@@ -20,7 +20,7 @@ class UserTableSeeder extends Seeder
            'middleName'     =>  '',
            'lastName'       =>  'Mlowoka',
            'email'          =>  'kunozgamlowoka@gmail.com',
-           'position_id'    =>  1,
+           'position_id'    =>  2,
            'password'       =>  bcrypt('12345678'),
         ]);
         $user->roles()->attach([1]);
