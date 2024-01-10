@@ -31,17 +31,35 @@ class PositionTableSeeder extends Seeder
 
         Position::create([
             "title"             =>  "Sales Officer",
-            "approvalStages"    =>  json_encode([]),
+            "approvalStages"    =>  json_encode([  [
+                "stage"     =>  1,
+                "position"  =>  3,
+                "name"      =>  null,
+                "date"      =>  null,
+                "status"    =>  false
+            ]]),
         ]);
 
         Position::create([
             "title"             =>  "Delivery Officer",
-            "approvalStages"    =>  json_encode([]),
+            "approvalStages"    =>  json_encode([  [
+                "stage"     =>  1,
+                "position"  =>  3,
+                "name"      =>  null,
+                "date"      =>  null,
+                "status"    =>  false
+            ]]),
         ]);
 
         Position::create([
             "title"             =>  "Operations Officer",
-            "approvalStages"    =>  json_encode([]),
+            "approvalStages"    =>  json_encode([  [
+                "stage"     =>  1,
+                "position"  =>  3,
+                "name"      =>  null,
+                "date"      =>  null,
+                "status"    =>  false
+            ]]),
         ]);
 
     }
