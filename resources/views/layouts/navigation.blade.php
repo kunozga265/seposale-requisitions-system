@@ -13,7 +13,7 @@
                 </div>
                 <div class="flex justify-center">
                     <div class="logo-variant">
-                        <img src="{{asset('images/logo-variant.jpg')}}" alt="Geoserve Engineering Group Variant Logo">
+                        <img src="{{asset('images/logo-variant.jpg')}}" alt="Seposale Limited Logo">
                     </div>
                 </div>
                 <div class="text-center pt-2 py-4 text-white">

@@ -1,3 +1,3 @@
 <template>
-    <img class="h-11 w-auto" :src="fileUrl('images/logo.png')" alt="Geoserve Engineering Group Variant Logo">
+    <img class="h-11 w-auto" :src="fileUrl('images/logo.png')" alt="Seposale Logo">
 </template>
