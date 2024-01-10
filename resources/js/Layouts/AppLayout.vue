@@ -17,9 +17,12 @@
                                 </button>
                             </div>
                             <div class="flex justify-center">
-                                <div class="logo-variant">
-                                    <img :src="fileUrl('images/logo-variant.jpg')" alt="Geoserve Engineering Group Variant Logo">
-                                </div>
+                                <div class=" h-24 w-24 flex justify-center items-center rounded-full bg-blue-700 cursor">
+                                            <i style="font-size: 30px;" class="mdi mdi-account-circle text-white"></i>
+                                        </div>
+                                <!-- <div class="logo-variant"> -->
+                                    <!-- <img :src="fileUrl('images/logo-variant.jpg')" alt="Geoserve Engineering Group Variant Logo"> -->
+                                <!-- </div> -->
                             </div>
                             <div class="text-center pt-2 py-4" v-if="$page.props.auth">
                                 <div class="heading-font text-white">{{$page.props.auth.data.firstName}} {{$page.props.auth.data.middleName}} {{$page.props.auth.data.lastName}}</div>
@@ -37,7 +40,7 @@
                             <li>
                                 <a :href="route('index')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
                                     <i class="text-lg mdi mdi-book-alphabet"></i>
-                                    <span class="ml-3">Index</span>
+                                    <span class="ml-3">All Requests</span>
                                 </a>
                             </li>
                             <!--<li>
