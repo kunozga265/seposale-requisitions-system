@@ -258,7 +258,7 @@
                                     <div class="text-gray-600 font-semibold">Person Collecting Advance</div>
                                     <div>{{request.data.personCollectingAdvance}}</div>
                                 </div>
-                                <div v-if="request.data.type!=='VEHICLE_MAINTENANCE'" class="border-b px-4 py-3 flex justify-between text-sm">
+                                <!-- <div v-if="request.data.type!=='VEHICLE_MAINTENANCE'" class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Project Name</div>
                                     <div v-if="request.data.project" >{{request.data.project.name}}</div>
                                 </div>
@@ -293,8 +293,8 @@
                                 <div v-if="request.data.type==='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Fuel Requested (Money Equivalent)</div>
                                     <div>{{numberWithCommas(request.data.fuelRequestedMoney)}}</div>
-                                </div>
-                                <div v-if="request.data.type==='FUEL'" class="border-b px-4 py-3 text-sm">
+                                </div> -->
+                                <div class="border-b px-4 py-3 text-sm">
                                     <div class="text-gray-600 font-semibold">Purpose</div>
                                     <div>{{request.data.purpose}}</div>
                                 </div>

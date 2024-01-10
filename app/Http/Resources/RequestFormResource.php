@@ -38,13 +38,14 @@ class RequestFormResource extends JsonResource
 
         switch ($this->type){
 
-            case "MATERIALS":
-            case "CASH":
+            case "REQUISITION":
+            case "PETTY_CASH":
                 return [
                     'id'                                  =>  $this->id,
                     'code'                                =>  $this->code,
                     'type'                                =>  $this->type,
                     'personCollectingAdvance'             =>  $this->personCollectingAdvance,
+                    'purpose'                             =>  $this->purpose,
                     'project'                             =>  new ProjectResource($this->project),
                     'information'                         =>  json_decode($this->information),
                     'total'                               =>  $this->total,

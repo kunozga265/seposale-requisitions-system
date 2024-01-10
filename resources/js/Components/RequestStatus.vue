@@ -36,7 +36,7 @@ export default {
             switch (this.request.approvalStatus){
                 case 0:
                     if (this.request.stagesApprovalStatus)
-                        return ": Manager to approve";
+                        return ": Management to approve";
                     else
                         return ": " + this.request.stagesApprovalPosition.title + " to approve";
                 case 1:

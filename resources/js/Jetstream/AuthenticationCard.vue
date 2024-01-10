@@ -14,8 +14,8 @@
             </div>
             <footer class="p-4 text-center">
                 <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-                    © 2022
-                    <a href="/">Geoserve Engineering Group™</a>. All Rights Reserved.
+                    © 2023
+                    <a href="https://www.seposale.com">Seposale</a>. All Rights Reserved.
                 </span>
             </footer>
 

@@ -193,15 +193,15 @@
                                 <div class="mb-4">
                                     <div class="text-sm text-gray-600">Position</div>
                                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ user.data.position.title }} ({{ user.data.position.state }})
+                                        {{ user.data.position.title }}
                                     </span>
                                 </div>
-                                <div class="mb-4">
-                                    <div class="text-sm text-gray-600">Grade</div>
-                                    <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ user.data.position.grade.code }}
-                                    </span>
-                                </div>
+    <!--                                <div class="mb-4">-->
+    <!--                                    <div class="text-sm text-gray-600">Grade</div>-->
+    <!--                                    <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">-->
+    <!--                                        {{ user.data.position.grade.code }}-->
+    <!--                                    </span>-->
+    <!--                                </div>-->
                                 <div class="mb-4">
                                     <div class="text-sm text-gray-600">Email</div>
                                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">

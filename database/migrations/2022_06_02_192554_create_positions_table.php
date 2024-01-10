@@ -16,9 +16,9 @@ class CreatePositionsTable extends Migration
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
             $table->string("title");
-            $table->string("grade_id");
+//            $table->string("grade_id");
             $table->json("approvalStages")->nullable();
-            $table->string("state");
+//            $table->string("state");
             $table->timestamps();
         });
     }

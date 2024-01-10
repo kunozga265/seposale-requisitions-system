@@ -173,8 +173,8 @@ class RequestFormController extends Controller
             $totalRequests=RequestForm::where('approval_by_id',$user->id)->count();
 
             //For Pie Chart
-            $cashRequestsCount=RequestForm::where('approval_by_id',$user->id)->where('type','CASH')->count();
-            $materialsRequestsCount=RequestForm::where('approval_by_id',$user->id)->where('type','MATERIALS')->count();
+            $pettyCashRequestsCount=RequestForm::where('approval_by_id',$user->id)->where('type','PETTY_CASH')->count();
+            $requisitionRequestsCount=RequestForm::where('approval_by_id',$user->id)->where('type','REQUISITION')->count();
             $vehicleMaintenanceRequestsCount=RequestForm::where('approval_by_id',$user->id)->where('type','VEHICLE_MAINTENANCE')->count();
             $fuelRequestsCount=RequestForm::where('approval_by_id',$user->id)->where('type','FUEL')->count();
 
@@ -192,8 +192,8 @@ class RequestFormController extends Controller
             $totalRequests=$user->approvedRequests->count();
 
             //For Pie Chart
-            $cashRequestsCount=$user->approvedRequests()->where('type','CASH')->count();
-            $materialsRequestsCount=$user->approvedRequests()->where('type','MATERIALS')->count();
+            $pettyCashRequestsCount=$user->approvedRequests()->where('type','PETTY_CASH')->count();
+            $requisitionRequestsCount=$user->approvedRequests()->where('type','REQUISITION')->count();
             $vehicleMaintenanceRequestsCount=$user->approvedRequests()->where('type','VEHICLE_MAINTENANCE')->count();
             $fuelRequestsCount=$user->approvedRequests()->where('type','FUEL')->count();
 
@@ -209,8 +209,8 @@ class RequestFormController extends Controller
         }
         $response=[
             'totalRequests'                     => $totalRequests,
-            'cashRequestsCount'                 => $cashRequestsCount,
-            'materialsRequestsCount'            => $materialsRequestsCount,
+            'pettyCashRequestsCount'            => $pettyCashRequestsCount,
+            'requisitionRequestsCount'          => $requisitionRequestsCount,
             'vehicleMaintenanceRequestsCount'   => $vehicleMaintenanceRequestsCount,
             'fuelRequestsCount'                 => $fuelRequestsCount,
             'approvedRequestsCount'             => $approvedRequestsCount,
@@ -239,8 +239,8 @@ class RequestFormController extends Controller
         $totalRequests=RequestForm::where('approvalStatus','>',0)->where('approvalStatus','<',5)->where('approvalStatus','!=',2)->count();
 
         //For Pie Chart
-        $cashRequestsCount=RequestForm::where('approvalStatus','>',0)->where('approvalStatus','<',4)->where('approvalStatus','!=',2)->where('type','CASH')->count();
-        $materialsRequestsCount=RequestForm::where('approvalStatus','>',0)->where('approvalStatus','<',4)->where('approvalStatus','!=',2)->where('type','MATERIALS')->count();
+        $pettyCashRequestsCount=RequestForm::where('approvalStatus','>',0)->where('approvalStatus','<',4)->where('approvalStatus','!=',2)->where('type','PETTY_CASH')->count();
+        $requisitionRequestsCount=RequestForm::where('approvalStatus','>',0)->where('approvalStatus','<',4)->where('approvalStatus','!=',2)->where('type','REQUISITION')->count();
         $vehicleMaintenanceRequestsCount=RequestForm::where('approvalStatus','>',0)->where('approvalStatus','<',4)->where('approvalStatus','!=',2)->where('type','VEHICLE_MAINTENANCE')->count();
         $fuelRequestsCount=RequestForm::where('approvalStatus','>',0)->where('approvalStatus','<',4)->where('approvalStatus','!=',2)->where('type','FUEL')->count();
 
@@ -254,8 +254,8 @@ class RequestFormController extends Controller
 
         $response=[
             'totalRequests'                     => $totalRequests,
-            'cashRequestsCount'                 => $cashRequestsCount,
-            'materialsRequestsCount'            => $materialsRequestsCount,
+            'pettyCashRequestsCount'            => $pettyCashRequestsCount,
+            'requisitionRequestsCount'          => $requisitionRequestsCount,
             'vehicleMaintenanceRequestsCount'   => $vehicleMaintenanceRequestsCount,
             'fuelRequestsCount'                 => $fuelRequestsCount,
             'awaitingInitiationCount'           => $awaitingInitiationCount,
@@ -315,8 +315,8 @@ class RequestFormController extends Controller
             $totalRequests=RequestForm::all()->count();
 
             //For Pie Chart
-            $cashRequestsCount=RequestForm::where('type','CASH')->count();
-            $materialsRequestsCount=RequestForm::where('type','MATERIALS')->count();
+            $pettyCashRequestsCount=RequestForm::where('type','PETTY_CASH')->count();
+            $requisitionRequestsCount=RequestForm::where('type','REQUISITION')->count();
             $vehicleMaintenanceRequestsCount=RequestForm::where('type','VEHICLE_MAINTENANCE')->count();
             $fuelRequestsCount=RequestForm::where('type','FUEL')->count();
 
@@ -333,8 +333,8 @@ class RequestFormController extends Controller
             $totalRequests=$user->requestForms->count();
 
             //For Pie Chart
-            $cashRequestsCount=$user->requestForms()->where('type','CASH')->count();
-            $materialsRequestsCount=$user->requestForms()->where('type','MATERIALS')->count();
+            $pettyCashRequestsCount=$user->requestForms()->where('type','PETTY_CASH')->count();
+            $requisitionRequestsCount=$user->requestForms()->where('type','REQUISITION')->count();
             $vehicleMaintenanceRequestsCount=$user->requestForms()->where('type','VEHICLE_MAINTENANCE')->count();
             $fuelRequestsCount=$user->requestForms()->where('type','FUEL')->count();
 
@@ -351,8 +351,8 @@ class RequestFormController extends Controller
 
         $response=[
             'totalRequests'                     => $totalRequests,
-            'cashRequestsCount'                 => $cashRequestsCount,
-            'materialsRequestsCount'            => $materialsRequestsCount,
+            'pettyCashRequestsCount'            => $pettyCashRequestsCount,
+            'requisitionRequestsCount'          => $requisitionRequestsCount,
             'vehicleMaintenanceRequestsCount'   => $vehicleMaintenanceRequestsCount,
             'fuelRequestsCount'                 => $fuelRequestsCount,
             'approvedRequestsCount'             => $approvedRequestsCount,
@@ -394,7 +394,7 @@ class RequestFormController extends Controller
         $stagesApprovalPosition=null;
 
         // Check the type of request
-        if($request->type == "CASH" || $request->type == "MATERIALS" ){
+        if($request->type == "PETTY_CASH" || $request->type == "REQUISITION" ){
 
             //Validate all the important attributes
             $request->validate([
@@ -418,7 +418,8 @@ class RequestFormController extends Controller
                 //Requested information
                 'type'                          =>  $request->type,
                 'personCollectingAdvance'       =>  $request->personCollectingAdvance,
-                'project_id'                    =>  $request->projectId,
+                'purpose'                       =>  $request->purpose,
+//                'project_id'                    =>  $request->projectId,
                 'information'                   =>  json_encode($request->information),
                 'total'                         =>  $request->total,
 
@@ -978,7 +979,7 @@ class RequestFormController extends Controller
                 }
 
                 // Check the type of request
-                if($requestForm->type == "CASH" || $requestForm->type == "MATERIALS" ){
+                if($request->type == "PETTY_CASH" || $request->type == "REQUISITION" ){
 
                     //Validate all the important attributes
                     $request->validate([
@@ -990,7 +991,8 @@ class RequestFormController extends Controller
 
                     $requestForm->update([
                         'personCollectingAdvance'       =>  $request->personCollectingAdvance,
-                        'project_id'                    =>  $request->projectId,
+                        'purpose'                       =>  $request->purpose,
+//                        'project_id'                    =>  $request->projectId,
                         'information'                   =>  json_encode($request->information),
                         'total'                         =>  $request->total,
                         'quotes'                        =>  json_encode($request->quotes ?? []),
@@ -1501,10 +1503,10 @@ class RequestFormController extends Controller
 
     private function getRequestTitle($type){
         switch ($type){
-            case "CASH":
-                return "Cash Advance Authorisation Form";
-            case "MATERIALS":
-                return "Materials Request Form";
+            case "PETTY_CASH":
+                return "Petty Cash Form";
+            case "REQUISITION":
+                return "Requisition Form";
             case "VEHICLE_MAINTENANCE":
                 return "Vehicle Maintenance Request";
             default:

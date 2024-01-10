@@ -119,21 +119,21 @@ class UserController extends Controller
                 $user->roles()->attach($employeeRole);
 
                 //If position is administrative secretary
-                if ($user->position->id == 2){
+                if ($user->position->id == 3){
                     //Give this user an administrative role
                     $administratorRole=Role::where('name','administrator')->first();
                     $user->roles()->attach($administratorRole);
                 }
 
-                //If position is finance or human resource make accountant
-                if ($user->position->id == 3 || $user->position->id == 5){
+                //If position is administrative or accountant give accounting rights
+                if ($user->position->id == 3){
                     //Give this user an accountant role
                     $accountantRole=Role::where('name','accountant')->first();
                     $user->roles()->attach($accountantRole);
                 }
 
                 //If position is a manager
-                if($user->position->id == 1 /*|| $user->position->id == 7*/){
+                if($user->position->id == 1 || $user->position->id == 2){
                     $user->roles()->detach();
                     $managementRole=Role::where('name','management')->first();
                     $user->roles()->attach($managementRole);

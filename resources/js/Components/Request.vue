@@ -35,9 +35,8 @@ export default {
     computed:{
         total(){
             switch (this.request.type){
-                case 'CASH':
-                case 'MATERIALS':
-                case 'VEHICLE_MAINTENANCE':
+                case 'PETTY_CASH':
+                case 'REQUISITION':
                     return this.request.total
                 case 'FUEL':
                     return this.request.fuelRequestedMoney
@@ -50,7 +49,8 @@ export default {
     methods:{
         getRequestIcon(){
             switch (this.request.type){
-                case 'CASH':
+                case 'REQUISITION':
+                case 'PETTY_CASH':
                     return 'mdi-cash'
                 case 'MATERIALS':
                     return 'mdi-hammer'

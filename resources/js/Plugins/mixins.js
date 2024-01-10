@@ -17,14 +17,10 @@ Vue.mixin({
         },
         getRequestName(type){
             switch (type){
-                case 'CASH':
-                    return 'Cash Request'
-                case 'MATERIALS':
-                    return 'Materials Request'
-                case 'VEHICLE_MAINTENANCE':
-                    return 'Vehicle Maintenance Request'
-                case 'FUEL':
-                    return 'Fuel Request'
+                case 'PETTY_CASH':
+                    return 'Petty Cash Request'
+                case 'REQUISITION':
+                    return 'Requisition'
                 default:
                     return  ''
             }

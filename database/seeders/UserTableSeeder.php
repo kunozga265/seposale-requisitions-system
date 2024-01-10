@@ -16,10 +16,10 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         $user=User::create([
-           'firstName'      =>  'Pilirani',
-           'middleName'     =>  'Joel',
-           'lastName'       =>  'Nyemba',
-           'email'          =>  'pjn@geoserve.com',
+           'firstName'      =>  'Kunozga',
+           'middleName'     =>  '',
+           'lastName'       =>  'Mlowoka',
+           'email'          =>  'kunozgamlowoka@gmail.com',
            'position_id'    =>  1,
            'password'       =>  bcrypt('12345678'),
         ]);

@@ -60,9 +60,9 @@
 </head>
 <body>
 <p style="text-align: right; font-size: 12px">Generated on {{$date}} at {{$time}}</p>
-<img style="width: 300px" src="{{storage_path()."/images/logo-black.png"}}" alt="">
-<div style="font-size: 32px; font-weight: bold">Geoserve Engineering Group</div>
-<div style="font-size: 25px">{{$type}}</div>
+<img style="width: 100%" src="{{storage_path()."/images/banner.jpg"}}" alt="">
+<div style="text-align: center; font-size: 25px; font-weight: normal; margin-top:12px">{{$type}}</div>
+<div style="text-align: center; font-size: 16px; font-weight: normal">Code: {{$requestForm->code}}</div>
 
 
 <table>
@@ -71,17 +71,21 @@
         <td>Status</td>
         <td>{{$statusMessage}}</td>
     </tr>
-    <tr>
+    <!-- <tr>
         <td>Request Code</td>
         <td>{{$requestForm->code}}</td>
-    </tr>
+    </tr> -->
     @if($requestForm->type!="FUEL")
         <tr>
-            <td>Person Collecting Advance</td>
+            <td>Person Collecting</td>
             <td>{{$requestForm->personCollectingAdvance}}</td>
         </tr>
+        <tr>
+            <td>Purpose</td>
+            <td>{{$requestForm->purpose}}</td>
+        </tr>
     @endif
-    @if($requestForm->type!="VEHICLE_MAINTENANCE")
+    <!-- @if($requestForm->type!="VEHICLE_MAINTENANCE")
         <tr>
             <td>Project Name</td>
             <td>{{$requestForm->project?$requestForm->project->name:""}}</td>
@@ -98,7 +102,7 @@
             <td>Project Site</td>
             <td>{{$requestForm->project?$requestForm->project->site:""}}</td>
         </tr>
-    @endif
+    @endif -->
     @if($requestForm->type=="VEHICLE_MAINTENANCE")
         <tr>
             <td>Assessed By</td>
@@ -199,7 +203,7 @@
             </tr>
         </tbody>
     </table>
-    <p style="font-size: 12px">I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment</p>
+    <!-- <p style="font-size: 12px">I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment</p> -->
 @endif
 
 <div class="">
@@ -208,7 +212,7 @@
             <div class="section">
                 <table>
                     <tr >
-                        <td style="background-color: #16365c; color: white; border: 1px solid black" colspan="2">
+                        <td style="background-color: #000000; color: white; border: 1px solid black" colspan="2">
                             Finance
                         </td>
                     </tr>
@@ -232,7 +236,7 @@
         <div class="section">
             <table>
                 <tr >
-                    <td style="background-color: #16365c; color: white; border: 1px solid black" colspan="2">Requested By</td>
+                    <td style="background-color: #000000; color: white; border: 1px solid black" colspan="2">Requested By</td>
                 </tr>
                 <tr>
                     <td style="font-weight: bold; width: 60px">Name</td>
@@ -253,7 +257,7 @@
                 <div class="section">
                     <table>
                         <tr >
-                            <td style="background-color: #16365c; color: white; border: 1px solid black" colspan="2">
+                            <td style="background-color: #000000; color: white; border: 1px solid black" colspan="2">
                                 Authorised By
                             </td>
                         </tr>
@@ -277,7 +281,7 @@
             <div class="section">
                 <table>
                     <tr >
-                        <td style="background-color: #16365c; color: white; border: 1px solid black" colspan="2">
+                        <td style="background-color: #000000; color: white; border: 1px solid black" colspan="2">
                             Approved By
                         </td>
                     </tr>

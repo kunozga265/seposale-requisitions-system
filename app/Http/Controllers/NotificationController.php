@@ -460,21 +460,17 @@ class NotificationController extends Controller
     public function getRequestTitle($type,$code): string
     {
         switch ($type){
-            case "CASH":
-                return "Cash Request [$code]";
-            case "MATERIALS":
-                return "Materials Request [$code]";
-            case "VEHICLE_MAINTENANCE":
-                return "Vehicle Maintenance Request [$code]";
-            default:
-                return "Fuel Request [$code]";
+            case "PETTY_CASH":
+                return "Petty Cash Request [$code]";
+           default:
+                return "Requisition [$code]";
 
         }
     }
 
     private function pushNotification($title,$subject,$message){
       //notification
-        try{
+       /* try{
             $client=new Client();
             $to=str_replace(' ','',$title);
             $notificationRequest=$client->request('POST','https://fcm.googleapis.com/fcm/send',[
@@ -499,6 +495,6 @@ class NotificationController extends Controller
 
         }catch (\GuzzleHttp\Exception\GuzzleException $e){
             //Log information
-        }
+        }*/
     }
 }
