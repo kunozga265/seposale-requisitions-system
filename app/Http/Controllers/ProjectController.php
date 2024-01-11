@@ -92,8 +92,8 @@ class ProjectController extends Controller
             $totalRequests=$project->requestForms->count();
 
             //For Pie Chart
-            $cashRequestsCount=$project->requestForms()->where('type','CASH')->count();
-            $materialsRequestsCount=$project->requestForms()->where('type','MATERIALS')->count();
+            $pettyCashRequestsCount=$project->requestForms()->where('type','CASH')->count();
+            $requisitionRequestsCount=$project->requestForms()->where('type','MATERIALS')->count();
             $vehicleMaintenanceRequestsCount=$project->requestForms()->where('type','VEHICLE_MAINTENANCE')->count();
             $fuelRequestsCount=$project->requestForms()->where('type','FUEL')->count();
 
@@ -110,8 +110,8 @@ class ProjectController extends Controller
             $response=[
                 'project'                           => new ProjectResource($project),
                 'totalRequests'                     => $totalRequests,
-                'cashRequestsCount'                 => $cashRequestsCount,
-                'materialsRequestsCount'            => $materialsRequestsCount,
+                'pettyCashRequestsCount'            => $pettyCashRequestsCount,
+                'requisitionRequestsCount'          => $requisitionRequestsCount,
                 'vehicleMaintenanceRequestsCount'   => $vehicleMaintenanceRequestsCount,
                 'fuelRequestsCount'                 => $fuelRequestsCount,
                 'approvedRequestsCount'             => $approvedRequestsCount,

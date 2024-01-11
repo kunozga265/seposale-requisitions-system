@@ -105,8 +105,8 @@ class VehicleController extends Controller
             $totalRequests=$vehicle->requestForms->count();
 
             //For Pie Chart
-            $cashRequestsCount=$vehicle->requestForms()->where('type','CASH')->count();
-            $materialsRequestsCount=$vehicle->requestForms()->where('type','MATERIALS')->count();
+            $pettyCashRequestsCount=$vehicle->requestForms()->where('type','CASH')->count();
+            $requisitionRequestsCount=$vehicle->requestForms()->where('type','MATERIALS')->count();
             $vehicleMaintenanceRequestsCount=$vehicle->requestForms()->where('type','VEHICLE_MAINTENANCE')->count();
             $fuelRequestsCount=$vehicle->requestForms()->where('type','FUEL')->count();
 
@@ -123,8 +123,8 @@ class VehicleController extends Controller
             $response=[
                 'vehicle'                           => new VehicleResource($vehicle),
                 'totalRequests'                     => $totalRequests,
-                'cashRequestsCount'                 => $cashRequestsCount,
-                'materialsRequestsCount'            => $materialsRequestsCount,
+                'pettyCashRequestsCount'            => $pettyCashRequestsCount,
+                'requisitionRequestsCount'          => $requisitionRequestsCount,
                 'vehicleMaintenanceRequestsCount'   => $vehicleMaintenanceRequestsCount,
                 'fuelRequestsCount'                 => $fuelRequestsCount,
                 'approvedRequestsCount'             => $approvedRequestsCount,

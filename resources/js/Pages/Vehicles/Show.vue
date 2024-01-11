@@ -343,8 +343,8 @@
     export default {
         props:[
             'totalRequests',
-            'cashRequestsCount',
-            'materialsRequestsCount',
+            'pettyCashRequestsCount',
+            'requisitionRequestsCount',
             'vehicleMaintenanceRequestsCount',
             'fuelRequestsCount',
             'approvedRequestsCount',
@@ -406,14 +406,14 @@
               typesData:{
                   datasets: [{
                       data: [
-                          this.cashRequestsCount,
-                          this.materialsRequestsCount,
-                          this.vehicleMaintenanceRequestsCount,
-                          this.fuelRequestsCount
+                          this.pettyCashRequestsCount,
+                          this.requisitionRequestsCount,
+                         // this.vehicleMaintenanceRequestsCount,
+                        //  this.fuelRequestsCount
                       ],
                       backgroundColor: ['#1a56db','#ed0b4b','#b1bbc9','#e3ebf6'],
                   }],
-                  labels: ['Cash', 'Materials', 'Vehicle Maintenance', 'Fuel']
+                   labels: ['Petty Cash', 'Requisitions']
               },
               typesChartOptions:{
                   plugins: {

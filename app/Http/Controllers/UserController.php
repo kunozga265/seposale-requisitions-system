@@ -396,8 +396,8 @@ class UserController extends Controller
             $totalRequests=$user->requestForms->count();
 
             //For Pie Chart
-            $cashRequestsCount=$user->requestForms()->where('type','CASH')->count();
-            $materialsRequestsCount=$user->requestForms()->where('type','MATERIALS')->count();
+            $pettyCashRequestsCount=$user->requestForms()->where('type','CASH')->count();
+            $requisitionRequestsCount=$user->requestForms()->where('type','MATERIALS')->count();
             $vehicleMaintenanceRequestsCount=$user->requestForms()->where('type','VEHICLE_MAINTENANCE')->count();
             $fuelRequestsCount=$user->requestForms()->where('type','FUEL')->count();
 
@@ -414,8 +414,8 @@ class UserController extends Controller
             $response=[
                 'user'                              =>  new UserResource($user),
                 'totalRequests'                     => $totalRequests,
-                'cashRequestsCount'                 => $cashRequestsCount,
-                'materialsRequestsCount'            => $materialsRequestsCount,
+                'pettyCashRequestsCount'            => $pettyCashRequestsCount,
+                'requisitionRequestsCount'          => $requisitionRequestsCount,
                 'vehicleMaintenanceRequestsCount'   => $vehicleMaintenanceRequestsCount,
                 'fuelRequestsCount'                 => $fuelRequestsCount,
                 'approvedRequestsCount'             => $approvedRequestsCount,

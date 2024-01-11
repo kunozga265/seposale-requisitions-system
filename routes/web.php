@@ -30,12 +30,12 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
         "uses"  => "App\Http\Controllers\RequestFormController@dashboard",
     ])->name('dashboard');
 
-    Route::get('/index', [
+    Route::get('/all-requests', [
         "uses"  => "App\Http\Controllers\RequestFormController@index",
         'roles' =>['employee','management']
     ])->name('index');
 
-    Route::get('/approved', [
+    Route::get('/approved-requests', [
         "uses"  => "App\Http\Controllers\RequestFormController@approved",
         'roles' =>['employee','management']
     ])->name('approved');
