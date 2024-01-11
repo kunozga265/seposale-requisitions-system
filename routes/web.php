@@ -42,19 +42,19 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     Route::get('/finance', [
         "uses"  => "App\Http\Controllers\RequestFormController@finance",
-        'roles' =>['employee','management']
+        'roles' =>['accountant','management']
     ])->name('finance');
 
 
     Route::group(['prefix'=>'users'],function() {
         Route::get('/', [
             "uses" => "App\Http\Controllers\UserController@index",
-            'roles' =>['employee','management']
+            'roles' =>['administrator','management']
         ])->name('users');
 
         Route::get('/view/{id}', [
             "uses" => "App\Http\Controllers\UserController@show",
-            'roles' =>['employee','management']
+            'roles' =>['administrator','management']
         ])->name('users.show');
 
         Route::post('/verify/{id}', [
@@ -87,12 +87,12 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
     Route::group(['prefix'=>'projects'],function(){
         Route::get('/', [
             "uses"  => "App\Http\Controllers\ProjectController@index",
-            'roles' => ['employee','management']
+            'roles' => ['administrator','management']
         ])->name('projects');
 
         Route::get('/view/{id}', [
             "uses"  => "App\Http\Controllers\ProjectController@show",
-            'roles' => ['employee','management']
+            'roles' => ['administrator','management']
         ])->name('projects.show');
 
         Route::get('/create', [
@@ -134,7 +134,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
     Route::group(['prefix'=>'vehicles'],function(){
         Route::get('/', [
             "uses"  => "App\Http\Controllers\VehicleController@index",
-            'roles' => ['employee','management']
+            'roles' => ['administrator','management']
         ])->name('vehicles');
 
         Route::get('/view/{id}', [
@@ -274,13 +274,13 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
         Route::get('/', [
             "uses" => "App\Http\Controllers\ReportController@index",
-            'roles' => ['employee', 'management']
+            'roles' => ['accountant','administrator', 'management']
 //            'roles' => ['accountant', 'management', 'administrator']
         ])->name('reports');
 
         Route::get('/generate', [
             "uses" => "App\Http\Controllers\ReportController@generate",
-            'roles' => ['employee', 'management']
+            'roles' => ['accountant','administrator', 'management']
 //            'roles' => ['accountant', 'management', 'administrator']
         ])->name('reports.generate');
 
