@@ -1524,12 +1524,11 @@ class RequestFormController extends Controller
                     $position=Position::find($requestForm->stagesApprovalPosition);
                     return "Pending : " . $position->title . " to approve";
                 }
+            case 3:
             case 1:
-                return "Approved: Accountant to initiate";
+                return "Approved";
             case 2:
                 return "Denied: By ".$requestForm->deniedBy->firstName." ".$requestForm->deniedBy->middleName." ".$requestForm->deniedBy->lastName;
-            case 3:
-                return "Accountant to reconcile";
             case 4:
                 return "Reconciled";
             case 5:
