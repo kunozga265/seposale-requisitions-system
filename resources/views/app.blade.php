@@ -21,6 +21,8 @@
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
         <link rel="stylesheet" href="{{ asset('css/material-icons.css') }}">
 
+{{--        <link rel="stylesheet" href="{{ asset('css/app-original.css') }}">--}}
+
         <!-- Styles -->
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 

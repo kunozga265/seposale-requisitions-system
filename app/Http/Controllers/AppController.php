@@ -156,6 +156,28 @@ class AppController extends Controller
         return $code;
     }
 
+    public function getQuotationNumber($number){
+        $quotation_number = '';
+        switch ($number){
+            case $number < 10:
+                $quotation_number = "0000$number";
+                break;
+            case $number < 100:
+                $quotation_number = "000$number";
+                break;
+            case $number < 1000:
+                $quotation_number = "00$number";
+                break;
+            case $number < 10000:
+                $quotation_number = "0$number";
+                break;
+            default:
+                $quotation_number = $number;
+        }
+
+        return $quotation_number;
+    }
+
     public function isApi(Request $request)
     {
         //get cookie object

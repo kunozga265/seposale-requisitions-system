@@ -63,6 +63,11 @@ class User extends Authenticatable
         return false;
     }
 
+    public function fullName()
+    {
+        return $this->firstName . " " . $this->lastName;
+    }
+
     /**
      * The attributes that are mass assignable.
      *

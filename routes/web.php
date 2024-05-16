@@ -262,6 +262,87 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     });
 
+    Route::group(['prefix'=>'quotations'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\QuotationController@index",
+            'roles' =>['employee','management']
+        ])->name('quotations.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\QuotationController@create",
+            'roles' =>['employee','management']
+        ])->name('quotations.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\QuotationController@store",
+            'roles' =>['employee','management']
+        ])->name('quotations.store');
+
+        Route::get('/view/{id}', [
+            "uses"  => "App\Http\Controllers\QuotationController@show",
+            'roles' =>['employee','management']
+        ])->name('quotations.show');
+
+        Route::get('/print/{id}', [
+            "uses"  => "App\Http\Controllers\QuotationController@print",
+            'roles' =>['employee','management']
+        ])->name('quotations.print');
+
+        Route::post('/find/{code}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@findRequestForm",
+            'roles' =>['employee','management']
+        ])->name('request-forms.find');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@edit",
+            'roles' =>['employee','management']
+        ])->name('request-forms.edit');
+
+        Route::post('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@update",
+            'roles' =>['employee','management']
+        ])->name('request-forms.update');
+
+        Route::post('/approve/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@approve",
+            'roles' =>['employee','management']
+        ])->name('request-forms.approve');
+
+        Route::post('/deny/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@deny",
+            'roles' =>['employee','management']
+        ])->name('request-forms.deny');
+
+        Route::post('/delete/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@destroy",
+            'roles' =>['employee','management']
+        ])->name('request-forms.delete');
+
+        Route::post('/discard/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@discard",
+            'roles' =>['employee','management']
+        ])->name('request-forms.discard');
+
+        Route::post('/add-remarks/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@appendRemarks",
+            'roles' =>['employee','management']
+        ])->name('request-forms.add-remarks');
+
+        Route::post('/initiate/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@initiate",
+             'roles' =>['accountant']
+        ])->name('request-forms.initiate');
+
+        Route::post('/reconcile/{id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@reconcile",
+             'roles' =>['accountant']
+        ])->name('request-forms.reconcile');
+
+
+
+    });
+
     Route::group(['prefix'=>'notifications'],function() {
 
         Route::get('/', [
