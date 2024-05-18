@@ -139,7 +139,7 @@ class QuotationController extends Controller
 
             $filename="QUOTATION#".(new AppController())->getQuotationNumber($quotation->code)." - ".$quotation->name."-".date('YMj');
 
-            $now_d=Carbon::now('Africa/Lusaka')->format('jS F, Y');
+            $now_d=Carbon::now('Africa/Lusaka')->format('F j, Y');
             $now_t=Carbon::now('Africa/Lusaka')->format('H:i');
 
             $total_in_words = SpellNumber::value($quotation->total)

@@ -9,7 +9,7 @@
 
     <style>
         *{
-            font-family: 'Lato Font',sans-serif;
+            font-family: 'Inter',sans-serif;
             text-transform: uppercase;
             font-size: 11px;
         }
@@ -19,10 +19,22 @@
             font-weight: bold;
             src: url({{storage_path()."/fonts/Exo2-Bold.ttf"}}) format("ttf");
         }
+        @font-face {
+            font-family: 'Rubik';
+            font-weight: bold;
+            src: url({{storage_path("/fonts/Rubik-Bold.ttf")}}) format("ttf");
+        }
 
         @font-face {
-            font-family: 'Lato Font';
-            src: url({{storage_path()."/fonts/Lato-Regular.ttf"}}) format("ttf");
+            font-family: 'Inter';
+            font-weight: normal;
+            src: url({{storage_path("/fonts/Inter-Regular.ttf")}}) format("ttf");
+        }
+
+        @font-face {
+            font-family: 'Inter';
+            font-weight: bold;
+            src: url({{storage_path("/fonts/Inter-Bold.ttf")}}) format("ttf");
         }
 
         table{
@@ -38,9 +50,10 @@
         }
 
         .heading{
+            font-family: 'Rubik', sans-serif;
             font-size: 12px;
             padding-bottom: 8px;
-            font-weight: bolder;
+            font-weight: bold;
         }
 
         .grid{
@@ -131,7 +144,7 @@
             <td class="b-0 font-bold">Phone Number</td>
             <td class="b-0 shade">{{$quotation->phone_number}}</td>
 
-            <td class="b-0 font-bold">Email Address</td>
+            <td class="b-0 font-bold">Email</td>
             <td class="b-0 shade" style="text-transform: lowercase">{{$quotation->email}}</td>
         </tr>
         <tr>
@@ -196,7 +209,10 @@
         <div>PREPARED BY</div>
         <div class="font-bold">{{$quotation->user->fullName()}}</div>
     </div>
+
+
 </div>
+<img style="width: 100%" src="{{storage_path()."/images/payment_details.png"}}" alt="">
 
 
 </body>
