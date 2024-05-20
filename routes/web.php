@@ -289,57 +289,20 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('quotations.print');
 
-        Route::post('/find/{code}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@findRequestForm",
-            'roles' =>['employee','management']
-        ])->name('request-forms.find');
-
         Route::get('/edit/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@edit",
+            "uses"  => "App\Http\Controllers\QuotationController@edit",
             'roles' =>['employee','management']
-        ])->name('request-forms.edit');
+        ])->name('quotations.edit');
 
         Route::post('/edit/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@update",
+            "uses"  => "App\Http\Controllers\QuotationController@update",
             'roles' =>['employee','management']
-        ])->name('request-forms.update');
-
-        Route::post('/approve/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@approve",
-            'roles' =>['employee','management']
-        ])->name('request-forms.approve');
-
-        Route::post('/deny/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@deny",
-            'roles' =>['employee','management']
-        ])->name('request-forms.deny');
+        ])->name('quotations.update');
 
         Route::post('/delete/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@destroy",
+            "uses"  => "App\Http\Controllers\QuotationController@destroy",
             'roles' =>['employee','management']
-        ])->name('request-forms.delete');
-
-        Route::post('/discard/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@discard",
-            'roles' =>['employee','management']
-        ])->name('request-forms.discard');
-
-        Route::post('/add-remarks/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@appendRemarks",
-            'roles' =>['employee','management']
-        ])->name('request-forms.add-remarks');
-
-        Route::post('/initiate/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@initiate",
-             'roles' =>['accountant']
-        ])->name('request-forms.initiate');
-
-        Route::post('/reconcile/{id}', [
-            "uses"  => "App\Http\Controllers\RequestFormController@reconcile",
-             'roles' =>['accountant']
-        ])->name('request-forms.reconcile');
-
-
+        ])->name('quotations.delete');
 
     });
 

@@ -139,7 +139,7 @@
                                         </tr>
                                         </tbody>
                                     </table>
-                                    <div @click="addRecord" class="mt-2 ml-2 flex justify-start items-center cursor">
+                                    <div @click="addRecordDialog = true" class="mt-2 ml-2 flex justify-start items-center cursor">
                                         <div>
                                             <i class="mdi mdi-plus-circle text-blue-600"></i>
                                         </div>
@@ -233,6 +233,40 @@
                 </form>
             </div>
         </div>
+
+      <dialog-modal :show="addRecordDialog" @close="addRecordDialog=false">
+        <template #title>
+          Add Record
+        </template>
+
+        <template #content>
+<!--          <div class="mb-2">-->
+<!--            Are you sure you want to approve this request?-->
+<!--          </div>-->
+          <div class="mb-4">
+            <jet-label for="product" value="Select Product" />
+            <select v-model="productIndex" id="product"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required>
+              <option value="-1">Blank</option>
+              <option v-for="(product, index) in products.data" :value="index" :key="index">
+                {{ product.name }}
+              </option>
+            </select>
+          </div>
+
+        </template>
+
+        <template #footer>
+          <secondary-button @click.native="addRecordDialog=false">
+            Cancel
+          </secondary-button>
+
+          <primary-button class="ml-2" @click.native="addRecord">
+            Add
+          </primary-button>
+        </template>
+      </dialog-modal>
     </app-layout>
 </template>
 
@@ -244,10 +278,13 @@ import JetLabel from '@/Jetstream/Label'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import SecondaryButton from '@/Jetstream/SecondaryButton'
 import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
+import PrimaryButton from "@/Jetstream/Button.vue";
+import DialogModal from "@/Jetstream/DialogModal.vue";
 
 export default {
-    props: [],
+    props: ["products"],
     components: {
+      DialogModal, PrimaryButton,
         AppLayout,
         JetInput,
         JetLabel,
@@ -258,6 +295,8 @@ export default {
     },
     data() {
         return {
+          addRecordDialog:false,
+          productIndex:-1,
             form: this.$inertia.form({
                 name: '',
                 phoneNumber: '',
@@ -277,8 +316,6 @@ export default {
             }),
             quotes: [],
             error: '',
-            date: null,
-            today: new Date().toISOString(),
         }
     },
     created() {
@@ -335,13 +372,29 @@ export default {
                 .post(this.route('quotations.store'))
         },
         addRecord() {
+
+          if(parseInt(this.productIndex) < 0){
             this.form.information.push({
-                "details": '',
-                "units": '',
-                "quantity": 0,
-                "unitCost": 0,
-                "totalCost": 0,
+              "details": '',
+              "units": '',
+              "quantity": 0,
+              "unitCost": 0,
+              "totalCost": 0,
             })
+          }else{
+            const product = this.products.data[this.productIndex]
+
+            this.form.information.push({
+              "details": product.name,
+              "units": product.unit,
+              "quantity": product.quantity,
+              "unitCost": product.cost/product.quantity,
+              "totalCost": product.cost,
+            })
+          }
+          this.productIndex = -1
+          this.addRecordDialog = false
+
         },
         removeRecord(index) {
             this.form.information.splice(index, 1)

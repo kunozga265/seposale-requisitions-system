@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Http\Resources\QuotationResource;
+use App\Models\Product;
 use App\Models\Quotation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -40,8 +42,9 @@ class QuotationController extends Controller
 
     public function create(Request $request)
     {
+        $products = Product::orderBy("name", 'asc')->get();
         return Inertia::render('Quotations/Create', [
-
+            "products" => ProductResource::collection($products)
         ]);
     }
 
@@ -124,6 +127,98 @@ class QuotationController extends Controller
             }
         }
     }
+
+    public function edit(Request $request,$id)
+    {
+        $quotation=Quotation::find($id);
+
+        if(is_object($quotation)){
+
+             $products = Product::orderBy("name", 'asc')->get();
+            return Inertia::render('Quotations/Edit',[
+                'quotation'   => new QuotationResource($quotation),
+                 "products" => ProductResource::collection($products)
+            ]);
+        }else {
+            return Redirect::back()->with('error','Quotation not found');
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $quotation=Quotation::find($id);
+
+        if(is_object($quotation)){
+
+            //Validate all the important attributes
+            $request->validate([
+                'name' => ['required'],
+                'information' => ['required'],
+                'total' => ['required'],
+            ]);
+
+            $quotation->update([
+                //Customer Details
+                'name' => $request->name,
+                'phone_number' => $request->phoneNumber,
+                'email' => $request->email,
+                'address' => $request->address,
+                'location' => $request->location,
+
+                'information' => json_encode($request->information),
+                'total' => $request->total,
+
+                //Requested by
+                'quotes' => json_encode($request->quotes ?? []),
+            ]);
+
+            //Run notifications
+//        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+
+
+//        $report = (new ReportController())->getCurrentReport();
+//        $report->requestForms()->attach($requestForm);
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(new QuotationResource($quotation), 201);
+            else {
+                //Web Response
+                return Redirect::route('quotations.index')->with('success', 'Quotation updated!');
+            }
+        }else {
+            return Redirect::back()->with('error','Quotation not found');
+        }
+    }
+
+    public function destroy(Request $request,$id)
+    {
+        //find out if the request is valid
+        $quotation=Quotation::find($id);
+
+        if(is_object($quotation)){
+
+            $quotation->delete();
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message'=>'Quotation has been deleted']);
+            }else{
+                //Web Response
+                return Redirect::route('quotations.index')->with('success','Quotation has been deleted');
+            }
+        }else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Quotation not found"], 404);
+            }else{
+                //Web Response
+                return Redirect::back()->with('error','Quotation not found');
+            }
+        }
+    }
+
 
     public function print(Request $request,$id)
     {
