@@ -1131,7 +1131,7 @@ class RequestFormController extends Controller
 
             if ((new AppController())->isApi($request)) {
                 //API Response
-                return response()->json(['message'=>'Project has been deleted']);
+                return response()->json(['message'=>'Request has been deleted']);
             }else{
                 //Web Response
                 return Redirect::route('dashboard')->with('success','Request has been deleted');
