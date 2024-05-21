@@ -5,12 +5,12 @@ namespace App\Http\Resources;
 use App\Http\Controllers\AppController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class QuotationResource extends JsonResource
+class InvoiceResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
     public function toArray($request)
@@ -25,11 +25,10 @@ class QuotationResource extends JsonResource
             'location' => $this->location,
             'information' => json_decode($this->information),
             'total' => $this->total,
+            'status' => $this->status,
             'requestedBy' => new UserResource($this->user),
-            'quotes' => json_decode($this->quotes),
+            'receipts' => json_decode($this->receipts),
             'date' => $this->created_at->getTimestamp(),
         ];
     }
-
-
 }

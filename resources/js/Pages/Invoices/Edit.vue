@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      Edit Quotation
+      Edit Invoice
     </template>
 
     <template #breadcrumbs>
@@ -13,18 +13,16 @@
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clip-rule="evenodd"></path>
           </svg>
-          <a :href="route('quotations.index')" class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-            Quotations
+          <a :href="route('invoices.index')" class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+            Invoices
           </a>
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        #{{ quotation.data.code }}
+                        #{{ invoice.data.code }}
                     </span>
         </div>
       </li>
     </template>
-
-
 
     <div class="py-6">
       <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
@@ -172,48 +170,6 @@
             </div>
           </div>
 
-          <div class="page-section">
-            <div class="page-section-header">
-              <div class="page-section-title">
-                Quotes
-              </div>
-            </div>
-            <div class="page-section-content flex justify-center">
-              <div class="card w-full sm:max-w-md md:max-w-3xl">
-
-                <div class="mb-4">
-                  <jet-label for="quote" value="Upload quote"/>
-                  <input type="file" id="quote" @input="fileUpload($event.target.files[0])"
-                         class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-                  <div v-for="(quote, index) in quotes" :key="index">
-                    <div class="relative" v-if="quote.ext === 'pdf'">
-                      <i @click="removeQuote(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                         class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
-                      <div
-                          style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                          class="h-9 w-9 bg-white absolute"></div>
-                      <pdf class="w-32" :source="fileUrl(quote.file)"/>
-                    </div>
-                    <div class="relative" v-else>
-                      <i @click="removeQuote(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                         class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
-                      <div
-                          style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                          class="h-9 w-9 bg-white absolute"></div>
-                      <img class="w-32" :src="fileUrl(quote.file)" alt="Quote Image">
-                    </div>
-
-
-                  </div>
-                </div>
-
-              </div>
-            </div>
-          </div>
-
           <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
             <div v-show="!validation" id="toast-danger"
                  class="flex items-center w-full max-w-xs p-4 mb-4 text-red-700 bg-red-100 rounded-lg shadow dark:text-red-400 dark:bg-red-800"
@@ -250,7 +206,7 @@
         <!--            Are you sure you want to approve this request?-->
         <!--          </div>-->
         <div class="mb-4">
-          <jet-label for="product" value="Select Product"/>
+          <jet-label for="product" value="Select Product" />
           <select v-model="productIndex" id="product"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   required>
@@ -288,7 +244,7 @@ import PrimaryButton from "@/Jetstream/Button.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 
 export default {
-  props: ["quotation","products"],
+  props: ["invoice","products"],
   components: {
     DialogModal, PrimaryButton,
     AppLayout,
@@ -301,17 +257,17 @@ export default {
   },
   data() {
     return {
-      addRecordDialog: false,
-      productIndex: -1,
+      addRecordDialog:false,
+      productIndex:-1,
       form: this.$inertia.form({
-        name: this.quotation.data.name,
-        phoneNumber: this.quotation.data.phoneNumber,
-        email: this.quotation.data.email,
-        address: this.quotation.data.address,
-        location: this.quotation.data.location,
-        information: this.quotation.data.information,
+        name: this.invoice.data.name,
+        phoneNumber: this.invoice.data.phoneNumber,
+        email: this.invoice.data.email,
+        address: this.invoice.data.address,
+        location: this.invoice.data.location,
+        information: this.invoice.data.information,
       }),
-      quotes: this.quotation.data.quotes,
+      quotes: [],
       error: '',
     }
   },
@@ -366,7 +322,7 @@ export default {
             total: this.totalCost,
             quotes: this.quoteFiles,
           }))
-          .post(this.route('quotations.update',{id:this.quotation.data.id}))
+          .post(this.route('invoices.update', {id: this.invoice.data.id}))
     },
     addRecord() {
 
@@ -395,34 +351,6 @@ export default {
     },
     removeRecord(index) {
       this.form.information.splice(index, 1)
-    },
-    fileUpload(file) {
-      const reader = new FileReader();
-      if (file) {
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-          axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
-            type: "QUOTE",
-            file: e.target.result
-          }).then(res => {
-            this.quotes.push({
-              'file': res.data.file,
-              'ext': res.data.ext,
-            })
-            document.getElementById('quote').value = ""
-          }).catch(function (res) {
-            // this.form.errors.push(res.data.message)
-          })
-        };
-      }
-    },
-    removeQuote(index) {
-      const file = this.quotes[index].file
-      //delete online
-      axios.post(this.$page.props.publicPath + "api/1.0.0/upload/delete", {
-        'file': file
-      })
-      this.quotes.splice(index, 1)
     },
   }
 

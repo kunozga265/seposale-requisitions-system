@@ -68,6 +68,12 @@
                                     <span class="ml-3">Quotations</span>
                                 </a>
                             </li>
+                            <li>
+                                <a :href="route('invoices.index')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <i class="text-lg mdi mdi-book-edit"></i>
+                                    <span class="ml-3">Invoices</span>
+                                </a>
+                            </li>
                             <li v-if="checkRole($page.props.auth.data,'administrator') || checkRole($page.props.auth.data,'management')">
                                 <a :href="route('users')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <i class="text-lg mdi mdi-account-supervisor-circle"></i>

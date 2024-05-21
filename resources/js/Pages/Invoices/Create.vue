@@ -1,7 +1,7 @@
 <template>
     <app-layout>
         <template #header>
-            New Quotation
+            New Invoice
         </template>
 
         <template #breadcrumbs>
@@ -14,7 +14,7 @@
                               clip-rule="evenodd"></path>
                     </svg>
                     <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Quotations
+                        Invoices
                     </span>
                 </div>
             </li>
@@ -162,48 +162,6 @@
                                         I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment.
                                     </div> -->
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Quotes
-                            </div>
-                        </div>
-                        <div class="page-section-content flex justify-center">
-                            <div class="card w-full sm:max-w-md md:max-w-3xl">
-
-                                <div class="mb-4">
-                                    <jet-label for="quote" value="Upload quote"/>
-                                    <input type="file" id="quote" @input="fileUpload($event.target.files[0])"
-                                           class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                                </div>
-
-                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-                                    <div v-for="(quote, index) in quotes" :key="index">
-                                        <div class="relative" v-if="quote.ext === 'pdf'">
-                                            <i @click="removeQuote(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                                               class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
-                                            <div
-                                                style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                                                class="h-9 w-9 bg-white absolute"></div>
-                                            <pdf class="w-32" :source="fileUrl(quote.file)"/>
-                                        </div>
-                                        <div class="relative" v-else>
-                                            <i @click="removeQuote(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                                               class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
-                                            <div
-                                                style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                                                class="h-9 w-9 bg-white absolute"></div>
-                                            <img class="w-32" :src="fileUrl(quote.file)" alt="Quote Image">
-                                        </div>
-
-
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>
@@ -369,7 +327,7 @@ export default {
                     total: this.totalCost,
                     quotes: this.quoteFiles,
                 }))
-                .post(this.route('quotations.store'))
+                .post(this.route('invoices.store'))
         },
         addRecord() {
 

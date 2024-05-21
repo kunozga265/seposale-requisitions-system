@@ -306,6 +306,50 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     });
 
+    Route::group(['prefix'=>'invoices'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\InvoiceController@index",
+            'roles' =>['employee','management']
+        ])->name('invoices.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\InvoiceController@create",
+            'roles' =>['employee','management']
+        ])->name('invoices.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\InvoiceController@store",
+            'roles' =>['employee','management']
+        ])->name('invoices.store');
+
+        Route::get('/view/{id}', [
+            "uses"  => "App\Http\Controllers\InvoiceController@show",
+            'roles' =>['employee','management']
+        ])->name('invoices.show');
+
+        Route::get('/print/{id}', [
+            "uses"  => "App\Http\Controllers\InvoiceController@print",
+            'roles' =>['employee','management']
+        ])->name('invoices.print');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\InvoiceController@edit",
+            'roles' =>['employee','management']
+        ])->name('invoices.edit');
+
+        Route::post('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\InvoiceController@update",
+            'roles' =>['employee','management']
+        ])->name('invoices.update');
+
+        Route::post('/delete/{id}', [
+            "uses"  => "App\Http\Controllers\InvoiceController@destroy",
+            'roles' =>['employee','management']
+        ])->name('invoices.delete');
+
+    });
+
     Route::group(['prefix'=>'notifications'],function() {
 
         Route::get('/', [

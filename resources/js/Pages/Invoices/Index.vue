@@ -1,7 +1,7 @@
 <template>
     <app-layout>
         <template #header>
-            Quotations
+            Invoices
         </template>
 
         <template #breadcrumbs>
@@ -14,15 +14,15 @@
                               clip-rule="evenodd"></path>
                     </svg>
                     <span
-                        class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">Quotations</span>
+                        class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">Invoices</span>
                 </div>
             </li>
         </template>
 
         <template #actions>
-            <inertia-link :href="route('quotations.create')">
+            <inertia-link :href="route('invoices.create')">
                 <primary-button>
-                    New Quotation
+                    New Invoice
                 </primary-button>
             </inertia-link>
         </template>
@@ -38,14 +38,14 @@
                     </div>
                     <div class="page-section-content">
 
-                        <div v-if="quotations.data.length === 0"
+                        <div v-if="invoices.data.length === 0"
                              class="text-center text-gray-400 md:col-span-2 text-sm">
-                            No Quotations Found
+                            No Invoices Found
                         </div>
                         <div v-else>
                             <div class="card w-full">
 
-                                <!--                            {{ quotations.data }}-->
+                                <!--                            {{ invoices.data }}-->
 
                                 <div class="p-2 mb-2 relative overflow-x-auto">
                                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -59,11 +59,11 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr class="cursor-pointer" @click="navigateToQuotation(quotation.id)"  v-for="quotation in quotations.data">
-                                            <td class="py-2 text-left">{{ quotation.code }}</td>
-                                            <td class="py-2 text-left">{{ quotation.name }}</td>
-                                            <td class="py-2 text-right">{{ numberWithCommas(quotation.total) }}</td>
-                                            <td class="py-2 text-right">{{ getDate(quotation.date * 1000) }}</td>
+                                        <tr class="cursor-pointer" @click="navigateToInvoice(invoice.id)"  v-for="invoice in invoices.data">
+                                            <td class="py-2 text-left">{{ invoice.code }}</td>
+                                            <td class="py-2 text-left">{{ invoice.name }}</td>
+                                            <td class="py-2 text-right">{{ numberWithCommas(invoice.total) }}</td>
+                                            <td class="py-2 text-right">{{ getDate(invoice.date * 1000) }}</td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -77,16 +77,16 @@
                                 <!-- Help text -->
                                 <span class="text-sm text-gray-700 dark:text-gray-400">
                                     Showing <span class="font-semibold text-gray-900 dark:text-white">{{
-                                        quotations.meta.from
+                                        invoices.meta.from
                                     }}</span> to <span
-                                    class="font-semibold text-gray-900 dark:text-white">{{ quotations.meta.to }}</span> of <span
+                                    class="font-semibold text-gray-900 dark:text-white">{{ invoices.meta.to }}</span> of <span
                                     class="font-semibold text-gray-900 dark:text-white">{{
-                                        quotations.meta.total
-                                    }}</span> Quotations
+                                        invoices.meta.total
+                                    }}</span> Invoices
                                 </span>
                                 <div class="inline-flex mt-2 xs:mt-0">
                                     <!-- Previous Button -->
-                                    <a :href="quotations.links.prev"
+                                    <a :href="invoices.links.prev"
                                        class="inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                         <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor"
                                              viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +96,7 @@
                                         </svg>
                                         Previous
                                     </a>
-                                    <a :href="quotations.links.next"
+                                    <a :href="invoices.links.next"
                                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                         Next
                                         <svg aria-hidden="true" class="w-5 h-5 ml-2" fill="currentColor"
@@ -125,7 +125,7 @@ import PrimaryButton from "@/Jetstream/Button";
 
 export default {
     props: [
-        'quotations',
+        'invoices',
     ],
     components: {
         AppLayout,
@@ -135,11 +135,11 @@ export default {
         return {}
     },
     methods:{
-        navigateToQuotation(id){
+        navigateToInvoice(id){
             console.log(id)
-            // this.route("quotations.show",{id:id})
-            // window.location.href = this.fileUrl("quotations/view/" + id)
-            this.$inertia.get(this.route('quotations.show',{'id':id}))
+            // this.route("invoices.show",{id:id})
+            // window.location.href = this.fileUrl("invoices/view/" + id)
+            this.$inertia.get(this.route('invoices.show',{'id':id}))
         }
     }
 }

@@ -26,7 +26,7 @@ class QuotationController extends Controller
 //            $projects = Project::orderBy('name', 'asc')->where('verified', 1)->where('status', 1)->paginate((new AppController())->paginate);
 //        }
 
-        $quotations = Quotation::latest()->paginate((new AppController())->paginate);
+        $quotations = Quotation::latest()->paginate(100);
 
 
         if ((new AppController())->isApi($request))
@@ -232,7 +232,7 @@ class QuotationController extends Controller
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename="QUOTATION#".(new AppController())->getQuotationNumber($quotation->code)." - ".$quotation->name."-".date('YMj');
+            $filename="QUOTATION#".(new AppController())->getZeroedNumber($quotation->code)." - ".$quotation->name."-".date('YMj');
 
             $now_d=Carbon::now('Africa/Lusaka')->format('F j, Y');
             $now_t=Carbon::now('Africa/Lusaka')->format('H:i');
@@ -244,7 +244,7 @@ class QuotationController extends Controller
                 ->toMoney();
 
             $pdf = PDF::loadView('quotation', [
-                'code'          => (new AppController())->getQuotationNumber($quotation->code),
+                'code'          => (new AppController())->getZeroedNumber($quotation->code),
                 'date'          => $now_d,
                 'time'          => $now_t,
                 'quotation'   => new QuotationResource($quotation),

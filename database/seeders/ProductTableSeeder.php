@@ -16,76 +16,76 @@ class ProductTableSeeder extends Seeder
     {
         Product::create([
             "name" => "Thanthwe Cement (42.5)",
-            "unit" => "Bag",
+            "unit" => "50kg",
             "quantity" => 1,
             "cost" => 20000,
         ]);
 
         Product::create([
             "name" => "Akshar Cement",
-            "unit" => "Bag",
+            "unit" => "50 kg",
             "quantity" => 1,
             "cost" => 18000,
         ]);
 
         Product::create([
-            "name" => "Quarry Stone 20T",
+            "name" => "Quarry Stone",
             "unit" => "Tonne",
             "quantity" => 20,
             "cost" => 510000,
         ]);
 
         Product::create([
-            "name" => "Quarry Stone 25T",
+            "name" => "Quarry Stone",
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 525000,
         ]);
 
         Product::create([
-            "name" => "Quarry Stone 30T",
+            "name" => "Quarry Stone",
             "unit" => "Tonne",
             "quantity" => 30,
             "cost" => 640000,
         ]);
 
         Product::create([
-            "name" => "Pebble Stone 20T",
+            "name" => "Pebble Stone",
             "unit" => "Tonne",
             "quantity" => 20,
             "cost" => 510000,
         ]);
 
         Product::create([
-            "name" => "Pebble Stone 25T",
+            "name" => "Pebble Stone",
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 525000,
         ]);
 
         Product::create([
-            "name" => "Pebble Stone 30T",
+            "name" => "Pebble Stone",
             "unit" => "Tonne",
             "quantity" => 30,
             "cost" => 640000,
         ]);
 
         Product::create([
-            "name" => "Quarry Dust 20T",
+            "name" => "Quarry Dust",
             "unit" => "Tonne",
             "quantity" => 20,
             "cost" => 470000,
         ]);
 
         Product::create([
-            "name" => "Quarry Dust 25T",
+            "name" => "Quarry Dust",
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 525000,
         ]);
 
         Product::create([
-            "name" => "Quarry Dust 30T",
+            "name" => "Quarry Dust",
             "unit" => "Tonne",
             "quantity" => 30,
             "cost" => 580000,
@@ -106,14 +106,14 @@ class ProductTableSeeder extends Seeder
         ]);
 
         Product::create([
-            "name" => "River Sand 25T",
+            "name" => "River Sand",
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 350000,
         ]);
 
         Product::create([
-            "name" => "River Sand 20T (Salima)",
+            "name" => "River Sand (Salima)",
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 750000,
