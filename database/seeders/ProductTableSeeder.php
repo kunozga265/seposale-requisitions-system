@@ -15,7 +15,7 @@ class ProductTableSeeder extends Seeder
     public function run()
     {
         Product::create([
-            "name" => "Thanthwe Cement (42.5)",
+            "name" => "Thanthwe Cement",
             "unit" => "50kg",
             "quantity" => 1,
             "cost" => 20000,
@@ -92,17 +92,17 @@ class ProductTableSeeder extends Seeder
         ]);
 
         Product::create([
-            "name" => "Cement Block (Medium)",
+            "name" => "Cement Block",
             "unit" => "150*200*400(mm)",
             "quantity" => 1,
             "cost" => 1300,
         ]);
 
         Product::create([
-            "name" => "Cement Block (Big)",
+            "name" => "Cement Block",
             "unit" => "200*200*400(mm)",
             "quantity" => 1,
-            "cost" => 1800,
+            "cost" => 1700,
         ]);
 
         Product::create([

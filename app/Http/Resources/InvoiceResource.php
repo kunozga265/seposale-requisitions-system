@@ -25,7 +25,7 @@ class InvoiceResource extends JsonResource
             'location' => $this->location,
             'information' => json_decode($this->information),
             'total' => $this->total,
-            'status' => $this->status,
+            'status' => intval($this->status),
             'requestedBy' => new UserResource($this->user),
             'receipts' => json_decode($this->receipts),
             'date' => $this->created_at->getTimestamp(),

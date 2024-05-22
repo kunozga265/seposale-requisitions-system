@@ -210,7 +210,7 @@ header h2{
 }
 
 /* RequestForms */
-.request{
+.request, .app-card{
     box-shadow: 0 3px 3px -2px rgb(39 44 51 / 10%), 0 3px 4px 0 rgb(39 44 51 / 4%), 0 1px 8px 0 rgb(39 44 51 / 2%);
     margin: 0 0.6rem 0.6rem 0.6rem;
     background-color: #fff;
@@ -225,31 +225,31 @@ header h2{
     min-width: 0;
     word-wrap: break-word;
 }
-.request > div:first-child{
+.request > div:first-child, .app-card > div:first-child{
     padding: 15px 22px;
 }
-.request > div:last-child{
+.request > div:last-child, .app-card > div:last-child {
     padding: 8px;
 }
-.request .date{
+.request .date, .app-card{
     letter-spacing: 1px;
     font-weight: 600;
     font-family: 'Exo\ 2', sans-serif;
 }
-.request .type{
+.request .type, .app-card .type{
     font-weight: 600;
     font-family: 'Exo\ 2', sans-serif;
 }
-.request .name{
+.request .name, .app-card .name{
     font-size: 14px;
     color: rgb(156 163 175);
 }
-.request .currency{
+.request .currency, .app-card .currency{
     font-weight: 800;
     border-bottom: 2px solid;
     font-family: 'Exo\ 2', sans-serif;
 }
-.request .total{
+.request .total, .app-card .total{
     font-weight: 700;
     font-size: 26px;
     margin-left: 6px;
@@ -285,7 +285,7 @@ header h2{
 }
 
 @media only screen and (min-width:550px) {
-    .request .header{
+    .request .header, .app-card .header{
         display: flex;
     }
 }
