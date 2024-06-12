@@ -143,12 +143,22 @@
                     </tr>
                     </tbody>
                   </table>
-                  <div @click="addRecordDialog = true" class="mt-2 ml-2 flex justify-start items-center cursor">
-                    <div>
-                      <i class="mdi mdi-plus-circle text-blue-600"></i>
+                  <div class="mt-2 ml-2 flex justify-start items-center">
+                    <div @click="addRecord" class="flex justify-start items-center cursor">
+                      <div>
+                        <i class="mdi mdi-plus-circle text-blue-600"></i>
+                      </div>
+                      <div class="ml-2 text-blue-600 text-sm">
+                        Add Blank
+                      </div>
                     </div>
-                    <div class="ml-2 text-blue-600 text-sm">
-                      Add Record
+                    <div @click="addRecordDialog = true" class="ml-3 flex justify-start items-center cursor">
+                      <div>
+                        <i class="mdi mdi-plus-circle text-blue-600"></i>
+                      </div>
+                      <div class="ml-2 text-blue-600 text-sm">
+                        Add Product
+                      </div>
                     </div>
                   </div>
                   <div class="text-center">
@@ -196,7 +206,7 @@
       </div>
     </div>
 
-    <dialog-modal :show="addRecordDialog" @close="addRecordDialog=false">
+    <dialog-modal :show="addRecordDialog" @close="cancelAddRecord">
       <template #title>
         Add Record
       </template>
@@ -211,8 +221,8 @@
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   required>
             <option value="-1">Blank</option>
-            <option v-for="(product, index) in products.data" :value="index" :key="index">
-              {{ product.name }} - {{product.quantity}} - {{product.unit}}
+            <option v-for="(product, index) in allProducts" :value="index" :key="index">
+              {{ product.name }} - {{ product.quantity }} - {{ product.unit }}
             </option>
           </select>
         </div>
@@ -220,7 +230,7 @@
       </template>
 
       <template #footer>
-        <secondary-button @click.native="addRecordDialog=false">
+        <secondary-button @click.native="cancelAddRecord">
           Cancel
         </secondary-button>
 
@@ -276,6 +286,22 @@ export default {
 
   },
   computed: {
+    allProducts() {
+      let products = [];
+
+      for (let x in this.products.data) {
+        for (let y in this.products.data[x].variants) {
+          products.push({
+            "name": this.products.data[x].name,
+            "unit": this.products.data[x].variants[y].unit,
+            "cost": this.products.data[x].variants[y].cost,
+            "quantity": this.products.data[x].variants[y].quantity,
+          })
+        }
+      }
+
+      return products;
+    },
     totalCost() {
       let totalCost = 0
       let currentTotal = 0
@@ -335,7 +361,7 @@ export default {
           "totalCost": 0,
         })
       } else {
-        const product = this.products.data[this.productIndex]
+        const product = this.allProducts[this.productIndex]
 
         this.form.information.push({
           "details": product.name,
@@ -348,6 +374,10 @@ export default {
       this.productIndex = -1
       this.addRecordDialog = false
 
+    },
+    cancelAddRecord() {
+      this.productIndex = -1
+      this.addRecordDialog = false
     },
     removeRecord(index) {
       this.form.information.splice(index, 1)

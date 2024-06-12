@@ -14,16 +14,19 @@ class Quotation extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+
     protected $fillable = [
         "code",
-        "name",
-        "phone_number",
-        "email",
-        "address",
+        "client_id",
         "location",
         "information",
         "total",
         "quotes",
         "user_id",
+        "sale_id",
     ];
 }

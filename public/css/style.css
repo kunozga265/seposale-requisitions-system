@@ -231,7 +231,7 @@ header h2{
 .request > div:last-child, .app-card > div:last-child {
     padding: 8px;
 }
-.request .date, .app-card{
+.request .date, .app-card .date{
     letter-spacing: 1px;
     font-weight: 600;
     font-family: 'Exo\ 2', sans-serif;
@@ -282,6 +282,10 @@ header h2{
     padding: 8px;
     border: 1px solid #3038406b;
     background-color: #f5f5f5;
+}
+
+.letter-spacing-normal{
+    letter-spacing: normal;
 }
 
 @media only screen and (min-width:550px) {

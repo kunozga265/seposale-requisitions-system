@@ -18,16 +18,14 @@ class QuotationResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => (new AppController())->getZeroedNumber($this->code),
-            'name' => $this->name,
-            'phoneNumber' => $this->phone_number,
-            'email' => $this->email,
-            'address' => $this->address,
+            'client' => new ClientResource($this->client),
             'location' => $this->location,
             'information' => json_decode($this->information),
             'total' => $this->total,
             'requestedBy' => new UserResource($this->user),
             'quotes' => json_decode($this->quotes),
             'date' => $this->created_at->getTimestamp(),
+            'hasSale' => $this->sale_id != null,
         ];
     }
 

@@ -17,18 +17,8 @@ class InvoiceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => (new AppController())->getZeroedNumber($this->code),
-            'name' => $this->name,
-            'phoneNumber' => $this->phone_number,
-            'email' => $this->email,
-            'address' => $this->address,
-            'location' => $this->location,
-            'information' => json_decode($this->information),
-            'total' => $this->total,
-            'status' => intval($this->status),
-            'requestedBy' => new UserResource($this->user),
-            'receipts' => json_decode($this->receipts),
-            'date' => $this->created_at->getTimestamp(),
+            'code' => (new AppController())->getZeroedNumber($this->code, $this->revision),
+            'sale' => new SaleResource($this->sale),
         ];
     }
 }

@@ -18,16 +18,14 @@ class CreateQuotationsTable extends Migration
 
             //Customer
             $table->integer("code");
-            $table->string("name");
-            $table->string("phone_number")->nullable();
-            $table->string("email")->nullable();
-            $table->string("address")->nullable();
+            $table->integer("client_id");
             $table->string("location")->nullable();
 
             $table->json("information");
             $table->double("total");
             $table->json("quotes")->nullable();
             $table->integer("user_id");
+            $table->integer("sale_id")->nullable();
             $table->timestamps();
         });
     }

@@ -52,7 +52,7 @@
         .heading{
             font-family: 'Rubik', sans-serif;
             font-size: 12px;
-            padding-bottom: 8px;
+            /*padding-bottom: 8px;*/
             font-weight: bold;
         }
 
@@ -129,12 +129,12 @@
 
     {{--<div style="text-align: center; font-size: 16px; font-weight: normal">Code: {{$invoice->code}}</div>--}}
 
-
+    <p class="heading">Customer Details</p>
     <table>
-        <p class="heading">Customer Details</p>
+
         <tr>
             <td class="b-0 bt-1 font-bold">Name</td>
-            <td class="b-0 bt-1 shade" colspan="3">{{$invoice->name}}</td>
+            <td class="b-0 bt-1 shade" colspan="3">{{$invoice->client->name}}</td>
         </tr>
         <tr>
             <td class="b-0 spacer"></td>
@@ -142,10 +142,10 @@
         </tr>
         <tr>
             <td class="b-0 font-bold">Phone Number</td>
-            <td class="b-0 shade">{{$invoice->phone_number}}</td>
+            <td class="b-0 shade">{{$invoice->client->phone_number}}</td>
 
             <td class="b-0 font-bold">Email</td>
-            <td class="b-0 shade" style="text-transform: lowercase">{{$invoice->email}}</td>
+            <td class="b-0 shade" style="text-transform: lowercase">{{$invoice->client->email}}</td>
         </tr>
         <tr>
             <td class="b-0 spacer"></td>
@@ -157,9 +157,9 @@
 
         <tr>
             <td class="b-0 font-bold">Address</td>
-            <td class="b-0 shade">{{$invoice->address}}</td>
-            <td class="b-0 font-bold">Location</td>
-            <td class="b-0 shade">{{$invoice->location}}</td>
+            <td class="b-0 shade">{{$invoice->client->address}}</td>
+            <td class="b-0 font-bold">Site Location</td>
+            <td class="b-0 shade">{{$invoice->sale->location}}</td>
         </tr>
         <tr>
             <td class="b-0 spacer"></td>
@@ -171,9 +171,8 @@
 
     </table>
 
-
+    <p class="heading">Products and Services</p>
     <table>
-        <p class="heading">Products and Services</p>
         <thead>
         <tr>
             <th class="shade">Details</th>
@@ -184,18 +183,18 @@
         </tr>
         </thead>
         <tbody>
-        @foreach(json_decode($invoice->information) as $info)
+        @foreach($invoice->sale->products as $productCompound)
             <tr>
-                <td style="text-transform: uppercase">{{$info->details}}</td>
-                <td style="text-align: center">{{$info->units ?? ""}}</td>
-                <td style="text-align: center">{{number_format($info->quantity,2)}}</td>
-                <td style="text-align: right">{{number_format($info->unitCost,2)}}</td>
-                <td style="text-align: right">{{number_format($info->totalCost,2)}}</td>
+                <td style="text-transform: uppercase">{{$productCompound->fullName()}}</td>
+                <td style="text-align: center">{{$productCompound->variant->unit ?? ""}}</td>
+                <td style="text-align: center">{{number_format($productCompound->quantity,2)}}</td>
+                <td style="text-align: right">{{number_format($productCompound->amount/$productCompound->quantity,2)}}</td>
+                <td style="text-align: right">{{number_format($productCompound->amount,2)}}</td>
             </tr>
         @endforeach
         <tr>
             <td style="text-align: right; font-weight: bolder" colspan="4">Total</td>
-            <td style="text-align: right" >{{number_format($invoice->total,2)}}</td>
+            <td style="text-align: right" >{{number_format($invoice->sale->total,2)}}</td>
         </tr>
         <tr>
             <td colspan="5" style="text-align: center;" class="font-bold">
@@ -207,7 +206,7 @@
 
     <div style="margin-top: 24px">
         <div>PREPARED BY</div>
-        <div class="font-bold">{{$invoice->user->fullName()}}</div>
+        <div class="font-bold">{{$invoice->sale->user->fullName()}}</div>
     </div>
 
     <table>

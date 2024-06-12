@@ -6,6 +6,7 @@ use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\Sale;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -51,16 +52,8 @@ class InvoiceController extends Controller
             'total' => ['required'],
         ]);
 
-        //generate code
-        $last_invoice = Invoice::latest()->first();
-        if (is_object($last_invoice)){
-            $code = $last_invoice->code + 1;
-        }else{
-            $code = 1;
-        }
-
         $invoice = Invoice::create([
-            'code' => $code,
+            'code' => $this->getCodeNumber(),
 
             //Customer Details
             'name' => $request->name,
@@ -92,6 +85,36 @@ class InvoiceController extends Controller
             //Web Response
             return Redirect::route('invoices.index')->with('success', 'Invoice created!');
         }
+    }
+
+    private function getCodeNumber()
+    {
+        $last_invoice = Invoice::latest()->first();
+        if (is_object($last_invoice)){
+            return $last_invoice->code + 1;
+        }else{
+            return 1;
+        }
+    }
+
+    public function storeFromSale(Sale $sale)
+    {
+        Invoice::create([
+            'code' => $this->getCodeNumber(),
+            'revision' => 0,
+            'client_id' => $sale->client->id,
+            'sale_id' => $sale->id,
+        ]);
+    }
+
+    public function updateFromSale(Sale $sale)
+    {
+        $revision = $sale->invoice->revision + 1;
+
+        $sale->invoice->update([
+            'revision' => $revision,
+            'client_id' => $sale->client->id,
+        ]);
     }
 
     public function show(Request $request, $id)
@@ -224,23 +247,25 @@ class InvoiceController extends Controller
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename="INVOICE#".(new AppController())->getZeroedNumber($invoice->code)." - ".$invoice->name."-".date('YMj');
+            $filename="INVOICE#".(new AppController())->getZeroedNumber($invoice->code,$invoice->revision)." - ".$invoice->name."-".date('Ymd',$invoice->sale->date);
 
-            $now_d=Carbon::now('Africa/Lusaka')->format('F j, Y');
-            $now_t=Carbon::now('Africa/Lusaka')->format('H:i');
+            $now_d=Carbon::createFromTimestamp($invoice->sale->date,'Africa/Lusaka')->format('F j, Y');
+            $now_t=Carbon::createFromTimestamp($invoice->sale->date,'Africa/Lusaka')->format('H:i');
 
-            $total_in_words = SpellNumber::value($invoice->total)
+            $total_in_words = SpellNumber::value($invoice->sale->total)
                 ->locale('en')
                 ->currency('Kwacha')
                 ->fraction('Tambala')
                 ->toMoney();
 
+            $total_in_words = str_replace(" of "," ",$total_in_words);
+
             $pdf = PDF::loadView('invoice', [
-                'code'          => (new AppController())->getZeroedNumber($invoice->code),
-                'date'          => $now_d,
-                'time'          => $now_t,
-                'invoice'   => new InvoiceResource($invoice),
-                'total_in_words' => $total_in_words
+                'code'              => (new AppController())->getZeroedNumber($invoice->code,$invoice->revision),
+                'date'              => $now_d,
+                'time'              => $now_t,
+                'invoice'           => new InvoiceResource($invoice),
+                'total_in_words'    => $total_in_words
             ]);
             return $pdf->download("$filename.pdf");
 

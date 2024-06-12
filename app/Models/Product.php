@@ -9,10 +9,12 @@ class Product extends Model
 {
     use HasFactory;
 
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
     protected $fillable = [
         "name",
-        "unit",
-        "quantity",
-        "cost",
     ];
 }

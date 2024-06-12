@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\ReportResource;
 use App\Http\Resources\RequestFormResource;
+use App\Http\Resources\SaleResource;
 use App\Http\Resources\VehicleResource;
 use App\Models\Position;
 use App\Models\Project;
 use App\Models\Report;
 use App\Models\RequestForm;
+use App\Models\Sale;
 use App\Models\User;
 use App\Models\Vehicle;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -123,12 +125,15 @@ class RequestFormController extends Controller
         $unverifiedVehicles=Vehicle::where('verified',0)->get();
         $unverifiedProjects=Project::where('verified',0)->get();
 
+        //generate sales
+        $sales = Sale::where("status","<",2)->get();
 
         if ((new AppController())->isApi($request))
             //API Response
             return response()->json([
                 'toApprove'                     => RequestFormResource::collection($toApprove),
                 'active'                        => RequestFormResource::collection($active),
+                'sales'                         => SaleResource::collection($sales),
 
                 //counts
                 'awaitingApprovalCount'         => $awaitingApprovalCount,
@@ -146,6 +151,7 @@ class RequestFormController extends Controller
             return Inertia::render('Dashboard',[
                 'toApprove'                     => RequestFormResource::collection($toApprove),
                 'active'                        => RequestFormResource::collection($active),
+                'sales'                         => SaleResource::collection($sales),
 
                 //counts
                 'awaitingApprovalCount'         => $awaitingApprovalCount,

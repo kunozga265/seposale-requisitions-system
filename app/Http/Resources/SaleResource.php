@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Http\Resources;
+
+use App\Http\Controllers\AppController;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class SaleResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     */
+    public function toArray($request)
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'status' => intval($this->status),
+            'client' => new ClientResource($this->client),
+            'invoice' => [
+                "id" => $this->invoice->id,
+                'code' => (new AppController())->getZeroedNumber($this->invoice->code,$this->invoice->revision),
+            ],
+            'total' => floatval($this->total),
+            'balance' => floatval($this->balance),
+            'date' => $this->date,
+            'createdDate' => $this->created_at->getTimestamp(),
+            'location' => $this->location,
+            'editable' => intval($this->editable),
+            'comments' => json_decode($this->comments),
+            'products' => SummaryResource::collection($this->products),
+            'receipts' => ReceiptResource::collection($this->receipts),
+            'generatedBy' => new UserResource($this->user),
+
+        ];
+    }
+}

@@ -23,10 +23,10 @@
            <a :href="route('invoices.print',{'id':invoice.data.id})" target="_blank">
                <primary-button>Print</primary-button>
            </a>
-           <a :href="route('invoices.edit',{'id':invoice.data.id})">
-               <primary-button>Edit</primary-button>
-           </a>
-         <danger-button @click.native="deleteDialog=true">Delete</danger-button>
+<!--           <a :href="route('invoices.edit',{'id':invoice.data.id})">-->
+<!--               <primary-button>Edit</primary-button>-->
+<!--           </a>-->
+<!--         <danger-button @click.native="deleteDialog=true">Delete</danger-button>-->
 
        </template>
 
@@ -64,62 +64,95 @@
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
 
-              <div v-if="invoice.data.status === 0" class="mb-4 flex justify-start items-center approval-pending">
-                <div>
-                  <i class="mdi text-xl mdi-alert-circle"></i>
-                </div>
-                <div class="ml-3 text-sm">
-                  Unpaid
-                </div>
-              </div>
+<!--              <div v-if="invoice.data.status === 0" class="mb-4 flex justify-start items-center approval-pending">-->
+<!--                <div>-->
+<!--                  <i class="mdi text-xl mdi-alert-circle"></i>-->
+<!--                </div>-->
+<!--                <div class="ml-3 text-sm">-->
+<!--                  Unpaid-->
+<!--                </div>-->
+<!--              </div>-->
 
-              <div v-else class="flex justify-start items-center approved">
-                <div>
-                  <i class="mdi text-xl mdi-check-circle"></i>
-                </div>
-                <div class="ml-3 text-sm">
-                  Paid
-                </div>
-              </div>
+<!--              <div v-else class="flex justify-start items-center approved">-->
+<!--                <div>-->
+<!--                  <i class="mdi text-xl mdi-check-circle"></i>-->
+<!--                </div>-->
+<!--                <div class="ml-3 text-sm">-->
+<!--                  Paid-->
+<!--                </div>-->
+<!--              </div>-->
 
-                <div class="grid grid-cols-1">
+
+                <div >
                     <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
-                                Customer Details
+                                Overview
                             </div>
                         </div>
-                        <div class="page-section-content">
 
+                        <div class="page-section-content">
                             <div class="card p-0">
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Invoice Number</div>
+                                    <div class="text-gray-600 font-semibold">Date</div>
+                                    <div>{{getDate(invoice.data.sale.date*1000)}}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Code</div>
                                     <div>{{invoice.data.code}}</div>
                                 </div>
+                                <inertia-link :href="route('sales.show',{id:invoice.data.sale.id})">
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Name</div>
-                                    <div>{{invoice.data.name}}</div>
+                                    <div class="text-gray-600 font-semibold">Sale Code</div>
+                                    <div>{{invoice.data.sale.code}}</div>
                                 </div>
+                                </inertia-link>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Phone Number</div>
-                                    <div>{{invoice.data.phoneNumber}}</div>
-                                </div>
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Email</div>
-                                    <div>{{invoice.data.email}}</div>
-                                </div>
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Address</div>
-                                    <div>{{invoice.data.address}}</div>
-                                </div>
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Location</div>
-                                    <div>{{invoice.data.location}}</div>
+                                    <div class="text-gray-600 font-semibold">Site Location</div>
+                                    <div>{{invoice.data.sale.location}}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="page-section md:col-span-2">
+                    <div class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Client Information
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+                            <div class="card profile">
+                                <div class="p-8 md:p-10 grid grid-cols-1 sm:grid-cols-2">
+                                    <div class="mb-4">
+                                        <div class="text-sm text-gray-600">Name</div>
+                                        <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                                        {{ invoice.data.sale.client.name }}
+                                        </span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="text-sm text-gray-600">Phone Number</div>
+                                        <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                                        {{ invoice.data.sale.client.phoneNumber }}
+                                        </span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="text-sm text-gray-600">email</div>
+                                        <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                                        {{ invoice.data.sale.client.email }}
+                                        </span>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="text-sm text-gray-600">Address</div>
+                                        <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                                        {{ invoice.data.sale.client.address }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+               <div class="page-section md:col-span-2">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Products and Services
@@ -151,23 +184,23 @@
                                         <tbody>
                                         <tr
                                             class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                                            v-for="(info,index) in invoice.data.information"
+                                            v-for="(productCompound,index) in invoice.data.sale.products"
                                             :key="index"
                                         >
                                             <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                {{info.details}}
+                                                {{productName(productCompound)}}
                                             </th>
                                             <td class="py-2 pr-1">
-                                                {{info.units}}
+                                                {{productCompound.variant.unit}}
                                             </td>
                                             <td class="py-2 pr-1">
-                                                {{numberWithCommas(info.quantity)}}
+                                                {{numberWithCommas(productCompound.quantity)}}
                                             </td>
                                             <td class="py-2 pr-1">
-                                                {{numberWithCommas(info.unitCost)}}
+                                                {{numberWithCommas(productCompound.amount/productCompound.quantity)}}
                                             </td>
                                             <td class="py-2 pr-1">
-                                                {{numberWithCommas(info.totalCost)}}
+                                                {{numberWithCommas(productCompound.amount)}}
                                             </td>
                                         </tr>
                                         <tr>
@@ -175,7 +208,7 @@
                                             <td></td>
                                             <td></td>
                                             <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
-                                            <td class="pt-4 pr-1 text-base font-bold">{{numberWithCommas(invoice.data.total)}}</td>
+                                            <td class="pt-4 pr-1 text-base font-bold">{{numberWithCommas(invoice.data.sale.total)}}</td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -183,29 +216,7 @@
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div class="page-section">
-                            <div class="page-section-content">
-                                <div class="card p-0">
-                                    <div class="p-3 text-white text-sm font-semibold bg-system heading-font uppercase rounded-t-lg">
-                                        Generated By
-                                    </div>
-                                    <div class="border-b px-3 py-2 flex justify-between text-sm">
-                                        <div class="font-semibold">Name</div>
-                                        <div>{{invoice.data.requestedBy.firstName}} {{invoice.data.requestedBy.middleName}} {{invoice.data.requestedBy.lastName}}</div>
-                                    </div>
-                                    <div class="border-b px-3 py-2 flex justify-between text-sm">
-                                        <div class="font-semibold">Position</div>
-                                        <div>{{invoice.data.requestedBy.position.title}}</div>
-                                    </div>
-                                    <div class="px-3 py-2 flex justify-between text-sm">
-                                        <div class="font-semibold">Date</div>
-                                        <div>{{getDate(invoice.data.date*1000,true)}}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
 
                 </div>
             </div>

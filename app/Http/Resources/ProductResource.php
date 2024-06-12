@@ -17,9 +17,7 @@ class ProductResource extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
-            "unit" => $this->unit,
-            "quantity" => floatval($this->quantity),
-            "cost" => floatval($this->cost),
+            "variants" => ProductVariantResource::collection($this->variants),
         ];
     }
 }

@@ -14,17 +14,20 @@ class Invoice extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
+    }
+
     protected $fillable = [
         "code",
-        "name",
-        "phone_number",
-        "email",
-        "address",
-        "location",
-        "information",
-        "total",
-        "receipts",
-        "user_id",
-        "status",
+        "client_id",
+        "sale_id",
+        "revision",
     ];
 }

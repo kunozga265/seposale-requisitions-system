@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ClientResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\QuotationResource;
+use App\Models\Client;
 use App\Models\Product;
 use App\Models\Quotation;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -43,8 +45,10 @@ class QuotationController extends Controller
     public function create(Request $request)
     {
         $products = Product::orderBy("name", 'asc')->get();
+        $clients = Client::orderBy("name", 'asc')->get();
         return Inertia::render('Quotations/Create', [
-            "products" => ProductResource::collection($products)
+            "products" => ProductResource::collection($products),
+            "clients" => ClientResource::collection($clients),
         ]);
     }
 
@@ -55,7 +59,6 @@ class QuotationController extends Controller
 
         //Validate all the important attributes
         $request->validate([
-            'name' => ['required'],
             'information' => ['required'],
             'total' => ['required'],
         ]);
@@ -68,14 +71,40 @@ class QuotationController extends Controller
             $code = 1;
         }
 
+        //get client info
+        if (isset($request->client_id)){
+            $request->validate([
+                'client_id' => ['required'],
+            ]);
+
+            $client = Client::find($request->client_id);
+            if (!is_object($client)){
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => "Client not found"], 404);
+                }else{
+                    //Web Response
+                    return Redirect::back()->with('error','Client not found');
+                }
+            }
+        }else{
+            $request->validate([
+                'name' => ['required'],
+            ]);
+
+            $client = Client::create([
+                'name' => $request->name,
+                'phone_number' => $request->phoneNumber,
+                'email' => $request->email,
+                'address' => $request->address,
+            ]);
+        }
+
         $quotation = Quotation::create([
             'code' => $code,
 
             //Customer Details
-            'name' => $request->name,
-            'phone_number' => $request->phoneNumber,
-            'email' => $request->email,
-            'address' => $request->address,
+            'client_id' => $client->id,
             'location' => $request->location,
 
             'information' => json_encode($request->information),
@@ -242,6 +271,8 @@ class QuotationController extends Controller
                 ->currency('Kwacha')
                 ->fraction('Tambala')
                 ->toMoney();
+
+            str_replace($total_in_words," and "," of ");
 
             $pdf = PDF::loadView('quotation', [
                 'code'          => (new AppController())->getZeroedNumber($quotation->code),

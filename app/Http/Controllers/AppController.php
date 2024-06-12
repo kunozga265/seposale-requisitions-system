@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RequestForm;
 use App\Models\Role;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -131,7 +132,7 @@ class AppController extends Controller
             return $lowercaseExt;
     }
 
-    public function generateUniqueCode()
+    public function generateUniqueCode($isSale = false)
     {
 
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -150,13 +151,13 @@ class AppController extends Controller
             }
 
         //If the code exists generate another one
-        }while(RequestForm::where('code',$code)->exists());
+        }while($isSale ? Sale::where('code',$code)->exists() : RequestForm::where('code',$code)->exists());
 
         //return unique code
         return $code;
     }
 
-    public function getZeroedNumber($number){
+    public function getZeroedNumber($number, $revision = 0){
         $zeroed_number = '';
         switch ($number){
             case $number < 10:
@@ -173,6 +174,10 @@ class AppController extends Controller
                 break;
             default:
                 $zeroed_number = $number;
+        }
+
+        if($revision > 0){
+            $zeroed_number = $zeroed_number."REV$revision";
         }
 
         return $zeroed_number;

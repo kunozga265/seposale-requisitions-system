@@ -313,15 +313,15 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('invoices.index');
 
-        Route::get('/create', [
-            "uses"  => "App\Http\Controllers\InvoiceController@create",
-            'roles' =>['employee','management']
-        ])->name('invoices.create');
-
-        Route::post('/store', [
-            "uses"  => "App\Http\Controllers\InvoiceController@store",
-            'roles' =>['employee','management']
-        ])->name('invoices.store');
+//        Route::get('/create', [
+//            "uses"  => "App\Http\Controllers\InvoiceController@create",
+//            'roles' =>['employee','management']
+//        ])->name('invoices.create');
+//
+//        Route::post('/store', [
+//            "uses"  => "App\Http\Controllers\InvoiceController@store",
+//            'roles' =>['employee','management']
+//        ])->name('invoices.store');
 
         Route::get('/view/{id}', [
             "uses"  => "App\Http\Controllers\InvoiceController@show",
@@ -350,12 +350,84 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     });
 
+    Route::group(['prefix'=>'sales'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\SaleController@index",
+            'roles' =>['employee','management']
+        ])->name('sales.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\SaleController@create",
+            'roles' =>['employee','management']
+        ])->name('sales.create');
+
+        Route::get('/generate-from-quotation/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@storeFromQuotation",
+            'roles' =>['employee','management']
+        ])->name('sales.generate-from-quotation');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\SaleController@store",
+            'roles' =>['employee','management']
+        ])->name('sales.store');
+
+        Route::get('/view/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@show",
+            'roles' =>['employee','management']
+        ])->name('sales.show');
+
+        Route::get('/print/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@print",
+            'roles' =>['employee','management']
+        ])->name('sales.print');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@edit",
+            'roles' =>['employee','management']
+        ])->name('sales.edit');
+
+        Route::post('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@update",
+            'roles' =>['employee','management']
+        ])->name('sales.update');
+
+        Route::post('/delete/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@destroy",
+            'roles' =>['employee','management']
+        ])->name('sales.delete');
+
+        Route::post('/receipt/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@storeReceipt",
+            'roles' =>['employee','management']
+        ])->name('sales.store.receipt');
+
+    });
+
     Route::group(['prefix'=>'notifications'],function() {
 
         Route::get('/', [
             "uses" => "App\Http\Controllers\NotificationController@index",
             'roles' => ['employee', 'management']
         ])->name('notifications');
+    });
+
+    Route::group(['prefix'=>'receipts'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\ReceiptController@index",
+            'roles' =>['employee','management']
+        ])->name('receipts.index');
+
+        Route::get('/print/{id}', [
+            "uses"  => "App\Http\Controllers\ReceiptController@print",
+            'roles' =>['employee','management']
+        ])->name('receipts.print');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\ReceiptController@show",
+            'roles' => ['employee', 'management']
+        ])->name('receipts.show');
     });
 
     Route::group(['prefix'=>'reports'],function() {

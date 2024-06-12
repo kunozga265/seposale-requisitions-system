@@ -25,6 +25,9 @@ Vue.mixin({
                     return  ''
             }
         },
+        productName(productCompound){
+            return productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
+        },
         getDate(timestamp,time=false){
             let date = new Date(timestamp);
             const month=date.getMonth()+1

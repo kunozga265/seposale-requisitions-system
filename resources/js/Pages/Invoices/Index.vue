@@ -20,11 +20,11 @@
     </template>
 
     <template #actions>
-      <inertia-link :href="route('invoices.create')">
-        <primary-button>
-          New Invoice
-        </primary-button>
-      </inertia-link>
+<!--      <inertia-link :href="route('invoices.create')">-->
+<!--        <primary-button>-->
+<!--          New Invoice-->
+<!--        </primary-button>-->
+<!--      </inertia-link>-->
     </template>
 
     <div class="py-6">
@@ -53,7 +53,7 @@
                         <div>
                           <span
                               class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                              getDate(invoice.date * 1000)
+                              getDate(invoice.sale.date * 1000)
                             }}</span>
                         </div>
                         <div class="type">#{{ invoice.code }}</div>
@@ -62,11 +62,11 @@
                       </div>
                       <div class="flex items-center ">
                         <div class="currency ">MK</div>
-                        <div class="total">{{ numberWithCommas(invoice.total) }}</div>
+                        <div class="total">{{ numberWithCommas(invoice.sale.total) }}</div>
                       </div>
                     </div>
                     <div>
-                      <div class="name font-normal ml-3">{{ invoice.name }}</div>
+                      <div class="name font-normal ml-3">{{ invoice.sale.client.name }}</div>
                     </div>
                   </div>
                 </inertia-link>

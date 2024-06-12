@@ -20,6 +20,9 @@
         </template>
 
        <template #actions >
+
+               <primary-button  v-if="!quotation.data.hasSale" @click.native="generateSale">Generate Sale</primary-button>
+
            <a :href="route('quotations.print',{'id':quotation.data.id})" target="_blank">
                <primary-button>Print</primary-button>
            </a>
@@ -79,19 +82,19 @@
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Name</div>
-                                    <div>{{quotation.data.name}}</div>
+                                    <div>{{quotation.data.client.name}}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Phone Number</div>
-                                    <div>{{quotation.data.phoneNumber}}</div>
+                                    <div>{{quotation.data.client.phoneNumber}}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Email</div>
-                                    <div>{{quotation.data.email}}</div>
+                                    <div>{{quotation.data.client.email}}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Address</div>
-                                    <div>{{quotation.data.address}}</div>
+                                    <div>{{quotation.data.client.address}}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Location</div>
@@ -321,6 +324,9 @@
 
         },
         methods:{
+            generateSale(){
+                this.$inertia.get(this.route('sales.generate-from-quotation',{'id':this.quotation.data.id}))
+            },
             printQuotation(){
                 this.$inertia.get(this.route('quotations.print',{'id':this.quotation.data.id}))
             },

@@ -63,7 +63,7 @@
                       </div>
                     </div>
                     <div>
-                      <div class="name font-normal ml-3">{{ quotation.name }}</div>
+                      <div class="name font-normal ml-3">{{ quotation.client.name }}</div>
                     </div>
                   </div>
                 </inertia-link>

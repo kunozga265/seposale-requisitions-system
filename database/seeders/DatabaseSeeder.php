@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
 //         $this->call(VehiclesTableSeeder::class);
 
          $this->call(UserTableSeeder::class);
+//        \App\Models\Client::factory(5)->create();
+         $this->call(PaymentMethodTableSeeder::class);
 //        \App\Models\User::factory(21)->create();
     }
 }
