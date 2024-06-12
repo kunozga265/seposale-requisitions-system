@@ -134,7 +134,7 @@
         <p class="heading">Customer Details</p>
         <tr>
             <td class="b-0 bt-1 font-bold">Name</td>
-            <td class="b-0 bt-1 shade" colspan="3">{{$quotation->name}}</td>
+            <td class="b-0 bt-1 shade" colspan="3">{{$quotation->client->name}}</td>
         </tr>
         <tr>
             <td class="b-0 spacer"></td>
@@ -142,10 +142,10 @@
         </tr>
         <tr>
             <td class="b-0 font-bold">Phone Number</td>
-            <td class="b-0 shade">{{$quotation->phone_number}}</td>
+            <td class="b-0 shade">{{$quotation->client->phone_number}}</td>
 
             <td class="b-0 font-bold">Email</td>
-            <td class="b-0 shade" style="text-transform: lowercase">{{$quotation->email}}</td>
+            <td class="b-0 shade" style="text-transform: lowercase">{{$quotation->client->email}}</td>
         </tr>
         <tr>
             <td class="b-0 spacer"></td>
@@ -157,7 +157,7 @@
 
         <tr>
             <td class="b-0 font-bold">Address</td>
-            <td class="b-0 shade">{{$quotation->address}}</td>
+            <td class="b-0 shade">{{$quotation->client->address}}</td>
             <td class="b-0 font-bold">Location</td>
             <td class="b-0 shade">{{$quotation->location}}</td>
         </tr>

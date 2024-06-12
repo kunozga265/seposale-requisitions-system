@@ -261,7 +261,7 @@ class QuotationController extends Controller
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename="QUOTATION#".(new AppController())->getZeroedNumber($quotation->code)." - ".$quotation->name."-".date('YMj');
+            $filename="QUOTATION#".(new AppController())->getZeroedNumber($quotation->code)." - ".$quotation->client->name."-".date('Ymd');
 
             $now_d=Carbon::now('Africa/Lusaka')->format('F j, Y');
             $now_t=Carbon::now('Africa/Lusaka')->format('H:i');
