@@ -95,7 +95,7 @@
                             <div class="card p-0">
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Date</div>
-                                    <div>{{getDate(invoice.data.sale.date*1000)}}</div>
+                                    <div>{{getDate(invoice.data.date*1000)}}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Code</div>

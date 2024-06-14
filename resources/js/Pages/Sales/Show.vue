@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      Sale Record
+      Sales Order
     </template>
 
     <template #breadcrumbs>
@@ -29,9 +29,11 @@
     </template>
 
     <template #actions>
-      <a :href="route('invoices.print',{'id':sale.data.invoice.id})" target="_blank">
+      <span v-if="sale.data.invoice">
+        <a :href="route('invoices.print',{'id':sale.data.invoice.id})" target="_blank">
         <primary-button>Print Invoice</primary-button>
       </a>
+      </span>
       <a  v-if="sale.data.editable" :href="route('sales.edit',{'id':sale.data.id})">
         <primary-button>Edit</primary-button>
       </a>
@@ -93,16 +95,27 @@
                   <div class="text-gray-600 font-semibold">Code</div>
                   <div>{{ sale.data.code }}</div>
                 </div>
-                <inertia-link :href="route('invoices.show',{id:sale.data.invoice.id})">
+
                   <div class="border-b px-4 py-3 flex justify-between text-sm">
                     <div class="text-gray-600 font-semibold">Invoice Number</div>
-                    <div>
 
+                    <div v-if="sale.data.invoice != null">
+                      <inertia-link :href="route('invoices.show',{id:sale.data.invoice.id})">
                       {{ sale.data.invoice.code }}
-
+                      </inertia-link>
+                    </div>
+                    <div v-else>
+                      <div @click="generateInvoice" class="flex justify-start items-center cursor">
+                        <div>
+                          <i class="mdi mdi-plus-circle text-blue-600"></i>
+                        </div>
+                        <div class="ml-2 text-blue-600 text-sm">
+                          Generate Invoice
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </inertia-link>
+
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Site Location</div>
                   <div>{{ sale.data.location }}</div>
@@ -464,6 +477,9 @@ export default {
     }
   },
   methods: {
+    generateInvoice(){
+      this.$inertia.post(this.route('invoices.generate', {'id': this.sale.data.id}))
+    },
     printInvoice() {
       this.$inertia.get(this.route('invoices.print', {'id': this.sale.data.id}))
     },

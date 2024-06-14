@@ -97,14 +97,34 @@ class InvoiceController extends Controller
         }
     }
 
-    public function storeFromSale(Sale $sale)
+    public function storeFromSale(Request $request, $id)
     {
-        Invoice::create([
-            'code' => $this->getCodeNumber(),
-            'revision' => 0,
-            'client_id' => $sale->client->id,
-            'sale_id' => $sale->id,
-        ]);
+        $sale = sale::find($id);
+
+        if (is_object($sale)) {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(new SaleResource($sale));
+            } else {
+
+                $invoice = Invoice::create([
+                    'code' => $this->getCodeNumber(),
+                    'revision' => 0,
+                    'client_id' => $sale->client->id,
+                    'sale_id' => $sale->id,
+                ]);
+
+                return Redirect::route("invoices.show",["id"=>$invoice->id])->with("success","Invoice generated");
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('dashboard')->with('error', 'Sale not found');
+            }
+        }
     }
 
     public function updateFromSale(Sale $sale)

@@ -20,10 +20,10 @@ class SaleResource extends JsonResource
             'code' => $this->code,
             'status' => intval($this->status),
             'client' => new ClientResource($this->client),
-            'invoice' => [
+            'invoice' => $this->invoice != null ? [
                 "id" => $this->invoice->id,
                 'code' => (new AppController())->getZeroedNumber($this->invoice->code,$this->invoice->revision),
-            ],
+            ] : null,
             'total' => floatval($this->total),
             'balance' => floatval($this->balance),
             'date' => $this->date,

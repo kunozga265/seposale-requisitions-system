@@ -129,8 +129,8 @@ class SaleController extends Controller
             ]);
         }
 
-        //Create Invoice
-        (new InvoiceController())->storeFromSale($sale);
+//        //Create Invoice
+//        (new InvoiceController())->storeFromSale($sale);
 
         //Run notifications
 //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
@@ -210,8 +210,8 @@ class SaleController extends Controller
                     "sale_id" => $sale->id
                 ]);
 
-                //Create Invoice
-                (new InvoiceController())->storeFromSale($sale);
+//                //Create Invoice
+//                (new InvoiceController())->storeFromSale($sale);
 
 
                 //Web Response

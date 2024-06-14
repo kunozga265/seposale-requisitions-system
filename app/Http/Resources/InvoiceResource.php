@@ -19,6 +19,7 @@ class InvoiceResource extends JsonResource
             'id' => $this->id,
             'code' => (new AppController())->getZeroedNumber($this->code, $this->revision),
             'sale' => new SaleResource($this->sale),
+            'date' => $this->created_at->getTimestamp(),
         ];
     }
 }

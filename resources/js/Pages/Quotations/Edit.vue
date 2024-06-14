@@ -41,7 +41,57 @@
 
                 <jet-validation-errors class="mb-4"/>
 
-                <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="flex items-center mb-4">
+                  <input id="default-radio-1" type="radio" value="existing" v-model="checkClient"
+                         class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                  <label for="default-radio-1"
+                         class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Existing</label>
+
+                  <input checked id="default-radio-2" type="radio" value="new" v-model="checkClient"
+                         class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                  <label for="default-radio-2"
+                         class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">New</label>
+                </div>
+                <div v-if="checkClient === 'existing'">
+
+                  <div class="p-2 mb-2">
+                    <jet-label for="clientIndex" value="Client"/>
+                    <select v-model="clientIndex" id="clientIndex"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required>
+                      <option value="-1">Select Client</option>
+                      <option
+                          v-for="(client,index) in clients.data"
+                          :value="index"
+                          :key="index"
+                      >
+                        {{ client.name }}
+                      </option>
+                    </select>
+                  </div>
+                  <div v-if="client != null" class="grid grid-cols-1 md:grid-cols-2">
+                    <div class="p-2 mb-2">
+                      <jet-label for="phoneNumber" value="Phone Number"/>
+                      <jet-input id="phoneNumber" type="text" class="block w-full"
+                                 v-model="client.phoneNumber"
+                                 autocomplete="seposale-customer-phone-number" disabled/>
+                    </div>
+                    <div class="p-2 mb-2">
+                      <jet-label for="email" value="Email"/>
+                      <jet-input id="email" type="email" class="block w-full"
+                                 v-model="client.email"
+                                 autocomplete="seposale-customer-email" disabled/>
+                    </div>
+                    <div class="p-2 mb-2 md:col-span-2">
+                      <jet-label for="address" value="Address"/>
+                      <jet-input id="address" type="text" class="block w-full"
+                                 v-model="client.address"
+                                 autocomplete="seposale-customer-address" disabled/>
+                    </div>
+                  </div>
+
+                </div>
+                <div v-else class="grid grid-cols-1 md:grid-cols-2">
 
                   <div class="p-2 mb-2 md:col-span-2">
                     <jet-label for="name" value="Name"/>
@@ -62,19 +112,21 @@
                                v-model="form.email"
                                autocomplete="seposale-customer-email"/>
                   </div>
-                  <div class="p-2 mb-2">
+                  <div class="p-2 mb-2 md:col-span-2">
                     <jet-label for="address" value="Address"/>
                     <jet-input id="address" type="text" class="block w-full"
                                v-model="form.address"
                                autocomplete="seposale-customer-address"/>
                   </div>
-                  <div class="p-2 mb-2">
-                    <jet-label for="location" value="Location"/>
-                    <jet-input id="location" type="text" class="block w-full"
-                               v-model="form.location"
-                               autocomplete="seposale-location"/>
-                  </div>
 
+
+                </div>
+
+                <div class="p-2 mb-2">
+                  <jet-label for="location" value="Site Location"/>
+                  <jet-input id="location" type="text" class="block w-full"
+                             v-model="form.location"
+                             autocomplete="seposale-location"/>
                 </div>
               </div>
             </div>
@@ -252,7 +304,7 @@
 
     <dialog-modal :show="addRecordDialog" @close="cancelAddRecord">
       <template #title>
-        Add Record
+        Add Product
       </template>
 
       <template #content>
@@ -265,11 +317,37 @@
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                   required>
             <option value="-1">Blank</option>
+
             <option v-for="(product, index) in allProducts" :value="index" :key="index">
-              {{ product.name }} - {{product.quantity}} - {{product.unit}}
+              {{ product.name }} - {{ product.description }}
             </option>
           </select>
         </div>
+
+        <div v-if="productIndex !== -1">
+          <div class="mb-4">
+            <jet-label for="units" value="Units"/>
+            <jet-input type="text" class="block w-full" v-model="addRecordUnits"/>
+          </div>
+          <div class="mb-4">
+            <jet-label for="units" value="Unit Cost"/>
+            <jet-input type="text" class="block w-full" v-model="addRecordUnitCost"/>
+          </div>
+          <div class="mb-4">
+            <jet-label for="quantity" value="Quantity"/>
+            <jet-input type="text" class="block w-full" v-model="addRecordQuantity"/>
+          </div>
+
+          <div class="mb-4">
+            <jet-label for="total" value="Total"/>
+            <div
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+              {{ numberWithCommas(addRecordTotal.toFixed(2)) }}
+            </div>
+          </div>
+        </div>
+
+
 
       </template>
 
@@ -298,7 +376,7 @@ import PrimaryButton from "@/Jetstream/Button.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 
 export default {
-  props: ["quotation","products"],
+  props: ["quotation","products","clients"],
   components: {
     DialogModal, PrimaryButton,
     AppLayout,
@@ -311,13 +389,18 @@ export default {
   },
   data() {
     return {
+      checkClient: "existing",
       addRecordDialog: false,
       productIndex: -1,
+      clientIndex: -1,
+      addRecordUnits: "",
+      addRecordQuantity: 0,
+      addRecordUnitCost: 0,
       form: this.$inertia.form({
-        name: this.quotation.data.name,
-        phoneNumber: this.quotation.data.phoneNumber,
-        email: this.quotation.data.email,
-        address: this.quotation.data.address,
+        name: "",
+        phoneNumber: "",
+        email: "",
+        address: "",
         location: this.quotation.data.location,
         information: this.quotation.data.information,
       }),
@@ -326,17 +409,33 @@ export default {
     }
   },
   created() {
-
+    for(let x in this.clients.data){
+      if(this.clients.data[x].id === this.quotation.data.client.id){
+        this.clientIndex = x
+        break
+      }
+    }
 
   },
   computed: {
+    addRecordTotal() {
+      return this.addRecordUnitCost * this.addRecordQuantity
+    },
+    client() {
+      if (this.clientIndex === -1 || this.clientIndex === '-1')
+        return null
+      else
+        return this.clients.data[this.clientIndex]
+    },
     allProducts() {
       let products = [];
 
       for (let x in this.products.data) {
         for (let y in this.products.data[x].variants) {
           products.push({
+            "id": this.products.data[x].variants[y].id,
             "name": this.products.data[x].name,
+            "description": this.products.data[x].variants[y].description,
             "unit": this.products.data[x].variants[y].unit,
             "cost": this.products.data[x].variants[y].cost,
             "quantity": this.products.data[x].variants[y].quantity,
@@ -345,6 +444,9 @@ export default {
       }
 
       return products;
+    },
+    product(){
+      return  this.allProducts[this.productIndex];
     },
     totalCost() {
       let totalCost = 0
@@ -370,10 +472,19 @@ export default {
     },
     validation() {
 
-      if (this.form.name.length == 0) {
-        this.error = "Enter customer name"
-        return false
-      } else if (isNaN(this.totalCost)) {
+      if (this.checkClient === "new") {
+        if (this.form.name.length === 0) {
+          this.error = "Enter customer name"
+          return false
+        }
+      }else  {
+        if (parseInt(this.clientIndex) < 0 || this.client == null) {
+          this.error = "Select client"
+          return false
+        }
+      }
+
+     if (isNaN(this.totalCost)) {
         this.error = "Enter valid breakdown details"
         return false
       } else if (this.totalCost <= 0) {
@@ -384,6 +495,19 @@ export default {
 
     },
   },
+  watch:{
+    productIndex(){
+      if(this.productIndex === -1 || this.productIndex === "-1"){
+        this.addRecordUnits = ""
+        this.addRecordQuantity = 0
+        this.addRecordUnitCost = 0
+      }else{
+        this.addRecordUnits = this.product.unit
+        this.addRecordQuantity = this.product.quantity
+        this.addRecordUnitCost = this.product.cost/this.product.quantity
+      }
+    }
+  },
   methods: {
     submit() {
       this.form
@@ -391,6 +515,7 @@ export default {
             ...data,
             total: this.totalCost,
             quotes: this.quoteFiles,
+            client_id:this.client == null ? null : this.client.id
           }))
           .post(this.route('quotations.update',{id:this.quotation.data.id}))
     },
@@ -398,6 +523,7 @@ export default {
 
       if (parseInt(this.productIndex) < 0) {
         this.form.information.push({
+          "id": 0,
           "details": '',
           "units": '',
           "quantity": 0,
@@ -406,15 +532,17 @@ export default {
         })
       } else {
         const product = this.allProducts[this.productIndex]
-
+        const name = this.product.description == null || this.product.description === "" ? product.name : product.name + " - " + product.description
         this.form.information.push({
-          "details": product.name,
-          "units": product.unit,
-          "quantity": product.quantity,
-          "unitCost": product.cost / product.quantity,
-          "totalCost": product.cost,
+          "id": product.id,
+          "details": name,
+          "units": this.addRecordUnits,
+          "quantity": this.addRecordQuantity,
+          "unitCost": this.addRecordUnitCost,
+          "totalCost": this.addRecordTotal,
         })
       }
+
       this.productIndex = -1
       this.addRecordDialog = false
 

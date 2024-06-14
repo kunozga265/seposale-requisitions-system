@@ -328,6 +328,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('invoices.show');
 
+        Route::post('/generate/{id}', [
+            "uses"  => "App\Http\Controllers\InvoiceController@storeFromSale",
+            'roles' =>['employee','management']
+        ])->name('invoices.generate');
+
         Route::get('/print/{id}', [
             "uses"  => "App\Http\Controllers\InvoiceController@print",
             'roles' =>['employee','management']

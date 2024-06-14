@@ -176,9 +176,9 @@ class AppController extends Controller
                 $zeroed_number = $number;
         }
 
-        if($revision > 0){
-            $zeroed_number = $zeroed_number."REV$revision";
-        }
+//        if($revision > 0){
+//            $zeroed_number = $zeroed_number."REV$revision";
+//        }
 
         return $zeroed_number;
     }
