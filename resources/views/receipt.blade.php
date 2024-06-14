@@ -198,11 +198,13 @@
     </div>
 
     <div style="margin-top: 24px">
-        <div>Yours sincerely,</div>
-        <div class="font-bold">{{$receipt->sale->user->fullName()}}</div>
+        <div>Accounts Department</div>
+{{--        <div>Yours sincerely,</div>--}}
+{{--        <div class="font-bold">{{$receipt->sale->user->fullName()}}</div>--}}
     </div>
 
-
+    <div style="page-break-after: always"></div>
+    <img style="width: 100%" src="{{storage_path()."/images/our-products.jpg"}}" alt="">
 
 </div>
 
