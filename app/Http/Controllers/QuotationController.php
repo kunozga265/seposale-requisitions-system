@@ -52,6 +52,16 @@ class QuotationController extends Controller
         ]);
     }
 
+    private function getCodeNumber()
+    {
+        $last_invoice = Quotation::orderBy("code","desc")->first();
+        if (is_object($last_invoice)){
+            return $last_invoice->code + 1;
+        }else{
+            return 1;
+        }
+    }
+
     public function store(Request $request)
     {
         //get user
@@ -62,14 +72,6 @@ class QuotationController extends Controller
             'information' => ['required'],
             'total' => ['required'],
         ]);
-
-        //generate code
-        $last_quotation = Quotation::latest()->first();
-        if (is_object($last_quotation)){
-            $code = $last_quotation->code + 1;
-        }else{
-            $code = 1;
-        }
 
         //get client info
         if (isset($request->client_id)){
@@ -101,7 +103,7 @@ class QuotationController extends Controller
         }
 
         $quotation = Quotation::create([
-            'code' => $code,
+            'code' => $this->getCodeNumber(),
 
             //Customer Details
             'client_id' => $client->id,
@@ -164,9 +166,11 @@ class QuotationController extends Controller
         if(is_object($quotation)){
 
              $products = Product::orderBy("name", 'asc')->get();
+             $clients = Client::orderBy("name", 'asc')->get();
             return Inertia::render('Quotations/Edit',[
                 'quotation'   => new QuotationResource($quotation),
-                 "products" => ProductResource::collection($products)
+                 "products" => ProductResource::collection($products),
+                "clients" => ClientResource::collection($clients),
             ]);
         }else {
             return Redirect::back()->with('error','Quotation not found');
@@ -182,17 +186,42 @@ class QuotationController extends Controller
 
             //Validate all the important attributes
             $request->validate([
-                'name' => ['required'],
                 'information' => ['required'],
                 'total' => ['required'],
             ]);
 
+            //get client info
+            if (isset($request->client_id)){
+                $request->validate([
+                    'client_id' => ['required'],
+                ]);
+
+                $client = Client::find($request->client_id);
+                if (!is_object($client)){
+                    if ((new AppController())->isApi($request)) {
+                        //API Response
+                        return response()->json(['message' => "Client not found"], 404);
+                    }else{
+                        //Web Response
+                        return Redirect::back()->with('error','Client not found');
+                    }
+                }
+            }else{
+                $request->validate([
+                    'name' => ['required'],
+                ]);
+
+                $client = Client::create([
+                    'name' => $request->name,
+                    'phone_number' => $request->phoneNumber,
+                    'email' => $request->email,
+                    'address' => $request->address,
+                ]);
+            }
+
             $quotation->update([
                 //Customer Details
-                'name' => $request->name,
-                'phone_number' => $request->phoneNumber,
-                'email' => $request->email,
-                'address' => $request->address,
+                'client_id' => $client->id,
                 'location' => $request->location,
 
                 'information' => json_encode($request->information),
