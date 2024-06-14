@@ -172,6 +172,10 @@
             </td>
         </tr>
         <tr>
+            <td class="b-0">Sales Order:</td>
+            <td class="b-0">{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code)}}</td>
+        </tr>
+        <tr>
             <td class="b-0">Method of Payment:</td>
             <td class="b-0">{{$receipt->paymentMethod->name}}</td>
         </tr>
@@ -181,10 +185,6 @@
                 <td class="b-0">{{$receipt->reference}}</td>
             </tr>
         @endif
-        <tr>
-            <td class="b-0">Invoice Number:</td>
-            <td class="b-0">{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->invoice->code)}}</td>
-        </tr>
     </table>
 
     <div class="text-center">

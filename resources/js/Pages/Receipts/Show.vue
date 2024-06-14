@@ -81,12 +81,14 @@
                                 <div class="text-gray-600 font-semibold">Receipt Number</div>
                                 <div>#{{receipt.data.code}}</div>
                               </div>
+                              <div v-if="sale.data.invoice != null">
                               <inertia-link :href="route('invoices.show',{id:sale.data.invoice.id})">
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                   <div class="text-gray-600 font-semibold">Invoice Number</div>
                                   <div>#{{sale.data.invoice.code}}</div>
                                 </div>
                               </inertia-link>
+                              </div>
                                 <inertia-link :href="route('sales.show',{id:sale.data.id})">
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Sale Code</div>
