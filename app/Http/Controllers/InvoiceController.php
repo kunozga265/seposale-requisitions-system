@@ -89,7 +89,7 @@ class InvoiceController extends Controller
 
     private function getCodeNumber()
     {
-        $last_invoice = Invoice::latest()->first();
+        $last_invoice = Invoice::orderBy("code","desc")->first();
         if (is_object($last_invoice)){
             return $last_invoice->code + 1;
         }else{
