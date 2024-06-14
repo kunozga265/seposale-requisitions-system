@@ -419,7 +419,9 @@ class SaleController extends Controller
             }
 
             //Update Invoice
-            (new InvoiceController())->updateFromSale($sale);
+            if($sale->invoice) {
+                (new InvoiceController())->updateFromSale($sale);
+            }
 
             //Run notifications
 //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
