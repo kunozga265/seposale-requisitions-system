@@ -279,8 +279,7 @@
                             }}</span>
                         </div>
                         <div class="type">{{ sale.code }}</div>
-
-
+                        <div class="name">{{sale.client.name}}</div>
                       </div>
                       <div class="flex items-center ">
                         <div class="currency ">MK</div>

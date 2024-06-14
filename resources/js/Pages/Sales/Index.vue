@@ -59,6 +59,7 @@
                             }}</span>
                         </div>
                         <div class="type">{{ sale.code }}</div>
+                        <div class="name">{{sale.client.name}}</div>
 
 
                       </div>
