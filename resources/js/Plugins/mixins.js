@@ -28,6 +28,18 @@ Vue.mixin({
         productName(productCompound){
             return productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
         },
+        getDeliveryStatusMessage(status){
+            switch (status){
+                case 0:
+                    return "Not Delivered";
+                case 1:
+                    return "Processing";
+                case 2:
+                    return "Delivered";
+                default:
+                    return "";
+            }
+        },
         getDate(timestamp,time=false){
             let date = new Date(timestamp);
             const month=date.getMonth()+1

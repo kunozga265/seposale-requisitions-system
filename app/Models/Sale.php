@@ -34,6 +34,11 @@ class Sale extends Model
         return $this->hasOne(Invoice::class);
     }
 
+    public function delivery()
+    {
+        return $this->hasOne(Delivery::class);
+    }
+
     public function quotation()
     {
         return $this->hasOne(Quotation::class);

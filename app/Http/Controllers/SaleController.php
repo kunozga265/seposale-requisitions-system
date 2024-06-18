@@ -6,7 +6,9 @@ use App\Http\Resources\ClientResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\QuotationResource;
 use App\Http\Resources\SaleResource;
+use App\Http\Resources\UserResource;
 use App\Models\Client;
+use App\Models\Delivery;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -14,6 +16,7 @@ use App\Models\Quotation;
 use App\Models\Receipt;
 use App\Models\Sale;
 use App\Models\Summary;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -129,6 +132,12 @@ class SaleController extends Controller
             ]);
         }
 
+//        create delivery note
+        Delivery::create([
+           "status"=>0,
+           "sale_id"=>$sale->id
+        ]);
+
 //        //Create Invoice
 //        (new InvoiceController())->storeFromSale($sale);
 
@@ -210,6 +219,11 @@ class SaleController extends Controller
                     "sale_id" => $sale->id
                 ]);
 
+                Delivery::create([
+                    "status"=>0,
+                    "sale_id"=>$sale->id
+                ]);
+
 //                //Create Invoice
 //                (new InvoiceController())->storeFromSale($sale);
 
@@ -233,6 +247,7 @@ class SaleController extends Controller
         //find out if the request is valid
         $sale = sale::find($id);
         $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
+        $users = User::orderBy("firstName")->get();
 
         if (is_object($sale)) {
             if ((new AppController())->isApi($request)) {
@@ -242,7 +257,8 @@ class SaleController extends Controller
                 //Web Response
                 return Inertia::render('Sales/Show', [
                     'sale' => new SaleResource($sale),
-                    'paymentMethods' => $payment_methods
+                    'paymentMethods' => $payment_methods,
+                    'users' => UserResource::collection($users),
                 ]);
             }
         } else {
@@ -441,6 +457,44 @@ class SaleController extends Controller
             return Redirect::back()->with('error', 'Sale not found');
         }
     }
+    public function updateDelivery(Request $request, $id)
+    {
+
+        $sale = sale::find($id);
+
+        //get user
+        $user = (new AppController())->getAuthUser($request);
+
+
+        if (is_object($sale)) {
+
+            if($sale->delivery->status == 0){
+                $sale->delivery->update([
+                    "status" => 1,
+                    "date_initiated" => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
+                    "initiated_by" => isset($request->user_id) ? $request->user_id : $user->id
+                ]);
+            }else{
+                $sale->delivery->update([
+                    "status" => 2,
+                    "date_delivered" => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
+                    "delivered_by" => isset($request->user_id) ? $request->user_id : $user->id
+                ]);
+            }
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(new SaleResource($sale), 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('success', 'Delivery updated!');
+            }
+        } else {
+            return Redirect::back()->with('error', 'Sale not found');
+        }
+    }
+
+
 
     public function destroy(Request $request, $id)
     {

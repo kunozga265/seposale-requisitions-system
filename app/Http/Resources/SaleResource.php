@@ -34,6 +34,7 @@ class SaleResource extends JsonResource
             'products' => SummaryResource::collection($this->products),
             'receipts' => ReceiptResource::collection($this->receipts),
             'generatedBy' => new UserResource($this->user),
+            'delivery' => new DeliveryResource($this->delivery),
 
         ];
     }

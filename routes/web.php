@@ -377,6 +377,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.store');
 
+        Route::post('/update-delivery/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@updateDelivery",
+            'roles' =>['employee','management']
+        ])->name('sales.update.delivery');
+
         Route::get('/view/{id}', [
             "uses"  => "App\Http\Controllers\SaleController@show",
             'roles' =>['employee','management']

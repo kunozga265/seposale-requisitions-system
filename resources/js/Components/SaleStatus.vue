@@ -1,12 +1,23 @@
 <template>
-    <div class="flex justify-start items-center" :class="getStatusClass()">
-        <div>
-            <i class="mdi text-xl" :class="getStatusIcon()"></i>
+    <div class="grid grid-cols-2 gap-2">
+        <div class="flex justify-start items-center" :class="getStatusClass()">
+            <div>
+                <i class="mdi text-xl" :class="getStatusIcon()"></i>
+            </div>
+            <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">
+                {{getStatusMessage() }}
+            </div>
         </div>
-        <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">
-            {{getStatusMessage() }}
+        <div class="flex justify-start items-center" :class="getDeliveryStatusClass()">
+            <div>
+                <i class="mdi text-xl" :class="getDeliveryStatusIcon()"></i>
+            </div>
+            <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">
+                {{getDeliveryStatusMessage(this.sale.delivery.status) }}
+            </div>
         </div>
     </div>
+
 </template>
 
 <script>
@@ -17,7 +28,7 @@ export default {
         getStatusClass(){
             switch (this.sale.status){
                 case 0:
-                    return "approval-pending";
+                    return "closed";
                 case 1:
                     return "approval-pending";
                 case 2:
@@ -60,6 +71,31 @@ export default {
                     return "mdi-check-circle";
                 case 5:
                     return "mdi-close-circle";
+                default:
+                    return "";
+            }
+        },
+        getDeliveryStatusClass(){
+            switch (this.sale.delivery.status){
+                case 0:
+                    return "denied";
+                case 1:
+                    return "approval-pending";
+                case 2:
+                    return "approved";
+                default:
+                    return "";
+            }
+        },
+
+        getDeliveryStatusIcon(){
+            switch (this.sale.delivery.status){
+                case 0:
+                    return "mdi-close-circle";
+                case 1:
+                    return "mdi-alert-circle";
+                case 2:
+                    return "mdi-check-circle";
                 default:
                     return "";
             }
