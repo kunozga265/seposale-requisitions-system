@@ -585,7 +585,7 @@ class SaleController extends Controller
     {
         $last = Sale::orderBy("code_alt","desc")->first();
         if (is_object($last)){
-            return $last->code + 1;
+            return intval($last->code_alt) + 1;
         }else{
             return 1;
         }
