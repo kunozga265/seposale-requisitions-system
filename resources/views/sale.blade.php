@@ -190,6 +190,7 @@
                     @endif
                 </table>
             </td>
+            @if(isset($sale->location))
             <td class="b-0">
                 <table>
 {{--                    <tr>--}}
@@ -205,7 +206,7 @@
                         </td></tr>
                 </table>
             </td>
-
+            @endif
         </tr>
     </table>
 
