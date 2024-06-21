@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
 //         $this->call(UserTableSeeder::class);
 //        \App\Models\Client::factory(5)->create();
 //         $this->call(PaymentMethodTableSeeder::class);
-         $this->call(DeliveryTableSeeder::class);
+//         $this->call(DeliveryTableSeeder::class);
+         $this->call(SaleTableSeeder::class);
 //        \App\Models\User::factory(21)->create();
     }
 }

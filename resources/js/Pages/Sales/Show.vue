@@ -29,11 +29,15 @@
     </template>
 
     <template #actions>
-      <span v-if="sale.data.invoice">
-        <a :href="route('invoices.print',{'id':sale.data.invoice.id})" target="_blank">
-        <primary-button>Print Invoice</primary-button>
-      </a>
-      </span>
+<!--      <span v-if="sale.data.invoice">-->
+<!--        <a :href="route('invoices.print',{'id':sale.data.invoice.id})" target="_blank">-->
+<!--        <primary-button>Print Invoice</primary-button>-->
+<!--      </a>-->
+<!--      </span>-->
+
+        <a :href="route('sales.print',{'id':sale.data.id})" target="_blank">
+            <primary-button>Print</primary-button>
+        </a>
       <a  v-if="sale.data.editable" :href="route('sales.edit',{'id':sale.data.id})">
         <primary-button>Edit</primary-button>
       </a>

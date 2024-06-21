@@ -17,7 +17,7 @@ class SaleResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
+            'code' => "LL".(new AppController())->getZeroedNumber($this->code_alt),
             'status' => intval($this->status),
             'client' => new ClientResource($this->client),
             'invoice' => $this->invoice != null ? [

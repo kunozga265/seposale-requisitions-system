@@ -1,5 +1,5 @@
 <template>
-    <div class="grid grid-cols-2 gap-2">
+    <div class="">
         <div class="flex justify-start items-center" :class="getStatusClass()">
             <div>
                 <i class="mdi text-xl" :class="getStatusIcon()"></i>
@@ -8,14 +8,14 @@
                 {{getStatusMessage() }}
             </div>
         </div>
-        <div class="flex justify-start items-center" :class="getDeliveryStatusClass()">
-            <div>
-                <i class="mdi text-xl" :class="getDeliveryStatusIcon()"></i>
-            </div>
-            <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">
-                {{getDeliveryStatusMessage(this.sale.delivery.status) }}
-            </div>
-        </div>
+<!--        <div class="flex justify-start items-center" :class="getDeliveryStatusClass()">-->
+<!--            <div>-->
+<!--                <i class="mdi text-xl" :class="getDeliveryStatusIcon()"></i>-->
+<!--            </div>-->
+<!--            <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">-->
+<!--                {{getDeliveryStatusMessage(this.sale.delivery.status) }}-->
+<!--            </div>-->
+<!--        </div>-->
     </div>
 
 </template>

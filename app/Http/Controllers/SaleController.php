@@ -17,10 +17,12 @@ use App\Models\Receipt;
 use App\Models\Sale;
 use App\Models\Summary;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Rmunate\Utilities\SpellNumber;
 
 class SaleController extends Controller
 {
@@ -92,7 +94,7 @@ class SaleController extends Controller
 
         $sale = Sale::create([
             'code' => (new AppController())->generateUniqueCode(true),
-
+            'code_alt' => $this->getSaleCodeNumber(),
             'status' => 0,
             'client_id' => $client->id,
             'total' => $request->total,
@@ -173,7 +175,7 @@ class SaleController extends Controller
 
                 $sale = Sale::create([
                     'code' => (new AppController())->generateUniqueCode(true),
-
+                    'code_alt' => $this->getSaleCodeNumber(),
                     'status' => 0,
                     'client_id' => $quotation->client->id,
                     'total' => $quotation->total,
@@ -531,6 +533,61 @@ class SaleController extends Controller
                 //Web Response
                 return Redirect::back()->with('error', 'Sale not found');
             }
+        }
+    }
+
+    public function print(Request $request,$id)
+    {
+        //find out if the request is valid
+        $sale=Sale::find($id);
+
+        if(is_object($sale)){
+
+            /*
+                        $pdf=App::make('dompdf.wrapper');
+                        $pdf->loadHTML('request');
+                        return $pdf->stream('Request Form');*/
+
+            $filename="SALE#LL".(new AppController())->getZeroedNumber($sale->code_alt)." - ".$sale->client->name."-".date('Ymd',$sale->date);
+
+            $now_d= \Illuminate\Support\Carbon::createFromTimestamp($sale->date,'Africa/Lusaka')->format('F j, Y');
+            $now_t=Carbon::createFromTimestamp($sale->date,'Africa/Lusaka')->format('H:i');
+
+            $total_in_words = SpellNumber::value($sale->total)
+                ->locale('en')
+                ->currency('Kwacha')
+                ->fraction('Tambala')
+                ->toMoney();
+
+            $total_in_words = str_replace(" of "," ",$total_in_words);
+
+            $pdf = PDF::loadView('sale', [
+                'code'              => "LL".(new AppController())->getZeroedNumber($sale->code_alt),
+                'date'              => $now_d,
+                'time'              => $now_t,
+                'sale'              => $sale,
+                'total_in_words'    => $total_in_words
+            ]);
+            return $pdf->download("$filename.pdf");
+
+        }else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale not found"], 404);
+            }else{
+                //Web Response
+                return Redirect::route('dashboard')->with('error','Sale not found');
+            }
+        }
+    }
+
+    public function getSaleCodeNumber()
+    {
+        $last = Sale::orderBy("code_alt","desc")->first();
+        if (is_object($last)){
+            return $last->code + 1;
+        }else{
+            return 1;
         }
     }
 }

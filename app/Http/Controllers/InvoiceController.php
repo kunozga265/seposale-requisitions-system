@@ -267,7 +267,7 @@ class InvoiceController extends Controller
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename="INVOICE#".(new AppController())->getZeroedNumber($invoice->code,$invoice->revision)." - ".$invoice->name."-".date('Ymd',$invoice->sale->date);
+            $filename="INVOICE#".(new AppController())->getZeroedNumber($invoice->code,$invoice->revision)." - ".$invoice->client->name."-".date('Ymd',$invoice->sale->date);
 
             $now_d=Carbon::createFromTimestamp($invoice->sale->date,'Africa/Lusaka')->format('F j, Y');
             $now_t=Carbon::createFromTimestamp($invoice->sale->date,'Africa/Lusaka')->format('H:i');
