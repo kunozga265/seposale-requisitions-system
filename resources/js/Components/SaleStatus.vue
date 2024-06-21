@@ -46,7 +46,7 @@ export default {
         getStatusMessage(){
             switch (this.sale.status){
                 case 0:
-                  return "Under Enquiry";
+                  return "Awaiting Payment";
                 case 1:
                     return "Partially Paid";
                 case 2:
