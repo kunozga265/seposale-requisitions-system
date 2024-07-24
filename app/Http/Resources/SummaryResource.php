@@ -22,7 +22,7 @@ class SummaryResource extends JsonResource
             "amount"           => $this->amount,
             "quantity"           => $this->quantity,
             "delivery"           => $this->delivery,
-            "overdue"           => $this->delivery->overdue()
+            "overdue"           => $this->delivery != null ? $this->delivery->overdue() : false
         ];
     }
 }
