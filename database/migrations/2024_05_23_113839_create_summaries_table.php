@@ -22,6 +22,7 @@ class CreateSummariesTable extends Migration
             $table->double("amount");
             $table->double("quantity");
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

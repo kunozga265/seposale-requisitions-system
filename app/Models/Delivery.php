@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -19,18 +20,30 @@ class Delivery extends Model
         return $this->belongsTo(User::class, "initiated_by");
     }
 
-    public function sale()
+    public function summary()
     {
-        return $this->belongsTo(Sale::class);
+        return $this->belongsTo(Summary::class);
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(SystemLog::class);
+    }
+
+    public function overdue()
+    {
+        $due_date = Carbon::createFromTimestamp($this->due_date);
+        $now = Carbon::now();
+        $overdue = $now->diff($due_date);
+        return $overdue->invert == 1;
     }
 
     protected $fillable = [
         "status",
         "photo",
-        "date_delivered",
-        "date_initiated",
-        "initiated_by",
-        "delivered_by",
-        "sale_id",
+        "quantity_delivered",
+        "tracking_number",
+        "summary_id",
+        "due_date",
     ];
 }

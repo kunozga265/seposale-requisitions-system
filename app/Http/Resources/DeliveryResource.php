@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DeliveryResource extends JsonResource
@@ -15,14 +16,17 @@ class DeliveryResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
-            "status" => $this->status,
+            "id" => intval($this->id),
+            "status" => intval($this->status),
             "photo" => $this->photo,
-            "dateInitiated" => $this->date_initiated,
-            "dateDelivered" => $this->date_delivered,
-            'deliveredBy' => new UserResource($this->deliveredBy),
-            'initiatedBy' => new UserResource($this->initiatedBy),
-            "sale" => $this->sale,
+            "client" => $this->summary->sale->client,
+            "location" => $this->summary->sale->location,
+            "quantityDelivered" => floatval($this->quantity_delivered),
+            "summary" => new SummaryResource($this->summary),
+            "date" => intval($this->due_date),
+            "due" => $this->status == 1 ? Carbon::createFromTimestamp($this->due_date)->diffForHumans() : null,
+            "overdue" => $this->status == 1 ? $this->overdue() : false,
+            "logs" => SystemLogResource::collection($this->logs),
         ];
     }
 }

@@ -33,7 +33,7 @@ class NotificationController extends Controller
         $unsorted=$user->userNotifications()->latest()->get();
         $sorted=[];
 
-        if ($unsorted->isEmpty()!==0){
+        if (!$unsorted->isEmpty()){
             $currentMonth=date('F',$unsorted[0]->created_at->getTimestamp());
             $currentYear=date('Y',$unsorted[0]->created_at->getTimestamp());
 

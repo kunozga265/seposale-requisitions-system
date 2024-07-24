@@ -243,13 +243,36 @@
         </tbody>
     </table>
 
+    <table style="margin-top:40px">
+        <tr class="">
+            <td class="b-0" style="width: 45px">
+                <img style="width: 40px" src="{{storage_path()."/images/nb.png"}}" alt="">
+            </td>
+            <td class="b-0">
+                <div style="font-size: 8px">National Bank Acc #</div>
+                <div style="font-size: 20px; font-weight: normal">1008405545</div>
+                <div style="font-size: 8px">Gateway Mall Branch</div>
+            </td>
+            <td class="b-0" style="width: 45px">
+                <img style="width: 40px" src="{{storage_path()."/images/std.png"}}" alt="">
+            </td>
+            <td class="b-0">
+                <div style="font-size: 8px">Standard Bank Acc #</div>
+                <div style="font-size: 20px; font-weight: normal">9100006110794</div>
+                <div style="font-size: 8px">Gateway Mall Branch</div>
+            </td>
+        </tr>
+    </table>
+
 
 </div>
 
-{{--<div style="page-break-after: always"></div>--}}
-<div style="padding:0 20px; position: absolute; bottom: 0">
-    <img style="width: 100%;" src="{{storage_path()."/images/cover.jpg"}}" alt="">
-</div>
+<div style="page-break-after: always"></div>
+<img style="width: 100%" src="{{storage_path()."/images/our-products.jpg"}}" alt="">
+
+{{--<div style="padding:0 20px; position: absolute; bottom: 0">--}}
+{{--    <img style="width: 100%;" src="{{storage_path()."/images/cover.jpg"}}" alt="">--}}
+{{--</div>--}}
 
 
 </body>

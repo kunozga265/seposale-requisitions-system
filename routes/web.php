@@ -377,11 +377,6 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.store');
 
-        Route::post('/update-delivery/{id}', [
-            "uses"  => "App\Http\Controllers\SaleController@updateDelivery",
-            'roles' =>['employee','management']
-        ])->name('sales.update.delivery');
-
         Route::get('/view/{id}', [
             "uses"  => "App\Http\Controllers\SaleController@show",
             'roles' =>['employee','management']
@@ -438,6 +433,39 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses" => "App\Http\Controllers\ReceiptController@show",
             'roles' => ['employee', 'management']
         ])->name('receipts.show');
+    });
+
+    Route::group(['prefix'=>'clients'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\ClientController@index",
+            'roles' =>['employee','management']
+        ])->name('clients.index');
+
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\ClientController@show",
+            'roles' => ['employee', 'management']
+        ])->name('clients.show');
+    });
+
+    Route::group(['prefix'=>'deliveries'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\DeliveryController@index",
+            'roles' =>['employee','management']
+        ])->name('deliveries.index');
+
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\DeliveryController@update",
+            'roles' => ['employee','management']
+        ])->name('deliveries.update');
+
+        Route::post('/cancel/{id}', [
+            "uses"  => "App\Http\Controllers\DeliveryController@cancel",
+            'roles' => ['employee','management']
+        ])->name('deliveries.cancel');
+
     });
 
     Route::group(['prefix'=>'reports'],function() {

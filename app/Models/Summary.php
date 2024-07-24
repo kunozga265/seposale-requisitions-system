@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Summary extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public function product()
     {
@@ -32,6 +34,12 @@ class Summary extends Model
     {
         return $this->belongsTo(Sale::class);
     }
+
+    public function delivery()
+    {
+        return $this->hasOne(Delivery::class);
+    }
+
 
 
     protected $fillable=[

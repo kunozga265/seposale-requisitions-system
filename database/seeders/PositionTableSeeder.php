@@ -41,7 +41,7 @@ class PositionTableSeeder extends Seeder
         ]);
 
         Position::create([
-            "title"             =>  "Delivery Officer",
+            "title"             =>  "Deliveries Officer",
             "approvalStages"    =>  json_encode([  [
                 "stage"     =>  1,
                 "position"  =>  3,

@@ -195,4 +195,46 @@ class AppController extends Controller
         $role=Role::where('name',$name)->first();
         return $role->users;
     }
+
+    public function generateCompound($models){
+        $sorted = [];
+        if (!$models->isEmpty()){
+            $current_month=date('F',$models[0]->date);
+            $current_year=date('Y',$models[0]->date);
+
+            $item=0;
+            $index=0;
+
+            foreach ($models as $model){
+                if ($item==0){
+                    $sorted[0]=[
+                        'month'         => $current_month,
+                        'year'          => $current_year,
+                        'data'          => [$model]
+                    ];
+                }else{
+                    $month=date('F',$models[$item]->date);
+                    $year=date('Y',$models[$item]->date);
+
+                    if ($current_month===$month && $current_year===$year){
+                        $sorted[$index]['data'][]=$model;
+                    }else{
+                        $index+=1;
+                        $current_month=date('F',$models[$item]->date);
+                        $current_year=date('Y',$models[$item]->date);
+
+                        $sorted[$index]=[
+                            'month'         => $current_month,
+                            'year'          => $current_year,
+                            'data'          => [$model]
+                        ];
+                    }
+                }
+
+                dump($sorted);
+                $item+=1;
+            }
+        }
+        return $sorted;
+    }
 }

@@ -16,10 +16,12 @@ use App\Models\Quotation;
 use App\Models\Receipt;
 use App\Models\Sale;
 use App\Models\Summary;
+use App\Models\SystemLog;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rmunate\Utilities\SpellNumber;
@@ -107,6 +109,14 @@ class SaleController extends Controller
             'user_id' => $user->id,
         ]);
 
+        //Logging
+        SystemLog::create([
+            "user_id" => Auth::id(),
+            "message" => "Sale #{$sale->code_alt} created for {$client->name}. Total amount is {$sale
+        ->total}",
+            "sale_id" => $sale->id,
+        ]);
+
         //attach products
         foreach ($request->products as $product) {
 //            $product_model = Product::find($product["id"]);
@@ -122,6 +132,12 @@ class SaleController extends Controller
                     "cost" => $product["unitCost"],
                     "product_id" => $product_model->id
                 ]);
+
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "New Product ({$product_model->name}) automatically added into the system.",
+                ]);
             }
 
             $summary = Summary::create([
@@ -132,13 +148,17 @@ class SaleController extends Controller
                 "amount" => $product["totalCost"],
                 "quantity" => $product["quantity"],
             ]);
+
+            Delivery::create([
+                "status"=>0,
+                "quantity_delivered"=>0,
+                "summary_id"=>$summary->id
+            ]);
+
         }
 
 //        create delivery note
-        Delivery::create([
-           "status"=>0,
-           "sale_id"=>$sale->id
-        ]);
+
 
 //        //Create Invoice
 //        (new InvoiceController())->storeFromSale($sale);
@@ -188,6 +208,14 @@ class SaleController extends Controller
                     'user_id' => $user->id,
                 ]);
 
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Sale #{$sale->code_alt} created for {$sale->client->name} from Quotation #{$quotation->code}. Total amount is {$sale
+        ->total}",
+                    "sale_id" => $sale->id,
+                ]);
+
                 $products = json_decode($quotation->information);
 
                 //attach products
@@ -205,6 +233,12 @@ class SaleController extends Controller
                             "cost" => $product->unitCost,
                             "product_id" => $product_model->id
                         ]);
+
+                        //Logging
+                        SystemLog::create([
+                            "user_id" => Auth::id(),
+                            "message" => "New Product ({$product_model->name}) automatically added into the system.",
+                        ]);
                     }
 
                     $summary = Summary::create([
@@ -215,15 +249,16 @@ class SaleController extends Controller
                         "amount" => $product->totalCost,
                         "quantity" => $product->quantity,
                     ]);
+
+                    Delivery::create([
+                        "status"=>0,
+                        "quantity_delivered"=>0,
+                        "summary_id"=>$summary->id
+                    ]);
                 }
 
                 $quotation->update([
                     "sale_id" => $sale->id
-                ]);
-
-                Delivery::create([
-                    "status"=>0,
-                    "sale_id"=>$sale->id
                 ]);
 
 //                //Create Invoice
@@ -302,6 +337,8 @@ class SaleController extends Controller
             $new_balance = $sale->balance - $request->amount;
             if ($new_balance < 0) {
                 return Redirect::back()->with("error", "Payment is more than what is required");
+            }else if ($request->amount <= 0){
+                return Redirect::back()->with("error", "Receipt amount is zero");
             }
 
             $receipt = Receipt::create([
@@ -315,13 +352,19 @@ class SaleController extends Controller
                 'date' => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
             ]);
 
-
             $sale->update([
                 "balance" => $new_balance,
                 "editable" => false,
                 "status" => $new_balance == 0 ? 2 : 1
             ]);
 
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Receipt #{$receipt->code} created for {$sale->client->name} under Sale #{$sale->code_alt}. Total amount received is {$receipt
+        ->amount}",
+                "sale_id" => $sale->id,
+            ]);
 
 
             if ((new AppController())->isApi($request))
@@ -406,8 +449,18 @@ class SaleController extends Controller
                 'location' => $request->location,
             ]);
 
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Sale #{$sale->code_alt} updated. Total amount is now {$sale->total}",
+                "sale_id" => $sale->id,
+            ]);
+
             //detach products
             foreach ($sale->products as $product) {
+                if(isset($product->delivery)){
+                    $product->delivery->delete();
+                }
                 $product->delete();
             }
             //attach products
@@ -424,6 +477,12 @@ class SaleController extends Controller
                         "cost" => $product["unitCost"],
                         "product_id" => $product_model->id
                     ]);
+
+                    //Logging
+                    SystemLog::create([
+                        "user_id" => Auth::id(),
+                        "message" => "New Product ({$product_model->name}) automatically added into the system.",
+                    ]);
                 }
 
                 $summary = Summary::create([
@@ -433,6 +492,12 @@ class SaleController extends Controller
                     "date" => $sale->date,
                     "amount" => $product["totalCost"],
                     "quantity" => $product["quantity"],
+                ]);
+
+                Delivery::create([
+                    "status"=>0,
+                    "quantity_delivered"=>0,
+                    "summary_id"=>$summary->id
                 ]);
             }
 
@@ -459,42 +524,7 @@ class SaleController extends Controller
             return Redirect::back()->with('error', 'Sale not found');
         }
     }
-    public function updateDelivery(Request $request, $id)
-    {
 
-        $sale = sale::find($id);
-
-        //get user
-        $user = (new AppController())->getAuthUser($request);
-
-
-        if (is_object($sale)) {
-
-            if($sale->delivery->status == 0){
-                $sale->delivery->update([
-                    "status" => 1,
-                    "date_initiated" => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
-                    "initiated_by" => isset($request->user_id) ? $request->user_id : $user->id
-                ]);
-            }else{
-                $sale->delivery->update([
-                    "status" => 2,
-                    "date_delivered" => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
-                    "delivered_by" => isset($request->user_id) ? $request->user_id : $user->id
-                ]);
-            }
-
-            if ((new AppController())->isApi($request))
-                //API Response
-                return response()->json(new SaleResource($sale), 201);
-            else {
-                //Web Response
-                return Redirect::back()->with('success', 'Delivery updated!');
-            }
-        } else {
-            return Redirect::back()->with('error', 'Sale not found');
-        }
-    }
 
 
 
@@ -515,6 +545,13 @@ class SaleController extends Controller
                     "sale_id" => null
                 ]);
             }
+
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Sale #{$sale->code_alt} has been deleted.",
+                "sale_id" => $sale->id,
+            ]);
 
             $sale->delete();
 

@@ -17,11 +17,10 @@ class CreateDeliveriesTable extends Migration
             $table->id();
             $table->integer("status");
             $table->string("photo")->nullable();
-            $table->double("date_initiated")->nullable();
-            $table->double("date_delivered")->nullable();
-            $table->integer("initiated_by")->nullable();
-            $table->integer("delivered_by")->nullable();
-            $table->integer("sale_id");
+            $table->string("tracking_number")->nullable();
+            $table->double("quantity_delivered");
+            $table->double("due_date")->nullable();
+            $table->integer("summary_id");
             $table->timestamps();
         });
     }

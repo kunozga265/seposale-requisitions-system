@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sale extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     public function client()
     {
@@ -32,11 +34,6 @@ class Sale extends Model
     public function invoice()
     {
         return $this->hasOne(Invoice::class);
-    }
-
-    public function delivery()
-    {
-        return $this->hasOne(Delivery::class);
     }
 
     public function quotation()

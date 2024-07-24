@@ -94,12 +94,7 @@
               <!--                                </a>-->
               <!--                            </li>-->
 
-              <!--                            <li v-if="checkRole($page.props.auth.data,'accountant') || checkRole($page.props.auth.data,'management')">-->
-              <!--                                <a :href="route('finance')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">-->
-              <!--                                    <i class="text-lg mdi mdi-finance"></i>-->
-              <!--                                    <span class="ml-3">Finance</span>-->
-              <!--                                </a>-->
-              <!--                            </li>-->
+
 
               <li>
                 <div @click="sales = !sales"
@@ -137,28 +132,74 @@
                       Quotations
                     </a>
                   </li>
+                  <li>
+                    <a :href="route('clients.index')"
+                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Clients
+                    </a>
+                  </li>
 
                 </ul>
               </li>
-              <li v-if="checkRole($page.props.auth.data,'administrator') || checkRole($page.props.auth.data,'management')">
-                <a :href="route('users')"
-                   class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                  <i class="text-lg mdi mdi-account-supervisor-circle"></i>
-                  <span class="ml-3">Users</span>
-                </a>
-              </li>
-              <!-- <li>
-                  <a :href="route('projects')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                      <i class="text-lg mdi mdi-home-group"></i>
-                      <span class="ml-3">Projects</span>
-                  </a>
-              </li>
-              <li>
-                  <a :href="route('vehicles')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                      <i class="text-lg mdi mdi-car-multiple"></i>
-                      <span class="ml-3">Vehicles</span>
-                  </a>
-              </li> -->
+
+               <li>
+                 <a :href="route('deliveries.index')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                     <i class="text-lg mdi mdi-dump-truck"></i>
+                     <span class="ml-3">Operations</span>
+                 </a>
+             </li>
+
+<!--               <li>-->
+<!--                   <div @click="operations = !operations"-->
+<!--                        class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">-->
+<!--                       <div>-->
+<!--                           <i class="text-lg mdi mdi-dump-truck"></i>-->
+<!--                           <span class="ml-3">Operations</span>-->
+<!--                       </div>-->
+<!--                       <div>-->
+<!--                           <i class="text-lg mdi" :class="{'mdi-menu-down':!operations, 'mdi-menu-up': operations}"></i>-->
+<!--                       </div>-->
+<!--                   </div>-->
+<!--                   <ul v-show="operations">-->
+<!--                       <li>-->
+<!--                           <a :href="route('deliveries.index',{filter:'processing'})"-->
+<!--                              class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">-->
+<!--                               Processing-->
+<!--                           </a>-->
+<!--                       </li>-->
+
+<!--                       <li>-->
+<!--                           <a :href="route('deliveries.index',{filter:'completed'})"-->
+<!--                              class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">-->
+<!--                               Completed-->
+<!--                           </a>-->
+<!--                       </li>-->
+
+
+<!--                   </ul>-->
+<!--               </li>-->
+
+
+
+             <li v-if="checkRole($page.props.auth.data,'administrator') || checkRole($page.props.auth.data,'management')">
+               <a :href="route('users')"
+                  class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                 <i class="text-lg mdi mdi-account-supervisor-circle"></i>
+                 <span class="ml-3">Users</span>
+               </a>
+             </li>
+             <!-- <li>
+                 <a :href="route('projects')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                     <i class="text-lg mdi mdi-home-group"></i>
+                     <span class="ml-3">Projects</span>
+                 </a>
+             </li>
+             <li>
+                 <a :href="route('vehicles')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                     <i class="text-lg mdi mdi-car-multiple"></i>
+                     <span class="ml-3">Vehicles</span>
+                 </a>
+             </li> -->
               <li v-if="checkRole($page.props.auth.data,'accountant') || checkRole($page.props.auth.data,'administrator') || checkRole($page.props.auth.data,'management')">
                 <a :href="route('reports')"
                    class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -314,6 +355,7 @@ export default {
       open: false,
       requests: false,
       sales: false,
+      operations: false,
     }
   },
 

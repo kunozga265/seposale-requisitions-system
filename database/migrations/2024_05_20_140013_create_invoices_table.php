@@ -20,6 +20,7 @@ class CreateInvoicesTable extends Migration
             $table->integer("client_id");
             $table->integer("sale_id");
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

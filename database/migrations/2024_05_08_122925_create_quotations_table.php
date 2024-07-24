@@ -27,6 +27,7 @@ class CreateQuotationsTable extends Migration
             $table->integer("user_id");
             $table->integer("sale_id")->nullable();
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

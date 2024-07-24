@@ -21,7 +21,8 @@ class SummaryResource extends JsonResource
             "date"           => $this->date,
             "amount"           => $this->amount,
             "quantity"           => $this->quantity,
-
+            "delivery"           => $this->delivery,
+            "overdue"           => $this->delivery->overdue()
         ];
     }
 }

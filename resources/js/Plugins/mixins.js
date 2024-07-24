@@ -36,6 +36,8 @@ Vue.mixin({
                     return "Processing";
                 case 2:
                     return "Delivered";
+                case 3:
+                    return "Cancelled";
                 default:
                     return "";
             }

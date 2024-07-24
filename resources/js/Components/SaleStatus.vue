@@ -28,7 +28,7 @@ export default {
         getStatusClass(){
             switch (this.sale.status){
                 case 0:
-                    return "closed";
+                    return "approval-pending";
                 case 1:
                     return "approval-pending";
                 case 2:

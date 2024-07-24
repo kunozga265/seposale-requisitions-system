@@ -182,10 +182,10 @@
                         <jet-input type="text" class="block w-full" v-model="info.units"/>
                       </td>
                       <td class="py-2 pr-1">
-                        <jet-input type="text" class="block w-full" v-model="info.quantity"/>
+                        <jet-input type="number" class="block w-full" v-model="info.quantity"/>
                       </td>
                       <td class="py-2 pr-1">
-                        <jet-input type="text" class="block w-full" v-model="info.unitCost"/>
+                        <jet-input type="number" class="block w-full" v-model="info.unitCost"/>
                       </td>
                       <td class="py-2 pr-1">
                         <div
@@ -331,11 +331,11 @@
           </div>
           <div class="mb-4">
             <jet-label for="units" value="Unit Cost"/>
-            <jet-input type="text" class="block w-full" v-model="addRecordUnitCost"/>
+            <jet-input type="number" class="block w-full" v-model="addRecordUnitCost"/>
           </div>
           <div class="mb-4">
             <jet-label for="quantity" value="Quantity"/>
-            <jet-input type="text" class="block w-full" v-model="addRecordQuantity"/>
+            <jet-input type="number" class="block w-full" v-model="addRecordQuantity"/>
           </div>
 
           <div class="mb-4">

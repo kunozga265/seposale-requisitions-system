@@ -193,6 +193,7 @@
     import JetValidationErrors from '@/Jetstream/ValidationErrors'
     import JetLabel from "@/Jetstream/Label";
     import JetInput from "@/Jetstream/Input";
+    // import {Head} from '@inertiajs/inertia-vue'
 
     export default {
         props:['receipt','sale'],
