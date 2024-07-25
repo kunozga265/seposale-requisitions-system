@@ -20,7 +20,7 @@ export default {
           let statusClass = "";
 
           if(this.overdue){
-            switch (this.productCompound.delivery.status){
+            switch (parseInt(this.productCompound.delivery.status)){
               case 0:
                 statusClass =   "denied";
                 break;
