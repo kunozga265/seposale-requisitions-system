@@ -49,5 +49,7 @@ class Summary extends Model
         "date",
         "amount",
         "quantity",
+        "description",
+        "units",
     ];
 }

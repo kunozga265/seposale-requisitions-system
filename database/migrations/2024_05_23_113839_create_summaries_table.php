@@ -16,11 +16,13 @@ class CreateSummariesTable extends Migration
         Schema::create('summaries', function (Blueprint $table) {
             $table->id();
             $table->string("product_id");
-            $table->string("product_variant_id");
+            $table->string("product_variant_id")->nullable();
             $table->string("sale_id");
             $table->double("date");
             $table->double("amount");
             $table->double("quantity");
+            $table->string("description")->nullable();
+            $table->string("units")->nullable();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

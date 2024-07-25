@@ -46,7 +46,7 @@ class SaleController extends Controller
 
     public function create(Request $request)
     {
-        $products = Product::orderBy("name", 'asc')->get();
+        $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
         return Inertia::render('Sales/Create', [
             "products" => ProductResource::collection($products),
@@ -121,40 +121,43 @@ class SaleController extends Controller
         foreach ($request->products as $product) {
 //            $product_model = Product::find($product["id"]);
             $product_variant = ProductVariant::find($product["id"]);
-            if (!is_object($product_variant)) {
-                $product_model = Product::create([
-                    "name" => $product["details"],
-                ]);
-
-                $product_variant = ProductVariant::create([
-                    "unit" => $product["units"],
-                    "quantity" => 1,
-                    "cost" => $product["unitCost"],
-                    "product_id" => $product_model->id
-                ]);
-
-                //Logging
-                SystemLog::create([
-                    "user_id" => Auth::id(),
-                    "message" => "New Product ({$product_model->name}) automatically added into the system.",
-                ]);
-            }
+//            if (!is_object($product_variant)) {
+//                $product_model = Product::create([
+//                    "name" => $product["details"],
+//                ]);
+//
+//                $product_variant = ProductVariant::create([
+//                    "unit" => $product["units"],
+//                    "quantity" => 1,
+//                    "cost" => $product["unitCost"],
+//                    "product_id" => $product_model->id
+//                ]);
+//
+//                //Logging
+//                SystemLog::create([
+//                    "user_id" => Auth::id(),
+//                    "message" => "New Product ({$product_model->name}) automatically added into the system.",
+//                ]);
+//            }
 
             $summary = Summary::create([
-                "product_id" => $product_variant->product->id,
-                "product_variant_id" => $product_variant->id,
+                "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
+                "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
                 "sale_id" => $sale->id,
                 "date" => $sale->date,
                 "amount" => $product["totalCost"],
                 "quantity" => $product["quantity"],
+                "description" => $product["details"],
+                "units" => $product["units"],
             ]);
 
-            Delivery::create([
-                "status"=>0,
-                "quantity_delivered"=>0,
-                "summary_id"=>$summary->id
-            ]);
-
+            if($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID){
+                Delivery::create([
+                    "status"=>0,
+                    "quantity_delivered"=>0,
+                    "summary_id"=>$summary->id
+                ]);
+            }
         }
 
 //        create delivery note
@@ -222,39 +225,44 @@ class SaleController extends Controller
                 foreach ($products as $product) {
 //            $product_model = Product::find($product["id"]);
                     $product_variant = ProductVariant::find($product->id);
-                    if (!is_object($product_variant)) {
-                        $product_model = Product::create([
-                            "name" => $product->details,
-                        ]);
-
-                        $product_variant = ProductVariant::create([
-                            "unit" => $product->units,
-                            "quantity" => 1,
-                            "cost" => $product->unitCost,
-                            "product_id" => $product_model->id
-                        ]);
-
-                        //Logging
-                        SystemLog::create([
-                            "user_id" => Auth::id(),
-                            "message" => "New Product ({$product_model->name}) automatically added into the system.",
-                        ]);
-                    }
+//                    if (!is_object($product_variant)) {
+//                        $product_model = Product::create([
+//                            "name" => $product->details,
+//                        ]);
+//
+//                        $product_variant = ProductVariant::create([
+//                            "unit" => $product->units,
+//                            "quantity" => 1,
+//                            "cost" => $product->unitCost,
+//                            "product_id" => $product_model->id
+//                        ]);
+//
+//                        //Logging
+//                        SystemLog::create([
+//                            "user_id" => Auth::id(),
+//                            "message" => "New Product ({$product_model->name}) automatically added into the system.",
+//                        ]);
+//                    }
 
                     $summary = Summary::create([
-                        "product_id" => $product_variant->product->id,
-                        "product_variant_id" => $product_variant->id,
+                        "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
+                        "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
                         "sale_id" => $sale->id,
                         "date" => $sale->date,
                         "amount" => $product->totalCost,
                         "quantity" => $product->quantity,
+                        "description" => $product->details,
+                        "units" => $product->units,
                     ]);
 
-                    Delivery::create([
-                        "status"=>0,
-                        "quantity_delivered"=>0,
-                        "summary_id"=>$summary->id
-                    ]);
+                    if($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID){
+                        Delivery::create([
+                            "status"=>0,
+                            "quantity_delivered"=>0,
+                            "summary_id"=>$summary->id
+                        ]);
+                    }
+
                 }
 
                 $quotation->update([
@@ -387,7 +395,7 @@ class SaleController extends Controller
 
         if (is_object($sale)) {
 
-            $products = Product::orderBy("name", 'asc')->get();
+            $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
             return Inertia::render('Sales/Edit', [
                 'sale' => new SaleResource($sale),
@@ -466,39 +474,43 @@ class SaleController extends Controller
             //attach products
             foreach ($request->products as $product) {
                 $product_variant = ProductVariant::find($product["id"]);
-                if (!is_object($product_variant)) {
-                    $product_model = Product::create([
-                        "name" => $product["details"],
-                    ]);
-
-                    $product_variant = ProductVariant::create([
-                        "unit" => $product["units"],
-                        "quantity" => 1,
-                        "cost" => $product["unitCost"],
-                        "product_id" => $product_model->id
-                    ]);
-
-                    //Logging
-                    SystemLog::create([
-                        "user_id" => Auth::id(),
-                        "message" => "New Product ({$product_model->name}) automatically added into the system.",
-                    ]);
-                }
+//                if (!is_object($product_variant)) {
+//                    $product_model = Product::create([
+//                        "name" => $product["details"],
+//                    ]);
+//
+//                    $product_variant = ProductVariant::create([
+//                        "unit" => $product["units"],
+//                        "quantity" => 1,
+//                        "cost" => $product["unitCost"],
+//                        "product_id" => $product_model->id
+//                    ]);
+//
+//                    //Logging
+//                    SystemLog::create([
+//                        "user_id" => Auth::id(),
+//                        "message" => "New Product ({$product_model->name}) automatically added into the system.",
+//                    ]);
+//                }
 
                 $summary = Summary::create([
-                    "product_id" => $product_variant->product->id,
-                    "product_variant_id" => $product_variant->id,
+                    "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
+                    "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
                     "sale_id" => $sale->id,
                     "date" => $sale->date,
                     "amount" => $product["totalCost"],
                     "quantity" => $product["quantity"],
+                    "description" => $product["details"],
+                    "units" => $product["units"],
                 ]);
 
-                Delivery::create([
-                    "status"=>0,
-                    "quantity_delivered"=>0,
-                    "summary_id"=>$summary->id
-                ]);
+                if($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID){
+                    Delivery::create([
+                        "status"=>0,
+                        "quantity_delivered"=>0,
+                        "summary_id"=>$summary->id
+                    ]);
+                }
             }
 
             //Update Invoice

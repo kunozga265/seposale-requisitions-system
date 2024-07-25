@@ -15,6 +15,8 @@ use Laravel\Sanctum\PersonalAccessToken;
 class AppController extends Controller
 {
     public $paginate = 20;
+    public $OTHER_PRODUCT_ID = 7;
+    public $SERVICES_PRODUCT_ID = 8;
 
     public function getAuthUser(Request $request)
     {

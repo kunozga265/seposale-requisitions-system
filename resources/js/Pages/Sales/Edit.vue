@@ -294,7 +294,7 @@
                       <option value="-1">Blank</option>
 
                       <option v-for="(product, index) in allProducts" :value="index" :key="index">
-                          {{ product.name }} - {{ product.description }}
+                          {{ product.name }} {{ product.description }}
                       </option>
                   </select>
               </div>
@@ -399,11 +399,11 @@ export default {
 
       for (let y in this.sale.data.products){
           let productCompound =  this.sale.data.products[y]
-          let name = productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
+          // let name = productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
           this.form.information.push({
-              "id": productCompound.variant.id,
-              "details": name,
-              "units": productCompound.variant.unit,
+              "id": productCompound.variantId,
+              "details": productCompound.description,
+              "units": productCompound.units,
               "quantity": productCompound.quantity,
               "unitCost": productCompound.amount/productCompound.quantity,
               "totalCost": productCompound.amount,

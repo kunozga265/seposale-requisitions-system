@@ -18,9 +18,12 @@ class SummaryResource extends JsonResource
             "id"                => $this->id,
             "product"           => $this->product,
             "variant"           => $this->variant,
+            "variantId"           => intval($this->product_variant_id),
             "date"           => $this->date,
             "amount"           => $this->amount,
             "quantity"           => $this->quantity,
+            "description"           => $this->description,
+            "units"           => $this->units,
             "delivery"           => $this->delivery,
             "overdue"           => $this->delivery != null ? $this->delivery->overdue() : false
         ];

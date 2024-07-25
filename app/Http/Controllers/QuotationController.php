@@ -44,7 +44,7 @@ class QuotationController extends Controller
 
     public function create(Request $request)
     {
-        $products = Product::orderBy("name", 'asc')->get();
+        $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
         return Inertia::render('Quotations/Create', [
             "products" => ProductResource::collection($products),
@@ -165,7 +165,7 @@ class QuotationController extends Controller
 
         if(is_object($quotation)){
 
-             $products = Product::orderBy("name", 'asc')->get();
+            $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
              $clients = Client::orderBy("name", 'asc')->get();
             return Inertia::render('Quotations/Edit',[
                 'quotation'   => new QuotationResource($quotation),
