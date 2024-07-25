@@ -720,7 +720,7 @@ export default {
         navigateToDelivery(productCompound){
 
             if(productCompound.delivery != null){
-              if(productCompound.delivery.status === 0){
+              if(parseInt(productCompound.delivery.status) === 0){
                 this.selectedProduct = productCompound
                 this.updateDeliveryDialog = true
               }else{

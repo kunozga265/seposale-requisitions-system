@@ -29,7 +29,7 @@ Vue.mixin({
             return productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
         },
         getDeliveryStatusMessage(status){
-            switch (status){
+            switch (parseInt(status)){
                 case 0:
                     return "Not Delivered";
                 case 1:
