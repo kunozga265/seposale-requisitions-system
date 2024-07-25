@@ -34,7 +34,7 @@ export default {
                 statusClass =   "closed";
             }
           }else{
-            switch (this.productCompound.delivery.status){
+            switch (parseInt(this.productCompound.delivery.status)){
               case 0:
                 statusClass =   "denied";
                 break;
@@ -57,7 +57,7 @@ export default {
         },
 
         getDeliveryStatusIcon(){
-            switch (this.productCompound.delivery.status){
+            switch (parseInt(this.productCompound.delivery.status)){
                 case 0:
                 case 3:
                     return "mdi-close-circle";
