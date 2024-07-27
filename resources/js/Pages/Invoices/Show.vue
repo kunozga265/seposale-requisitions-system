@@ -188,10 +188,10 @@
                                             :key="index"
                                         >
                                             <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                {{productName(productCompound)}}
+                                              {{ productCompound.description }}
                                             </th>
                                             <td class="py-2 pr-1">
-                                                {{productCompound.variant.unit}}
+                                              {{ productCompound.units }}
                                             </td>
                                             <td class="py-2 pr-1">
                                                 {{numberWithCommas(productCompound.quantity)}}
