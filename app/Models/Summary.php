@@ -18,7 +18,7 @@ class Summary extends Model
 
     public function fullName()
     {
-        if($this->variant->description != null){
+        if($this->variant != null){
             return $this->product->name. " - ". $this->variant->description;
         }else{
             return $this->product->name;
