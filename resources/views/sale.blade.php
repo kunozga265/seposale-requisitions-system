@@ -224,8 +224,8 @@
         <tbody>
         @foreach($sale->products as $productCompound)
             <tr>
-                <td style="text-transform: capitalize">{{$productCompound->fullName()}}</td>
-                <td style="text-align: center">{{$productCompound->variant->unit ?? ""}}</td>
+                <td style="text-transform: uppercase">{{$productCompound->description}}</td>
+                <td style="text-align: center">{{$productCompound->units}}</td>
                 <td style="text-align: center">{{number_format($productCompound->quantity,2)}}</td>
                 <td style="text-align: right">{{number_format($productCompound->amount/$productCompound->quantity,2)}}</td>
                 <td style="text-align: right">{{number_format($productCompound->amount,2)}}</td>
