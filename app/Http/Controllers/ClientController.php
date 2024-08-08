@@ -71,7 +71,7 @@ class ClientController extends Controller
             ]);
 
             $client = Client::create([
-                'name' => $request->name,
+                'name' => ucwords($request->name),
                 'phone_number' => $request->phoneNumber,
                 'email' => $request->email,
                 'address' => $request->address,
@@ -113,7 +113,7 @@ class ClientController extends Controller
             ]);
 
             $client->update([
-                'name' => $request->name,
+                'name' => ucwords($request->name),
                 'phone_number' => $request->phoneNumber,
                 'email' => $request->email,
                 'address' => $request->address,
