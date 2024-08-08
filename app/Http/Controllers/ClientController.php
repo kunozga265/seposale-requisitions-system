@@ -13,7 +13,7 @@ class ClientController extends Controller
 {
     public function index(Request $request)
     {
-        $clients = Client::orderBy("name", "desc")->paginate(100);
+        $clients = Client::orderBy("name", "asc")->paginate(100);
 
 
         if ((new AppController())->isApi($request))
