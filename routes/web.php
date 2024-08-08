@@ -442,11 +442,31 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('clients.index');
 
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\ClientController@create",
+            'roles' =>['employee','management']
+        ])->name('clients.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ClientController@store",
+            'roles' =>['employee','management']
+        ])->name('clients.store');
 
         Route::get('/view/{id}', [
             "uses" => "App\Http\Controllers\ClientController@show",
             'roles' => ['employee', 'management']
         ])->name('clients.show');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ClientController@edit",
+            'roles' =>['employee','management']
+        ])->name('clients.edit');
+
+        Route::post('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ClientController@update",
+            'roles' =>['employee','management']
+        ])->name('clients.update');
+
     });
 
     Route::group(['prefix'=>'deliveries'],function() {

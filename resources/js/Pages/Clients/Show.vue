@@ -20,17 +20,9 @@
         </template>
 
         <template #actions >
-
-<!--            <primary-button  v-if="!client.data.hasSale" @click.native="generateSale">Generate Sale</primary-button>-->
-
-<!--            <a :href="route('clients.print',{'id':client.data.id})" target="_blank">-->
-<!--                <primary-button>Print</primary-button>-->
-<!--            </a>-->
-<!--            <a :href="route('clients.edit',{'id':client.data.id})">-->
-<!--                <primary-button>Edit</primary-button>-->
-<!--            </a>-->
-<!--            <danger-button @click.native="deleteDialog=true">Delete</danger-button>-->
-
+            <a :href="route('clients.edit',{'id':client.data.id})">
+                <primary-button>Edit</primary-button>
+            </a>
         </template>
 
         <dialog-modal :show="deleteDialog" @close="deleteDialog=false">

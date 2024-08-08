@@ -55,4 +55,84 @@ class ClientController extends Controller
         }
     }
 
+
+    public function create(Request $request)
+    {
+        return Inertia::render('Clients/Create', [
+        ]);
+    }
+
+
+    public function store(Request $request)
+    {
+
+            $request->validate([
+                'name' => ['required'],
+            ]);
+
+            $client = Client::create([
+                'name' => $request->name,
+                'phone_number' => $request->phoneNumber,
+                'email' => $request->email,
+                'address' => $request->address,
+            ]);
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(new ClientResource($client), 201);
+        else {
+            //Web Response
+            return Redirect::route('clients.index')->with('success', 'Client created!');
+        }
+    }
+
+    public function edit(Request $request, $id)
+    {
+        $client = Client::find($id);
+
+        if (is_object($client)) {
+
+            return Inertia::render('Clients/Edit', [
+                'client' => new ClientResource($client),
+            ]);
+        } else {
+            return Redirect::back()->with('error', 'Client not found');
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $client=Client::find($id);
+
+        if(is_object($client)){
+
+            //Validate all the important attributes
+            $request->validate([
+                'name' => ['required'],
+            ]);
+
+            $client->update([
+                'name' => $request->name,
+                'phone_number' => $request->phoneNumber,
+                'email' => $request->email,
+                'address' => $request->address,
+            ]);
+
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(new ClientResource($client), 201);
+            else {
+                //Web Response
+                return Redirect::route('clients.index')->with('success', 'Client updated!');
+            }
+        }else {
+            return Redirect::back()->with('error','Quotation not found');
+        }
+    }
+
+
+
+
 }

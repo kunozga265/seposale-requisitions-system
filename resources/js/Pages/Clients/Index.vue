@@ -20,11 +20,11 @@
     </template>
 
     <template #actions>
-      <!--      <inertia-link :href="route('quotations.create')">-->
-      <!--        <primary-button>-->
-      <!--          New Client-->
-      <!--        </primary-button>-->
-      <!--      </inertia-link>-->
+            <inertia-link :href="route('clients.create')">
+              <primary-button>
+                New Client
+              </primary-button>
+            </inertia-link>
     </template>
 
     <div class="py-6">

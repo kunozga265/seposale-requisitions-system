@@ -1,7 +1,7 @@
 <template>
     <app-layout>
         <template #header>
-            New Quotation
+            New Client
         </template>
 
         <template #breadcrumbs>
@@ -14,7 +14,7 @@
                               clip-rule="evenodd"></path>
                     </svg>
                     <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Quotations
+                        Clients
                     </span>
                 </div>
             </li>
@@ -26,7 +26,7 @@
                     <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
-                                Customer Details
+                                Details
                             </div>
                         </div>
                         <div class="page-section-content flex justify-center">
@@ -35,57 +35,7 @@
 
                                 <jet-validation-errors class="mb-4"/>
 
-                                <div class="flex items-center mb-4">
-                                    <input id="default-radio-1" type="radio" value="existing" v-model="checkClient"
-                                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="default-radio-1"
-                                           class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Existing</label>
-
-                                    <input checked id="default-radio-2" type="radio" value="new" v-model="checkClient"
-                                           class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="default-radio-2"
-                                           class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">New</label>
-                                </div>
-                                <div v-if="checkClient === 'existing'">
-
-                                    <div class="p-2 mb-2">
-                                        <jet-label for="clientIndex" value="Client"/>
-                                        <select v-model="clientIndex" id="clientIndex"
-                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                                required>
-                                            <option value="-1">Select Client</option>
-                                            <option
-                                                v-for="(client,index) in clients.data"
-                                                :value="index"
-                                                :key="index"
-                                            >
-                                                {{ client.name }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div v-if="client != null" class="grid grid-cols-1 md:grid-cols-2">
-                                        <div class="p-2 mb-2">
-                                            <jet-label for="phoneNumber" value="Phone Number"/>
-                                            <jet-input id="phoneNumber" type="text" class="block w-full"
-                                                       v-model="client.phoneNumber"
-                                                       autocomplete="seposale-customer-phone-number" disabled/>
-                                        </div>
-                                        <div class="p-2 mb-2">
-                                            <jet-label for="email" value="Email"/>
-                                            <jet-input id="email" type="email" class="block w-full"
-                                                       v-model="client.email"
-                                                       autocomplete="seposale-customer-email" disabled/>
-                                        </div>
-                                        <div class="p-2 mb-2 md:col-span-2">
-                                            <jet-label for="address" value="Address"/>
-                                            <jet-input id="address" type="text" class="block w-full"
-                                                       v-model="client.address"
-                                                       autocomplete="seposale-customer-address" disabled/>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div v-else class="grid grid-cols-1 md:grid-cols-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2">
 
                                     <div class="p-2 mb-2 md:col-span-2">
                                         <jet-label for="name" value="Name"/>
@@ -115,161 +65,6 @@
 
 
                                 </div>
-
-                                <div class="p-2 mb-2">
-                                    <jet-label for="location" value="Site Location"/>
-                                    <jet-input id="location" type="text" class="block w-full"
-                                               v-model="form.location"
-                                               autocomplete="seposale-location"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Products and Services
-                            </div>
-                        </div>
-                        <div class="page-section-content flex justify-center">
-
-                            <div class="card w-full sm:max-w-md md:max-w-3xl">
-
-                                <div class="p-2 mb-2 relative overflow-x-auto">
-                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                        <thead
-                                            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                        <tr>
-                                            <th scope="col" class="heading-font">
-
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Details
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Units
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Quantity
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Unit Cost
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Total Cost
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                                            v-for="(info, index) in form.information" :key="index">
-                                            <th scope="row" class="px-2">
-                                                <i @click="removeRecord(index)"
-                                                   class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor"></i>
-                                            </th>
-                                            <th scope="row"
-                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                <jet-input type="text" class="block w-full" v-model="info.details"/>
-                                            </th>
-                                            <td class="py-2 pr-1">
-                                                <jet-input type="text" class="block w-full" v-model="info.units"/>
-                                            </td>
-                                            <td class="py-2 pr-1">
-<!--                                                <money-->
-<!--                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"-->
-<!--                                                    v-bind="moneyMaskOptions" v-model="info.quantity"/>-->
-                                                                        <jet-input type="text" class="block w-full" v-model="info.quantity"/>
-                                            </td>
-                                            <td class="py-2 pr-1">
-                                                <jet-input type="text" class="block w-full" v-model="info.unitCost"/>
-                                            </td>
-                                            <td class="py-2 pr-1">
-                                                <div
-                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                                                    {{ numberWithCommas((info.quantity * info.unitCost).toFixed(2)) }}
-                                                </div>
-                                                <!--                                                <jet-input type="text" class="block w-full" v-model="info.totalCost" value="23" />-->
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="mt-2 ml-2 flex justify-start items-center">
-                                        <div @click="addRecord" class="flex justify-start items-center cursor">
-                                            <div>
-                                                <i class="mdi mdi-plus-circle text-blue-600"></i>
-                                            </div>
-                                            <div class="ml-2 text-blue-600 text-sm">
-                                                Add Blank
-                                            </div>
-                                        </div>
-                                        <div @click="addRecordDialog = true"
-                                             class="ml-3 flex justify-start items-center cursor">
-                                            <div>
-                                                <i class="mdi mdi-plus-circle text-blue-600"></i>
-                                            </div>
-                                            <div class="ml-2 text-blue-600 text-sm">
-                                                Add Product
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div v-if="isNaN(totalCost)"
-                                             class="text-red-600 uppercase font-semibold heading-font">
-                                            Enter valid total cost
-                                        </div>
-                                        <div v-else class="flex justify-center items-center ">
-                                            <div class="currency ">MK</div>
-                                            <div class="total">{{ numberWithCommas(totalCost) }}</div>
-                                        </div>
-                                        <div class="text-gray-600 text-xs">Total Cost</div>
-                                    </div>
-                                    <!-- <div class="mt-4 text-gray-600 text-sm">
-                                        I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment.
-                                    </div> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Quotes
-                            </div>
-                        </div>
-                        <div class="page-section-content flex justify-center">
-                            <div class="card w-full sm:max-w-md md:max-w-3xl">
-
-                                <div class="mb-4">
-                                    <jet-label for="quote" value="Upload quote"/>
-                                    <input type="file" id="quote" @input="fileUpload($event.target.files[0])"
-                                           class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                                </div>
-
-                                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-                                    <div v-for="(quote, index) in quotes" :key="index">
-                                        <div class="relative" v-if="quote.ext === 'pdf'">
-                                            <i @click="removeQuote(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                                               class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
-                                            <div
-                                                style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                                                class="h-9 w-9 bg-white absolute"></div>
-                                            <pdf class="w-32" :source="fileUrl(quote.file)"/>
-                                        </div>
-                                        <div class="relative" v-else>
-                                            <i @click="removeQuote(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                                               class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
-                                            <div
-                                                style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                                                class="h-9 w-9 bg-white absolute"></div>
-                                            <img class="w-32" :src="fileUrl(quote.file)" alt="Quote Image">
-                                        </div>
-
-
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>
@@ -300,64 +95,6 @@
             </div>
         </div>
 
-        <dialog-modal :show="addRecordDialog" @close="cancelAddRecord">
-            <template #title>
-                Add Product
-            </template>
-
-            <template #content>
-                <!--          <div class="mb-2">-->
-                <!--            Are you sure you want to approve this request?-->
-                <!--          </div>-->
-                <div class="mb-4">
-                    <jet-label for="product" value="Select Product"/>
-                    <select v-model="productIndex" id="product"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            required>
-                        <option value="-1">Blank</option>
-
-                        <option v-for="(product, index) in allProducts" :value="index" :key="index">
-                            {{ product.name }} - {{ product.description }}
-                        </option>
-                    </select>
-                </div>
-
-                <div v-if="productIndex !== -1">
-                    <div class="mb-4">
-                        <jet-label for="units" value="Units"/>
-                        <jet-input type="text" class="block w-full" v-model="addRecordUnits"/>
-                    </div>
-                    <div class="mb-4">
-                        <jet-label for="units" value="Unit Cost"/>
-                        <jet-input type="text" class="block w-full" v-model="addRecordUnitCost"/>
-                    </div>
-                    <div class="mb-4">
-                        <jet-label for="quantity" value="Quantity"/>
-                        <jet-input type="text" class="block w-full" v-model="addRecordQuantity"/>
-                    </div>
-
-                    <div class="mb-4">
-                        <jet-label for="total" value="Total"/>
-                        <div
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                            {{ numberWithCommas(addRecordTotal.toFixed(2)) }}
-                        </div>
-                    </div>
-                </div>
-
-
-            </template>
-
-            <template #footer>
-                <secondary-button @click.native="cancelAddRecord">
-                    Cancel
-                </secondary-button>
-
-                <primary-button class="ml-2" @click.native="addRecord">
-                    Add
-                </primary-button>
-            </template>
-        </dialog-modal>
     </app-layout>
 </template>
 
@@ -400,28 +137,8 @@ export default {
                 phoneNumber: '',
                 email: '',
                 address: '',
-                location: '',
-                information: [
-                    // {
-                    //     "details": '',
-                    //     "units": '',
-                    //     "quantity": 0,
-                    //     "unitCost": 0,
-                    //     "totalCost": 0,
-                    // },
-
-                ],
             }),
-            quotes: [],
             error: '',
-            moneyMaskOptions: {
-                decimal: '.',
-                thousands: ',',
-                prefix: '',
-                suffix: '',
-                precision: 2,
-                masked: false
-            },
         }
     },
     created() {
@@ -429,75 +146,9 @@ export default {
 
     },
     computed: {
-        addRecordTotal() {
-            return this.addRecordUnitCost * this.addRecordQuantity
-        },
-        client() {
-            if (this.clientIndex === -1 || this.clientIndex === '-1')
-                return null
-            else
-                return this.clients.data[this.clientIndex]
-        },
-        allProducts() {
-            let products = [];
-
-            for (let x in this.products.data) {
-                for (let y in this.products.data[x].variants) {
-                    products.push({
-                        "id": this.products.data[x].variants[y].id,
-                        "name": this.products.data[x].name,
-                        "description": this.products.data[x].variants[y].description,
-                        "unit": this.products.data[x].variants[y].unit,
-                        "cost": this.products.data[x].variants[y].cost,
-                        "quantity": this.products.data[x].variants[y].quantity,
-                    })
-                }
-            }
-
-            return products;
-        },
-        product() {
-            return this.allProducts[this.productIndex];
-        },
-        totalCost() {
-            let totalCost = 0
-            let currentTotal = 0
-            for (let x in this.form.information) {
-                currentTotal = parseFloat(this.form.information[x].quantity * this.form.information[x].unitCost)
-                totalCost += currentTotal
-                this.form.information[x].totalCost = parseFloat(currentTotal.toFixed(2))
-
-                //convert to numbers
-                this.form.information[x].quantity = parseFloat(this.form.information[x].quantity)
-                this.form.information[x].unitCost = parseFloat(this.form.information[x].unitCost)
-
-            }
-            return parseFloat(totalCost.toFixed(2))
-        },
-        quoteFiles() {
-            let files = []
-            for (let x in this.quotes)
-                files.push(this.quotes[x].file)
-
-            return files
-        },
         validation() {
-            if (this.checkClient === "new") {
-                if (this.form.name.length === 0) {
-                    this.error = "Enter customer name"
-                    return false
-                }
-            } else {
-                if (parseInt(this.clientIndex) < 0 || this.client == null) {
-                    this.error = "Select client"
-                    return false
-                }
-            }
-            if (isNaN(this.totalCost)) {
-                this.error = "Enter valid product and services details"
-                return false
-            } else if (this.totalCost <= 0) {
-                this.error = "Enter products and services"
+            if (this.form.name.length === 0) {
+                this.error = "Enter customer name"
                 return false
             } else
                 return true
@@ -505,20 +156,7 @@ export default {
         },
     },
     watch: {
-        checkClient() {
-            this.clientIndex = -1
-        },
-        productIndex() {
-            if (this.productIndex === -1 || this.productIndex === "-1") {
-                this.addRecordUnits = ""
-                this.addRecordQuantity = 0
-                this.addRecordUnitCost = 0
-            } else {
-                this.addRecordUnits = this.product.unit
-                this.addRecordQuantity = this.product.quantity
-                this.addRecordUnitCost = this.product.cost / this.product.quantity
-            }
-        }
+
     },
     methods: {
         submit() {
@@ -529,70 +167,7 @@ export default {
                     quotes: this.quoteFiles,
                     client_id: this.client == null ? null : this.client.id
                 }))
-                .post(this.route('quotations.store'))
-        },
-        addRecord() {
-
-            if (parseInt(this.productIndex) < 0) {
-                this.form.information.push({
-                    "id": 0,
-                    "details": '',
-                    "units": '',
-                    "quantity": 0,
-                    "unitCost": 0,
-                    "totalCost": 0,
-                })
-            } else {
-                const product = this.allProducts[this.productIndex]
-                const name = this.product.description == null || this.product.description === "" ? product.name : product.name + " - " + product.description
-                this.form.information.push({
-                    "id": product.id,
-                    "details": name,
-                    "units": this.addRecordUnits,
-                    "quantity": this.addRecordQuantity,
-                    "unitCost": this.addRecordUnitCost,
-                    "totalCost": this.addRecordTotal,
-                })
-            }
-
-            this.productIndex = -1
-            this.addRecordDialog = false
-
-        },
-        cancelAddRecord() {
-            this.productIndex = -1
-            this.addRecordDialog = false
-        },
-        removeRecord(index) {
-            this.form.information.splice(index, 1)
-        },
-        fileUpload(file) {
-            const reader = new FileReader();
-            if (file) {
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
-                        type: "QUOTE",
-                        file: e.target.result
-                    }).then(res => {
-                        this.quotes.push({
-                            'file': res.data.file,
-                            'ext': res.data.ext,
-                        })
-                        document.getElementById('quote').value = ""
-                    }).catch(function (res) {
-                        // this.form.errors.push(res.data.message)
-                    })
-                };
-            }
-        },
-        removeQuote(index) {
-            const file = this.quotes[index].file
-            //delete online
-            axios.post(this.$page.props.publicPath + "api/1.0.0/upload/delete", {
-                'file': file
-            })
-            this.quotes.splice(index, 1)
+                .post(this.route('clients.store'))
         },
     }
 
