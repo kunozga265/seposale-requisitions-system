@@ -124,6 +124,8 @@
             </div>
         </div>
         <div style="font-size: 25px; font-weight: bold; margin-top:12px">Invoice: <span style="color:red; font-size: 25px; font-weight: bold; ">#{{$code}}</span></div>
+        <div>Sale Order #: LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($invoice->sale->code_alt)}}</div>
+
 
     </div>
 
@@ -141,11 +143,15 @@
             <td class="b-0 spacer"></td>
         </tr>
         <tr>
+            @if(isset($invoice->client->phone_number))
             <td class="b-0 font-bold">Phone Number</td>
             <td class="b-0 shade">{{$invoice->client->phone_number}}</td>
 
+            @endif
+            @if(isset($invoice->client->email))
             <td class="b-0 font-bold">Email</td>
             <td class="b-0 shade" style="text-transform: lowercase">{{$invoice->client->email}}</td>
+                @endif
         </tr>
         <tr>
             <td class="b-0 spacer"></td>
@@ -156,8 +162,10 @@
         </tr>
 
         <tr>
+            @if(isset($invoice->client->address))
             <td class="b-0 font-bold">Address</td>
             <td class="b-0 shade">{{$invoice->client->address}}</td>
+            @endif
             <td class="b-0 font-bold">Site Location</td>
             <td class="b-0 shade">{{$invoice->sale->location}}</td>
         </tr>

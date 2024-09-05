@@ -141,11 +141,16 @@
             <td class="b-0 spacer"></td>
         </tr>
         <tr>
+            @if(isset($quotation->client->phone_number))
             <td class="b-0 font-bold">Phone Number</td>
             <td class="b-0 shade">{{$quotation->client->phone_number}}</td>
 
+            @endif
+            @if(isset($quotation->client->email))
+
             <td class="b-0 font-bold">Email</td>
             <td class="b-0 shade" style="text-transform: lowercase">{{$quotation->client->email}}</td>
+                @endif
         </tr>
         <tr>
             <td class="b-0 spacer"></td>
@@ -156,8 +161,10 @@
         </tr>
 
         <tr>
+            @if(isset($quotation->client->address))
             <td class="b-0 font-bold">Address</td>
             <td class="b-0 shade">{{$quotation->client->address}}</td>
+            @endif
             <td class="b-0 font-bold">Location</td>
             <td class="b-0 shade">{{$quotation->location}}</td>
         </tr>
