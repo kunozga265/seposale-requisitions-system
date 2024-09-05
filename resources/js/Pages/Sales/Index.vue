@@ -29,6 +29,37 @@
       </inertia-link>
     </template>
 
+      <div class="mx-9 flex">
+          <a :href="route('sales.index',{filter:'all'})">
+              <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'info':headline==='all'}">
+                  <div>All</div>
+                  <i v-show="headline === 'all' || headline == null"
+                     class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+              </div>
+          </a>
+          <a :href="route('sales.index',{filter:'unpaid'})">
+              <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold" :class="{'error':headline==='unpaid'}">
+                  <div>Unpaid</div>
+                  <i  v-show="headline === 'unpaid'"
+                      class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+              </div>
+          </a>
+          <a :href="route('sales.index',{filter:'partially-paid'})">
+              <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'warning':headline==='partially-paid'}">
+                  <div>Partially Paid</div>
+                  <i v-show="headline === 'partially-paid'"
+                     class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+              </div>
+          </a>
+          <a :href="route('sales.index',{filter:'fully-paid'})">
+              <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'success':headline==='fully-paid'}">
+                  <div>Fully Paid</div>
+                  <i v-show="headline === 'fully-paid'"
+                     class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+              </div>
+          </a>
+      </div>
+
     <div class="py-6">
       <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
@@ -156,6 +187,7 @@ import SaleStatus from "@/Components/SaleStatus.vue";
 export default {
   props: [
     'sales',
+    'headline',
   ],
   components: {
     SaleStatus,

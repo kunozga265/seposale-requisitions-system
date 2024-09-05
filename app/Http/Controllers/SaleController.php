@@ -30,7 +30,20 @@ class SaleController extends Controller
 {
     public function index(Request $request)
     {
-        $sales = Sale::orderBy("date", "desc")->paginate(100);
+        $filter = strtolower($request->query("filter"));
+        if($filter == "unpaid"){
+            $sales = Sale::where("status", 0)->orderBy("date","desc")->paginate(100);
+            $headline = "unpaid";
+        }else if ($filter == "partially-paid"){
+            $sales = Sale::where("status", 1)->orderBy("date","desc")->paginate(100);
+            $headline = "partially-paid";
+        }else if ($filter == "fully-paid"){
+            $sales = Sale::where("status", 2)->orderBy("date","desc")->paginate(100);
+            $headline = "fully-paid";
+        }else{
+            $sales = Sale::orderBy("date", "desc")->paginate(100);
+            $headline = "all";
+        }
 
 
         if ((new AppController())->isApi($request))
@@ -40,6 +53,7 @@ class SaleController extends Controller
             //Web Response
             return Inertia::render('Sales/Index', [
                 'sales' => SaleResource::collection($sales),
+                'headline'=>$headline
             ]);
         }
     }

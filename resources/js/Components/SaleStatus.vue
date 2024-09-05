@@ -28,7 +28,7 @@ export default {
         getStatusClass(){
             switch (this.sale.status){
                 case 0:
-                    return "approval-pending";
+                    return "denied";
                 case 1:
                     return "approval-pending";
                 case 2:
@@ -46,7 +46,7 @@ export default {
         getStatusMessage(){
             switch (this.sale.status){
                 case 0:
-                  return "Awaiting Payment";
+                  return "Unpaid";
                 case 1:
                     return "Partially Paid";
                 case 2:
