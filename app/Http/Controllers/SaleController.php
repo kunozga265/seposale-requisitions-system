@@ -28,7 +28,7 @@ use Rmunate\Utilities\SpellNumber;
 
 class SaleController extends Controller
 {
-    private $paginate = 5;
+    private $paginate = 100;
 
     public function index(Request $request)
     {
