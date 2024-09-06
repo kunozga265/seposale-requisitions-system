@@ -384,7 +384,7 @@ header h2{
     color:rgba(63, 131, 248, var(--tw-text-opacity))
 }
 
-.warning, .success, .error, .info{
+.warning, .success, .error, .info, .discarded{
     border-radius: 9999px;
 }
 

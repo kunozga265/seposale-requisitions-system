@@ -58,6 +58,13 @@
                      class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
               </div>
           </a>
+          <a :href="route('sales.index',{filter:'discarded'})">
+              <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'discarded':headline==='discarded'}">
+                  <div>Discarded</div>
+                  <i v-show="headline === 'discarded'"
+                     class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+              </div>
+          </a>
       </div>
 
     <div class="py-6">
@@ -197,7 +204,18 @@ export default {
   data() {
     return {}
   },
-  methods: {
+    created() {
+        this.sales.links.first = this.sales.links.first + "&filter="+ this.headline
+        this.sales.links.last = this.sales.links.last + "&filter="+ this.headline
+
+        if(this.sales.links.prev != null) {
+            this.sales.links.prev = this.sales.links.prev + "&filter=" + this.headline
+        }
+        if(this.sales.links.next != null) {
+            this.sales.links.next = this.sales.links.next + "&filter=" + this.headline
+        }
+    },
+    methods: {
     navigateToInvoice(id) {
       console.log(id)
       // this.route("invoices.show",{id:id})

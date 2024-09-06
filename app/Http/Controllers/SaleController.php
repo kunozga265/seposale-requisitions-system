@@ -28,20 +28,25 @@ use Rmunate\Utilities\SpellNumber;
 
 class SaleController extends Controller
 {
+    private $paginate = 5;
+
     public function index(Request $request)
     {
         $filter = strtolower($request->query("filter"));
         if($filter == "unpaid"){
-            $sales = Sale::where("status", 0)->orderBy("date","desc")->paginate(100);
+            $sales = Sale::where("status", 0)->orderBy("date","desc")->paginate($this->paginate);
             $headline = "unpaid";
         }else if ($filter == "partially-paid"){
-            $sales = Sale::where("status", 1)->orderBy("date","desc")->paginate(100);
+            $sales = Sale::where("status", 1)->orderBy("date","desc")->paginate($this->paginate);
             $headline = "partially-paid";
         }else if ($filter == "fully-paid"){
-            $sales = Sale::where("status", 2)->orderBy("date","desc")->paginate(100);
+            $sales = Sale::where("status", 2)->orderBy("date","desc")->paginate($this->paginate);
             $headline = "fully-paid";
+        }else if ($filter == "discarded"){
+            $sales = Sale::onlyTrashed()->paginate($this->paginate);
+            $headline = "discarded";
         }else{
-            $sales = Sale::orderBy("date", "desc")->paginate(100);
+            $sales = Sale::orderBy("date", "desc")->paginate($this->paginate);
             $headline = "all";
         }
 
