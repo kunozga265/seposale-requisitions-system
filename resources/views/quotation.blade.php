@@ -173,6 +173,20 @@
             <td class="b-0 spacer"></td>
         </tr>
         <tr>
+            @if(isset($quotation->recipient_name))
+            <td class="b-0 font-bold">Contact Name</td>
+            <td class="b-0 shade">{{$quotation->recipient_name}}</td>
+            @endif
+            @if(isset($quotation->recipient_phone_number))
+            <td class="b-0 font-bold">Contact Number</td>
+            <td class="b-0 shade">{{$quotation->recipient_phone_number}}</td>
+            @endif
+        </tr>
+        <tr>
+            <td class="b-0 spacer"></td>
+            <td class="b-0 spacer"></td>
+        </tr>
+        <tr>
 
         </tr>
 

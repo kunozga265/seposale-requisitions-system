@@ -402,6 +402,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.delete');
 
+        Route::post('/close/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@close",
+            'roles' =>['employee','management']
+        ])->name('sales.close');
+
         Route::post('/receipt/{id}', [
             "uses"  => "App\Http\Controllers\SaleController@storeReceipt",
             'roles' =>['employee','management']

@@ -51,7 +51,7 @@
             text-align: left;
         }
 
-        .services td, .services th{
+        .services td, .services th {
             padding: 6px 6px;
             /*font-size: 11px;*/
             text-transform: capitalize;
@@ -118,15 +118,15 @@
             font-weight: bolder;
         }
 
-        .details td{
+        .details td {
             vertical-align: top;
         }
 
-        .details{
+        .details {
             margin-bottom: 20px;
         }
 
-        .details td{
+        .details td {
             border: none;
         }
 
@@ -140,16 +140,16 @@
     <div style="margin: 30px 0 20px">
         <div style="float: right">
             <div
-                style="font-size: 11px; margin: 12px 0 16px 0; border: 1px solid black; padding: 10px 35px; text-transform: uppercase">
+                    style="font-size: 11px; margin: 12px 0 16px 0; border: 1px solid black; padding: 10px 35px; text-transform: uppercase">
                 {{$date}}
             </div>
 
-{{--            <div>Ref No: {{$code}}</div>--}}
-{{--            <div style="margin-top: 16px">{{$date}}</div>--}}
+            {{--            <div>Ref No: {{$code}}</div>--}}
+            {{--            <div style="margin-top: 16px">{{$date}}</div>--}}
         </div>
         <div style="font-size: 28px; font-weight: bold; margin-top:12px">Sales Order:
             <span
-                style="color:red; font-size: 25px; font-weight: bold; ">#{{$code}}</span>
+                    style="color:red; font-size: 25px; font-weight: bold; ">#{{$code}}</span>
         </div>
 
     </div>
@@ -190,23 +190,49 @@
                     @endif
                 </table>
             </td>
-            @if(isset($sale->location))
             <td class="b-0">
                 <table>
-{{--                    <tr>--}}
-{{--                        <td colspan="2">--}}
-{{--                            <span class="heading" style="margin-bottom: 0">Order Details</span>--}}
-{{--                        </td>--}}
-{{--                    </tr>--}}
-{{--                   --}}
-{{--                    <tr><td class="spacer"></td></tr>--}}
-                    <tr><td style="text-align: right"><span class="heading" style="margin-bottom: 0; ">Deliver To</span></td></tr>
-                    <tr><td style="text-align: right">
-                            {{$sale->location}}
-                        </td></tr>
+                    {{--                    <tr>--}}
+                    {{--                        <td colspan="2">--}}
+                    {{--                            <span class="heading" style="margin-bottom: 0">Order Details</span>--}}
+                    {{--                        </td>--}}
+                    {{--                    </tr>--}}
+                    {{--                   --}}
+                    {{--                    <tr><td class="spacer"></td></tr>--}}
+                    <tr>
+                        <td style="text-align: right"><span class="heading"
+                                                            style="margin-bottom: 0; ">Delivery Details</span></td>
+                    </tr>
+                    @if(isset($sale->recipient_name))
+                        <tr>
+                            <td style="text-align: right">
+                                {{$sale->recipient_name}}
+                            </td>
+                        </tr>
+                    @endif
+                    @if(isset($sale->recipient_profession))
+                        <tr>
+                            <td style="text-align: right">
+                                {{$sale->recipient_profession}}
+                            </td>
+                        </tr>
+                    @endif
+                    @if(isset($sale->recipient_phone_number))
+                        <tr>
+                            <td style="text-align: right">
+                                {{$sale->recipient_phone_number}}
+                            </td>
+                        </tr>
+                    @endif
+                    @if(isset($sale->location))
+                        <tr>
+                            <td style="text-align: right">
+                                {{$sale->location}}
+                            </td>
+                        </tr>
+                    @endif
                 </table>
             </td>
-            @endif
         </tr>
     </table>
 

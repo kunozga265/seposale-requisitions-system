@@ -66,7 +66,7 @@
         <div class="py-6">
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
-                <div class="grid grid-cols-1">
+                <div class="">
                     <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
@@ -96,9 +96,34 @@
                                     <div class="text-gray-600 font-semibold">Address</div>
                                     <div>{{quotation.data.client.address}}</div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Site Details
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+
+                            <div class="card p-0">
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Location</div>
                                     <div>{{quotation.data.location}}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Recipient Name</div>
+                                    <div>{{quotation.data.recipientName}}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Recipient Profession</div>
+                                    <div>{{quotation.data.recipientProfession}}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Recipient Phone Number</div>
+                                    <div>{{quotation.data.recipientPhoneNumber}}</div>
                                 </div>
                             </div>
                         </div>

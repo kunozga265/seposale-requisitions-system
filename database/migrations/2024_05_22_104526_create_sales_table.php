@@ -25,6 +25,9 @@ class CreateSalesTable extends Migration
             $table->boolean("editable");
             $table->json("comments")->nullable();
             $table->string("location")->nullable();
+            $table->string("recipient_name")->nullable();
+            $table->string("recipient_profession")->nullable();
+            $table->string("recipient_phone_number")->nullable();
             $table->integer("user_id");
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();

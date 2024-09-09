@@ -108,6 +108,9 @@ class QuotationController extends Controller
             //Customer Details
             'client_id' => $client->id,
             'location' => $request->location,
+            'recipient_name' => $request->recipient_name,
+            'recipient_profession' => $request->recipient_profession,
+            'recipient_phone_number' => $request->recipient_phone_number,
 
             'information' => json_encode($request->information),
             'total' => $request->total,
@@ -223,6 +226,9 @@ class QuotationController extends Controller
                 //Customer Details
                 'client_id' => $client->id,
                 'location' => $request->location,
+                'recipient_name' => $request->recipient_name,
+                'recipient_profession' => $request->recipient_profession,
+                'recipient_phone_number' => $request->recipient_phone_number,
 
                 'information' => json_encode($request->information),
                 'total' => $request->total,

@@ -126,13 +126,6 @@
 
                                 </div>
 
-                                <div class="p-2 mb-2">
-                                    <jet-label for="location" value="Site Location"/>
-                                    <jet-input id="location" type="text" class="block w-full"
-                                               v-model="form.location"
-                                               autocomplete="seposale-location"/>
-                                </div>
-
                                 <div class="mb-4">
 <!--                                    <jet-label for="lastRefillDate" value="Backdate" />-->
                                     <div class="flex items-center mb-2">
@@ -153,7 +146,48 @@
                         </div>
                     </div>
 
-                    <div class="page-section">
+
+                  <div class="page-section">
+                    <div class="page-section-header">
+                      <div class="page-section-title">
+                        Site Details
+                      </div>
+                    </div>
+                    <div class="page-section-content flex justify-center">
+
+                      <div class="card w-full sm:max-w-md md:max-w-3xl">
+                        <div class="grid grid-cols-1 md:grid-cols-2">
+                          <div class="p-2 mb-2">
+                            <jet-label for="location" value="Location"/>
+                            <jet-input id="location" type="text" class="block w-full"
+                                       v-model="form.location"
+                                       autocomplete="seposale-location"/>
+                          </div>
+                          <div class="p-2 mb-2">
+                            <jet-label for="recipientName" value="Recipient Name"/>
+                            <jet-input id="recipientName" type="text" class="block w-full"
+                                       v-model="form.recipientName"
+                                       autocomplete="seposale-recipient-name"/>
+                          </div>
+                          <div class="p-2 mb-2">
+                            <jet-label for="recipientProfession" value="Recipient Profession"/>
+                            <jet-input id="recipientProfession" type="text" class="block w-full"
+                                       v-model="form.recipientProfession"
+                                       autocomplete="seposale-recipient-profession"/>
+                          </div>
+                          <div class="p-2 mb-2">
+                            <jet-label for="recipientPhoneNumber" value="Recipient Phone Number"/>
+                            <jet-input id="recipientPhoneNumber" type="text" class="block w-full"
+                                       v-model="form.recipientPhoneNumber"
+                                       autocomplete="seposale-recipient-phone-number"/>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Products and Services
@@ -389,6 +423,9 @@ export default {
                 email: '',
                 address: '',
                 location: '',
+              recipientName: '',
+              recipientProfession: '',
+              recipientPhoneNumber: '',
                 information: [
 
                 ],
@@ -520,7 +557,10 @@ export default {
                     quotes: this.quoteFiles,
                     products:this.form.information,
                     date:this.saleDate,
-                    client_id:this.client == null ? null : this.client.id
+                    client_id:this.client == null ? null : this.client.id,
+                  recipient_name: this.form.recipientName,
+                  recipient_profession: this.form.recipientProfession,
+                  recipient_phone_number: this.form.recipientPhoneNumber,
                 }))
                 .post(this.route('sales.store'))
         },

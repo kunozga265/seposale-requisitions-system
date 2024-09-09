@@ -20,7 +20,9 @@ class CreateQuotationsTable extends Migration
             $table->integer("code");
             $table->integer("client_id");
             $table->string("location")->nullable();
-
+            $table->string("recipient_name")->nullable();
+            $table->string("recipient_profession")->nullable();
+            $table->string("recipient_phone_number")->nullable();
             $table->json("information");
             $table->double("total");
             $table->json("quotes")->nullable();

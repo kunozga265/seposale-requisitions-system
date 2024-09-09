@@ -41,7 +41,7 @@ class Sale extends Model
         return $this->hasOne(Quotation::class);
     }
 
-    protected $fillable=[
+    protected $fillable = [
         "code",
         "code_alt",
         "status",
@@ -52,6 +52,9 @@ class Sale extends Model
         "editable",
         "comments",
         "location",
+        "recipient_name",
+        "recipient_profession",
+        "recipient_phone_number",
         "user_id",
     ];
 }
