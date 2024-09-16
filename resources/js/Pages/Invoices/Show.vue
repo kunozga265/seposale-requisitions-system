@@ -129,19 +129,19 @@
                                         {{ invoice.data.sale.client.name }}
                                         </span>
                                     </div>
-                                  <div v-show="invoice.data.client.phone_number != null" class="mb-4">
+                                  <div v-show="invoice.data.sale.client.phone_number != null" class="mb-4">
                                     <div class="text-sm text-gray-600">Phone Number</div>
                                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
                                         {{ invoice.data.sale.client.phone_number }}
                                         </span>
                                   </div>
-                                  <div v-show="invoice.data.client.email != null" class="mb-4">
+                                  <div v-show="invoice.data.sale.client.email != null" class="mb-4">
                                     <div class="text-sm text-gray-600">Email</div>
                                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
                                          {{ invoice.data.sale.client.email }}
                                         </span>
                                   </div>
-                                  <div v-show="invoice.data.client.address != null" class="mb-4">
+                                  <div v-show="invoice.data.sale.client.address != null" class="mb-4">
                                     <div class="text-sm text-gray-600">Address</div>
                                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
                                         {{ invoice.data.sale.client.address }}
