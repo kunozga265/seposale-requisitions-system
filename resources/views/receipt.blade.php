@@ -37,15 +37,18 @@
         }
 
         table{
-            margin: 12px 0;
-            /*width: 100%;*/
+            /*margin: 12px 0;*/
+            width: 100%;
             border-collapse: collapse;
             font-size: 14px;
+            /*text-align: right;*/
+            vertical-align: top;
         }
         td,th{
             border: 1px solid;
             /*padding: 14px 6px;*/
             text-align: left;
+            vertical-align: top;
         }
 
         .heading{
@@ -57,67 +60,34 @@
 
         }
 
-        .grid{
-            display: flex;
-            justify-content: space-between;
-            /*grid-template-columns:repeat(2,minmax(0,1fr))*/
-        }
-
-        /*    .grid > div{
-                width: 50%;
-            }*/
-
-        .section{
-            width: 340px;
-        }
-
-        .flex{
-            display: flex;
-        }
-
-        .justify-between{
-            justify-content: space-between;
-        }
-
-        td.spacer{
-            padding: 8px;
-        }
-
-        td.shade{
-            background-color: #f2f2f2;
-            /*font-size: 10px;*/
-            /*text-transform: none;*/
-            min-width: 150px;
-        }
-
-        th.shade{
-            background-color: rgb(217, 217, 217);
-
-        }
 
         .b-0{
             border: none;
+
         }
 
-        .bt-1{
-            border-top: 1px solid black;
-        }
-
-        .font-bold{
-            font-weight: bold;
-        }
-
-        .font-bolder{
-            font-weight: bolder;
+        tr td:first-child{
+            text-align: left;
+            /*width: 250px;*/
+            /*background-color: chocolate;*/
         }
 
         .text-center{
             text-align: center;
         }
 
-        tr td:first-child{
-            width: 150px;
-            /*background-color: chocolate;*/
+        table.details{
+            /*background-color: #fafafa;*/
+            margin-bottom: 24px;
+        }
+
+        #products{
+            width: 100%;
+            margin-bottom: 48px;
+        }
+
+        #products td{
+            width: 50%;
         }
 
 
@@ -139,53 +109,93 @@
 
     {{--<div style="text-align: center; font-size: 16px; font-weight: normal">Code: {{$receipt->code}}</div>--}}
 
-
+<table >
+    <tr>
+        <td class="b-0">
+            <table class="details">
+                <tr >
+                    <td class="b-0" colspan="2">
+                        <div class="heading">Customer Details</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="b-0">Name:</td>
+                    <td class="b-0">{{$receipt->client->name}}</td>
+                </tr>
+                <tr>
+                    <td class="b-0">Phone Number:</td>
+                    <td class="b-0">{{$receipt->client->phone_number}}</td>
+                </tr>
+                @if(isset($receipt->client->email))
+                    <tr>
+                        <td class="b-0">Email:</td>
+                        <td class="b-0">{{$receipt->client->email}}</td>
+                    </tr>
+                @endif
+                @if(isset($receipt->client->address))
+                    <tr>
+                        <td class="b-0">Address:</td>
+                        <td class="b-0">{{$receipt->client->address}}</td>
+                    </tr>
+                    <tr>
+                        <td class="b-0"></td>
+                    </tr>
+                @endif
+            </table>
+        </td>
+        <td class="b-0">
+            <table class="details">
+                <tr >
+                    <td class="b-0" colspan="2">
+                        <div class="heading">Payment Details</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="b-0">Sales Order:</td>
+                    <td class="b-0">LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code_alt)}}
+                        {{--                ({{$receipt->sale->code}})--}}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="b-0">Method of Payment:</td>
+                    <td class="b-0">{{$receipt->paymentMethod->name}}</td>
+                </tr>
+                @if($receipt->reference != "")
+                    <tr>
+                        <td class="b-0">Reference:</td>
+                        <td class="b-0">{{$receipt->reference}}</td>
+                    </tr>
+                @endif
+            </table>
+        </td>
+    </tr>
+</table>
     <table>
+
+
+
+    </table>
+
+    @if(isset($receipt->information))
+    <table id="products">
+{{--        <tr>--}}
+{{--            <th>Product</th>--}}
+{{--            <th>Amount</th>--}}
+{{--        </tr>--}}
         <tr >
             <td class="b-0" colspan="2">
-                <p class="heading">Customer Details</p>
+                <p class="heading">Products and Services</p>
             </td>
-        </tr>
-        <tr>
-            <td class="b-0">Name:</td>
-            <td class="b-0">{{$receipt->client->name}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Phone Number:</td>
-            <td class="b-0">{{$receipt->client->phone_number}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Email:</td>
-            <td class="b-0">{{$receipt->client->email}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Address:</td>
-            <td class="b-0">{{$receipt->client->address}}</td>
-        </tr>
-        <tr>
-            <td class="b-0"></td>
         </tr>
 
-        <tr >
-            <td class="b-0" colspan="2">
-                <p class="heading">Payment Details</p>
-            </td>
-        </tr>
-        <tr>
-            <td class="b-0">Sales Order:</td>
-            <td class="b-0">{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code)}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Method of Payment:</td>
-            <td class="b-0">{{$receipt->paymentMethod->name}}</td>
-        </tr>
-        @if($receipt->reference != "")
-            <tr>
-                <td class="b-0">Reference:</td>
-                <td class="b-0">{{$receipt->reference}}</td>
+        @foreach(json_decode($receipt->information) as $info)
+            <tr style="border-bottom: 1px solid black">
+                <td class="b-0">{{$info->name}}</td>
+                <td class="b-0">MK {{number_format($info->amount,2)}}</td>
             </tr>
-        @endif
+        @endforeach
     </table>
+    @endif
 
     <div class="text-center">
         <div>Amount Received:</div>

@@ -26,7 +26,11 @@ Vue.mixin({
             }
         },
         productName(productCompound){
-            return productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
+            if(productCompound.variant == null){
+                return productCompound.description
+            }else {
+                return productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
+            }
         },
         getDeliveryStatusMessage(status){
             switch (parseInt(status)){

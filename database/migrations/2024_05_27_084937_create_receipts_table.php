@@ -23,6 +23,7 @@ class CreateReceiptsTable extends Migration
             $table->double("amount");
             $table->double("date");
             $table->string("reference")->nullable();
+            $table->json("information")->nullable();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

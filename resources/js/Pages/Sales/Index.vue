@@ -107,7 +107,7 @@
                       </div>
                     </div>
                     <div>
-                      <sale-status :sale="sale"/>
+                      <sale-status :status="sale.status"/>
                     </div>
                   </div>
                 </inertia-link>

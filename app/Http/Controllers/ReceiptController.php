@@ -5,9 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
 use App\Models\Receipt;
+use App\Models\Sale;
+use App\Models\Summary;
+use App\Models\SystemLog;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rmunate\Utilities\SpellNumber;
@@ -57,6 +61,100 @@ class ReceiptController extends Controller
         }
     }
 
+    public function store(Request $request, $id)
+    {
+        //get user
+        $user = (new AppController())->getAuthUser($request);
+
+        $sale = sale::find($id);
+
+        if (is_object($sale)) {
+
+            //Validate all the important attributes
+            $request->validate([
+                'payment_method_id' => ['required'],
+                'information' => ['required'],
+            ]);
+
+            //Checking
+            $total = 0;
+            $filteredProducts=[];
+            foreach ($request->information as $item){
+                $amount = $item["amount"];
+                $total += $amount;
+
+                $summary = Summary::findOrFail($item["id"]);
+                if(isset($summary->balance)) {
+                    $balance = $summary->balance - $amount;
+                    if ($balance < 0) {
+                        return Redirect::back()->with("error", "Payment is more than what is required");
+                    }
+                }
+                if($amount > 0){
+                    $filteredProducts[] = $item;
+                }
+            }
+
+            $new_balance = $sale->balance - $total;
+            if ($new_balance < 0) {
+                return Redirect::back()->with("error", "Payment is more than what is required");
+            }else if ($total <= 0){
+                return Redirect::back()->with("error", "Receipt amount is zero");
+            }
+
+            //Updating data
+            foreach ($filteredProducts as $item){
+                $amount = $item["amount"];
+                $summary = Summary::find($item["id"]);
+                if(isset($summary->balance)) {
+                    $balance = $summary->balance - $amount;
+                    $summary->update([
+                        "balance" => $balance
+                    ]);
+                }
+            }
+
+            $receipt = Receipt::create([
+                'code' => $this->getCodeReceiptNumber(),
+                'client_id' => $sale->client->id,
+                'sale_id' => $sale->id,
+                'payment_method_id' => $request->payment_method_id,
+                'amount' => $total,
+                'reference' => strtoupper($request->reference),
+                'information' => json_encode($filteredProducts),
+                'user_id' => $user->id,
+                'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+            ]);
+
+            $sale->update([
+                "balance" => $new_balance,
+                "editable" => false,
+                "status" => $new_balance == 0 ? 2 : 1
+            ]);
+
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Receipt #{$receipt->code} created for {$sale->client->name} under Sale #{$sale->code_alt}. Total amount received is {$receipt
+        ->amount}",
+                "sale_id" => $sale->id,
+            ]);
+
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json($receipt, 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('success', 'Receipt generated!');
+            }
+        } else {
+            return Redirect::back()->with('error', 'Sale not found');
+        }
+
+
+    }
+
     public function print(Request $request,$id)
     {
         //find out if the request is valid
@@ -101,6 +199,19 @@ class ReceiptController extends Controller
                 //Web Response
                 return Redirect::route('dashboard')->with('error','Invoice not found');
             }
+        }
+
+
+    }
+
+
+    private function getCodeReceiptNumber()
+    {
+        $last = Receipt::orderBy("code", "desc")->first();
+        if (is_object($last)) {
+            return $last->code + 1;
+        } else {
+            return 1;
         }
     }
 }

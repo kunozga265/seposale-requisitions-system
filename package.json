@@ -34,6 +34,7 @@
         "v-money": "^0.8.1",
         "vue-chartjs": "^4.1.1",
         "vue-ctk-date-time-picker": "^2.5.0",
-        "vue-pdf-embed": "^1.1.4"
+        "vue-pdf-embed": "^1.1.4",
+        "vue2-datatable-component": "^2.3.1"
     }
 }

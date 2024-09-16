@@ -407,10 +407,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.close');
 
-        Route::post('/receipt/{id}', [
-            "uses"  => "App\Http\Controllers\SaleController@storeReceipt",
-            'roles' =>['employee','management']
-        ])->name('sales.store.receipt');
+
 
     });
 
@@ -428,6 +425,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\ReceiptController@index",
             'roles' =>['employee','management']
         ])->name('receipts.index');
+
+        Route::post('/sale/{id}', [
+            "uses"  => "App\Http\Controllers\ReceiptController@store",
+            'roles' =>['employee','management']
+        ])->name('receipts.store');
 
         Route::get('/print/{id}', [
             "uses"  => "App\Http\Controllers\ReceiptController@print",

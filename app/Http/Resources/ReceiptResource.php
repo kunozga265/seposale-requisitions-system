@@ -21,6 +21,7 @@ class ReceiptResource extends JsonResource
             "paymentMethod"         => $this->paymentMethod->name,
             "amount"                => $this->amount,
             "reference"             => $this->reference,
+            "information"           => json_decode($this->information),
             'generatedBy'           => new UserResource($this->user),
             "date"                  => $this->date,
         ];

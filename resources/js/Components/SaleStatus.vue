@@ -23,28 +23,41 @@
 <script>
 export default {
     name: "SaleStatus",
-    props:['sale'],
+    props:['status','isSolo'],
     methods:{
         getStatusClass(){
-            switch (this.sale.status){
+          let statusClass = "";
+
+            switch (this.status){
                 case 0:
-                    return "denied";
+                    statusClass = "denied";
+                    break;
                 case 1:
-                    return "approval-pending";
+                    statusClass = "approval-pending";
+                    break;
                 case 2:
-                    return "approved";
+                    statusClass = "approved";
+                    break;
                 case 3:
-                    return "approved";
+                    statusClass = "closed";
+                    break;
                 case 4:
-                    return "closed";
+                    statusClass = "closed";
+                    break;
                 case 5:
-                    return "closed";
+                    statusClass = "closed";
+                    break;
                 default:
-                    return "";
+                    statusClass = "";
             }
+
+          if(this.isSolo){
+            return statusClass + " clear-background";
+          }else
+            return statusClass;
         },
         getStatusMessage(){
-            switch (this.sale.status){
+            switch (this.status){
                 case 0:
                   return "Unpaid";
                 case 1:
@@ -52,13 +65,13 @@ export default {
                 case 2:
                   return "Fully Paid";
                 case 3:
-                    return "";
+                    return "-";
                 default:
                     return "";
             }
         },
         getStatusIcon(){
-            switch (this.sale.status){
+            switch (this.status){
                 case 0:
                     return "mdi-alert-circle";
                 case 1:
@@ -66,36 +79,11 @@ export default {
                 case 2:
                     return "mdi-check-circle";
                 case 3:
-                    return "mdi-check-circle";
+                    return "";
                 case 4:
                     return "mdi-check-circle";
                 case 5:
                     return "mdi-close-circle";
-                default:
-                    return "";
-            }
-        },
-        getDeliveryStatusClass(){
-            switch (this.sale.delivery.status){
-                case 0:
-                    return "denied";
-                case 1:
-                    return "approval-pending";
-                case 2:
-                    return "approved";
-                default:
-                    return "";
-            }
-        },
-
-        getDeliveryStatusIcon(){
-            switch (this.sale.delivery.status){
-                case 0:
-                    return "mdi-close-circle";
-                case 1:
-                    return "mdi-alert-circle";
-                case 2:
-                    return "mdi-check-circle";
                 default:
                     return "";
             }

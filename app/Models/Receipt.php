@@ -38,6 +38,7 @@ class Receipt extends Model
         "user_id",
         "amount",
         "code",
+        "information",
         "reference",
         "date",
     ];

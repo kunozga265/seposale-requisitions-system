@@ -20,6 +20,7 @@ class CreateSummariesTable extends Migration
             $table->string("sale_id");
             $table->double("date");
             $table->double("amount");
+            $table->double("balance")->nullable();
             $table->double("quantity");
             $table->string("description")->nullable();
             $table->string("units")->nullable();

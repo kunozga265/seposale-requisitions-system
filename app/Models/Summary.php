@@ -48,6 +48,7 @@ class Summary extends Model
         "sale_id",
         "date",
         "amount",
+        "balance",
         "quantity",
         "description",
         "units",
