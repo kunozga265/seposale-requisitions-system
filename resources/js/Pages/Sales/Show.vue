@@ -677,10 +677,13 @@ export default {
   created() {
 
     for (let x in this.sale.data.products) {
+
+        console.log(this.sale.data.products[x].balance)
+        console.log(this.sale.data.products[x].amount)
       this.form.information.push({
         id: this.sale.data.products[x].id,
         name: this.sale.data.products[x].description,
-        balance: this.sale.data.products[x].balance ?? this.sale.data.products[x].amount,
+        balance: this.sale.data.products[x].balance != null && this.sale.data.products[x].balance > 0  ? this.sale.data.products[x].balance : this.sale.data.products[x].amount,
         amount: 0,
 
       })
