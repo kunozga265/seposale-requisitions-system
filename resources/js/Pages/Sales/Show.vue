@@ -526,12 +526,12 @@
 
                   <div class="flex justify-between">
                     <div class="mb-4">
-                      <div class="heading-font text-lg ">MK {{ numberWithCommas(receiptAmount) }}</div>
+                      <div class="heading-font text-lg ">MK {{ numberWithCommas(receiptAmount.toFixed(2)) }}</div>
                       <div class="heading-font text-xs">Total Amount</div>
                     </div>
                     <div class="mb-4">
                       <div class="heading-font text-lg" :class="{'text-red-500':!amountValidation}">MK
-                        {{ numberWithCommas(receiptBalance) }}
+                        {{ numberWithCommas(receiptBalance.toFixed(2)) }}
                       </div>
                       <div class="heading-font text-xs">Balance</div>
                     </div>
@@ -708,10 +708,10 @@ export default {
       for (let x in this.form.information) {
         sum += this.form.information[x].amount;
       }
-      return sum.toFixed(2);
+      return sum;
     },
     receiptBalance() {
-      return (this.sale.data.balance - this.receiptAmount).toFixed(2);
+      return (this.sale.data.balance - this.receiptAmount);
     },
     attachment() {
       if (this.attachmentIndex !== null) {
