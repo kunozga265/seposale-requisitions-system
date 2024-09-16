@@ -46,7 +46,7 @@
 
               <div class="grid grid-cols-1 md:grid-cols-2">
                 <inertia-link :href="route('invoices.show',{id:invoice.id})"
-                              v-for="(invoice, index) in invoices.data" :key="index">
+                              v-for="(invoice, index) in invoices.data" v-if="invoice.sale != null" :key="index">
                   <div class="app-card">
                     <div class="header justify-between items-center border-b">
                       <div>
