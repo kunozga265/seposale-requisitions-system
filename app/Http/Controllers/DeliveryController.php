@@ -170,6 +170,13 @@ class DeliveryController extends Controller
                    "status" => 3
                 ]);
 
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Delivery has been cancelled",
+                    "delivery_id" => $delivery->id,
+                ]);
+
                 return Redirect::back()->with('success', 'Delivery cancelled successfully');
             }
         } else {
