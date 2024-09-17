@@ -65,6 +65,9 @@ class AppController extends Controller
             case 'RECEIPT':
                 $filename="files/receipts/".$type."-".uniqid().".".$ext;
                 break;
+            case 'DELIVERY_NOTE':
+                $filename="files/deliveries/".$type."-".uniqid().".".$ext;
+                break;
             default:
                 $filename="files/other/".$type."-".uniqid().".".$ext;
         }

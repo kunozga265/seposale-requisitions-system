@@ -85,6 +85,7 @@ class DeliveryController extends Controller
                 //Validate all the important attributes
                 $request->validate([
                     'quantity' => ['required'],
+                    'photo' => ['required'],
                     'recipient_name' => ['required'],
                     'recipient_phone_number' => ['required'],
                 ]);
@@ -109,6 +110,7 @@ class DeliveryController extends Controller
                 $notes [] = [
                     "quantity" => $request->quantity,
                     "balance" => $balance,
+                    "photo" => $request->photo,
                     "recipientName" => $request->recipient_name,
                     "recipientPhoneNumber" => $request->recipient_phone_number,
                     "date"  => Carbon::now()->getTimestamp(),
