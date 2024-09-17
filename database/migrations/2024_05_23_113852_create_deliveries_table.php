@@ -21,6 +21,7 @@ class CreateDeliveriesTable extends Migration
             $table->double("quantity_delivered");
             $table->double("due_date")->nullable();
             $table->integer("summary_id");
+            $table->json("notes")->nullable();
             $table->timestamps();
         });
     }

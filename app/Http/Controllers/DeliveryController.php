@@ -72,6 +72,8 @@ class DeliveryController extends Controller
 //                    "initiated_by" => isset($request->user_id) ? $request->user_id : $user->id
                 ]);
 
+
+
                 //Logging
                 SystemLog::create([
                     "user_id" => Auth::id(),
@@ -83,8 +85,9 @@ class DeliveryController extends Controller
                 //Validate all the important attributes
                 $request->validate([
                     'quantity' => ['required'],
+                    'recipient_name' => ['required'],
+                    'recipient_phone_number' => ['required'],
                 ]);
-
 
 
                 $delivered_quantity = $summary->delivery->quantity_delivered;
@@ -98,10 +101,28 @@ class DeliveryController extends Controller
                     $delivered_quantity += $request->quantity;
                 }
 
+                $notes =[];
+                if(isset($summary->notes)){
+                    $notes = json_decode($summary->notes);
+                }
+
+                $notes [] = [
+                    "quantity" => $request->quantity,
+                    "balance" => $balance,
+                    "recipientName" => $request->recipient_name,
+                    "recipientPhoneNumber" => $request->recipient_phone_number,
+                    "date"  => Carbon::now()->getTimestamp(),
+                ];
+
                 $summary->delivery->update([
                     "status" => $balance == 0 ? 2 : 1,
-                    "quantity_delivered" => $delivered_quantity
+                    "quantity_delivered" => $delivered_quantity,
+                    "notes" => json_encode($notes)
                 ]);
+
+
+
+
 
                 $message = $summary->delivery->status == 2 ?
                     "{$request->quantity} delivered. Delivery Completed." :
@@ -129,7 +150,7 @@ class DeliveryController extends Controller
                 return Redirect::route("deliveries.index",["filter"=>$filter])->with('success', 'Delivery updated!');
             }
         } else {
-            return Redirect::back()->with('error', 'Sale not found');
+            return Redirect::back()->with('error', 'Delivery not found');
         }
     }
 

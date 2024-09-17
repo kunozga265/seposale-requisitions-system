@@ -45,5 +45,6 @@ class Delivery extends Model
         "tracking_number",
         "summary_id",
         "due_date",
+        "notes",
     ];
 }

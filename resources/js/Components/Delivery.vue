@@ -65,7 +65,7 @@
             </template>
 
             <template #content>
-                <div class="delivery-profile grid grid-cols-1 md:grid-cols-2">
+                <div class="delivery-profile grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div class="mb-4">
                         <div class="text-mute text-sm">
                             Client
@@ -104,6 +104,29 @@
 <!--                            Hello World-->
 <!--                        </div>-->
                     </div>
+
+                    <div v-show="delivery.status === 1" class="mb-4">
+                        <div class="text-mute text-sm">
+                           Recipient Name
+                        </div>
+                        <jet-input  type="text"  class="block w-full" v-model="form.recipientName"/>
+                        <div class="text-red-500 text-xs" v-if="form.errors.recipient_name">Required
+                        </div>
+                    </div>
+
+                    <div v-show="delivery.status === 1" class="mb-4">
+                        <div class="text-mute text-sm">
+                           Recipient Phone Number
+                        </div>
+                        <jet-input  type="text"  class="block w-full" v-model="form.recipientPhoneNumber"/>
+                        <div class="text-red-500 text-xs" v-if="form.errors.recipient_phone_number">Required
+                        </div>
+                    </div>
+
+                  <div class="mb-4 md:col-span-2" >
+                    <jet-label for="photo" value="Photo" />
+                    <input type="file" id="photo"  class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                  </div>
 
                     <div class="mb-4 md:col-span-2" >
                         <div @click="showLogs = !showLogs" class="text-mute transition-all ease-in">
@@ -187,11 +210,13 @@ import PrimaryButton from "@/Jetstream/Button.vue";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetInput from "@/Jetstream/Input.vue";
 import DangerButton from "@/Jetstream/DangerButton.vue";
+import JetLabel from "@/Jetstream/Label.vue";
 
 export default {
     name: "Delivery",
     props: ['delivery'],
     components: {
+      JetLabel,
         DangerButton,
         JetInput,
         SecondaryButton, PrimaryButton, DialogModal, pdf,
@@ -204,7 +229,9 @@ export default {
             showDialog: false,
             showLogs: false,
             form: this.$inertia.form({
-                quantity:0
+                quantity:0,
+                recipientName:"",
+                recipientPhoneNumber:"",
             }),
             quantityValidation : null,
         }
@@ -226,7 +253,8 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
-
+                    recipient_name:this.form.recipientName,
+                    recipient_phone_number:this.form.recipientPhoneNumber,
                 }))
                 .post(this.route('deliveries.update', {'id': this.delivery.summary.id}), {
                     // preserveScroll: true,
@@ -240,7 +268,8 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
-
+                    recipient_name:this.form.recipientName,
+                    recipient_phone_number:this.form.recipientPhoneNumber,
                 }))
                 .post(this.route('deliveries.cancel', {'id': this.delivery.id}), {
                     // preserveScroll: true,
