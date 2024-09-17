@@ -261,6 +261,8 @@ export default {
                     onSuccess: () => {
                         this.showDialog = false
                         this.form.quantity = 0
+                        this.form.recipientName = ""
+                        this.form.recipientPhoneNumber = ""
                     },
                 })
         },
