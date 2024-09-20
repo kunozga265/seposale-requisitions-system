@@ -421,6 +421,7 @@ class RequestFormController extends Controller
 
             $requestForm=RequestForm::create([
                 'code'                          =>  (new AppController())->generateUniqueCode(),
+                'code_alt'                      =>  $this->getCodeRequestFormNumber(),
                 //Requested information
                 'type'                          =>  $request->type,
                 'personCollectingAdvance'       =>  $request->personCollectingAdvance,
@@ -480,6 +481,7 @@ class RequestFormController extends Controller
 
         $requestForm=RequestForm::create([
             'code'                          =>  (new AppController())->generateUniqueCode(),
+            'code_alt'                      =>  $this->getCodeRequestFormNumber(),
             //Requested information
             'type'                          =>  $request->type,
             'assessedBy'                    =>  $request->assessedBy,
@@ -542,6 +544,7 @@ class RequestFormController extends Controller
 
             $requestForm=RequestForm::create([
                 'code'                          =>  (new AppController())->generateUniqueCode(),
+                'code_alt'                      =>  $this->getCodeRequestFormNumber(),
                 //Requested information
                 'type'                          =>  $request->type,
                 'driverName'                    =>  $request->driverName,
@@ -598,6 +601,17 @@ class RequestFormController extends Controller
         else{
             //Web Response
             return Redirect::route('dashboard')->with('success','Request created!');
+        }
+    }
+
+
+    private function getCodeRequestFormNumber()
+    {
+        $last = RequestForm::orderBy("code_alt", "desc")->first();
+        if (is_object($last)) {
+            return $last->code_alt + 1;
+        } else {
+            return 1;
         }
     }
 

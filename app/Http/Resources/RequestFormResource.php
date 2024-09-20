@@ -42,7 +42,7 @@ class RequestFormResource extends JsonResource
             case "PETTY_CASH":
                 return [
                     'id'                                  =>  $this->id,
-                    'code'                                =>  $this->code,
+                    'code'                                =>  (new AppController())->getZeroedNumber($this->code_alt),
                     'type'                                =>  $this->type,
                     'personCollectingAdvance'             =>  $this->personCollectingAdvance,
                     'purpose'                             =>  $this->purpose,

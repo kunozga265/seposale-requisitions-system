@@ -295,7 +295,7 @@
 
               <div class="card p-0">
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
-                  <div class="text-gray-600 font-semibold">Request Code</div>
+                  <div class="text-gray-600 font-semibold">Code</div>
                   <div>{{ request.data.code }}</div>
                 </div>
                 <div v-if="request.data.type!=='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
