@@ -27,30 +27,30 @@ class ClientController extends Controller
         }
     }
 
-        public function show(Request $request, $id)
+    public function show(Request $request, $id)
     {
         //find out if the request is valid
-        $client=Client::find($id);
+        $client = Client::find($id);
 
-        if(is_object($client)){
+        if (is_object($client)) {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(new ClientResource($client));
-            }else{
+            } else {
                 $sales = $client->sales()->paginate(100);
                 //Web Response
-                return Inertia::render('Clients/Show',[
+                return Inertia::render('Clients/Show', [
                     'client' => new ClientResource($client),
                     'sales' => SaleResource::collection($sales),
                 ]);
             }
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Client not found"], 404);
-            }else{
+            } else {
                 //Web Response
-                return Redirect::route('dashboard')->with('error','Client not found');
+                return Redirect::route('dashboard')->with('error', 'Client not found');
             }
         }
     }
@@ -66,16 +66,16 @@ class ClientController extends Controller
     public function store(Request $request)
     {
 
-            $request->validate([
-                'name' => ['required'],
-            ]);
+        $request->validate([
+            'name' => ['required'],
+        ]);
 
-            $client = Client::create([
-                'name' => ucwords($request->name),
-                'phone_number' => $request->phoneNumber,
-                'email' => $request->email,
-                'address' => $request->address,
-            ]);
+        $client = Client::create([
+            'name' => ucwords($request->name),
+            'phone_number' => $request->phoneNumber,
+            'email' => $request->email,
+            'address' => $request->address,
+        ]);
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -103,9 +103,9 @@ class ClientController extends Controller
     public function update(Request $request, $id)
     {
 
-        $client=Client::find($id);
+        $client = Client::find($id);
 
-        if(is_object($client)){
+        if (is_object($client)) {
 
             //Validate all the important attributes
             $request->validate([
@@ -127,12 +127,10 @@ class ClientController extends Controller
                 //Web Response
                 return Redirect::route('clients.index')->with('success', 'Client updated!');
             }
-        }else {
-            return Redirect::back()->with('error','Quotation not found');
+        } else {
+            return Redirect::back()->with('error', 'Quotation not found');
         }
     }
-
-
 
 
 }

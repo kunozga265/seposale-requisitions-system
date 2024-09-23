@@ -179,7 +179,8 @@ class SaleController extends Controller
                 Delivery::create([
                     "status"=>0,
                     "quantity_delivered"=>0,
-                    "summary_id"=>$summary->id
+                    "summary_id"=>$summary->id,
+                    "tracking_number"=> uniqid()
                 ]);
             }
         }
@@ -287,7 +288,8 @@ class SaleController extends Controller
                         Delivery::create([
                             "status"=>0,
                             "quantity_delivered"=>0,
-                            "summary_id"=>$summary->id
+                            "summary_id"=>$summary->id,
+                            "tracking_number"=> uniqid()
                         ]);
                     }
 
@@ -468,7 +470,8 @@ class SaleController extends Controller
                     Delivery::create([
                         "status"=>0,
                         "quantity_delivered"=>0,
-                        "summary_id"=>$summary->id
+                        "summary_id"=>$summary->id,
+                        "tracking_number"=> uniqid()
                     ]);
                 }
             }
