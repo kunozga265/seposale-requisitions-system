@@ -483,6 +483,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('deliveries.index');
 
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\DeliveryController@show",
+            'roles' => ['employee', 'management']
+        ])->name('deliveries.show');
+
         Route::post('/update/{id}', [
             "uses"  => "App\Http\Controllers\DeliveryController@update",
             'roles' => ['employee','management']

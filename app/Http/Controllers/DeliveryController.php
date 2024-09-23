@@ -19,9 +19,9 @@ class DeliveryController extends Controller
     public function index(Request $request)
     {
         $filter = strtolower($request->query("filter"));
-        if($filter == "processing"){
-            $deliveries = Delivery::where("status", 1)->orderBy("due_date","asc")->paginate(100);
-            $headline = "processing";
+        if($filter == "all"){
+            $deliveries = Delivery::where("status", ">", 0)->orderBy("due_date","asc")->paginate(100);
+            $headline = "all";
         }else if ($filter == "completed"){
             $deliveries = Delivery::where("status", 2)->orderBy("due_date","asc")->paginate(100);
             $headline = "completed";
@@ -29,8 +29,8 @@ class DeliveryController extends Controller
             $deliveries = Delivery::where("status", 3)->orderBy("due_date","asc")->paginate(100);
             $headline = "cancelled";
         }else{
-            $deliveries = Delivery::where("status", ">", 0)->orderBy("due_date","asc")->paginate(100);
-            $headline = "all";
+            $deliveries = Delivery::where("status", 1)->orderBy("due_date","asc")->paginate(100);
+            $headline = "processing";
         }
 
 //        dd((new AppController())->generateCompound(DeliveryResource::collection($deliveries)));
@@ -45,6 +45,33 @@ class DeliveryController extends Controller
                 'deliveries' => DeliveryResource::collection($deliveries),
                 'headline'=>$headline
             ]);
+        }
+    }
+
+
+    public function show(Request $request, $id)
+    {
+        //find out if the request is valid
+        $delivery = Delivery::find($id);
+
+        if (is_object($delivery)) {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(new DeliveryResource($delivery));
+            } else {
+                //Web Response
+                return Inertia::render('Deliveries/Show', [
+                    'delivery' => new DeliveryResource($delivery),
+                ]);
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Delivery not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('deliveries.index')->with('error', 'Delivery not found');
+            }
         }
     }
 

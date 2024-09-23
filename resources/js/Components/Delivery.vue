@@ -1,10 +1,14 @@
 <template>
   <div>
+
     <div class="app-card cursor-pointer hover:shadow-lg" @click="showDialog=true">
       <div class="header justify-between items-center border-b">
         <div class="grid grid-cols-1 md:grid-cols-3 w-full items-center">
           <div class="mb-4 md:m-0">
-            <div class="type">{{ productName(delivery.summary) }}</div>
+
+                  <div class="type">{{ productName(delivery.summary) }}</div>
+
+
             <!--                          <div class="name">{{ delivery.summary.variant.unit }}</div>-->
             <div class="text-sm">{{ delivery.client.name }}</div>
             <div class="name" v-if="delivery.location"><i class="mdi mdi mdi-map-marker-outline"></i>
@@ -58,10 +62,17 @@
 
     </div>
 
+
     <dialog-modal :show="showDialog" @close="showDialog=false">
 
       <template #title>
-        {{ productName(delivery.summary) }}
+          <div class="flex justify-between">
+              {{ productName(delivery.summary) }}
+              <inertia-link :href="route('deliveries.show',{id:delivery.id})">
+                  <span class="text-blue-700 text-xs font-bold">View Summary</span>
+              </inertia-link>
+          </div>
+
       </template>
 
       <template #content>
@@ -250,7 +261,20 @@ export default {
     quantityBalance() {
       return this.delivery.summary.quantity - this.delivery.quantityDelivered
 
-    }
+    },
+      notes() {
+          let data = []
+          let split = null
+
+          for (let x in this.delivery.notes) {
+              split = this.delivery.notes[x].split('.')
+              data.push({
+                  file: this.delivery.data.notes[x],
+                  ext: split[1]
+              })
+          }
+          return data
+      },
   },
 
   methods: {

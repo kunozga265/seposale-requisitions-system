@@ -13,7 +13,7 @@
                               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                               clip-rule="evenodd"></path>
                     </svg>
-                    <a :href="route('invoices.index')"
+                    <a :href="route('deliveries.index')"
                        class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                         Deliveries
                     </a>
@@ -24,26 +24,26 @@
                               clip-rule="evenodd"></path>
                     </svg>
                     <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        #{{ delivery.data.trackingNumber }}
+                        {{ delivery.data.trackingNumber }}
                     </span>
                 </div>
             </li>
         </template>
 
         <template #actions>
-            <a :href="route('invoices.print',{'id':delivery.data.id})" target="_blank">
-                <primary-button>Print</primary-button>
-            </a>
-            <!--           <a :href="route('invoices.edit',{'id':delivery.data.id})">-->
-            <!--               <primary-button>Edit</primary-button>-->
-            <!--           </a>-->
-            <!--         <danger-button @click.native="deleteDialog=true">Delete</danger-button>-->
+<!--            <a :href="route('invoices.print',{'id':delivery.data.id})" target="_blank">-->
+<!--                <primary-button>Print</primary-button>-->
+<!--            </a>-->
+<!--            &lt;!&ndash;           <a :href="route('invoices.edit',{'id':delivery.data.id})">&ndash;&gt;-->
+<!--            &lt;!&ndash;               <primary-button>Edit</primary-button>&ndash;&gt;-->
+<!--            &lt;!&ndash;           </a>&ndash;&gt;-->
+<!--            <danger-button @click.native="deleteDialog=true">Cancel</danger-button>-->
 
         </template>
 
         <dialog-modal :show="deleteDialog" @close="deleteDialog=false">
             <template #title>
-                Delete Invoice
+                Cancel Delivery
             </template>
 
             <template #content>
@@ -93,12 +93,59 @@
                 <!--                </div>-->
                 <!--              </div>-->
 
+                <div>
+                    <delivery-status :product-compound="delivery.data.summary" :due="delivery.data.due" :overdue="delivery.data.overdue"/>
+                </div>
+
 
                 <div>
                     <div class="page-section">
+                        <div class="page-section-content">
+
+                            <div class="card p-8 md:p-10 ">
+                                <div class="mb-4 font-bold">
+                                    {{ productName(delivery.data.summary) }}
+                                </div>
+
+                                <div class="delivery-profile grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <inertia-link :href="route('clients.show',{id:delivery.data.client.id})">
+                                        <div class="mb-4">
+                                            <div class="text-mute text-sm">
+                                                Client
+                                            </div>
+                                            <div class="text-gray-500 text-sm">
+                                                {{ delivery.data.client.name }}
+                                            </div>
+                                        </div>
+                                    </inertia-link>
+                                    <div class="mb-4">
+                                        <div class="text-mute text-sm">
+                                            Site Location
+                                        </div>
+                                        <div class="text-gray-500 text-sm">
+                                            {{ delivery.data.location }}
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="text-mute text-sm">
+                                            Quantity Delivered
+                                        </div>
+                                        <!--                        <div class="currency ">MK</div>-->
+                                        <div>
+                            <span class="total">{{
+                                    numberWithCommas(delivery.data.quantityDelivered)
+                                }}/{{ numberWithCommas(delivery.data.summary.quantity) }}</span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
-                                Overview
+                                Details
                             </div>
                         </div>
 
@@ -116,15 +163,56 @@
                                     <div class="text-gray-600 font-semibold">Due Date</div>
                                     <div>{{ getDate(delivery.data.date * 1000) }}</div>
                                 </div>
-                                <div v-if="delivery.data.location"
-                                     class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Site Location</div>
-                                    <div>{{ delivery.data.location }}</div>
-                                </div>
                             </div>
                         </div>
                     </div>
-                    <inertia-link :href="route('clients.show',{id:delivery.data.client.id})">
+
+
+
+                    <div v-if="delivery.data.notes != null" class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Notes Summary
+                            </div>
+                        </div>
+
+                        <div v-if="delivery.data.notes.length > 0" class="page-section-content">
+                            <div class="">
+                                <div class="card p-0"
+                                     v-for="(note,index) in delivery.data.notes"
+                                     :key="index"
+                                >
+                                    <div class="flex justify-between border-b p-3 text-sm ">
+                                        <div>
+                                        Delivered: {{ note.quantity }}
+                                        </div>
+                                        <div>
+                                            <a :href="fileUrl(note.photo)" target="_blank">
+<!--                                                <div class=" h-10 w-10 flex justify-center items-center rounded-full bg-blue-700 cursor">-->
+                                                <span class="text-blue-700 text-xs font-bold">Download</span>
+                                                    <i class="text-blue-700 font-bold mdi mdi-download text-white"></i>
+<!--                                                </div>-->
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="px-3 py-2 bg-text-gray-400 bg-gray-50 rounded-b-xl flex justify-between text-xs">
+                                        <div>
+                                            <div class="font-semibold">{{ note.recipientName }}</div>
+                                            <div>{{ note.recipientPhoneNumber }}</div>
+
+                                        </div>
+                                        <div>
+                                            {{ getDate(note.date * 1000, true) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="text-center text-gray-400 md:col-span-2 text-sm">
+                            No delivery notes found
+                        </div>
+                    </div>
+<!--                    <inertia-link :href="route('clients.show',{id:delivery.data.client.id})">
                         <div class="page-section">
                             <div class="page-section-header">
                                 <div class="page-section-title">
@@ -145,7 +233,7 @@
                                             <div class="text-sm text-gray-600">Phone Number</div>
                                             <span
                                                 class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ delivery.data.sale.client.phone_number }}
+                                        {{ delivery.data.client.phone_number }}
                                         </span>
                                         </div>
                                         <div v-show="delivery.data.client.email != null" class="mb-4">
@@ -168,74 +256,7 @@
                                 </div>
                             </div>
                         </div>
-                    </inertia-link>
-                    <div class="page-section md:col-span-2">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Products and Services
-                            </div>
-                        </div>
-                        <div class="page-section-content">
-                            <div class="card">
-                                <div class="p-2 relative overflow-x-auto">
-                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                        <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                        <tr>
-                                            <th scope="col" class="heading-font">
-                                                Details
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Units
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Quantity
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Unit Cost
-                                            </th>
-                                            <th scope="col" class="heading-font">
-                                                Total Cost
-                                            </th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr
-                                            class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                                            v-for="(productCompound,index) in delivery.data.sale.products"
-                                            :key="index"
-                                        >
-                                            <th scope="row"
-                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                {{ productCompound.description }}
-                                            </th>
-                                            <td class="py-2 pr-1">
-                                                {{ productCompound.units }}
-                                            </td>
-                                            <td class="py-2 pr-1">
-                                                {{ numberWithCommas(productCompound.quantity) }}
-                                            </td>
-                                            <td class="py-2 pr-1">
-                                                {{ numberWithCommas(productCompound.amount / productCompound.quantity) }}
-                                            </td>
-                                            <td class="py-2 pr-1">
-                                                {{ numberWithCommas(productCompound.amount) }}
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
-                                            <td class="pt-4 pr-1 text-base font-bold">
-                                                {{ numberWithCommas(delivery.data.sale.total) }}
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </inertia-link>-->
 
 
                 </div>
@@ -257,10 +278,12 @@ import requestStatus from "@/Components/RequestStatus";
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
+import DeliveryStatus from "@/Components/DeliveryStatus.vue";
 
 export default {
     props: ['delivery'],
     components: {
+        DeliveryStatus,
         AppLayout,
         DoughnutChart,
         PieChart,

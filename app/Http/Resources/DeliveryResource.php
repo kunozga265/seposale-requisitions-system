@@ -19,6 +19,8 @@ class DeliveryResource extends JsonResource
             "id" => intval($this->id),
             "status" => intval($this->status),
             "photo" => $this->photo,
+            "trackingNumber" => $this->tracking_number,
+            "notes" => json_decode($this->notes),
             "client" => $this->summary->sale->client,
             "location" => $this->summary->sale->location,
             "quantityDelivered" => floatval($this->quantity_delivered),
