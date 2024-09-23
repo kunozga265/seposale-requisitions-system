@@ -67,6 +67,7 @@
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
                 <div class="">
+                    <inertia-link :href="route('clients.show',{id:quotation.data.client.id})">
                     <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
@@ -99,6 +100,7 @@
                             </div>
                         </div>
                     </div>
+                    </inertia-link>
 
                     <div class="page-section">
                         <div class="page-section-header">

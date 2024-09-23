@@ -114,6 +114,7 @@
                             </div>
                         </div>
                     </div>
+                    <inertia-link :href="route('clients.show',{id:invoice.data.sale.client.id})">
                     <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
@@ -153,6 +154,7 @@
                             </div>
                         </div>
                     </div>
+                    </inertia-link>
                <div class="page-section md:col-span-2">
                         <div class="page-section-header">
                             <div class="page-section-title">
