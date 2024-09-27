@@ -60,7 +60,7 @@
 </head>
 <body>
 <p style="text-align: right; font-size: 12px">Generated on {{$date}} at {{$time}}</p>
-<img style="width: 100%" src="{{storage_path()."/images/banner.jpg"}}" alt="">
+<img style="width: 100%" src="{{storage_path()."/images/banner.png"}}" alt="">
 <div style="text-align: center; font-size: 25px; font-weight: normal; margin-top:12px">{{$type}}</div>
 <div style="text-align: center; font-size: 16px; font-weight: normal">Code: {{$requestForm->code}}</div>
 
