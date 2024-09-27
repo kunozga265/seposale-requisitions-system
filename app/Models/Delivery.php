@@ -39,6 +39,7 @@ class Delivery extends Model
     }
 
     protected $fillable = [
+        "code",
         "status",
         "photo",
         "quantity_delivered",

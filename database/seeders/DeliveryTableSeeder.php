@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Http\Controllers\DeliveryController;
 use App\Models\Delivery;
 use App\Models\Sale;
 use Illuminate\Database\Seeder;
@@ -15,12 +16,16 @@ class DeliveryTableSeeder extends Seeder
      */
     public function run()
     {
-        $sales = Sale::all();
+        $deliveries = Delivery::all();
 
-        foreach ($sales as $sale){
-            Delivery::create([
-                "status"=>0,
-                "sale_id"=>$sale->id
+        foreach ($deliveries as $delivery){
+            if($delivery->status > 0){
+                $delivery->update([
+                   "code" => (new DeliveryController())->getCodeNumber()
+                ]);
+            }
+            $delivery->update([
+                "tracking_number" => uniqid()
             ]);
         }
     }

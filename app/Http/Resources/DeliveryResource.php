@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Controllers\AppController;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,6 +18,7 @@ class DeliveryResource extends JsonResource
     {
         return [
             "id" => intval($this->id),
+            'code' => (new AppController())->getZeroedNumber($this->code),
             "status" => intval($this->status),
             "photo" => $this->photo,
             "trackingNumber" => $this->tracking_number,

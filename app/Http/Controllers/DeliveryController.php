@@ -7,6 +7,7 @@ use App\Http\Resources\SaleResource;
 use App\Models\Delivery;
 use App\Models\Summary;
 use App\Models\SystemLog;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,6 +95,7 @@ class DeliveryController extends Controller
 
 
                 $summary->delivery->update([
+                    "code" => $this->getCodeNumber(),
                     "status" => 1,
                     "due_date" => $request->delivery_date,
 //                    "initiated_by" => isset($request->user_id) ? $request->user_id : $user->id
@@ -130,8 +132,8 @@ class DeliveryController extends Controller
                 }
 
                 $notes =[];
-                if(isset($summary->notes)){
-                    $notes = json_decode($summary->notes);
+                if($summary->delivery->notes != null){
+                    $notes = json_decode($summary->delivery->notes);
                 }
 
                 $notes [] = [
@@ -176,7 +178,7 @@ class DeliveryController extends Controller
                 return response()->json(new SaleResource($summary), 201);
             else {
                 //Web Response
-                return Redirect::route("deliveries.index",["filter"=>$filter])->with('success', 'Delivery updated!');
+                return Redirect::route("deliveries.show",["id"=>$summary->delivery->id])->with('success', 'Delivery updated!');
             }
         } else {
             return Redirect::back()->with('error', 'Delivery not found');
@@ -214,6 +216,49 @@ class DeliveryController extends Controller
                 //Web Response
                 return Redirect::back()->with('error', 'Delivery not found');
             }
+        }
+    }
+
+    public function print(Request $request,$id)
+    {
+        //find out if the request is valid
+        $delivery=Delivery::find($id);
+
+        if(is_object($delivery)){
+
+            $filename="DELIVERY#".$delivery->tracking_number.date('Ymd',$delivery->summary->sale->date);
+
+            $now_d= \Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('F j, Y');
+            $now_t=Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('H:i');
+
+            $pdf = PDF::loadView('delivery', [
+                'date'              => $now_d,
+                'time'              => $now_t,
+                'delivery'           => $delivery,
+            ]);
+            return $pdf->download("$filename.pdf");
+
+        }else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Delivery not found"], 404);
+            }else{
+
+
+                //Web Response
+                return Redirect::route('dashboard')->with('error','Delivery not found');
+            }
+        }
+    }
+
+    public function getCodeNumber()
+    {
+        $last = Delivery::orderBy("code", "desc")->first();
+        if (is_object($last)) {
+
+            return $last->code != null ? $last->code + 1 : 1;
+        } else {
+            return 1;
         }
     }
 }
