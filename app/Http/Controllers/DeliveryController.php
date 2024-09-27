@@ -226,7 +226,7 @@ class DeliveryController extends Controller
 
         if(is_object($delivery)){
 
-            $filename="DELIVERY#".$delivery->tracking_number.date('Ymd',$delivery->summary->sale->date);
+            $filename="DELIVERY-NOTE#".(new AppController())->getZeroedNumber($delivery->code)." - ".$delivery->summary->sale->client->name."-".date('Ymd',$delivery->summary->sale->date);
 
             $now_d= \Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('F j, Y');
             $now_t=Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('H:i');
