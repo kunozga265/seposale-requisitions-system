@@ -15,6 +15,7 @@ class CreateDeliveriesTable extends Migration
     {
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
+            $table->integer("code");
             $table->integer("status");
             $table->string("photo")->nullable();
             $table->string("tracking_number")->nullable();
