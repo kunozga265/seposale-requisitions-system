@@ -124,7 +124,7 @@
             </div>
         </div>
         <div style="font-size: 25px; font-weight: bold; margin-top:12px">Invoice: <span style="color:red; font-size: 25px; font-weight: bold; ">#{{$code}}</span></div>
-        <div>Sale Order #: LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($invoice->sale->code_alt)}}</div>
+        <div>Sales Order #: LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($invoice->sale->code_alt)}}</div>
 
 
     </div>

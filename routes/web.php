@@ -498,6 +498,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' => ['employee','management']
         ])->name('deliveries.cancel');
 
+        Route::get('/print/{id}', [
+            "uses"  => "App\Http\Controllers\DeliveryController@print",
+            'roles' =>['employee','management']
+        ])->name('deliveries.print');
+
     });
 
     Route::group(['prefix'=>'reports'],function() {

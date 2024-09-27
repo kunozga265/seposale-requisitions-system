@@ -7,11 +7,22 @@
         <template #breadcrumbs>
             <li aria-current="page">
                 <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                    <a :href="route('clients.index')" class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    <a :href="route('clients.index')"
+                       class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                         Clients
                     </a>
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"></path>
+                    </svg>
                     <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
                         {{ client.data.name }}
                     </span>
@@ -19,7 +30,7 @@
             </li>
         </template>
 
-        <template #actions >
+        <template #actions>
             <a :href="route('clients.edit',{'id':client.data.id})">
                 <primary-button>Edit</primary-button>
             </a>
@@ -70,19 +81,19 @@
                             <div class="card p-0">
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Name</div>
-                                    <div>{{client.data.name}}</div>
+                                    <div>{{ client.data.name }}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Phone Number</div>
-                                    <div>{{client.data.phoneNumber}}</div>
+                                    <div>{{ client.data.phoneNumber }}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Email</div>
-                                    <div>{{client.data.email}}</div>
+                                    <div>{{ client.data.email }}</div>
                                 </div>
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Address</div>
-                                    <div>{{client.data.address}}</div>
+                                    <div>{{ client.data.address }}</div>
                                 </div>
                             </div>
                         </div>
@@ -110,12 +121,12 @@
                                                 <div>
                                                     <div>
                           <span
-                                  class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
+                              class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
                                   getDate(sale.date * 1000)
                               }}</span>
                                                     </div>
                                                     <div class="type">{{ sale.code }}</div>
-                                                    <div class="name">{{sale.client.name}}</div>
+                                                    <div class="name">{{ sale.client.name }}</div>
 
 
                                                 </div>
@@ -132,7 +143,6 @@
                                 </div>
 
                                 <pagination :object="sales"/>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -159,7 +169,7 @@ import SaleStatus from "@/Components/SaleStatus.vue";
 import Pagination from "@/Components/Pagination.vue";
 
 export default {
-    props:['client','sales'],
+    props: ['client', 'sales'],
     components: {
         Pagination,
         SaleStatus,
@@ -176,30 +186,26 @@ export default {
         JetLabel,
         JetInput,
     },
-    data(){
-        return{
-            loading:false,
-            attachmentDialog:false,
-            attachmentIndex:null,
-            attachmentType:'',
-            denyDialog:false,
+    data() {
+        return {
+            loading: false,
+            attachmentDialog: false,
+            attachmentIndex: null,
+            attachmentType: '',
+            denyDialog: false,
             deleteDialog: false,
-            form: this.$inertia.form({
-
-            }),
+            form: this.$inertia.form({}),
 
 
         }
     },
-    created(){
+    created() {
 
     },
-    computed:{
-
-    },
-    methods:{
-        printQuotation(){
-            this.$inertia.get(this.route('quotations.print',{'id':this.quotation.data.id}))
+    computed: {},
+    methods: {
+        printQuotation() {
+            this.$inertia.get(this.route('quotations.print', {'id': this.quotation.data.id}))
         },
         // deleteQuotation() {
         //     this.form
