@@ -94,7 +94,7 @@
         <div style="font-size: 25px; margin-top:12px">Delivery Note: <span
                 style="color:red; font-size: 25px; font-weight: normal; ">#{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->code)}}</span>
         </div>
-        <div>Tracking Number: {{$delivery->tracking_number}}</div>
+        <div>Sales Order: #{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->summary->sale->code_alt)}}</div>
 
 
     </div>
@@ -167,6 +167,11 @@
             <td class="b-0">Date</td>
             <td class="b-0"
                 colspan="3">{{\Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('F j, Y')}}</td>
+        </tr>
+        <tr>
+            <td class="b-0">Tracking Number</td>
+            <td class="b-0"
+                colspan="3">{{$delivery->tracking_number}}</td>
         </tr>
         <tr>
             <td class="b-0">Name</td>
