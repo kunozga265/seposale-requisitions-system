@@ -103,7 +103,7 @@
                 {{$date}}
             </div>
         </div>
-        <div style="font-size: 25px; font-weight: normal; margin-top:12px">RECEIPT: <span style="color:red; font-size: 25px; font-weight: bold; ">#{{$code}}</span></div>
+        <div style="font-size: 25px; font-weight: normal; margin-top:12px">RECEIPT: <span style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
 
     </div>
 
