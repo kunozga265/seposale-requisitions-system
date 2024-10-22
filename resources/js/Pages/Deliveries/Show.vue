@@ -54,7 +54,7 @@
                         <div class="text-mute text-sm">
                             Quantity Delivered
                         </div>
-                        <jet-input min="0" :max="quantityBalance" type="number" class="block w-full" v-model="form.quantity"/>
+                        <jet-input min="0" :max="quantityBalance" type="number" step="0.01" class="block w-full" v-model="form.quantity"/>
                         <!--                        <div class="text-mute text-xs">-->
                         <!--                            Hello World-->
                         <!--                        </div>-->
