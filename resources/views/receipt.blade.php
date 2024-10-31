@@ -99,11 +99,15 @@
 <div style="padding: 0 20px">
     <div style="margin: 30px 0">
         <div style="float: right">
-            <div style="font-size: 11px; margin-left: 12px; border: 1px solid black; padding: 14px 40px; text-transform: uppercase">
+            <div
+                style=" margin-left: 12px; padding:0; text-transform: capitalize">
                 {{$date}}
             </div>
         </div>
         <div style="font-size: 25px; font-weight: normal; margin-top:0px">Receipt: <span style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
+        <div>Sales Order #:
+            LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code_alt)}}</div>
+
 
     </div>
 
@@ -150,12 +154,12 @@
                         <div class="heading">Payment Details</div>
                     </td>
                 </tr>
-                <tr>
-                    <td class="b-0">Sales Order:</td>
-                    <td class="b-0">LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code_alt)}}
-                        {{--                ({{$receipt->sale->code}})--}}
-                    </td>
-                </tr>
+{{--                <tr>--}}
+{{--                    <td class="b-0">Sales Order:</td>--}}
+{{--                    <td class="b-0">LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code_alt)}}--}}
+{{--                        --}}{{--                ({{$receipt->sale->code}})--}}
+{{--                    </td>--}}
+{{--                </tr>--}}
                 <tr>
                     <td class="b-0">Method of Payment:</td>
                     <td class="b-0">{{$receipt->paymentMethod->name}}</td>
