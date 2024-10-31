@@ -65,7 +65,7 @@ export default {
                 case 2:
                   return "Fully Paid";
                 case 3:
-                    return "-";
+                    return "Closed";
                 default:
                     return "";
             }
@@ -79,7 +79,7 @@ export default {
                 case 2:
                     return "mdi-check-circle";
                 case 3:
-                    return "";
+                    return "mdi-check-circle";
                 case 4:
                     return "mdi-check-circle";
                 case 5:

@@ -58,8 +58,15 @@
                      class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
               </div>
           </a>
+          <a :href="route('sales.index',{filter:'closed'})">
+              <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'error':headline==='closed'}">
+                  <div>Closed</div>
+                  <i v-show="headline === 'closed'"
+                     class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+              </div>
+          </a>
           <a :href="route('sales.index',{filter:'discarded'})">
-              <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'discarded':headline==='discarded'}">
+              <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'error':headline==='discarded'}">
                   <div>Discarded</div>
                   <i v-show="headline === 'discarded'"
                      class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
