@@ -22,6 +22,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rmunate\Utilities\SpellNumber;
@@ -33,19 +34,22 @@ class SaleController extends Controller
     public function index(Request $request)
     {
         $filter = strtolower($request->query("filter"));
-        if($filter == "unpaid"){
-            $sales = Sale::where("status", 0)->orderBy("date","desc")->paginate($this->paginate);
+        if ($filter == "unpaid") {
+            $sales = Sale::where("status", 0)->orderBy("date", "desc")->paginate($this->paginate);
             $headline = "unpaid";
-        }else if ($filter == "partially-paid"){
-            $sales = Sale::where("status", 1)->orderBy("date","desc")->paginate($this->paginate);
+        } else if ($filter == "partially-paid") {
+            $sales = Sale::where("status", 1)->orderBy("date", "desc")->paginate($this->paginate);
             $headline = "partially-paid";
-        }else if ($filter == "fully-paid"){
-            $sales = Sale::where("status", 2)->orderBy("date","desc")->paginate($this->paginate);
+        } else if ($filter == "fully-paid") {
+            $sales = Sale::where("status", 2)->orderBy("date", "desc")->paginate($this->paginate);
             $headline = "fully-paid";
-        }else if ($filter == "discarded"){
+        }else if ($filter == "closed") {
+            $sales = Sale::where("status", 3)->orderBy("date", "desc")->paginate($this->paginate);
+            $headline = "closed";
+        } else if ($filter == "discarded") {
             $sales = Sale::onlyTrashed()->paginate($this->paginate);
             $headline = "discarded";
-        }else{
+        } else {
             $sales = Sale::orderBy("date", "desc")->paginate($this->paginate);
             $headline = "all";
         }
@@ -58,14 +62,14 @@ class SaleController extends Controller
             //Web Response
             return Inertia::render('Sales/Index', [
                 'sales' => SaleResource::collection($sales),
-                'headline'=>$headline
+                'headline' => $headline
             ]);
         }
     }
 
     public function create(Request $request)
     {
-        $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
+        $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
         return Inertia::render('Sales/Create', [
             "products" => ProductResource::collection($products),
@@ -78,71 +82,74 @@ class SaleController extends Controller
         //get user
         $user = (new AppController())->getAuthUser($request);
 
-        //Validate all the important attributes
-        $request->validate([
-            'products' => ['required'],
-            'total' => ['required'],
-        ]);
+        $sale = Cache::lock($user->id . ':sales:store', 10)->get(function () use ($user, $request) {
 
-        //get client info
-        if (isset($request->client_id)) {
+            //Validate all the important attributes
             $request->validate([
-                'client_id' => ['required'],
+                'products' => ['required'],
+                'total' => ['required'],
             ]);
 
-            $client = Client::find($request->client_id);
-            if (!is_object($client)) {
-                if ((new AppController())->isApi($request)) {
-                    //API Response
-                    return response()->json(['message' => "Client not found"], 404);
-                } else {
-                    //Web Response
-                    return Redirect::back()->with('error', 'Client not found');
+            //get client info
+            if (isset($request->client_id)) {
+                $request->validate([
+                    'client_id' => ['required'],
+                ]);
+
+                $client = Client::find($request->client_id);
+                if (!is_object($client)) {
+                    if ((new AppController())->isApi($request)) {
+                        //API Response
+                        return response()->json(['message' => "Client not found"], 404);
+                    } else {
+                        //Web Response
+                        return Redirect::back()->with('error', 'Client not found');
+                    }
                 }
+            } else {
+                $request->validate([
+                    'name' => ['required'],
+                ]);
+
+                $client = Client::create([
+                    'name' => $request->name,
+                    'phone_number' => $request->phoneNumber,
+                    'email' => $request->email,
+                    'address' => $request->address,
+                ]);
             }
-        } else {
-            $request->validate([
-                'name' => ['required'],
+
+
+            $sale = Sale::create([
+                'code' => (new AppController())->generateUniqueCode(true),
+                'code_alt' => $this->getSaleCodeNumber(),
+                'status' => 0,
+                'client_id' => $client->id,
+                'total' => $request->total,
+                'balance' => $request->total,
+                'date' => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
+                'editable' => true,
+                'location' => $request->location,
+                'recipient_name' => $request->recipient_name,
+                'recipient_profession' => $request->recipient_profession,
+                'recipient_phone_number' => $request->recipient_phone_number,
+
+                //Generated by
+                'user_id' => $user->id,
             ]);
 
-            $client = Client::create([
-                'name' => $request->name,
-                'phone_number' => $request->phoneNumber,
-                'email' => $request->email,
-                'address' => $request->address,
-            ]);
-        }
-
-        $sale = Sale::create([
-            'code' => (new AppController())->generateUniqueCode(true),
-            'code_alt' => $this->getSaleCodeNumber(),
-            'status' => 0,
-            'client_id' => $client->id,
-            'total' => $request->total,
-            'balance' => $request->total,
-            'date' => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
-            'editable' => true,
-            'location' => $request->location,
-            'recipient_name' => $request->recipient_name,
-            'recipient_profession' => $request->recipient_profession,
-            'recipient_phone_number' => $request->recipient_phone_number,
-
-            //Generated by
-            'user_id' => $user->id,
-        ]);
-
-        //Logging
-        SystemLog::create([
-            "user_id" => Auth::id(),
-            "message" => "Sale #{$sale->code_alt} created for {$client->name}. Total amount is {$sale
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Sale #{$sale->code_alt} created for {$client->name}. Total amount is {$sale
         ->total}",
-            "sale_id" => $sale->id,
-        ]);
+                "sale_id" => $sale->id,
+            ]);
 
-        //attach products
-        foreach ($request->products as $product) {
+            //attach products
+            foreach ($request->products as $product) {
 //            $product_model = Product::find($product["id"]);
-            $product_variant = ProductVariant::find($product["id"]);
+                $product_variant = ProductVariant::find($product["id"]);
 //            if (!is_object($product_variant)) {
 //                $product_model = Product::create([
 //                    "name" => $product["details"],
@@ -162,27 +169,40 @@ class SaleController extends Controller
 //                ]);
 //            }
 
-            $summary = Summary::create([
-                //If product not found add it under other
-                "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
-                "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
-                "sale_id" => $sale->id,
-                "date" => $sale->date,
-                "amount" => $product["totalCost"],
-                "balance" => $product["totalCost"],
-                "quantity" => $product["quantity"],
-                "description" => $product["details"],
-                "units" => $product["units"],
-            ]);
-
-            if($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID){
-                Delivery::create([
-                    "status"=>0,
-                    "quantity_delivered"=>0,
-                    "summary_id"=>$summary->id,
-                    "tracking_number"=> uniqid()
+                $summary = Summary::create([
+                    //If product not found add it under other
+                    "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
+                    "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
+                    "sale_id" => $sale->id,
+                    "date" => $sale->date,
+                    "amount" => $product["totalCost"],
+                    "balance" => $product["totalCost"],
+                    "quantity" => $product["quantity"],
+                    "description" => $product["details"],
+                    "units" => $product["units"],
                 ]);
+
+                if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
+                    Delivery::create([
+                        "status" => 0,
+                        "quantity_delivered" => 0,
+                        "summary_id" => $summary->id,
+                        "tracking_number" => uniqid()
+                    ]);
+                }
             }
+
+            return $sale;
+
+
+        });
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(new SaleResource($sale), 201);
+        else {
+            //Web Response
+            return Redirect::route('sales.index')->with('success', 'Sale created!');
         }
 
 //        create delivery note
@@ -198,13 +218,7 @@ class SaleController extends Controller
 //        $report = (new ReportController())->getCurrentReport();
 //        $report->requestForms()->attach($requestForm);
 
-        if ((new AppController())->isApi($request))
-            //API Response
-            return response()->json(new SaleResource($sale), 201);
-        else {
-            //Web Response
-            return Redirect::route('sales.index')->with('success', 'Sale created!');
-        }
+
     }
 
     public function storeFromQuotation(Request $request, $id)
@@ -221,38 +235,40 @@ class SaleController extends Controller
                 return response()->json(new QuotationResource($quotation));
             } else {
 
-                $sale = Sale::create([
-                    'code' => (new AppController())->generateUniqueCode(true),
-                    'code_alt' => $this->getSaleCodeNumber(),
-                    'status' => 0,
-                    'client_id' => $quotation->client->id,
-                    'total' => $quotation->total,
-                    'balance' => $quotation->total,
-                    'date' => Carbon::now()->getTimestamp(),
-                    'editable' => true,
-                    'location' => $quotation->location,
-                    'recipient_name' => $quotation->recipient_name,
-                    'recipient_profession' => $quotation->recipient_profession,
-                    'recipient_phone_number' => $quotation->recipient_phone_number,
+                $sale = Cache::lock($user->id . ':sales:store', 10)->get(function () use ($quotation, $user, $request) {
 
-                    //Generated by
-                    'user_id' => $user->id,
-                ]);
+                    $sale = Sale::create([
+                        'code' => (new AppController())->generateUniqueCode(true),
+                        'code_alt' => $this->getSaleCodeNumber(),
+                        'status' => 0,
+                        'client_id' => $quotation->client->id,
+                        'total' => $quotation->total,
+                        'balance' => $quotation->total,
+                        'date' => Carbon::now()->getTimestamp(),
+                        'editable' => true,
+                        'location' => $quotation->location,
+                        'recipient_name' => $quotation->recipient_name,
+                        'recipient_profession' => $quotation->recipient_profession,
+                        'recipient_phone_number' => $quotation->recipient_phone_number,
 
-                //Logging
-                SystemLog::create([
-                    "user_id" => Auth::id(),
-                    "message" => "Sale #{$sale->code_alt} created for {$sale->client->name} from Quotation #{$quotation->code}. Total amount is {$sale
+                        //Generated by
+                        'user_id' => $user->id,
+                    ]);
+
+                    //Logging
+                    SystemLog::create([
+                        "user_id" => Auth::id(),
+                        "message" => "Sale #{$sale->code_alt} created for {$sale->client->name} from Quotation #{$quotation->code}. Total amount is {$sale
         ->total}",
-                    "sale_id" => $sale->id,
-                ]);
+                        "sale_id" => $sale->id,
+                    ]);
 
-                $products = json_decode($quotation->information);
+                    $products = json_decode($quotation->information);
 
-                //attach products
-                foreach ($products as $product) {
+                    //attach products
+                    foreach ($products as $product) {
 //            $product_model = Product::find($product["id"]);
-                    $product_variant = ProductVariant::find($product->id);
+                        $product_variant = ProductVariant::find($product->id);
 //                    if (!is_object($product_variant)) {
 //                        $product_model = Product::create([
 //                            "name" => $product->details,
@@ -272,39 +288,43 @@ class SaleController extends Controller
 //                        ]);
 //                    }
 
-                    $summary = Summary::create([
-                        "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
-                        "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
-                        "sale_id" => $sale->id,
-                        "date" => $sale->date,
-                        "amount" => $product->totalCost,
-                        "balance" => $product->totalCost,
-                        "quantity" => $product->quantity,
-                        "description" => $product->details,
-                        "units" => $product->units,
-                    ]);
-
-                    if($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID){
-                        Delivery::create([
-                            "status"=>0,
-                            "quantity_delivered"=>0,
-                            "summary_id"=>$summary->id,
-                            "tracking_number"=> uniqid()
+                        $summary = Summary::create([
+                            "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
+                            "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
+                            "sale_id" => $sale->id,
+                            "date" => $sale->date,
+                            "amount" => $product->totalCost,
+                            "balance" => $product->totalCost,
+                            "quantity" => $product->quantity,
+                            "description" => $product->details,
+                            "units" => $product->units,
                         ]);
+
+                        if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
+                            Delivery::create([
+                                "status" => 0,
+                                "quantity_delivered" => 0,
+                                "summary_id" => $summary->id,
+                                "tracking_number" => uniqid()
+                            ]);
+                        }
+
                     }
 
-                }
+                    $quotation->update([
+                        "sale_id" => $sale->id
+                    ]);
 
-                $quotation->update([
-                    "sale_id" => $sale->id
-                ]);
+                    return $sale;
+
+                });
 
 //                //Create Invoice
 //                (new InvoiceController())->storeFromSale($sale);
 
 
                 //Web Response
-                return Redirect::route("sales.show",["id" => $sale->id])->with("success","Sale created!");
+                return Redirect::route("sales.show", ["id" => $sale->id])->with("success", "Sale created!");
             }
         } else {
             if ((new AppController())->isApi($request)) {
@@ -353,7 +373,7 @@ class SaleController extends Controller
 
         if (is_object($sale)) {
 
-            $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
+            $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
             return Inertia::render('Sales/Edit', [
                 'sale' => new SaleResource($sale),
@@ -368,73 +388,76 @@ class SaleController extends Controller
     public function update(Request $request, $id)
     {
 
+        $user = (new AppController())->getAuthUser($request);
         $sale = sale::find($id);
 
         if (is_object($sale)) {
 
-            //Validate all the important attributes
-            $request->validate([
-                'products' => ['required'],
-                'total' => ['required'],
-            ]);
+            Cache::lock($user->id . ':sales:update', 10)->get(function () use ($user, $request, $sale) {
 
-            //get client info
-            if (isset($request->client_id)) {
+                //Validate all the important attributes
                 $request->validate([
-                    'client_id' => ['required'],
+                    'products' => ['required'],
+                    'total' => ['required'],
                 ]);
 
-                $client = Client::find($request->client_id);
-                if (!is_object($client)) {
-                    if ((new AppController())->isApi($request)) {
-                        //API Response
-                        return response()->json(['message' => "Client not found"], 404);
-                    } else {
-                        //Web Response
-                        return Redirect::back()->with('error', 'Client not found');
+                //get client info
+                if (isset($request->client_id)) {
+                    $request->validate([
+                        'client_id' => ['required'],
+                    ]);
+
+                    $client = Client::find($request->client_id);
+                    if (!is_object($client)) {
+                        if ((new AppController())->isApi($request)) {
+                            //API Response
+                            return response()->json(['message' => "Client not found"], 404);
+                        } else {
+                            //Web Response
+                            return Redirect::back()->with('error', 'Client not found');
+                        }
                     }
+                } else {
+                    $request->validate([
+                        'name' => ['required'],
+                    ]);
+
+                    $client = Client::create([
+                        'name' => $request->name,
+                        'phone_number' => $request->phoneNumber,
+                        'email' => $request->email,
+                        'address' => $request->address,
+                    ]);
                 }
-            } else {
-                $request->validate([
-                    'name' => ['required'],
+
+                $sale->update([
+                    'client_id' => $client->id,
+                    'total' => $request->total,
+                    'balance' => $request->total,
+                    'date' => $request->date ?? $sale->date,
+                    'location' => $request->location,
+                    'recipient_name' => $request->recipient_name,
+                    'recipient_profession' => $request->recipient_profession,
+                    'recipient_phone_number' => $request->recipient_phone_number,
                 ]);
 
-                $client = Client::create([
-                    'name' => $request->name,
-                    'phone_number' => $request->phoneNumber,
-                    'email' => $request->email,
-                    'address' => $request->address,
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Sale #{$sale->code_alt} updated. Total amount is now {$sale->total}",
+                    "sale_id" => $sale->id,
                 ]);
-            }
 
-            $sale->update([
-                'client_id' => $client->id,
-                'total' => $request->total,
-                'balance' => $request->total,
-                'date' => $request->date ?? $sale->date,
-                'location' => $request->location,
-                'recipient_name' => $request->recipient_name,
-                'recipient_profession' => $request->recipient_profession,
-                'recipient_phone_number' => $request->recipient_phone_number,
-            ]);
-
-            //Logging
-            SystemLog::create([
-                "user_id" => Auth::id(),
-                "message" => "Sale #{$sale->code_alt} updated. Total amount is now {$sale->total}",
-                "sale_id" => $sale->id,
-            ]);
-
-            //detach products
-            foreach ($sale->products as $product) {
-                if(isset($product->delivery)){
-                    $product->delivery->delete();
+                //detach products
+                foreach ($sale->products as $product) {
+                    if (isset($product->delivery)) {
+                        $product->delivery->delete();
+                    }
+                    $product->delete();
                 }
-                $product->delete();
-            }
-            //attach products
-            foreach ($request->products as $product) {
-                $product_variant = ProductVariant::find($product["id"]);
+                //attach products
+                foreach ($request->products as $product) {
+                    $product_variant = ProductVariant::find($product["id"]);
 //                if (!is_object($product_variant)) {
 //                    $product_model = Product::create([
 //                        "name" => $product["details"],
@@ -454,32 +477,35 @@ class SaleController extends Controller
 //                    ]);
 //                }
 
-                $summary = Summary::create([
-                    "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
-                    "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
-                    "sale_id" => $sale->id,
-                    "date" => $sale->date,
-                    "amount" => $product["totalCost"],
-                    "balance" => $product["totalCost"],
-                    "quantity" => $product["quantity"],
-                    "description" => $product["details"],
-                    "units" => $product["units"],
-                ]);
-
-                if($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID){
-                    Delivery::create([
-                        "status"=>0,
-                        "quantity_delivered"=>0,
-                        "summary_id"=>$summary->id,
-                        "tracking_number"=> uniqid()
+                    $summary = Summary::create([
+                        "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
+                        "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
+                        "sale_id" => $sale->id,
+                        "date" => $sale->date,
+                        "amount" => $product["totalCost"],
+                        "balance" => $product["totalCost"],
+                        "quantity" => $product["quantity"],
+                        "description" => $product["details"],
+                        "units" => $product["units"],
                     ]);
-                }
-            }
 
-            //Update Invoice
-            if($sale->invoice) {
-                (new InvoiceController())->updateFromSale($sale);
-            }
+                    if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
+                        Delivery::create([
+                            "status" => 0,
+                            "quantity_delivered" => 0,
+                            "summary_id" => $summary->id,
+                            "tracking_number" => uniqid()
+                        ]);
+                    }
+
+                }
+
+                //Update Invoice
+                if ($sale->invoice) {
+                    (new InvoiceController())->updateFromSale($sale);
+                }
+                return true;
+            });
 
             //Run notifications
 //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
@@ -501,8 +527,6 @@ class SaleController extends Controller
     }
 
 
-
-
     public function destroy(Request $request, $id)
     {
         //find out if the request is valid
@@ -515,7 +539,7 @@ class SaleController extends Controller
                 $product->delete();
             }
 
-            if (is_object($sale->quotation)){
+            if (is_object($sale->quotation)) {
                 $sale->quotation->update([
                     "sale_id" => null
                 ]);
@@ -557,7 +581,7 @@ class SaleController extends Controller
         if (is_object($sale)) {
 
             $sale->update([
-                "status" => 2
+                "status" => 3
             ]);
 
             //Logging
@@ -585,22 +609,22 @@ class SaleController extends Controller
         }
     }
 
-    public function print(Request $request,$id)
+    public function print(Request $request, $id)
     {
         //find out if the request is valid
-        $sale=Sale::find($id);
+        $sale = Sale::find($id);
 
-        if(is_object($sale)){
+        if (is_object($sale)) {
 
             /*
                         $pdf=App::make('dompdf.wrapper');
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename="SALE#LL".(new AppController())->getZeroedNumber($sale->code_alt)." - ".$sale->client->name."-".date('Ymd',$sale->date);
+            $filename = "SALE#LL" . (new AppController())->getZeroedNumber($sale->code_alt) . " - " . $sale->client->name . "-" . date('Ymd', $sale->date);
 
-            $now_d= \Illuminate\Support\Carbon::createFromTimestamp($sale->date,'Africa/Lusaka')->format('F j, Y');
-            $now_t=Carbon::createFromTimestamp($sale->date,'Africa/Lusaka')->format('H:i');
+            $now_d = \Illuminate\Support\Carbon::createFromTimestamp($sale->date, 'Africa/Lusaka')->format('F j, Y');
+            $now_t = Carbon::createFromTimestamp($sale->date, 'Africa/Lusaka')->format('H:i');
 
             $total_in_words = SpellNumber::value($sale->total)
                 ->locale('en')
@@ -608,34 +632,34 @@ class SaleController extends Controller
                 ->fraction('Tambala')
                 ->toMoney();
 
-            $total_in_words = str_replace(" of "," ",$total_in_words);
+            $total_in_words = str_replace(" of ", " ", $total_in_words);
 
             $pdf = PDF::loadView('sale', [
-                'code'              => "LL".(new AppController())->getZeroedNumber($sale->code_alt),
-                'date'              => $now_d,
-                'time'              => $now_t,
-                'sale'              => $sale,
-                'total_in_words'    => $total_in_words
+                'code' => "LL" . (new AppController())->getZeroedNumber($sale->code_alt),
+                'date' => $now_d,
+                'time' => $now_t,
+                'sale' => $sale,
+                'total_in_words' => $total_in_words
             ]);
             return $pdf->download("$filename.pdf");
 
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Sale not found"], 404);
-            }else{
+            } else {
                 //Web Response
-                return Redirect::route('dashboard')->with('error','Sale not found');
+                return Redirect::route('dashboard')->with('error', 'Sale not found');
             }
         }
     }
 
     public function getSaleCodeNumber()
     {
-        $last = Sale::orderBy("code_alt","desc")->first();
-        if (is_object($last)){
+        $last = Sale::orderBy("code_alt", "desc")->first();
+        if (is_object($last)) {
             return intval($last->code_alt) + 1;
-        }else{
+        } else {
             return 1;
         }
     }

@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rmunate\Utilities\SpellNumber;
@@ -20,7 +21,7 @@ class ReceiptController extends Controller
 {
     public function index(Request $request)
     {
-        $receipts = Receipt::orderBy("date","desc")->paginate(100);
+        $receipts = Receipt::orderBy("date", "desc")->paginate(100);
 
 
         if ((new AppController())->isApi($request))
@@ -37,26 +38,26 @@ class ReceiptController extends Controller
     public function show(Request $request, $id)
     {
         //find out if the request is valid
-        $receipt=Receipt::find($id);
+        $receipt = Receipt::find($id);
 
-        if(is_object($receipt)){
+        if (is_object($receipt)) {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(new ReceiptResource($receipt));
-            }else{
+            } else {
                 //Web Response
-                return Inertia::render('Receipts/Show',[
+                return Inertia::render('Receipts/Show', [
                     'receipt' => new ReceiptResource($receipt),
                     'sale' => new SaleResource($receipt->sale),
                 ]);
             }
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Receipt not found"], 404);
-            }else{
+            } else {
                 //Web Response
-                return Redirect::route('dashboard')->with('error','Receipt not found');
+                return Redirect::route('dashboard')->with('error', 'Receipt not found');
             }
         }
     }
@@ -70,75 +71,81 @@ class ReceiptController extends Controller
 
         if (is_object($sale)) {
 
-            //Validate all the important attributes
-            $request->validate([
-                'payment_method_id' => ['required'],
-                'information' => ['required'],
-            ]);
+            $receipt = Cache::lock($user->id . ':receipt:store', 10)->get(function () use ($user, $request, $sale) {
 
-            //Checking
-            $total = 0;
-            $filteredProducts=[];
-            foreach ($request->information as $item){
-                $amount = $item["amount"];
-                $total += $amount;
+                //Validate all the important attributes
+                $request->validate([
+                    'payment_method_id' => ['required'],
+                    'information' => ['required'],
+                ]);
 
-                $summary = Summary::findOrFail($item["id"]);
-                if(isset($summary->balance)) {
-                    $balance = $summary->balance - $amount;
-                    if ($balance < 0) {
-                        return Redirect::back()->with("error", "Payment is more than what is required");
+                //Checking
+                $total = 0;
+                $filteredProducts = [];
+                foreach ($request->information as $item) {
+                    $amount = $item["amount"];
+                    $total += $amount;
+
+                    $summary = Summary::findOrFail($item["id"]);
+                    if (isset($summary->balance)) {
+                        $balance = $summary->balance - $amount;
+                        if ($balance < 0) {
+                            return Redirect::back()->with("error", "Payment is more than what is required");
+                        }
+                    }
+                    if ($amount > 0) {
+                        $filteredProducts[] = $item;
                     }
                 }
-                if($amount > 0){
-                    $filteredProducts[] = $item;
+
+                $new_balance = $sale->balance - $total;
+                if ($new_balance < 0) {
+                    return Redirect::back()->with("error", "Payment is more than what is required");
+                } else if ($total <= 0) {
+                    return Redirect::back()->with("error", "Receipt amount is zero");
                 }
-            }
 
-            $new_balance = $sale->balance - $total;
-            if ($new_balance < 0) {
-                return Redirect::back()->with("error", "Payment is more than what is required");
-            }else if ($total <= 0){
-                return Redirect::back()->with("error", "Receipt amount is zero");
-            }
-
-            //Updating data
-            foreach ($filteredProducts as $item){
-                $amount = $item["amount"];
-                $summary = Summary::find($item["id"]);
-                if(isset($summary->balance)) {
-                    $balance = $summary->balance - $amount;
-                    $summary->update([
-                        "balance" => $balance
-                    ]);
+                //Updating data
+                foreach ($filteredProducts as $item) {
+                    $amount = $item["amount"];
+                    $summary = Summary::find($item["id"]);
+                    if (isset($summary->balance)) {
+                        $balance = $summary->balance - $amount;
+                        $summary->update([
+                            "balance" => $balance
+                        ]);
+                    }
                 }
-            }
 
-            $receipt = Receipt::create([
-                'code' => $this->getCodeReceiptNumber(),
-                'client_id' => $sale->client->id,
-                'sale_id' => $sale->id,
-                'payment_method_id' => $request->payment_method_id,
-                'amount' => $total,
-                'reference' => strtoupper($request->reference),
-                'information' => json_encode($filteredProducts),
-                'user_id' => $user->id,
-                'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
-            ]);
+                $receipt = Receipt::create([
+                    'code' => $this->getCodeReceiptNumber(),
+                    'client_id' => $sale->client->id,
+                    'sale_id' => $sale->id,
+                    'payment_method_id' => $request->payment_method_id,
+                    'amount' => $total,
+                    'reference' => strtoupper($request->reference),
+                    'information' => json_encode($filteredProducts),
+                    'user_id' => $user->id,
+                    'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+                ]);
 
-            $sale->update([
-                "balance" => $new_balance,
-                "editable" => false,
-                "status" => $new_balance == 0 ? 2 : 1
-            ]);
+                $sale->update([
+                    "balance" => $new_balance,
+                    "editable" => false,
+                    "status" => $new_balance == 0 ? 2 : 1
+                ]);
 
-            //Logging
-            SystemLog::create([
-                "user_id" => Auth::id(),
-                "message" => "Receipt #{$receipt->code} created for {$sale->client->name} under Sale #{$sale->code_alt}. Total amount received is {$receipt
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Receipt #{$receipt->code} created for {$sale->client->name} under Sale #{$sale->code_alt}. Total amount received is {$receipt
         ->amount}",
-                "sale_id" => $sale->id,
-            ]);
+                    "sale_id" => $sale->id,
+
+                ]);
+
+                return $receipt;
+            });
 
 
             if ((new AppController())->isApi($request))
@@ -155,22 +162,22 @@ class ReceiptController extends Controller
 
     }
 
-    public function print(Request $request,$id)
+    public function print(Request $request, $id)
     {
         //find out if the request is valid
-        $receipt=Receipt::find($id);
+        $receipt = Receipt::find($id);
 
-        if(is_object($receipt)){
+        if (is_object($receipt)) {
 
             /*
                         $pdf=App::make('dompdf.wrapper');
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename="RECEIPT#".(new AppController())->getZeroedNumber($receipt->code)." - ".$receipt->client->name."-".date('Ymd',$receipt->date);
+            $filename = "RECEIPT#" . (new AppController())->getZeroedNumber($receipt->code) . " - " . $receipt->client->name . "-" . date('Ymd', $receipt->date);
 
-            $now_d=Carbon::createFromTimestamp($receipt->date,'Africa/Lusaka')->format('F j, Y');
-            $now_t=Carbon::createFromTimestamp($receipt->date,'Africa/Lusaka')->format('H:i');
+            $now_d = Carbon::createFromTimestamp($receipt->date, 'Africa/Lusaka')->format('F j, Y');
+            $now_t = Carbon::createFromTimestamp($receipt->date, 'Africa/Lusaka')->format('H:i');
 
             $total_in_words = SpellNumber::value($receipt->amount)
                 ->locale('en')
@@ -178,26 +185,26 @@ class ReceiptController extends Controller
                 ->fraction('Tambala')
                 ->toMoney();
 
-            $total_in_words = str_replace(" of "," ",$total_in_words);
+            $total_in_words = str_replace(" of ", " ", $total_in_words);
 
             $pdf = PDF::loadView('receipt', [
-                'code'              => (new AppController())->getZeroedNumber($receipt->code),
-                'date'              => $now_d,
-                'time'              => $now_t,
-                'receipt'           => new ReceiptResource($receipt),
-                'total_in_words'    => $total_in_words
+                'code' => (new AppController())->getZeroedNumber($receipt->code),
+                'date' => $now_d,
+                'time' => $now_t,
+                'receipt' => new ReceiptResource($receipt),
+                'total_in_words' => $total_in_words
             ]);
             return $pdf->download("$filename.pdf");
 
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Invoice not found"], 404);
-            }else{
+            } else {
 
 
                 //Web Response
-                return Redirect::route('dashboard')->with('error','Invoice not found');
+                return Redirect::route('dashboard')->with('error', 'Invoice not found');
             }
         }
 

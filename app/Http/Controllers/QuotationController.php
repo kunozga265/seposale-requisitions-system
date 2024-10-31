@@ -11,6 +11,7 @@ use App\Models\Quotation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rmunate\Utilities\SpellNumber;
@@ -102,23 +103,27 @@ class QuotationController extends Controller
             ]);
         }
 
-        $quotation = Quotation::create([
-            'code' => $this->getCodeNumber(),
+        $quotation = Cache::lock($user->id . ':quotation:store', 10)->get(function () use ($client, $user, $request) {
 
-            //Customer Details
-            'client_id' => $client->id,
-            'location' => $request->location,
-            'recipient_name' => $request->recipient_name,
-            'recipient_profession' => $request->recipient_profession,
-            'recipient_phone_number' => $request->recipient_phone_number,
+            return Quotation::create([
+                'code' => $this->getCodeNumber(),
 
-            'information' => json_encode($request->information),
-            'total' => $request->total,
+                //Customer Details
+                'client_id' => $client->id,
+                'location' => $request->location,
+                'recipient_name' => $request->recipient_name,
+                'recipient_profession' => $request->recipient_profession,
+                'recipient_phone_number' => $request->recipient_phone_number,
 
-            //Requested by
-            'user_id' => $user->id,
-            'quotes' => json_encode($request->quotes ?? []),
-        ]);
+                'information' => json_encode($request->information),
+                'total' => $request->total,
+
+                //Requested by
+                'user_id' => $user->id,
+                'quotes' => json_encode($request->quotes ?? []),
+            ]);
+
+        });
 
         //Run notifications
 //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
@@ -182,6 +187,8 @@ class QuotationController extends Controller
 
     public function update(Request $request, $id)
     {
+        //get user
+        $user = (new AppController())->getAuthUser($request);
 
         $quotation=Quotation::find($id);
 
@@ -222,20 +229,25 @@ class QuotationController extends Controller
                 ]);
             }
 
-            $quotation->update([
-                //Customer Details
-                'client_id' => $client->id,
-                'location' => $request->location,
-                'recipient_name' => $request->recipient_name,
-                'recipient_profession' => $request->recipient_profession,
-                'recipient_phone_number' => $request->recipient_phone_number,
+            Cache::lock($user->id . ':quotation:update', 10)->get(function () use ($quotation, $client, $user, $request) {
 
-                'information' => json_encode($request->information),
-                'total' => $request->total,
+                $quotation->update([
+                    //Customer Details
+                    'client_id' => $client->id,
+                    'location' => $request->location,
+                    'recipient_name' => $request->recipient_name,
+                    'recipient_profession' => $request->recipient_profession,
+                    'recipient_phone_number' => $request->recipient_phone_number,
 
-                //Requested by
-                'quotes' => json_encode($request->quotes ?? []),
-            ]);
+                    'information' => json_encode($request->information),
+                    'total' => $request->total,
+
+                    //Requested by
+                    'quotes' => json_encode($request->quotes ?? []),
+                ]);
+
+                return true;
+            });
 
             //Run notifications
 //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");

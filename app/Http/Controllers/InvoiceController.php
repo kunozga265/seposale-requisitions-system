@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\SaleResource;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\Sale;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rmunate\Utilities\SpellNumber;
@@ -99,6 +101,9 @@ class InvoiceController extends Controller
 
     public function storeFromSale(Request $request, $id)
     {
+        //get user
+        $user = (new AppController())->getAuthUser($request);
+
         $sale = sale::find($id);
 
         if (is_object($sale)) {
@@ -107,12 +112,15 @@ class InvoiceController extends Controller
                 return response()->json(new SaleResource($sale));
             } else {
 
-                $invoice = Invoice::create([
-                    'code' => $this->getCodeNumber(),
-                    'revision' => 0,
-                    'client_id' => $sale->client->id,
-                    'sale_id' => $sale->id,
-                ]);
+                $invoice = Cache::lock($user->id . ':invoices:store', 10)->get(function () use ($user, $request, $sale) {
+
+                    return Invoice::create([
+                        'code' => $this->getCodeNumber(),
+                        'revision' => 0,
+                        'client_id' => $sale->client->id,
+                        'sale_id' => $sale->id,
+                    ]);
+                });
 
                 return Redirect::route("invoices.show",["id"=>$invoice->id])->with("success","Invoice generated");
             }
