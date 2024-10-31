@@ -126,7 +126,7 @@ class RequestFormController extends Controller
         $unverifiedProjects=Project::where('verified',0)->get();
 
         //generate sales
-        $sales = Sale::where("status","<",2)->get();
+        $sales = Sale::where("status","<",2)->orderBy("date","desc")->get();
 
         if ((new AppController())->isApi($request))
             //API Response
