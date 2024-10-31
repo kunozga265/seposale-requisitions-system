@@ -8,10 +8,10 @@
     <title>Document</title>
 
     <style>
-        *{
-            font-family: 'Inter',sans-serif;
-            text-transform: uppercase;
-            font-size: 11px;
+        * {
+            font-family: 'Inter', sans-serif;
+            text-transform: none;
+            font-size: 12px;
         }
 
         @font-face {
@@ -19,6 +19,7 @@
             font-weight: bold;
             src: url({{storage_path()."/fonts/Exo2-Bold.ttf"}}) format("ttf");
         }
+
         @font-face {
             font-family: 'Rubik';
             font-weight: bold;
@@ -37,79 +38,74 @@
             src: url({{storage_path("/fonts/Inter-Bold.ttf")}}) format("ttf");
         }
 
-        table{
-            margin: 12px 0;
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        td,th{
+        td, th {
             border: 1px solid;
             padding: 14px 6px;
             text-align: left;
         }
 
-        .heading{
-            font-family: 'Rubik', sans-serif;
-            font-size: 12px;
-            padding-bottom: 8px;
-            font-weight: bold;
+        table {
+            margin: 12px 0;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
         }
 
-        .grid{
-            display: flex;
-            justify-content: space-between;
-            /*grid-template-columns:repeat(2,minmax(0,1fr))*/
+        table.details {
+            margin-left: -6px;
         }
 
-        /*    .grid > div{
-                width: 50%;
-            }*/
-
-        .section{
-            width: 340px;
-        }
-
-        .flex{
-            display: flex;
-        }
-
-        .justify-between{
-            justify-content: space-between;
-        }
-
-        td.spacer{
-            padding: 8px;
-        }
-
-        td.shade{
-            background-color: #f2f2f2;
-            /*font-size: 10px;*/
-            /*text-transform: none;*/
-            min-width: 150px;
-        }
-
-        th.shade{
-            background-color: rgb(217, 217, 217);
-
-        }
-
-        .b-0{
+        table.details td {
+            padding: 2px 8px;
             border: none;
         }
 
-        .bt-1{
-            border-top: 1px solid black;
+        table.details tr td:first-child {
+            width: 150px;
+            margin-left: -6px;
         }
 
-        .font-bold{
+        table.details tr:nth-child(odd) {
+            /*background-color: #f2f2f2;*/
+        }
+
+        table.summary td, table.summary th {
+            border: 1px solid;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.summary th {
+            background-color: rgb(217, 217, 217);
+            text-transform: none;
+        }
+
+        table.summary .total td {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        table.summary .total-in-words {
+            font-weight: bold;
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        .heading {
+            font-family: 'Rubik', sans-serif;
+            font-size: 14px;
+            /*padding-bottom: 8px;*/
+            font-weight: bold;
+            margin: 24px 0 8px;
+        }
+
+        .b-0 {
+            border: none;
+        }
+
+        .font-bold {
             font-weight: bold;
         }
-
-        .font-bolder{
-            font-weight: bolder;
-        }
-
 
     </style>
 </head>
@@ -119,82 +115,69 @@
 <div style="padding: 0 20px">
     <div style="margin: 30px 0">
         <div style="float: right">
-            <div style="font-size: 11px; margin-left: 12px; border: 1px solid black; padding: 14px 40px; text-transform: uppercase">
+            <div
+                style=" margin-left: 12px; padding:0; text-transform: capitalize">
                 {{$date}}
             </div>
         </div>
-        <div style="font-size: 25px; font-weight: normal; margin-top:12px">Quotation: <span style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
+        <div style="font-size: 25px; font-weight: normal; margin-top:0">Quotation: <span
+                style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
 
     </div>
 
     {{--<div style="text-align: center; font-size: 16px; font-weight: normal">Code: {{$quotation->code}}</div>--}}
 
 
-    <table>
-        <p class="heading">Customer Details</p>
-        <tr>
-            <td class="b-0 bt-1 font-bold">Name</td>
-            <td class="b-0 bt-1 shade" colspan="3">{{$quotation->client->name}}</td>
-        </tr>
-        <tr>
-            <td class="b-0 spacer"></td>
-            <td class="b-0 spacer"></td>
-        </tr>
-        <tr>
-            @if(isset($quotation->client->phone_number))
-            <td class="b-0 font-bold">Phone Number</td>
-            <td class="b-0 shade">{{$quotation->client->phone_number}}</td>
-
-            @endif
-            @if(isset($quotation->client->email))
-
-            <td class="b-0 font-bold">Email</td>
-            <td class="b-0 shade" style="text-transform: lowercase">{{$quotation->client->email}}</td>
-                @endif
-        </tr>
-        <tr>
-            <td class="b-0 spacer"></td>
-            <td class="b-0 spacer"></td>
-        </tr>
-        <tr>
-
-        </tr>
+    <p class="heading">Customer Details</p>
+    <table class="details">
 
         <tr>
-            @if(isset($quotation->client->address))
-            <td class="b-0 font-bold">Address</td>
-            <td class="b-0 shade">{{$quotation->client->address}}</td>
-            @endif
-            <td class="b-0 font-bold">Location</td>
-            <td class="b-0 shade">{{$quotation->location}}</td>
+            <td class="">Name:</td>
+            <td class="">{{$quotation->client->name}}</td>
         </tr>
-        <tr>
-            <td class="b-0 spacer"></td>
-            <td class="b-0 spacer"></td>
-        </tr>
-        <tr>
-            @if(isset($quotation->recipient_name))
-            <td class="b-0 font-bold">Contact Name</td>
-            <td class="b-0 shade">{{$quotation->recipient_name}}</td>
-            @endif
-            @if(isset($quotation->recipient_phone_number))
-            <td class="b-0 font-bold">Contact Number</td>
-            <td class="b-0 shade">{{$quotation->recipient_phone_number}}</td>
-            @endif
-        </tr>
-        <tr>
-            <td class="b-0 spacer"></td>
-            <td class="b-0 spacer"></td>
-        </tr>
-        <tr>
+        @if(isset($quotation->client->phone_number))
+            <tr>
+                <td class="">Phone Number:</td>
+                <td class="">{{$quotation->client->phone_number}}</td>
 
+            </tr>
+        @endif
+        @if(isset($quotation->client->email))
+            <tr>
+                <td class="">Email:</td>
+                <td class="" style="text-transform: lowercase">{{$quotation->client->email}}</td>
+            </tr>
+        @endif
+        @if(isset($quotation->client->address))
+            <tr>
+                <td class="">Address:</td>
+                <td class="">{{$quotation->client->address}}</td>
+            </tr>
+        @endif
+        <tr>
+            <td class="">Site Location:</td>
+            <td class="">{{$quotation->location}}</td>
         </tr>
+        @if(isset($quotation->recipient_name))
+            <tr>
+
+                <td class="">Contact Name:</td>
+                <td class="">{{$quotation->recipient_name}}</td>
+            </tr>
+        @endif
+        @if(isset($quotation->recipient_phone_number))
+            <tr>
+                <td class="b-0 font-bold">Contact Number:</td>
+                <td class="">{{$quotation->recipient_phone_number}}</td>
+            </tr>
+        @endif
+
 
     </table>
 
+    <p class="heading">Products and Services</p>
+    <table class="summary">
 
-    <table>
-        <p class="heading">Products and Services</p>
         <thead>
         <tr>
             <th class="shade">Details</th>
@@ -207,27 +190,27 @@
         <tbody>
         @foreach(json_decode($quotation->information) as $info)
             <tr>
-                <td style="text-transform: uppercase">{{$info->details}}</td>
+                <td style="text-transform: none">{{$info->details}}</td>
                 <td style="text-align: center">{{$info->units ?? ""}}</td>
                 <td style="text-align: center">{{number_format($info->quantity,2)}}</td>
                 <td style="text-align: right">{{number_format($info->unitCost,2)}}</td>
                 <td style="text-align: right">{{number_format($info->totalCost,2)}}</td>
             </tr>
         @endforeach
-        <tr>
-            <td style="text-align: right; font-weight: bolder" colspan="4">Total</td>
-            <td style="text-align: right" >{{number_format($quotation->total,2)}}</td>
+        <tr class="total">
+            <td colspan="4">Total</td>
+            <td>{{number_format($quotation->total,2)}}</td>
         </tr>
         <tr>
-            <td colspan="5" style="text-align: center;" class="font-bold">
-                {{$total_in_words}} ONLY
+            <td colspan="5" class="total-in-words">
+                {{$total_in_words}} Only
             </td>
         </tr>
         </tbody>
     </table>
 
     <div style="margin-top: 24px">
-        <div>PREPARED BY</div>
+        <div>Prepared By</div>
         <div class="font-bold">{{$quotation->user->fullName()}}</div>
     </div>
 
@@ -237,17 +220,17 @@
                 <img style="width: 40px" src="{{storage_path()."/images/nb.png"}}" alt="">
             </td>
             <td class="b-0">
-                <div style="font-size: 8px">National Bank Acc #</div>
+                <div style="font-size: 10px">National Bank Account Number</div>
                 <div style="font-size: 20px; font-weight: normal">1008405545</div>
-                <div style="font-size: 8px">Gateway Mall Branch</div>
+                <div style="font-size: 12px">Gateway Mall Branch</div>
             </td>
             <td class="b-0" style="width: 45px">
                 <img style="width: 40px" src="{{storage_path()."/images/std.png"}}" alt="">
             </td>
             <td class="b-0">
-                <div style="font-size: 8px">Standard Bank Acc #</div>
+                <div style="font-size: 10px">Standard Bank Account Number</div>
                 <div style="font-size: 20px; font-weight: normal">9100006110794</div>
-                <div style="font-size: 8px">Gateway Mall Branch</div>
+                <div style="font-size: 12px">Gateway Mall Branch</div>
             </td>
         </tr>
     </table>

@@ -10,8 +10,8 @@
     <style>
         * {
             font-family: 'Inter', sans-serif;
-            /*text-transform: uppercase;*/
-            font-size: 13px;
+            text-transform: none;
+            font-size: 12px;
         }
 
         @font-face {
@@ -38,96 +38,71 @@
             src: url({{storage_path("/fonts/Inter-Bold.ttf")}}) format("ttf");
         }
 
-        table {
-            margin: 12px 0;
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
         td, th {
             border: 1px solid;
-            /*padding: 14px 6px;*/
+            padding: 14px 6px;
             text-align: left;
         }
 
-        .services td, .services th {
-            padding: 6px 6px;
-            /*font-size: 11px;*/
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        table.details {
+            margin: 12px 0 0 -12px;
+        }
+        table.details td {
+            padding: 2px 6px;
+            border: none;
+
+        }
+
+        table.details tr td:first-child {
+            /*width: 100px;*/
+            margin-left: -6px;
+        }
+
+        table.details tr:nth-child(odd) {
+            /*background-color: #f2f2f2;*/
+        }
+
+        table.summary td, table.summary th {
+            border: 1px solid;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.summary th {
+            background-color: rgb(217, 217, 217);
+            text-transform: none;
+        }
+
+        table.summary .total td{
+            font-weight: bold;
+            text-align: right;
+        }
+        table.summary .total-in-words{
+            font-weight: bold;
+            text-align: center;
             text-transform: capitalize;
         }
 
         .heading {
             font-family: 'Rubik', sans-serif;
-            font-size: 16px;
+            font-size: 14px;
             /*padding-bottom: 8px;*/
             font-weight: bold;
-        }
-
-        .grid {
-            display: flex;
-            justify-content: space-between;
-            /*grid-template-columns:repeat(2,minmax(0,1fr))*/
-        }
-
-        /*    .grid > div{
-                width: 50%;
-            }*/
-
-        .section {
-            width: 340px;
-        }
-
-        .flex {
-            display: flex;
-        }
-
-        .justify-between {
-            justify-content: space-between;
-        }
-
-        td.spacer {
-            padding: 8px;
-        }
-
-        td.shade {
-            background-color: #f2f2f2;
-            /*font-size: 10px;*/
-            /*text-transform: none;*/
-            min-width: 150px;
-        }
-
-        th.shade {
-            background-color: rgb(217, 217, 217);
-
+            margin: 24px 0 8px;
         }
 
         .b-0 {
             border: none;
         }
 
-        .bt-1 {
-            border-top: 1px solid black;
-        }
-
         .font-bold {
             font-weight: bold;
-        }
-
-        .font-bolder {
-            font-weight: bolder;
-        }
-
-        .details td {
-            vertical-align: top;
-        }
-
-        .details {
-            margin-bottom: 20px;
-        }
-
-        .details td {
-            border: none;
         }
 
 
@@ -137,61 +112,58 @@
 {{--<p style="text-align: right; font-size: 12px">Generated on {{$date}} at {{$time}}</p>--}}
 <img style="width: 100%" src="{{storage_path()."/images/banner.png"}}" alt="">
 <div style="padding: 0 20px">
-    <div style="margin: 30px 0 20px">
+    <div style="margin: 30px 0 0">
         <div style="float: right">
             <div
-                    style="font-size: 11px; margin: 12px 0 16px 0; border: 1px solid black; padding: 10px 35px; text-transform: uppercase">
+                style=" margin-left: 12px; padding:0; text-transform: capitalize">
                 {{$date}}
             </div>
-
-            {{--            <div>Ref No: {{$code}}</div>--}}
-            {{--            <div style="margin-top: 16px">{{$date}}</div>--}}
         </div>
-        <div style="font-size: 28px; font-weight: bold; margin-top:12px">Sales Order:
+        <div style="font-size: 25px; font-weight: normal; margin-top:0px">Sales Order:
             <span
-                    style="color:red; font-size: 25px; font-weight: bold; ">#{{$code}}</span>
+                    style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span>
         </div>
 
     </div>
 
     {{--<div style="text-align: center; font-size: 16px; font-weight: normal">Code: {{$sale->code}}</div>--}}
 
-    <table class="details">
+    <table >
 
         <tr>
-            <td class="b-0">
-                <table>
+            <td class="b-0" style="vertical-align: top;">
+                <table class="details">
                     <tr>
                         <td class="b-0" colspan="2">
                             <span class="heading" style="margin-bottom: 0">Customer Details</span>
                         </td>
                     </tr>
                     <tr>
-                        {{--                        <td class="b-0">Name:</td>--}}
+                                                <td class="b-0">Name:</td>
                         <td class="b-0"> {{$sale->client->name}}</td>
                     </tr>
                     @if(isset($sale->client->phone_number))
                         <tr>
-                            {{--                            <td class="b-0">Phone Number:</td>--}}
+                                                        <td class="b-0">Phone Number:</td>
                             <td class="b-0"> {{$sale->client->phone_number}}</td>
                         </tr>
                     @endif
                     @if(isset($sale->client->email))
                         <tr>
-                            {{--                            <td class="b-0">Email:</td>--}}
+                                                        <td class="b-0">Email:</td>
                             <td class="b-0"> {{$sale->client->email}}</td>
                         </tr>
                     @endif
                     @if(isset($sale->client->address))
                         <tr>
-                            {{--                            <td class="b-0">Address:</td>--}}
+                                                        <td class="b-0">Address:</td>
                             <td class="b-0"> {{$sale->client->address}}</td>
                         </tr>
                     @endif
                 </table>
             </td>
-            <td class="b-0">
-                <table>
+            <td class="b-0" style="vertical-align: top;">
+                <table class="details">
                     {{--                    <tr>--}}
                     {{--                        <td colspan="2">--}}
                     {{--                            <span class="heading" style="margin-bottom: 0">Order Details</span>--}}
@@ -200,33 +172,37 @@
                     {{--                   --}}
                     {{--                    <tr><td class="spacer"></td></tr>--}}
                     <tr>
-                        <td style="text-align: right"><span class="heading"
+                        <td style="text-align: left" colspan="2"><span class="heading"
                                                             style="margin-bottom: 0; ">Delivery Details</span></td>
                     </tr>
                     @if(isset($sale->recipient_name))
                         <tr>
-                            <td style="text-align: right">
+                              <td class="b-0">Contact Name:</td>
+                            <td style="text-align: left">
                                 {{$sale->recipient_name}}
                             </td>
                         </tr>
                     @endif
-                    @if(isset($sale->recipient_profession))
-                        <tr>
-                            <td style="text-align: right">
-                                {{$sale->recipient_profession}}
-                            </td>
-                        </tr>
-                    @endif
+{{--                    @if(isset($sale->recipient_profession))--}}
+{{--                        <tr>--}}
+{{--                              <td class="b-0">Address:</td>--}}
+{{--                            <td style="text-align: left">--}}
+{{--                                {{$sale->recipient_profession}}--}}
+{{--                            </td>--}}
+{{--                        </tr>--}}
+{{--                    @endif--}}
                     @if(isset($sale->recipient_phone_number))
                         <tr>
-                            <td style="text-align: right">
+                              <td class="b-0">Phone Number:</td>
+                            <td style="text-align: left">
                                 {{$sale->recipient_phone_number}}
                             </td>
                         </tr>
                     @endif
                     @if(isset($sale->location))
                         <tr>
-                            <td style="text-align: right">
+                              <td class="b-0">Location:</td>
+                            <td style="text-align: left">
                                 {{$sale->location}}
                             </td>
                         </tr>
@@ -237,7 +213,7 @@
     </table>
 
     <div class="heading">Products and Services</div>
-    <table class="services">
+    <table class="summary">
         <thead>
         <tr>
             <th class="shade">Details</th>
@@ -250,42 +226,42 @@
         <tbody>
         @foreach($sale->products as $productCompound)
             <tr>
-                <td style="text-transform: uppercase">{{$productCompound->description}}</td>
+                <td style="text-transform: none">{{$productCompound->description}}</td>
                 <td style="text-align: center">{{$productCompound->units}}</td>
                 <td style="text-align: center">{{number_format($productCompound->quantity,2)}}</td>
                 <td style="text-align: right">{{number_format($productCompound->amount/$productCompound->quantity,2)}}</td>
                 <td style="text-align: right">{{number_format($productCompound->amount,2)}}</td>
             </tr>
         @endforeach
-        <tr>
-            <td style="text-align: right; font-weight: bolder" colspan="4">Total</td>
-            <td style="text-align: right">{{number_format($sale->total,2)}}</td>
+        <tr class="total">
+            <td colspan="4">Total</td>
+            <td >{{number_format($sale->total,2)}}</td>
         </tr>
         <tr>
-            <td colspan="5" style="text-align: center;" class="font-bold">
+            <td colspan="5" class="total-in-words">
                 {{$total_in_words}} Only
             </td>
         </tr>
         </tbody>
     </table>
 
-    <table style="margin-top:40px">
+    <table style="margin-top:30px">
         <tr class="">
             <td class="b-0" style="width: 45px">
                 <img style="width: 40px" src="{{storage_path()."/images/nb.png"}}" alt="">
             </td>
             <td class="b-0">
-                <div style="font-size: 8px">National Bank Acc #</div>
+                <div style="font-size: 10px">National Bank Account Number</div>
                 <div style="font-size: 20px; font-weight: normal">1008405545</div>
-                <div style="font-size: 8px">Gateway Mall Branch</div>
+                <div style="font-size: 12px">Gateway Mall Branch</div>
             </td>
             <td class="b-0" style="width: 45px">
                 <img style="width: 40px" src="{{storage_path()."/images/std.png"}}" alt="">
             </td>
             <td class="b-0">
-                <div style="font-size: 8px">Standard Bank Acc #</div>
+                <div style="font-size: 10px">Standard Bank Account Number</div>
                 <div style="font-size: 20px; font-weight: normal">9100006110794</div>
-                <div style="font-size: 8px">Gateway Mall Branch</div>
+                <div style="font-size: 12px">Gateway Mall Branch</div>
             </td>
         </tr>
     </table>

@@ -10,7 +10,7 @@
     <style>
         * {
             font-family: 'Inter', sans-serif;
-            /*text-transform: uppercase;*/
+            text-transform: none;
             font-size: 12px;
         }
 
@@ -38,11 +38,57 @@
             src: url({{storage_path("/fonts/Inter-Bold.ttf")}}) format("ttf");
         }
 
+        td, th {
+            border: 1px solid;
+            padding: 14px 6px;
+            text-align: left;
+        }
+
         table {
-            /*margin: 12px 0;*/
+            margin: 12px 0;
             width: 100%;
             border-collapse: collapse;
+            font-size: 14px;
+        }
 
+        table.details {
+            margin-left: -6px;
+        }
+
+        table.details td {
+            padding: 2px 8px;
+            border: none;
+        }
+
+        table.details tr td:first-child {
+            width: 150px;
+            margin-left: -6px;
+        }
+
+        table.details tr:nth-child(odd) {
+            /*background-color: #f2f2f2;*/
+        }
+
+        table.summary td, table.summary th {
+            border: 1px solid;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.summary th {
+            background-color: rgb(217, 217, 217);
+            text-transform: none;
+        }
+
+        table.summary .total td {
+            font-weight: bold;
+            text-align: right;
+        }
+
+        table.summary .total-in-words {
+            font-weight: bold;
+            text-align: center;
+            text-transform: capitalize;
         }
 
         .heading {
@@ -53,30 +99,12 @@
             margin: 24px 0 8px;
         }
 
-        table.details td {
-            padding: 2px 6px;
-            font-size: 12px;
+        .b-0 {
             border: none;
         }
 
-        table.details tr td:first-child {
-            width: 150px;
-        }
-
-        table.details tr:nth-child(odd) {
-            background-color: #f2f2f2;
-        }
-
-        table.summary td, table.summary th {
-            border: 1px solid;
-            padding: 14px 6px;
-            text-align: left;
-        }
-
-        table.summary th {
-            text-transform: uppercase;
-            background-color: rgb(217, 217, 217);
-            font-size: 11px;
+        .font-bold {
+            font-weight: bold;
         }
 
     </style>
@@ -86,15 +114,17 @@
 <img style="width: 100%" src="{{storage_path()."/images/banner.png"}}" alt="">
 <div style="padding: 0 20px">
     <div style="margin: 30px 0">
-        {{--        <div style="float: right">--}}
-        {{--            <div style="font-size: 11px; margin-left: 12px; border: 1px solid black; padding: 14px 40px; text-transform: uppercase">--}}
-        {{--                {{$date}}--}}
-        {{--            </div>--}}
-        {{--        </div>--}}
+        <div style="float: right">
+            <div
+                style=" margin-left: 12px; padding:0; text-transform: capitalize">
+                {{\Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('F j, Y')}}
+            </div>
+        </div>
         <div style="font-size: 25px; margin-top:12px">Delivery Note: <span
                 style="color:red; font-size: 25px; font-weight: normal; ">#{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->code)}}</span>
         </div>
-        <div>Sales Order: #{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->summary->sale->code_alt)}}</div>
+        <div>Sales Order:
+            #{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->summary->sale->code_alt)}}</div>
 
 
     </div>
@@ -127,14 +157,14 @@
                 <td class="b-0">{{$delivery->summary->sale->client->address}}</td>
             </tr>
         @endif
-        @if(isset($delivery->summary->sale->location))
-            <tr>
-                <td class="b-0">Site Location</td>
-                <td class="b-0">
-                    {{$delivery->summary->sale->location}}
-                </td>
-            </tr>
-        @endif
+        {{--        @if(isset($delivery->summary->sale->location))--}}
+        {{--            <tr>--}}
+        {{--                <td class="b-0">Site Location</td>--}}
+        {{--                <td class="b-0">--}}
+        {{--                    {{$delivery->summary->sale->location}}--}}
+        {{--                </td>--}}
+        {{--            </tr>--}}
+        {{--        @endif--}}
         @if(isset($delivery->summary->sale->recipient_name))
             <tr>
                 <td class="b-0">Contact Name</td>
@@ -160,37 +190,51 @@
             </tr>
         @endif
     </table>
-    <div class="heading">Product Details</div>
+
+    <div class="heading"></div>
+
+    <div style="float: right">
+        <div style="font-weight: normal; font-size: 18px; text-align: right">
+            {{$delivery->quantity_delivered}}/{{$delivery->summary->quantity}}
+        </div>
+        <div style="text-align: right">Quantity Delivered</div>
+    </div>
+    <div style="font-weight: normal; font-size: 18px">{{$delivery->summary->fullname()}}</div>
+    @if(isset($delivery->summary->sale->location))
+        <div> {{$delivery->summary->sale->location}}</div>
+    @endif
+
+
     <table class="details">
 
-        <tr>
-            <td class="b-0">Date</td>
-            <td class="b-0"
-                colspan="3">{{\Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('F j, Y')}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Tracking Number</td>
-            <td class="b-0"
-                colspan="3">{{$delivery->tracking_number}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Name</td>
-            <td class="b-0" colspan="3">{{$delivery->summary->fullname()}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Quantity</td>
-            <td class="b-0" colspan="3">{{$delivery->summary->quantity}}</td>
-        </tr>
-        <tr>
-            <td class="b-0">Delivered</td>
-            <td class="b-0" colspan="3">{{$delivery->quantity_delivered}}</td>
-        </tr>
+        {{--        <tr>--}}
+        {{--            <td class="b-0">Date</td>--}}
+        {{--            <td class="b-0"--}}
+        {{--                colspan="3">{{\Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('F j, Y')}}</td>--}}
+        {{--        </tr>--}}
+        {{--        <tr>--}}
+        {{--            <td class="b-0">Tracking Number</td>--}}
+        {{--            <td class="b-0"--}}
+        {{--                colspan="3">{{$delivery->tracking_number}}</td>--}}
+        {{--        </tr>--}}
+        {{--        <tr>--}}
+        {{--            <td class="b-0">Product</td>--}}
+        {{--            <td class="b-0" colspan="3">{{$delivery->summary->fullname()}}</td>--}}
+        {{--        </tr>--}}
+        {{--        <tr>--}}
+        {{--            <td class="b-0">Ordered</td>--}}
+        {{--            <td class="b-0" colspan="3">{{$delivery->summary->quantity}}</td>--}}
+        {{--        </tr>--}}
+        {{--        <tr>--}}
+        {{--            <td class="b-0">Delivered</td>--}}
+        {{--            <td class="b-0" colspan="3">{{$delivery->quantity_delivered}}</td>--}}
+        {{--        </tr>--}}
 
     </table>
 
     @if($delivery->notes !=  null)
 
-        <p class="heading">Summary</p>
+        {{--        <p class="heading">Summary</p>--}}
         <table class="summary">
             <thead>
             <tr>
