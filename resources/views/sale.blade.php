@@ -51,16 +51,17 @@
         }
 
         table.details {
-            margin: 12px 0 0 -12px;
+            margin-left: -6px;
         }
+
         table.details td {
-            padding: 2px 6px;
+            padding: 2px 8px;
             border: none;
 
         }
 
         table.details tr td:first-child {
-            /*width: 100px;*/
+            width: 150px;
             margin-left: -6px;
         }
 
@@ -79,11 +80,12 @@
             text-transform: none;
         }
 
-        table.summary .total td{
+        table.summary .total td {
             font-weight: bold;
             text-align: right;
         }
-        table.summary .total-in-words{
+
+        table.summary .total-in-words {
             font-weight: bold;
             text-align: center;
             text-transform: capitalize;
@@ -121,96 +123,87 @@
         </div>
         <div style="font-size: 25px; font-weight: normal; margin-top:0px">Sales Order:
             <span
-                    style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span>
+                style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span>
         </div>
 
     </div>
 
     {{--<div style="text-align: center; font-size: 16px; font-weight: normal">Code: {{$sale->code}}</div>--}}
 
-    <table >
+    {{--    <table >--}}
+
+    {{--        <tr>--}}
+    {{--            <td class="b-0" style="vertical-align: top;">--}}
+    <p class="heading" style="margin-bottom: 0">Customer Details</p>
+    <table class="details">
 
         <tr>
-            <td class="b-0" style="vertical-align: top;">
-                <table class="details">
-                    <tr>
-                        <td class="b-0" colspan="2">
-                            <span class="heading" style="margin-bottom: 0">Customer Details</span>
-                        </td>
-                    </tr>
-                    <tr>
-                                                <td class="b-0">Name:</td>
-                        <td class="b-0"> {{$sale->client->name}}</td>
-                    </tr>
-                    @if(isset($sale->client->phone_number))
-                        <tr>
-                                                        <td class="b-0">Phone Number:</td>
-                            <td class="b-0"> {{$sale->client->phone_number}}</td>
-                        </tr>
-                    @endif
-                    @if(isset($sale->client->email))
-                        <tr>
-                                                        <td class="b-0">Email:</td>
-                            <td class="b-0"> {{$sale->client->email}}</td>
-                        </tr>
-                    @endif
-                    @if(isset($sale->client->address))
-                        <tr>
-                                                        <td class="b-0">Address:</td>
-                            <td class="b-0"> {{$sale->client->address}}</td>
-                        </tr>
-                    @endif
-                </table>
-            </td>
-            <td class="b-0" style="vertical-align: top;">
-                <table class="details">
-                    {{--                    <tr>--}}
-                    {{--                        <td colspan="2">--}}
-                    {{--                            <span class="heading" style="margin-bottom: 0">Order Details</span>--}}
-                    {{--                        </td>--}}
-                    {{--                    </tr>--}}
-                    {{--                   --}}
-                    {{--                    <tr><td class="spacer"></td></tr>--}}
-                    <tr>
-                        <td style="text-align: left" colspan="2"><span class="heading"
-                                                            style="margin-bottom: 0; ">Delivery Details</span></td>
-                    </tr>
-                    @if(isset($sale->recipient_name))
-                        <tr>
-                              <td class="b-0">Contact Name:</td>
-                            <td style="text-align: left">
-                                {{$sale->recipient_name}}
-                            </td>
-                        </tr>
-                    @endif
-{{--                    @if(isset($sale->recipient_profession))--}}
-{{--                        <tr>--}}
-{{--                              <td class="b-0">Address:</td>--}}
-{{--                            <td style="text-align: left">--}}
-{{--                                {{$sale->recipient_profession}}--}}
-{{--                            </td>--}}
-{{--                        </tr>--}}
-{{--                    @endif--}}
-                    @if(isset($sale->recipient_phone_number))
-                        <tr>
-                              <td class="b-0">Phone Number:</td>
-                            <td style="text-align: left">
-                                {{$sale->recipient_phone_number}}
-                            </td>
-                        </tr>
-                    @endif
-                    @if(isset($sale->location))
-                        <tr>
-                              <td class="b-0">Location:</td>
-                            <td style="text-align: left">
-                                {{$sale->location}}
-                            </td>
-                        </tr>
-                    @endif
-                </table>
-            </td>
+            <td class="b-0">Name:</td>
+            <td class="b-0"> {{$sale->client->name}}</td>
         </tr>
+        @if(isset($sale->client->phone_number))
+            <tr>
+                <td class="b-0">Phone Number:</td>
+                <td class="b-0"> {{$sale->client->phone_number}}</td>
+            </tr>
+        @endif
+        @if(isset($sale->client->email))
+            <tr>
+                <td class="b-0">Email:</td>
+                <td class="b-0"> {{$sale->client->email}}</td>
+            </tr>
+        @endif
+        @if(isset($sale->client->address))
+            <tr>
+                <td class="b-0">Address:</td>
+                <td class="b-0"> {{$sale->client->address}}</td>
+            </tr>
+        @endif
     </table>
+    {{--            </td>--}}
+    {{--            <td class="b-0" style="vertical-align: top;">--}}
+
+    @if(isset($sale->recipient_name) || isset($sale->recipient_phone_number) || isset($sale->location))
+    <p class="heading"
+       style="margin-bottom: 0; ">Delivery Details</p>
+    <table class="details">
+        @if(isset($sale->recipient_name))
+            <tr>
+                <td class="b-0">Contact Name:</td>
+                <td style="text-align: left">
+                    {{$sale->recipient_name}}
+                </td>
+            </tr>
+        @endif
+        {{--                    @if(isset($sale->recipient_profession))--}}
+        {{--                        <tr>--}}
+        {{--                              <td class="b-0">Address:</td>--}}
+        {{--                            <td style="text-align: left">--}}
+        {{--                                {{$sale->recipient_profession}}--}}
+        {{--                            </td>--}}
+        {{--                        </tr>--}}
+        {{--                    @endif--}}
+        @if(isset($sale->recipient_phone_number))
+            <tr>
+                <td class="b-0">Phone Number:</td>
+                <td style="text-align: left">
+                    {{$sale->recipient_phone_number}}
+                </td>
+            </tr>
+        @endif
+        @if(isset($sale->location))
+            <tr>
+                <td class="b-0">Location:</td>
+                <td style="text-align: left">
+                    {{$sale->location}}
+                </td>
+            </tr>
+        @endif
+    </table>
+        @endif
+    {{--            </td>--}}
+    {{--        </tr>--}}
+    {{--    </table>--}}
 
     <div class="heading">Products and Services</div>
     <table class="summary">
@@ -235,7 +228,7 @@
         @endforeach
         <tr class="total">
             <td colspan="4">Total</td>
-            <td >{{number_format($sale->total,2)}}</td>
+            <td>{{number_format($sale->total,2)}}</td>
         </tr>
         <tr>
             <td colspan="5" class="total-in-words">

@@ -124,7 +124,7 @@
                 style="color:red; font-size: 25px; font-weight: normal; ">#{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->code)}}</span>
         </div>
         <div>Sales Order:
-            #{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->summary->sale->code_alt)}}</div>
+            #LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->summary->sale->code_alt)}}</div>
 
 
     </div>
@@ -135,25 +135,25 @@
     <table class="details">
 
         <tr>
-            <td class="b-0">Name</td>
+            <td class="b-0">Name:</td>
             <td class="b-0">{{$delivery->summary->sale->client->name}}</td>
         </tr>
         @if(isset($delivery->summary->sale->client->phone_number))
             <tr>
-                <td class="b-0">Phone Number</td>
+                <td class="b-0">Phone Number:</td>
                 <td class="b-0">{{$delivery->summary->sale->client->phone_number}}</td>
             </tr>
         @endif
 
         @if(isset($delivery->summary->sale->client->email))
             <tr>
-                <td class="b-0">Email</td>
+                <td class="b-0">Email:</td>
                 <td class="b-0" style="text-transform: lowercase">{{$delivery->summary->sale->client->email}}</td>
             </tr>
         @endif
         @if(isset($delivery->summary->sale->client->address))
             <tr>
-                <td class="b-0">Address</td>
+                <td class="b-0">Address:</td>
                 <td class="b-0">{{$delivery->summary->sale->client->address}}</td>
             </tr>
         @endif
@@ -167,7 +167,7 @@
         {{--        @endif--}}
         @if(isset($delivery->summary->sale->recipient_name))
             <tr>
-                <td class="b-0">Contact Name</td>
+                <td class="b-0">Contact Name:</td>
                 <td>
                     {{$delivery->summary->sale->recipient_name}}
                 </td>
@@ -175,7 +175,7 @@
         @endif
         @if(isset($delivery->summary->sale->recipient_profession))
             <tr>
-                <td class="b-0">Contact Position</td>
+                <td class="b-0">Contact Position:</td>
                 <td>
                     {{$delivery->summary->sale->recipient_profession}}
                 </td>
@@ -183,7 +183,7 @@
         @endif
         @if(isset($delivery->summary->sale->recipient_phone_number))
             <tr>
-                <td class="b-0">Contact Phone Number</td>
+                <td class="b-0">Contact Phone Number:</td>
                 <td>
                     {{$delivery->summary->sale->recipient_phone_number}}
                 </td>

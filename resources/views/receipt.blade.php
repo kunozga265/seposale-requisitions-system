@@ -105,8 +105,8 @@
             </div>
         </div>
         <div style="font-size: 25px; font-weight: normal; margin-top:0px">Receipt: <span style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
-        <div>Sales Order #:
-            LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code_alt)}}</div>
+        <div>Sales Order:
+            #LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code_alt)}}</div>
 
 
     </div>
