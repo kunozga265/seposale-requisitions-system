@@ -41,6 +41,20 @@ class Summary extends Model
         return $this->hasOne(Delivery::class);
     }
 
+    public function getPaymentStatus()
+    {
+        if (isset($this->balance)) {
+            if ($this->balance == $this->amount) {
+                return 0;
+            } elseif ($this->balance > 0 && $this->balance < $this->amount) {
+                return 1;
+            } elseif ($this->balance == 0) {
+                return 2;
+            }
+        }
+        return 3;
+    }
+
 
 
     protected $fillable=[

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Controllers\DeliveryController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SummaryResource extends JsonResource
@@ -22,7 +23,7 @@ class SummaryResource extends JsonResource
             "date" => $this->date,
             'amount' => floatval($this->amount),
             'balance' => floatval($this->balance),
-            "paymentStatus" => intval($this->getPaymentStatus($this->amount, $this->balance)),
+            "paymentStatus" => intval((new DeliveryController)->getPaymentStatus($this->amount, $this->balance)),
             "quantity" => $this->quantity,
             "description" => $this->description,
             "units" => $this->units,
@@ -31,18 +32,5 @@ class SummaryResource extends JsonResource
         ];
     }
 
-    private function getPaymentStatus($amount, $balance): int
-    {
-//        dump($balance);
-        if (isset($balance)) {
-            if ($balance == $amount) {
-                return 0;
-            } elseif ($balance > 0 && $balance < $amount) {
-                return 1;
-            } elseif ($balance == 0) {
-                return 2;
-            }
-        }
-        return 3;
-    }
+
 }

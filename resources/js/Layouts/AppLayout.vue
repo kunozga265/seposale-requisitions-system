@@ -109,7 +109,7 @@
                 </div>
                 <ul v-show="sales">
                   <li>
-                    <a :href="route('sales.index')"
+                    <a :href="route('sales.index',{section:'tabular'})"
                        class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       All
                     </a>

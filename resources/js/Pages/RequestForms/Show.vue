@@ -490,13 +490,13 @@
                       <th scope="col" class="heading-font">
                         Details
                       </th>
-                      <th v-if="request.data.type ==='MATERIALS'" scope="col" class="heading-font">
+                      <th v-if="request.data.type ==='MATERIALS'" scope="col" class="heading-font hidden sm:table-cell">
                         Units
                       </th>
-                      <th scope="col" class="heading-font">
+                      <th scope="col" class="heading-font hidden sm:table-cell">
                         Quantity
                       </th>
-                      <th scope="col" class="heading-font">
+                      <th scope="col" class="heading-font hidden sm:table-cell">
                         Unit Cost
                       </th>
                       <th scope="col" class="heading-font">
@@ -512,14 +512,17 @@
                     >
                       <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                         {{ info.details }}
+                          <div class="text-sm text-mute sm:hidden">
+                              {{ numberWithCommas(info.quantity) }} x  {{ numberWithCommas(info.unitCost) }}
+                          </div>
                       </th>
-                      <td v-if="request.data.type ==='MATERIALS'" class="py-2 pr-1">
+                      <td v-if="request.data.type ==='MATERIALS'" class="py-2 pr-1 hidden sm:table-cell">
                         {{ info.units }}
                       </td>
-                      <td class="py-2 pr-1">
+                      <td class="py-2 pr-1 hidden sm:table-cell">
                         {{ numberWithCommas(info.quantity) }}
                       </td>
-                      <td class="py-2 pr-1">
+                      <td class="py-2 pr-1 hidden sm:table-cell">
                         {{ numberWithCommas(info.unitCost) }}
                       </td>
                       <td class="py-2 pr-1">
@@ -527,9 +530,9 @@
                       </td>
                     </tr>
                     <tr>
-                      <td></td>
-                      <td v-if="request.data.type ==='MATERIALS'"></td>
-                      <td></td>
+                      <td class="hidden sm:table-cell"></td>
+                      <td class="hidden sm:table-cell" v-if="request.data.type ==='MATERIALS'"></td>
+                      <td class="hidden sm:table-cell"></td>
                       <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
                       <td class="pt-4 pr-1 text-base font-bold">{{ numberWithCommas(request.data.total) }}</td>
                     </tr>

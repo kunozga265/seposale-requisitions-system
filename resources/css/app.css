@@ -54,7 +54,8 @@ button{
 
 .card{
     box-shadow: 0 3px 3px -2px rgb(39 44 51 / 10%), 0 3px 4px 0 rgb(39 44 51 / 4%), 0 1px 8px 0 rgb(39 44 51 / 2%);
-    margin: 0 0.6rem 1.2rem 0.6rem;
+    /*margin: 0 0.6rem 1.2rem 0.6rem;*/
+    margin-bottom: 1.2rem;
     background-color: #fff;
     background-clip: border-box;
     border: 1px solid #dfe2e6;
@@ -342,6 +343,11 @@ header h2{
     margin-left: 6px;
     font-family: 'Exo\ 2', sans-serif;
 }
+.sales-profile .total{
+    /*font-weight: 700;*/
+    font-size: 26px;
+    font-family: 'Exo\ 2', sans-serif;
+}
 .approval-pending, .warning{
     color: #ca8a04;
     border-radius: 4px;
@@ -449,3 +455,58 @@ header h2{
 th.heading-font{
     background-color: white;
 }
+
+.sales-table{
+    /*display: inline-table;*/
+    overflow: auto;
+    min-height: 600px;
+}
+.sales-table table *{
+    font-size: 0.8rem;
+}
+.sales-table table thead tr th{
+    min-width:100px;
+}
+.sales-table table tbody tr td{
+    border-top: 1px solid #dfe2e6;
+    min-width:100px;
+}
+
+.sales-table .datetimepicker, .sales-profile .datepicker{
+    bottom: 0;
+}
+
+.card.blue{
+    color: rgba(28, 100, 242);
+    /*border: 1px solid rgba(28, 100, 242, var(--tw-text-opacity));*/
+    background-color: rgba(195, 221, 253, var(--tw-bg-opacity));
+    border:none;
+}
+
+.card.green{
+    color: #059669;
+    /*border: 1px solid #31C48D6b;*/
+    background-color: #d1fae5;
+    border:none;
+}
+
+.card.red{
+    color: #dc2626;
+    /*border: 1px solid #F052526b;*/
+    background-color: #fee2e2;
+    border:none;
+}
+
+.no-shadow{
+    box-shadow: none;
+}
+
+.view-options a:hover{
+    color: rgba(28, 100, 242);
+    /*font-size: 24px;*/
+}
+.view-options a.active{
+    color: rgba(28, 100, 242);
+    /*font-size: 24px;*/
+}
+

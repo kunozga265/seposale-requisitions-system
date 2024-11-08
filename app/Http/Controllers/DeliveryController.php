@@ -93,6 +93,10 @@ class DeliveryController extends Controller
                     'delivery_date' => ['required'],
                 ]);
 
+                if($this->getPaymentStatus($summary->amount,$summary->balance) == 0){
+                    return Redirect::back()->with("error", "Product has not been paid for. Please update payment status first.");
+                }
+
 
                 $summary->delivery->update([
                     "code" => $this->getCodeNumber(),
@@ -260,5 +264,20 @@ class DeliveryController extends Controller
         } else {
             return 1;
         }
+    }
+
+    public function getPaymentStatus($amount, $balance): int
+    {
+//        dump($balance);
+        if (isset($balance)) {
+            if ($balance == $amount) {
+                return 0;
+            } elseif ($balance > 0 && $balance < $amount) {
+                return 1;
+            } elseif ($balance == 0) {
+                return 2;
+            }
+        }
+        return 3;
     }
 }

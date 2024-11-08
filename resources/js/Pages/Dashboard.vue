@@ -279,7 +279,7 @@
                             }}</span>
                         </div>
                         <div class="type">{{ sale.code }}</div>
-                        <div class="name">{{sale.client.name}}</div>
+                        <div class="name">{{ sale.client.name }}</div>
                       </div>
                       <div class="flex items-center ">
                         <div class="currency ">MK</div>
@@ -287,7 +287,7 @@
                       </div>
                     </div>
                     <div>
-                      <sale-status :status="sale.status" />
+                      <sale-status :status="sale.status"/>
                     </div>
                   </div>
                 </inertia-link>

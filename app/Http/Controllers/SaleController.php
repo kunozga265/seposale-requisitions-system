@@ -31,8 +31,9 @@ class SaleController extends Controller
 {
     private $paginate = 100;
 
-    public function index(Request $request)
+    public function index(Request $request, $section)
     {
+
         $filter = strtolower($request->query("filter"));
         if ($filter == "unpaid") {
             $sales = Sale::where("status", 0)->orderBy("date", "desc")->paginate($this->paginate);
@@ -43,7 +44,7 @@ class SaleController extends Controller
         } else if ($filter == "fully-paid") {
             $sales = Sale::where("status", 2)->orderBy("date", "desc")->paginate($this->paginate);
             $headline = "fully-paid";
-        }else if ($filter == "closed") {
+        } else if ($filter == "closed") {
             $sales = Sale::where("status", 3)->orderBy("date", "desc")->paginate($this->paginate);
             $headline = "closed";
         } else if ($filter == "discarded") {
@@ -54,6 +55,84 @@ class SaleController extends Controller
             $headline = "all";
         }
 
+        $unsorted = Sale::orderBy("date", "desc")->get();
+        $sorted = [];
+
+        if (!$unsorted->isEmpty()) {
+            $currentMonth = date('F', $unsorted[0]->date);
+            $currentYear = date('Y', $unsorted[0]->date);
+
+            $item = 0;
+            $index = 0;
+            foreach ($unsorted as $sale) {
+
+                if ($item == 0) {
+                    $sum = 0;
+                    foreach ($sale->products as $summary) {
+                        if ($summary->getPaymentStatus() > 0) {
+                            $sum += $summary->amount;
+                        }
+                    }
+                    $sorted[0] = [
+                        'month' => $currentMonth,
+                        'year' => $currentYear,
+                        'total' => $sum
+                    ];
+                } else {
+                    $month = date('F', $unsorted[$item]->date);
+                    $year = date('Y', $unsorted[$item]->date);
+
+                    if ($currentMonth === $month && $currentYear === $year) {
+                        $sum = $sorted[$index]['total'];
+                        foreach ($sale->products as $summary) {
+                            if ($summary->getPaymentStatus() > 0) {
+                                $sum += $summary->amount;
+                            }
+                        }
+                        $sorted[$index]['total'] = $sum;
+                    } else {
+                        $index += 1;
+                        $currentMonth = date('F', $unsorted[$item]->date);
+                        $currentYear = date('Y', $unsorted[$item]->date);
+
+                        $sum = 0;
+                        foreach ($sale->products as $summary) {
+                            if ($summary->getPaymentStatus() > 0) {
+                                $sum += $summary->amount;
+                            }
+                        }
+
+                        $sorted[$index] = [
+                            'month' => $currentMonth,
+                            'year' => $currentYear,
+                            'total' => $sum
+                        ];
+                    }
+                }
+                $item += 1;
+            }
+        }
+
+        $chartData = [];
+        $currentYear = "";
+        $index = -1;
+        foreach ($sorted as $item) {
+            $year = $item["year"];
+            if ($currentYear != $year) {
+                $index++;
+                $currentYear = $year;
+                $chartData[$index] = [
+                    "year" => $currentYear,
+                    "data" => [$item]
+                ];
+            } else {
+                $chartData[$index]["data"][] = $item;
+            }
+        }
+
+        for ($i = 0; $i < count($chartData); $i++) {
+            $chartData[$i]["data"] = array_reverse($chartData[$i]["data"]);
+        }
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -61,8 +140,10 @@ class SaleController extends Controller
         else {
             //Web Response
             return Inertia::render('Sales/Index', [
-                'sales' => SaleResource::collection($sales),
-                'headline' => $headline
+                'sales' => SaleResource::collection($section == "block" ? $sales : $unsorted),
+                'headline' => $headline,
+                'section' => $section,
+                'chartData' => $chartData
             ]);
         }
     }
@@ -202,7 +283,7 @@ class SaleController extends Controller
             return response()->json(new SaleResource($sale), 201);
         else {
             //Web Response
-            return Redirect::route('sales.index')->with('success', 'Sale created!');
+            return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale created!');
         }
 
 //        create delivery note
@@ -519,7 +600,7 @@ class SaleController extends Controller
                 return response()->json(new SaleResource($sale), 201);
             else {
                 //Web Response
-                return Redirect::route('sales.index')->with('success', 'Sale updated!');
+                return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale updated!');
             }
         } else {
             return Redirect::back()->with('error', 'Sale not found');
@@ -559,7 +640,7 @@ class SaleController extends Controller
                 return response()->json(['message' => 'Sale has been deleted']);
             } else {
                 //Web Response
-                return Redirect::route('sales.index')->with('success', 'Sale has been deleted');
+                return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale has been deleted');
             }
         } else {
             if ((new AppController())->isApi($request)) {
@@ -596,7 +677,7 @@ class SaleController extends Controller
                 return response()->json(['message' => 'Sale has been closed']);
             } else {
                 //Web Response
-                return Redirect::route('sales.index')->with('success', 'Sale has been closed');
+                return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale has been closed');
             }
         } else {
             if ((new AppController())->isApi($request)) {

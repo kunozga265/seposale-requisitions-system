@@ -357,7 +357,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     Route::group(['prefix'=>'sales'],function() {
 
-        Route::get('/', [
+        Route::get('/{section}', [
             "uses"  => "App\Http\Controllers\SaleController@index",
             'roles' =>['employee','management']
         ])->name('sales.index');
