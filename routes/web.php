@@ -416,6 +416,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\SiteController@overview",
             'roles' =>['employee','management']
         ])->name('sites.overview');
+//
+//        Route::get('/{code}/collections', [
+//            "uses"  => "App\Http\Controllers\SiteController@collections",
+//            'roles' =>['employee','management']
+//        ])->name('sites.collections');
 
         Route::get('/{code}/sales/create', [
             "uses"  => "App\Http\Controllers\SiteSaleController@create",

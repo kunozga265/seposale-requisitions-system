@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\SiteSaleSummaryController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SiteSaleSummaryResource extends JsonResource
@@ -16,15 +17,7 @@ class SiteSaleSummaryResource extends JsonResource
     public function toArray($request)
     {
 
-        $collections = [];
-        foreach ($this->collections as $collection){
-            $by = $collection->collected_by != null ? $collection->collected_by : " self";
-            $phone_number = $collection->collected_by_phone_number != null ? "({$collection->collected_by_phone_number})" : "";
-            $collections[] = [
-                "date" => intval($collection->date),
-                "message" => "{$collection->quantity} collected by $by $phone_number",
-            ];
-        }
+
 
 
         return [
@@ -36,7 +29,7 @@ class SiteSaleSummaryResource extends JsonResource
             'collected' => floatval($this->collected),
             'collectionStatus' => $this->getCollectionStatus(),
             'quantity' => floatval($this->quantity),
-            "collections" =>$collections,
+            "collections" =>(new SiteSaleSummaryController())->getCollections($this->collections),
             "site" => $this->site,
             "trashed" => $this->deleted_at != null,
             "sale" => [

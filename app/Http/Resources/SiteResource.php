@@ -21,6 +21,7 @@ class SiteResource extends JsonResource
             "location" => $this->location,
             "inventories" => InventoryResource::collection($this->inventories),
             "summaries" => InventorySummaryResource::collection($this->summaries()->orderBy("date","desc")->get()),
+            "collections" => CollectionResource::collection($this->collections()->orderBy("date","desc")->get()),
 
         ];
     }

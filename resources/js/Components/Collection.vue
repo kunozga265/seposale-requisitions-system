@@ -172,7 +172,7 @@ import PrimaryButton from "@/Jetstream/Button.vue";
 import DangerButton from "@/Jetstream/DangerButton.vue";
 
 export default {
-    name: "DeliveryStatus",
+    name: "Collection",
     components: {DangerButton, PrimaryButton, DialogModal, JetInput, SecondaryButton},
     props: ['product', "client", "isSolo"],
     emits: ['clickEvent'],
