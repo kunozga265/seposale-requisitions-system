@@ -13,6 +13,7 @@ class CreateInventorySummariesTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('inventory_summaries')) {
         Schema::create('inventory_summaries', function (Blueprint $table) {
             $table->id();
             $table->integer("code")->unique();
@@ -25,6 +26,7 @@ class CreateInventorySummariesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+    }
     }
 
     /**

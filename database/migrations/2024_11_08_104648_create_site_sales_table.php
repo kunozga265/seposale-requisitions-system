@@ -13,21 +13,23 @@ class CreateSiteSalesTable extends Migration
      */
     public function up()
     {
-        Schema::create('site_sales', function (Blueprint $table) {
-            $table->id();
-            $table->integer("code")->unique();
-            $table->integer("status");
-            $table->integer("client_id");
-            $table->double("total");
-            $table->double("balance");
-            $table->double("date");
-            $table->boolean("editable");
-            $table->integer("user_id");
-            $table->integer("site_id");
-            $table->integer("inventory_summary_id");
-            $table->softDeletes();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('site_sales')) {
+            Schema::create('site_sales', function (Blueprint $table) {
+                $table->id();
+                $table->integer("code")->unique();
+                $table->integer("status");
+                $table->integer("client_id");
+                $table->double("total");
+                $table->double("balance");
+                $table->double("date");
+                $table->boolean("editable");
+                $table->integer("user_id");
+                $table->integer("site_id");
+                $table->integer("inventory_summary_id");
+                $table->softDeletes();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

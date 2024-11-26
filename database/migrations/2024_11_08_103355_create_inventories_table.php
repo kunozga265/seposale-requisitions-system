@@ -13,6 +13,7 @@ class CreateInventoriesTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('inventories')) {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->string("name");
@@ -25,6 +26,7 @@ class CreateInventoriesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+    }
     }
 
     /**

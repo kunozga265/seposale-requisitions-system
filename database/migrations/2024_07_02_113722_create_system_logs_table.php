@@ -13,6 +13,7 @@ class CreateSystemLogsTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('system_logs')) {
         Schema::create('system_logs', function (Blueprint $table) {
             $table->id();
             $table->integer("user_id");
@@ -25,6 +26,7 @@ class CreateSystemLogsTable extends Migration
             $table->json("contents")->nullable();
             $table->timestamps();
         });
+    }
     }
 
     /**

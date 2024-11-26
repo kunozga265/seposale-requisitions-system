@@ -13,18 +13,20 @@ class CreateDeliveriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('deliveries', function (Blueprint $table) {
-            $table->id();
-            $table->integer("code");
-            $table->integer("status");
-            $table->string("photo")->nullable();
-            $table->string("tracking_number")->nullable();
-            $table->double("quantity_delivered");
-            $table->double("due_date")->nullable();
-            $table->integer("summary_id");
-            $table->json("notes")->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('deliveries')) {
+            Schema::create('deliveries', function (Blueprint $table) {
+                $table->id();
+                $table->integer("code");
+                $table->integer("status");
+                $table->string("photo")->nullable();
+                $table->string("tracking_number")->nullable();
+                $table->double("quantity_delivered");
+                $table->double("due_date")->nullable();
+                $table->integer("summary_id");
+                $table->json("notes")->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

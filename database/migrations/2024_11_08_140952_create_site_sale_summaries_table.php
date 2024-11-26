@@ -13,16 +13,18 @@ class CreateSiteSaleSummariesTable extends Migration
      */
     public function up()
     {
-        Schema::create('site_sale_summaries', function (Blueprint $table) {
-            $table->id();
-            $table->integer("inventory_id");
-            $table->integer("site_sale_id");
-            $table->double("quantity");
-            $table->double("amount");
-            $table->double("balance");
-            $table->double("collected");
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('site_sale_summaries')) {
+            Schema::create('site_sale_summaries', function (Blueprint $table) {
+                $table->id();
+                $table->integer("inventory_id");
+                $table->integer("site_sale_id");
+                $table->double("quantity");
+                $table->double("amount");
+                $table->double("balance");
+                $table->double("collected");
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -13,6 +13,7 @@ class CreateCollectionsTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('collections')) {
         Schema::create('collections', function (Blueprint $table) {
             $table->id();
             $table->integer("code")->unique();
@@ -31,6 +32,7 @@ class CreateCollectionsTable extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+    }
     }
 
     /**

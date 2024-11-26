@@ -13,6 +13,7 @@ class CreateReceiptsTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('receipts')) {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
             $table->integer("client_id");
@@ -28,6 +29,7 @@ class CreateReceiptsTable extends Migration
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
+    }
     }
 
     /**

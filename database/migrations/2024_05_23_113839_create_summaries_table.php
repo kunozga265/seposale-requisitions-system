@@ -13,6 +13,7 @@ class CreateSummariesTable extends Migration
      */
     public function up()
     {
+        if(!Schema::hasTable('summaries')){
         Schema::create('summaries', function (Blueprint $table) {
             $table->id();
             $table->string("product_id");
@@ -27,6 +28,7 @@ class CreateSummariesTable extends Migration
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
+    }
     }
 
     /**

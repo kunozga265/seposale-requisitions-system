@@ -13,10 +13,12 @@ class CreateExpensesTable extends Migration
      */
     public function up()
     {
+        if(!Schema::hasTable('expenses')){
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
+    }
     }
 
     /**

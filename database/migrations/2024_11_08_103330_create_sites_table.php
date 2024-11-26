@@ -13,6 +13,7 @@ class CreateSitesTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('sites')) {
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
             $table->string("name");
@@ -21,6 +22,7 @@ class CreateSitesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+    }
     }
 
     /**
