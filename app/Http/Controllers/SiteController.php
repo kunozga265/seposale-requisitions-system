@@ -27,7 +27,7 @@ class SiteController extends Controller
 
 
                 foreach ($summaries as $summary){
-                    if($summary->getPaymentStatus() < 2){
+                    if($summary->getCollectionStatus() < 2){
                         $filtered [] = [
                             "id" => $summary->id,
                             "inventory" => $summary->inventory,
@@ -48,6 +48,8 @@ class SiteController extends Controller
                         ];
                     }
                 }
+
+                dd($filtered);
 
 
                 //Web Response
