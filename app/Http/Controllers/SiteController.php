@@ -49,8 +49,6 @@ class SiteController extends Controller
                     }
                 }
 
-                dd($filtered);
-
 
                 //Web Response
                 return Inertia::render('Sites/Overview', [
