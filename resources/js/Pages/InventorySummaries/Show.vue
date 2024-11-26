@@ -62,7 +62,7 @@
                             </div>
 
                             <div class="page-section-content">
-                                <div class="card default-table">
+                                <div class="card overflow-x-auto">
                                     <table class="w-full  text-left text-gray-500 dark:text-gray-400">
                                         <thead
                                             class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -101,7 +101,7 @@
                             </div>
 
                             <div class="page-section-content">
-                                <div class="card default-table">
+                                <div class="card overflow-x-auto">
                                     <table class="w-full  text-left text-gray-500 dark:text-gray-400">
                                         <thead
                                             class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -156,7 +156,7 @@
                         </div>
 
                         <div class="page-section-content">
-                            <div class="card default-table">
+                            <div class="card default-table overflow-x-auto">
                                 <table class="w-full  text-left text-gray-500 dark:text-gray-400">
                                     <thead
                                         class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -274,7 +274,7 @@
 
                             </div>
 
-                            <div class="card w-full">
+                            <div class="card default-table w-full">
                                 <!--                            {{ invoices.data }}-->
                                 <div class="overflow-x-auto p-2 mb-2 relative ">
                                     <table class=" w-full default-table  text-left text-gray-500 dark:text-gray-400">

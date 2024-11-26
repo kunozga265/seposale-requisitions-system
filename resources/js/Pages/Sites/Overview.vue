@@ -150,7 +150,7 @@
               <inertia-link :href="route('sales.show',{id:inventory.id})"
                             v-for="(inventory, index) in site.data.inventories" :key="index">
                 <div class="app-card">
-                  <div class="header justify-between items-center border-b">
+                  <div class="header lg:flex justify-between items-center border-b">
                     <div>
 
                       <div class="type">{{ inventory.name }}</div>
@@ -158,8 +158,8 @@
 
 
                     </div>
-                    <div class="flex ">
-                      <div class="flex items-center justify-end">
+                    <div class="lg:flex ">
+                      <div class="flex items-center justify-e">
                         <div class="name">Available:</div>
                         <div class="w-12 ml-2">
                                                       <span
@@ -168,7 +168,7 @@
                                                         }}</span>
                         </div>
                       </div>
-                      <div class="flex items-center justify-end">
+                      <div class="flex items-center justify-e">
                         <div class="name">Uncollected:</div>
                         <div class="w-12 ml-2"><span
                             class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
@@ -273,7 +273,7 @@
                     </div>
             -->
 
-            <div class="card w-full">
+            <div class="card default-table w-full">
               <!--                            {{ invoices.data }}-->
               <div class="p-2 mb-2 relative ">
                 <table class="w-full  text-left text-gray-500 dark:text-gray-400">
@@ -348,7 +348,7 @@
             </div>
           </div>
           <div class="page-section-content ">
-            <div class="card">
+            <div class="card default-table">
               <div class="p-2 relative overflow-x-auto">
                 <table class="overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

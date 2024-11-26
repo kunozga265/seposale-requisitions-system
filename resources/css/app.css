@@ -463,6 +463,7 @@ th.heading-font{
 }
 .sales-table table *, table *, .default-table *{
     font-size: 0.8rem;
+    overflow-x: auto;
 }
 .sales-table table thead tr th{
     min-width:100px;
@@ -474,6 +475,10 @@ th.heading-font{
 
 .sales-table .datetimepicker, .sales-profile .datepicker{
     bottom: 0;
+}
+
+.default-table td{
+    min-width: 130px;
 }
 
 .card.blue{
