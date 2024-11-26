@@ -19,6 +19,7 @@ class SystemLog extends Model
         "message",
         "delivery_id",
         "sale_id",
+        "site_sale_id",
         "request_form_id",
         "collection_id",
         "inventory_id",

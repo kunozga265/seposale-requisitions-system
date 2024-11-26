@@ -210,7 +210,7 @@
                         <div class="page-section-content">
                             <div class="card">
                                 <div class="p-2 relative overflow-x-auto">
-                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <table class="overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                         <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                         <tr>
                                             <th scope="col" class="heading-font">
@@ -253,6 +253,7 @@
                                                 <collection class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200" :client="sale.data.client" :product="productCompound" :is-solo="true"/>
                                             </td>
                                             <th scope="row"
+                                                :class="{'strike-through':productCompound.trashed}"
                                                 class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                                 {{ productCompound.inventory.name }}
                                             </th>

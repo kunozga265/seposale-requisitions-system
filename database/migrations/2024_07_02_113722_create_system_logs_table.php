@@ -20,6 +20,7 @@ class CreateSystemLogsTable extends Migration
             $table->string("message");
             $table->integer("delivery_id")->nullable();
             $table->integer("sale_id")->nullable();
+            $table->integer("site_sale_id")->nullable();
             $table->integer("request_form_id")->nullable();
             $table->integer("collection_id")->nullable();
             $table->integer("inventory_id")->nullable();

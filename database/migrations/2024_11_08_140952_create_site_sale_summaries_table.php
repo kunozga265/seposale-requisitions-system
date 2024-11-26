@@ -23,6 +23,7 @@ class CreateSiteSaleSummariesTable extends Migration
                 $table->double("balance");
                 $table->double("collected");
                 $table->timestamps();
+                $table->softDeletes();
             });
         }
     }

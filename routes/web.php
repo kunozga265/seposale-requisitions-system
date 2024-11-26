@@ -441,10 +441,14 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     Route::group(['prefix'=>'collections'],function() {
 
-        Route::post('/{id}', [
+        Route::post('store/{id}', [
             "uses" => "App\Http\Controllers\CollectionController@store",
             'roles' => ['employee', 'management']
         ])->name('collections.store');
+        Route::post('trash/{id}', [
+            "uses" => "App\Http\Controllers\CollectionController@trash",
+            'roles' => ['employee', 'management']
+        ])->name('collections.cancel');
     });
 
     Route::group(['prefix'=>'inventories'],function() {

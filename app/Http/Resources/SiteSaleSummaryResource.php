@@ -38,6 +38,7 @@ class SiteSaleSummaryResource extends JsonResource
             'quantity' => floatval($this->quantity),
             "collections" =>$collections,
             "site" => $this->site,
+            "trashed" => $this->deleted_at != null,
             "sale" => [
                 "id" => $this->sale->id,
                 "code" => (new AppController())->getZeroedNumber($this->sale->code),

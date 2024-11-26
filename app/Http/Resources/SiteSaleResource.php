@@ -28,7 +28,7 @@ class SiteSaleResource extends JsonResource
                 "code" => $this->site->code
             ],
             'editable' => intval($this->editable),
-            'products' => SiteSaleSummaryResource::collection($this->products),
+            'products' => SiteSaleSummaryResource::collection($this->products()->withTrashed()->get()),
             'receipts' => ReceiptResource::collection($this->receipts),
             'generatedBy' => new UserResource($this->user),
         ];

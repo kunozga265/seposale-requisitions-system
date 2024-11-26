@@ -102,6 +102,38 @@ class CollectionController extends Controller
         }
     }
 
+    public function trash(Request $request,$id)
+    {
+        $summary = SiteSaleSummary::find($id);
+
+        if (is_object($summary)) {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+//                return response()->json(new SaleResource($summary));
+            } else {
+
+                $summary->delete();
+
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Collection has been cancelled",
+                    "site_sale_id" => $summary->sale->id,
+                ]);
+
+                return Redirect::back()->with('success', 'Delivery cancelled successfully');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Resource not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Resource not found');
+            }
+        }
+    }
+
     private function getCodeNumber()
     {
         $last = Collection::orderBy("code", "desc")->first();

@@ -224,6 +224,7 @@
                                         </div>
                                     </div>
                                 </div>
+
 <!--                                <div class="card">-->
 <!--                                    <div class="flex justify-between items-center">-->
 
@@ -275,8 +276,8 @@
 
                             <div class="card w-full">
                                 <!--                            {{ invoices.data }}-->
-                                <div class="p-2 mb-2 relative ">
-                                    <table class="w-full default-table  text-left text-gray-500 dark:text-gray-400">
+                                <div class="overflow-x-auto p-2 mb-2 relative ">
+                                    <table class=" w-full default-table  text-left text-gray-500 dark:text-gray-400">
                                         <thead
                                             class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                         <tr>

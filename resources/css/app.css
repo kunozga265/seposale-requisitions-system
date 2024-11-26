@@ -510,3 +510,7 @@ th.heading-font{
     /*font-size: 24px;*/
 }
 
+.strike-through{
+    text-decoration-line: line-through;
+}
+
