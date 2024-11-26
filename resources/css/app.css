@@ -461,7 +461,7 @@ th.heading-font{
     overflow: auto;
     min-height: 600px;
 }
-.sales-table table *{
+.sales-table table *, table *, .default-table *{
     font-size: 0.8rem;
 }
 .sales-table table thead tr th{

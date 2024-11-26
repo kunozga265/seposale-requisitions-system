@@ -747,7 +747,6 @@ export default {
                     ...data,
                     payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
                     date: this.getTimestampFromDate(this.date),
-                    type: "ORDINARY",
                 }))
                 .post(this.route('receipts.store', {'id': this.sale.data.id}), {
                     preserveScroll: true,

@@ -90,20 +90,31 @@
                   <div class="text-gray-600 font-semibold">Receipt Number</div>
                   <div>#{{ receipt.data.code }}</div>
                 </div>
-                <div v-if="sale.data.invoice != null">
-                  <inertia-link :href="route('invoices.show',{id:sale.data.invoice.id})">
+
+                <div v-if="sale != null">
+                  <div v-if="sale.data.invoice != null">
+                    <inertia-link :href="route('invoices.show',{id:sale.data.invoice.id})">
+                      <div class="border-b px-4 py-3 flex justify-between text-sm">
+                        <div class="text-gray-600 font-semibold">Invoice Number</div>
+                        <div>#{{ sale.data.invoice.code }}</div>
+                      </div>
+                    </inertia-link>
+                  </div>
+                  <inertia-link :href="route('sales.show',{id:sale.data.id})">
                     <div class="border-b px-4 py-3 flex justify-between text-sm">
-                      <div class="text-gray-600 font-semibold">Invoice Number</div>
-                      <div>#{{ sale.data.invoice.code }}</div>
+                      <div class="text-gray-600 font-semibold">Sale Code</div>
+                      <div>{{ sale.data.code }}</div>
                     </div>
                   </inertia-link>
                 </div>
-                <inertia-link :href="route('sales.show',{id:sale.data.id})">
-                  <div class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Sale Code</div>
-                    <div>{{ sale.data.code }}</div>
-                  </div>
-                </inertia-link>
+                <div v-if="siteSale != null">
+                  <inertia-link :href="route('sites.sales.show', {'code':siteSale.data.site.code, 'id': siteSale.data.id})">
+                    <div class="border-b px-4 py-3 flex justify-between text-sm">
+                      <div class="text-gray-600 font-semibold">Sale Code</div>
+                      <div>{{ siteSale.data.code }}</div>
+                    </div>
+                  </inertia-link>
+                </div>
 
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Payment Method</div>
@@ -134,25 +145,25 @@
                   <div class="mb-4">
                     <div class="text-sm text-gray-600">Name</div>
                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.name }}
+                                        {{ receipt.data.client.name }}
                                         </span>
                   </div>
-                  <div v-show="sale.data.client.phone_number != null" class="mb-4">
+                  <div v-show="receipt.data.client.phone_number != null" class="mb-4">
                     <div class="text-sm text-gray-600">Phone Number</div>
                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.phone_number }}
+                                        {{ receipt.data.client.phone_number }}
                                         </span>
                   </div>
-                  <div v-show="sale.data.client.email != null" class="mb-4">
+                  <div v-show="receipt.data.client.email != null" class="mb-4">
                     <div class="text-sm text-gray-600">Email</div>
                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.email }}
+                                        {{ receipt.data.client.email }}
                                         </span>
                   </div>
-                  <div v-show="sale.data.client.address != null" class="mb-4">
+                  <div v-show="receipt.data.client.address != null" class="mb-4">
                     <div class="text-sm text-gray-600">Address</div>
                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.address }}
+                                        {{ receipt.data.client.address }}
                                         </span>
                   </div>
                 </div>
@@ -249,7 +260,7 @@ import JetInput from "@/Jetstream/Input";
 // import {Head} from '@inertiajs/inertia-vue'
 
 export default {
-  props: ['receipt', 'sale'],
+  props: ['receipt', 'sale','siteSale'],
   components: {
     AppLayout,
     DoughnutChart,

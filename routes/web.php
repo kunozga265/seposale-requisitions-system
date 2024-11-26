@@ -362,7 +362,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.index');
 
-        Route::get('/create', [
+        Route::get('/create/new', [
             "uses"  => "App\Http\Controllers\SaleController@create",
             'roles' =>['employee','management']
         ])->name('sales.create');
@@ -372,7 +372,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.generate-from-quotation');
 
-        Route::post('/store', [
+        Route::post('/store/new', [
             "uses"  => "App\Http\Controllers\SaleController@store",
             'roles' =>['employee','management']
         ])->name('sales.store');
@@ -410,6 +410,51 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
 
     });
+    Route::group(['prefix'=>'sites'],function() {
+
+        Route::get('/{code}/overview', [
+            "uses"  => "App\Http\Controllers\SiteController@overview",
+            'roles' =>['employee','management']
+        ])->name('sites.overview');
+
+        Route::get('/{code}/sales/create', [
+            "uses"  => "App\Http\Controllers\SiteSaleController@create",
+            'roles' =>['employee','management']
+        ])->name('sites.sales.create');
+
+        Route::get('/{code}/daily-reports/{id}', [
+            "uses"  => "App\Http\Controllers\InventorySummaryController@show",
+            'roles' =>['employee','management']
+        ])->name('sites.summaries.show');
+
+        Route::post('/{code}/sales/store', [
+            "uses"  => "App\Http\Controllers\SiteSaleController@store",
+            'roles' =>['employee','management']
+        ])->name('sites.sales.store');
+
+        Route::get('/{code}/sales/view/{id}', [
+            "uses"  => "App\Http\Controllers\SiteSaleController@show",
+            'roles' =>['employee','management']
+        ])->name('sites.sales.show');
+
+    });
+
+    Route::group(['prefix'=>'collections'],function() {
+
+        Route::post('/{id}', [
+            "uses" => "App\Http\Controllers\CollectionController@store",
+            'roles' => ['employee', 'management']
+        ])->name('collections.store');
+    });
+
+    Route::group(['prefix'=>'inventories'],function() {
+
+        Route::post('/inventories/update', [
+            "uses"  => "App\Http\Controllers\InventoryController@update",
+            'roles' =>['employee','management']
+        ])->name('inventories.update');
+    });
+
 
     Route::group(['prefix'=>'notifications'],function() {
 

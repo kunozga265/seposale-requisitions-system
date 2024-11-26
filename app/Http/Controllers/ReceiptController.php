@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
+use App\Http\Resources\SiteSaleResource;
 use App\Models\Receipt;
 use App\Models\Sale;
+use App\Models\SiteSale;
+use App\Models\SiteSaleSummary;
 use App\Models\Summary;
 use App\Models\SystemLog;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -48,7 +51,8 @@ class ReceiptController extends Controller
                 //Web Response
                 return Inertia::render('Receipts/Show', [
                     'receipt' => new ReceiptResource($receipt),
-                    'sale' => new SaleResource($receipt->sale),
+                    'sale' => $receipt->sale != null ? new SaleResource($receipt->sale) : null,
+                    'siteSale' => $receipt->siteSale != null ? new SiteSaleResource($receipt->siteSale) : null,
                 ]);
             }
         } else {
@@ -67,7 +71,7 @@ class ReceiptController extends Controller
         //get user
         $user = (new AppController())->getAuthUser($request);
 
-        $sale = sale::find($id);
+        $sale = $request->type == "ORDINARY" ? Sale::find($id) : SiteSale::find($id);
 
         if (is_object($sale)) {
 
@@ -77,6 +81,7 @@ class ReceiptController extends Controller
                 $request->validate([
                     'payment_method_id' => ['required'],
                     'information' => ['required'],
+                    'type' => ['required'],
                 ]);
 
                 //Checking
@@ -86,7 +91,7 @@ class ReceiptController extends Controller
                     $amount = $item["amount"];
                     $total += $amount;
 
-                    $summary = Summary::findOrFail($item["id"]);
+                    $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
                     if (isset($summary->balance)) {
                         $balance = $summary->balance - $amount;
                         if ($balance < 0) {
@@ -108,7 +113,7 @@ class ReceiptController extends Controller
                 //Updating data
                 foreach ($filteredProducts as $item) {
                     $amount = $item["amount"];
-                    $summary = Summary::find($item["id"]);
+                    $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
                     if (isset($summary->balance)) {
                         $balance = $summary->balance - $amount;
                         $summary->update([
@@ -120,7 +125,8 @@ class ReceiptController extends Controller
                 $receipt = Receipt::create([
                     'code' => $this->getCodeReceiptNumber(),
                     'client_id' => $sale->client->id,
-                    'sale_id' => $sale->id,
+                    "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
+                    "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
                     'payment_method_id' => $request->payment_method_id,
                     'amount' => $total,
                     'reference' => strtoupper($request->reference),
@@ -140,7 +146,8 @@ class ReceiptController extends Controller
                     "user_id" => Auth::id(),
                     "message" => "Receipt #{$receipt->code} created for {$sale->client->name} under Sale #{$sale->code_alt}. Total amount received is {$receipt
         ->amount}",
-                    "sale_id" => $sale->id,
+                    "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
+                    "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
 
                 ]);
 

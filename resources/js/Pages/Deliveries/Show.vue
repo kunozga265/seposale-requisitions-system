@@ -64,7 +64,7 @@
                         <div class="text-mute text-sm">
                             Recipient Name
                         </div>
-                        <jet-input type="text" class="block w-full" v-model="form.recipientName"/>
+                        <jet-input type="text" class="block w-full" v-model="form.collectedBy"/>
                         <div class="text-red-500 text-xs" v-if="form.errors.recipient_name">Required
                         </div>
                     </div>
@@ -415,7 +415,7 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
-                    recipient_name: this.form.recipientName,
+                    recipient_name: this.form.collectedBy,
                     recipient_phone_number: this.form.recipientPhoneNumber,
                 }))
                 .post(this.route('deliveries.update', {'id': this.delivery.data.summary.id}), {
@@ -423,7 +423,7 @@ export default {
                     onSuccess: () => {
                         this.showDialog = false
                         this.form.quantity = 0
-                        this.form.recipientName = ""
+                        this.form.collectedBy = ""
                         this.form.recipientPhoneNumber = ""
                         document.getElementById('photo').value = ""
                     },
@@ -433,7 +433,7 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
-                    recipient_name: this.form.recipientName,
+                    recipient_name: this.form.collectedBy,
                     recipient_phone_number: this.form.recipientPhoneNumber,
                 }))
                 .post(this.route('deliveries.cancel', {'id': this.delivery.data.id}), {

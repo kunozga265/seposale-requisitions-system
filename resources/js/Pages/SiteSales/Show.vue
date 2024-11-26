@@ -1,7 +1,7 @@
 <template>
     <app-layout>
         <template #header>
-            Sales Order
+            {{site.name}} Sales Order
         </template>
 
         <template #breadcrumbs>
@@ -13,10 +13,19 @@
                               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                               clip-rule="evenodd"></path>
                     </svg>
-                    <a :href="route('sales.index',{section:'tabular'})"
+                    <a :href="route('sites.overview',{code:site.code})"
                        class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                        Sales
+                        Njewa
                     </a>
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Sales
+                    </span>
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
                          xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd"
@@ -134,27 +143,6 @@
                                 </div>
 
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Invoice Number</div>
-
-                                    <div v-if="sale.data.invoice != null">
-                                        <inertia-link :href="route('invoices.show',{id:sale.data.invoice.id})">
-                                            {{ sale.data.invoice.code }}
-                                        </inertia-link>
-                                    </div>
-                                    <div v-else>
-                                        <div @click="generateInvoice" class="flex justify-start items-center cursor">
-                                            <div>
-                                                <i class="mdi mdi-plus-circle text-blue-600"></i>
-                                            </div>
-                                            <div class="ml-2 text-blue-600 text-sm">
-                                                Generate Invoice
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Balance</div>
                                     <div>MK{{ numberWithCommas(sale.data.balance) }}</div>
                                 </div>
@@ -166,96 +154,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Site Details
-                            </div>
-                        </div>
-                        <div class="page-section-content">
 
-                            <div class="card p-0">
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Location</div>
-                                    <div>{{ sale.data.location }}</div>
-                                </div>
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Recipient Name</div>
-                                    <div>{{ sale.data.recipientName }}</div>
-                                </div>
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Recipient Profession</div>
-                                    <div>{{ sale.data.recipientProfession }}</div>
-                                </div>
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                                    <div class="text-gray-600 font-semibold">Recipient Phone Number</div>
-                                    <div>{{ sale.data.recipientPhoneNumber }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <dialog-modal v-if="selectedProduct != null" :show="updateDeliveryDialog"
-                                  @close="closeUpdateDeliveryDialog">
-                        <template #title>
-                            {{ selectedProduct.delivery.status == 0 ? "Initiate" : "Close" }} Delivery
-                        </template>
-
-                        <template #content>
-                            <jet-validation-errors class="mb-4"/>
-
-                            <div v-if="selectedProduct.paymentStatus==0">
-                                <div class="mb-4">
-                                    Product has not been paid for. Please contact the accounts department to update
-                                    payment status.
-                                </div>
-                            </div>
-                            <div v-else class="mb-4">
-                                <div class="mb-4">
-                                    Give the operations department a go ahead to deliver <span
-                                    class="font-bold">{{ selectedProduct.description }}</span>?
-                                </div>
-
-                                <div class="mb-4">
-                                    <label
-                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Delivery
-                                        Date</label>
-                                    <vue-date-time-picker
-
-                                        color="#1a56db"
-                                        v-model="deliveryDate"
-                                        :min-date="minDate"
-                                    />
-                                </div>
-                            </div>
-
-
-                        </template>
-
-                        <template #footer>
-                            <secondary-button @click.native="closeUpdateDeliveryDialog">
-                                Cancel
-                            </secondary-button>
-
-                            <primary-button v-if="selectedProduct.paymentStatus != 0" class="ml-2"
-                                            @click.native="updateDelivery">
-                                <svg v-show="form.processing" role="status"
-                                     class="inline w-4 h-4 mr-3 text-white animate-spin"
-                                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                        fill="#E5E7EB"/>
-                                    <path
-                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                        fill="currentColor"/>
-                                </svg>
-                                Proceed
-                            </primary-button>
-                        </template>
-                    </dialog-modal>
-
-                    <!--                        </div>-->
-
-                    <!--                    </div>-->
                     <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
@@ -318,7 +217,7 @@
                                                 Payment Status
                                             </th>
                                             <th scope="col" class="heading-font">
-                                                Delivery Status
+                                                Collection Status
                                             </th>
                                             <th scope="col" class="heading-font">
                                                 Details
@@ -346,23 +245,19 @@
                                             class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
                                             v-for="(productCompound,index) in sale.data.products"
                                             :key="index"
-                                            @click="navigateToDelivery(productCompound)"
                                         >
                                             <td>
                                                 <sale-status :status="productCompound.paymentStatus" :is-solo="true"/>
                                             </td>
-                                            <td>
-                                                <delivery-status v-if="productCompound.delivery != null" class="mr-1"
-                                                                 :productCompound="productCompound"
-                                                                 :overdue="productCompound.overdue"
-                                                                 :is-solo="true"/>
+                                            <td class="">
+                                                <collection class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200" :client="sale.data.client" :product="productCompound" :is-solo="true"/>
                                             </td>
                                             <th scope="row"
                                                 class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                {{ productCompound.description }}
+                                                {{ productCompound.inventory.name }}
                                             </th>
                                             <td class="py-2 pr-1">
-                                                {{ productCompound.units }}
+                                                {{ productCompound.inventory.units }}
                                             </td>
                                             <td class="py-2 pr-1 text-right">
                                                 {{ numberWithCommas(productCompound.quantity) }}
@@ -605,13 +500,13 @@ import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
 import {Money} from 'v-money'
-import DeliveryStatus from "@/Components/DeliveryStatus.vue";
+import Collection from "@/Components/Collection.vue";
 
 
 export default {
-    props: ['sale', 'paymentMethods', 'users'],
+    props: ['site','sale', 'paymentMethods', 'users'],
     components: {
-        DeliveryStatus,
+        Collection,
         AppLayout,
         DoughnutChart,
         PieChart,
@@ -673,12 +568,9 @@ export default {
     created() {
 
         for (let x in this.sale.data.products) {
-
-            console.log(this.sale.data.products[x].balance)
-            console.log(this.sale.data.products[x].amount)
             this.form.information.push({
                 id: this.sale.data.products[x].id,
-                name: this.sale.data.products[x].description,
+                name: this.sale.data.products[x].inventory.name,
                 balance: this.sale.data.products[x].balance != null && this.sale.data.products[x].balance > 0 ? this.sale.data.products[x].balance : this.sale.data.products[x].amount,
                 amount: 0,
 
@@ -747,7 +639,7 @@ export default {
                     ...data,
                     payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
                     date: this.getTimestampFromDate(this.date),
-                    type: "ORDINARY",
+                    type: "SITE",
                 }))
                 .post(this.route('receipts.store', {'id': this.sale.data.id}), {
                     preserveScroll: true,

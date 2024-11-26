@@ -22,9 +22,23 @@
 
 <script>
 export default {
-    name: "SaleStatus",
-    props:['status','isSolo'],
+    name: "InventoryStatus",
+    props:['available','threshold','isSolo'],
     emits: ['clickEvent'],
+    data() {
+        return {
+            status:0
+        }
+    },
+    created() {
+        if(this.available <= 0){
+            this.status = 0
+        }else if( this.available <= this.threshold){
+            this.status = 1
+        }else{
+            this.status = 2
+        }
+    },
     methods:{
         getStatusClass(){
           let statusClass = "";
@@ -39,15 +53,6 @@ export default {
                 case 2:
                     statusClass = "approved";
                     break;
-                case 3:
-                    statusClass = "closed";
-                    break;
-                case 4:
-                    statusClass = "closed";
-                    break;
-                case 5:
-                    statusClass = "closed";
-                    break;
                 default:
                     statusClass = "";
             }
@@ -60,13 +65,11 @@ export default {
         getStatusMessage(){
             switch (this.status){
                 case 0:
-                  return "Unpaid";
+                  return "Out of stock";
                 case 1:
-                    return "Partially Paid";
+                    return "Need to restock";
                 case 2:
-                  return "Fully Paid";
-                case 3:
-                    return "Closed";
+                  return "Available";
                 default:
                     return "";
             }
@@ -74,17 +77,11 @@ export default {
         getStatusIcon(){
             switch (this.status){
                 case 0:
-                    return "mdi-alert-circle";
+                    return "mdi-close-circle";
                 case 1:
-                    return "mdi-check-circle";
+                    return "mdi-alert-circle";
                 case 2:
                     return "mdi-check-circle";
-                case 3:
-                    return "mdi-check-circle";
-                case 4:
-                    return "mdi-check-circle";
-                case 5:
-                    return "mdi-close-circle";
                 default:
                     return "";
             }

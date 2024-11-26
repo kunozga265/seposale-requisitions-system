@@ -142,6 +142,28 @@
                 </ul>
               </li>
 
+              <li>
+                <div @click="sites = !sites"
+                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+                  <div>
+                    <i class="text-lg mdi mdi-finance"></i>
+                    <span class="ml-3">One Stop Shops</span>
+                  </div>
+                  <div>
+                    <i class="text-lg mdi" :class="{'mdi-menu-down':!sites, 'mdi-menu-up': sites}"></i>
+                  </div>
+                </div>
+                <ul v-show="sites">
+                  <li v-for="(site, index) in $page.props.sites" :key="index">
+                    <a :href="route('sites.overview',{code:site.code})"
+                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                        {{ site.name }}
+                    </a>
+                  </li>
+
+                </ul>
+              </li>
+
                <li>
                  <a :href="route('deliveries.index')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                      <i class="text-lg mdi mdi-dump-truck"></i>
@@ -355,6 +377,7 @@ export default {
       open: false,
       requests: false,
       sales: false,
+      sites: false,
       operations: false,
     }
   },

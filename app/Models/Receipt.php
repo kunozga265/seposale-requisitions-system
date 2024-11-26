@@ -26,6 +26,11 @@ class Receipt extends Model
         return $this->belongsTo(Sale::class);
     }
 
+    public function siteSale()
+    {
+        return $this->belongsTo(SiteSale::class);
+    }
+
     public function client()
     {
         return $this->belongsTo(Client::class);
@@ -34,6 +39,7 @@ class Receipt extends Model
     protected $fillable=[
         "client_id",
         "sale_id",
+        "site_sale_id",
         "payment_method_id",
         "user_id",
         "amount",

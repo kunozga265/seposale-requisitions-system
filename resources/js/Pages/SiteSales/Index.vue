@@ -234,7 +234,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card ">
+                            <div class="card no-shadow blue">
                                 <div class="flex justify-start items-center">
                                     <div class="">
                                         <div class="heading-font" style="font-weight: 600;">Sales Made</div>
@@ -243,7 +243,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card ">
+                            <div class="card no-shadow green">
                                 <div class="flex justify-between items-center">
 
                                     <div class="mr-4">
@@ -266,7 +266,7 @@
                                 </div>
 
                             </div>
-                            <div class="card ">
+                            <div class="card no-shadow red">
                                 <div class="flex justify-between items-center">
                                     <div class="mr-4">
                                         <div class="heading-font" style="font-weight: 600;">

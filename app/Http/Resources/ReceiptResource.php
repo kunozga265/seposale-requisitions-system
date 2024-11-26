@@ -20,6 +20,7 @@ class ReceiptResource extends JsonResource
             "code"                  => (new AppController())->getZeroedNumber($this->code),
             "paymentMethod"         => $this->paymentMethod->name,
             "amount"                => $this->amount,
+            "client"                => $this->client,
             "reference"             => $this->reference,
             "information"           => json_decode($this->information),
             'generatedBy'           => new UserResource($this->user),

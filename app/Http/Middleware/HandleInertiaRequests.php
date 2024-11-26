@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Http\Controllers\AppController;
 use App\Http\Resources\UserResource;
 use App\Models\Notification;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
@@ -65,6 +66,10 @@ class HandleInertiaRequests extends Middleware
                     return $user->userNotifications()->where('read',0)->get()->count();
                 }else
                     return 0;
+            },
+            'sites'=> function() use ($request){
+                //get user
+                return Site::orderBy("name","asc")->get();
             },
         ]);
     }
