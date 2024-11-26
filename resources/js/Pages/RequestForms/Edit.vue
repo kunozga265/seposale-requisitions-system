@@ -119,7 +119,7 @@
                         </div>
                         <div class="page-section-content flex justify-center">
 
-                            <div class="card w-full sm:max-w-md md:max-w-3xl">
+                            <div class="card default-table w-full sm:max-w-md md:max-w-3xl">
 
                                 <div class="p-2 mb-2 relative overflow-x-auto">
                                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -153,10 +153,10 @@
                                                     <i @click="removeRecord(index)"
                                                         class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor"></i>
                                                 </th>
-                                                <th scope="row"
+                                                <td scope="row"
                                                     class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                                     <jet-input type="text" class="block w-full" v-model="info.details" />
-                                                </th>
+                                                </td>
                                                 <td v-if="form.type === 'MATERIALS'" class="py-2 pr-1">
                                                     <jet-input type="text" class="block w-full" v-model="info.units" />
                                                 </td>
@@ -532,7 +532,7 @@ export default {
             //         return false
             //     } else
             //         return true
-            // } 
+            // }
             else {
                 this.error = "Select request type"
                 return false
