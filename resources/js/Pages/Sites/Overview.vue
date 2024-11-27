@@ -353,29 +353,15 @@
                 <table class="overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
-                    <th scope="col" class="heading-font">
-                      Payment Status
-                    </th>
-                    <th scope="col" class="heading-font">
-                      Collection Status
-                    </th>
-                    <th scope="col" class="heading-font">
-                      Details
-                    </th>
-                    <th scope="col" class="heading-font">
-                      Units
-                    </th>
-                    <th scope="col" class="heading-font text-right">
-                      Quantity
-                    </th>
-                    <th scope="col" class="heading-font text-right">
-                      Unit Cost
-                    </th>
-                    <th scope="col" class="heading-font text-right">
-                      Total Cost
-                    </th>
-                    <th scope="col" class="heading-font text-right">
-                      Balance
+                    <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-left">Client</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-right">Balance</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-right">Quantity</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-right">Collected</th>
+                    <th scope="col" class="p-2 pb-0 heading-font text-left">Collection Status
                     </th>
 
                   </tr>
@@ -386,37 +372,39 @@
                       v-for="(productCompound,index) in collections"
                       :key="index"
                   >
-                    <td>
-                      <sale-status :status="productCompound.paymentStatus" :is-solo="true"/>
+                    <td class="py-2 pr-1">
+                      {{ productCompound.sale.code }}
                     </td>
-                    <td class="">
-                      <collection
-                          class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                          :client="productCompound.sale.client" :product="productCompound" :is-solo="true"/>
+
+                    <td class="py-2 pr-1">
+                      {{ productCompound.sale.client.name }}
                     </td>
                     <th scope="row"
                         :class="{'strike-through':productCompound.trashed}"
                         class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                       {{ productCompound.inventory.name }}
                     </th>
-                    <td class="py-2 pr-1">
-                      {{ productCompound.inventory.units }}
+                    <td class="py-2 pr-1 text-right">
+                      {{ numberWithCommas(productCompound.amount)}}
                     </td>
                     <td class="py-2 pr-1 text-right">
-                      {{ numberWithCommas(productCompound.quantity) }}
+                      {{ numberWithCommas(productCompound.balance) }}
                     </td>
-                    <td class="py-2 pr-1 text-right">
-                      {{
-                        numberWithCommas(productCompound.amount / productCompound.quantity)
-                      }}
-                    </td>
-                    <td class="py-2 pr-1 text-right">
-                      {{ numberWithCommas(productCompound.amount) }}
+                    <td>
+                      <sale-status :status="productCompound.paymentStatus" :is-solo="true"/>
                     </td>
                     <td class="py-2 pr-1 text-right">
                       {{
-                        productCompound.balance != null ? numberWithCommas(productCompound.balance) : "-"
+                        numberWithCommas(productCompound.quantity)
                       }}
+                    </td>
+                    <td class="py-2 pr-1 text-right">
+                      {{ numberWithCommas(productCompound.collected) }}
+                    </td>
+                    <td class="">
+                      <collection
+                          class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                          :client="productCompound.sale.client" :product="productCompound" :is-solo="true"/>
                     </td>
 
                   </tr>
