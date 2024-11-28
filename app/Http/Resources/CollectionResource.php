@@ -19,6 +19,7 @@ class CollectionResource extends JsonResource
             "id" => intval($this->id),
             "code" => (new AppController())->getZeroedNumber($this->code),
             "client" => $this->client,
+            "photo" => $this->photo,
             "collectedBy" => $this->collected_by,
             "collectedByPhoneNumber" => $this->collected_by_phone_number,
             "inventory" => $this->inventory,

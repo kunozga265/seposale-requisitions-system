@@ -90,6 +90,14 @@
                             <div class="ml-5 mb-1 flex text-xs text-mute" v-for="(collection, index) in  product.collections" :key="index">
                                 <div style="width:120px" class="text-gray-500">{{ getDate(collection.date*1000) }}:</div>
                                 <div class="">{{ collection.message }}</div>
+                                <div class="ml-4" v-if="collection.photo != null">
+                                    <a :href="fileUrl(collection.photo)" target="_blank">
+                                        <!--                                                <div class=" h-10 w-10 flex justify-center items-center rounded-full bg-blue-700 cursor">-->
+                                        <span class="text-blue-700 text-xs font-bold">Download</span>
+                                        <i class="text-blue-700 font-bold mdi mdi-download text-white"></i>
+                                        <!--                                                </div>-->
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

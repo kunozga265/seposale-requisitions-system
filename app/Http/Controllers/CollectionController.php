@@ -95,7 +95,7 @@ class CollectionController extends Controller
                 return response()->json(new SiteSaleSummaryResource($summary), 201);
             else {
                 //Web Response
-                return Redirect::back()->with('success', 'Collection recorded!');
+                return Redirect::route('sites.summaries.show',['code'=>$summary->sale->site->code,'id'=>$inventorySummary->id])->with('success', 'Collection recorded!');
             }
         } else {
             return Redirect::back()->with('error', 'Resource not found');
