@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\DeliveryResource;
 use App\Http\Resources\SaleResource;
 use App\Models\Delivery;
+use App\Models\Expense;
 use App\Models\Summary;
 use App\Models\SystemLog;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -24,11 +25,14 @@ class DeliveryController extends Controller
             $deliveries = Delivery::where("status", ">", 0)->orderBy("due_date","asc")->paginate(100);
             $headline = "all";
         }else if ($filter == "completed"){
-            $deliveries = Delivery::where("status", 2)->orderBy("due_date","asc")->paginate(100);
+            $deliveries = Delivery::where("status", 4)->orderBy("due_date","asc")->paginate(100);
             $headline = "completed";
         }else if ($filter == "cancelled"){
             $deliveries = Delivery::where("status", 3)->orderBy("due_date","asc")->paginate(100);
             $headline = "cancelled";
+        }else if ($filter == "delivered"){
+            $deliveries = Delivery::where("status", 2)->orderBy("due_date","asc")->paginate(100);
+            $headline = "delivered";
         }else{
             $deliveries = Delivery::where("status", 1)->orderBy("due_date","asc")->paginate(100);
             $headline = "processing";
@@ -211,6 +215,59 @@ class DeliveryController extends Controller
                 ]);
 
                 return Redirect::back()->with('success', 'Delivery cancelled successfully');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Delivery not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Delivery not found');
+            }
+        }
+    }
+
+    public function complete(Request $request,$id)
+    {
+        $delivery = Delivery::find($id);
+
+        if (is_object($delivery)) {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+//                return response()->json(new SaleResource($delivery));
+            } else {
+
+                $request->validate([
+                    'product' => ['required'],
+//                    'transportation' => ['required'],
+                ]);
+
+                $delivery->update([
+                   "status" => 4
+                ]);
+
+                $total = $request->product + $request->transportation + $request->other;
+
+                Expense::create([
+                    "total" => $total,
+                    "contents" => json_encode([
+                        "product" => $request->product,
+                        "transportation" => $request->transportation,
+                        "other" => $request->other,
+                        "comments" => $request->comments,
+                    ]),
+                    "sale_id" => $delivery->summary->sale->id ,
+                    "delivery_id" => $delivery->id,
+                ]);
+
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Delivery has been completed",
+                    "delivery_id" => $delivery->id,
+                ]);
+
+                return Redirect::back()->with('success', 'Delivery completed successfully');
             }
         } else {
             if ((new AppController())->isApi($request)) {

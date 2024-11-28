@@ -32,8 +32,11 @@ export default {
                     case 2:
                         statusClass = "approved";
                         break;
-                    default:
+                    case 3:
                         statusClass = "closed";
+                        break;
+                    default:
+                        statusClass = "approved";
                 }
             } else {
                 switch (parseInt(this.productCompound.delivery.status)) {
@@ -46,8 +49,11 @@ export default {
                     case 2:
                         statusClass = "approved";
                         break;
-                    default:
+                    case 3:
                         statusClass = "closed";
+                        break;
+                    default:
+                        statusClass = "approved";
                         break;
                 }
             }
@@ -66,6 +72,8 @@ export default {
                 case 1:
                     return "mdi-alert-circle";
                 case 2:
+                    return "mdi-check-circle";
+                case 4:
                     return "mdi-check-circle";
                 default:
                     return "";

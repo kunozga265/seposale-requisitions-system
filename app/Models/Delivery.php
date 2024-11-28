@@ -29,6 +29,10 @@ class Delivery extends Model
     {
         return $this->hasMany(SystemLog::class);
     }
+    public function expense()
+    {
+        return $this->hasOne(Expense::class);
+    }
 
     public function overdue()
     {

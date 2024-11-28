@@ -25,6 +25,7 @@ class DeliveryResource extends JsonResource
             "notes" => json_decode($this->notes),
             "client" => $this->summary->sale->client,
             "location" => $this->summary->sale->location,
+            "expense" => new ExpenseResource($this->expense),
             "quantityDelivered" => floatval($this->quantity_delivered),
             "summary" => new SummaryResource($this->summary),
             "date" => intval($this->due_date),

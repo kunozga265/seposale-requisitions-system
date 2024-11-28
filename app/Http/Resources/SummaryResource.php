@@ -27,7 +27,11 @@ class SummaryResource extends JsonResource
             "quantity" => $this->quantity,
             "description" => $this->description,
             "units" => $this->units,
-            "delivery" => $this->delivery,
+            "delivery" => $this->delivery != null ? [
+                "id" => intval($this->delivery->id),
+                "status" => intval($this->delivery->status),
+                "expense" => new ExpenseResource($this->delivery->expense),
+            ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false
         ];
     }

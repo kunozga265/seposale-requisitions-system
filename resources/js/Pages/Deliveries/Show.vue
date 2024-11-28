@@ -1,4 +1,4 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
     <app-layout>
         <template #header>
             Delivery Summary
@@ -36,6 +36,7 @@
             </a>
 <!--            &lt;!&ndash;           <a :href="route('invoices.edit',{'id':delivery.data.id})">&ndash;&gt;-->
                            <primary-button v-show="delivery.data.status === 1"  @click.native="showDialog=true">Add Note</primary-button>
+                           <primary-button v-show="delivery.data.status === 2"  @click.native="completeDialog=true">Complete</primary-button>
             <!--           </a>-->
             <danger-button v-if="delivery.data.status === 1" @click.native="deleteDialog=true">Cancel</danger-button>
 
@@ -99,6 +100,75 @@
                     close
                 </secondary-button>
                 <primary-button v-show="delivery.data.status === 1" @click.native="submit">
+                    <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
+                         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="#E5E7EB"/>
+                        <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="currentColor"/>
+                    </svg>
+                    Submit
+                </primary-button>
+            </template>
+        </dialog-modal>
+
+        <dialog-modal :show="completeDialog" @close="completeDialog=false">
+
+            <template #title>
+                Complete Delivery
+            </template>
+
+            <template #content>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div class="mb-4">
+                        <div class="text-mute text-sm">
+                            Product Cost
+                        </div>
+                          <money
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            v-bind="moneyMaskOptions" v-model="form.product"/>
+                        <div class="text-red-500 text-xs" v-if="form.errors.product || productValidation">Required</div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="text-mute text-sm">
+                            Transportation Cost
+                        </div>
+                          <money
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            v-bind="moneyMaskOptions" v-model="form.transportation"/>
+                        <div class="text-red-500 text-xs" v-if="form.errors.transportation || transportationValidation">Required</div>
+                    </div>
+                    <div class="mb-4 md:col-span-2">
+                        <div class="text-mute text-sm">
+                            Other Costs
+                        </div>
+                          <money
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            v-bind="moneyMaskOptions" v-model="form.other"/>
+                    </div>
+                    <div class="mb-4 md:col-span-2">
+                        <div class="text-mute text-sm">
+                            Comments
+                        </div>
+                        <textarea
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                   v-model="form.comments"> </textarea>
+                    </div>
+
+
+                </div>
+            </template>
+
+            <template #footer>
+                <!--                <danger-button @click.native="showDialog=false">-->
+                <!--                    Cancel-->
+                <!--                </danger-button>-->
+                <secondary-button @click.native="completeDialog=false">
+                    close
+                </secondary-button>
+                <primary-button v-show="delivery.data.status === 2" @click.native="complete">
                     <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
                          viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -237,6 +307,78 @@
                         </div>
                     </div>
 
+                    <div class="page-section md:col-span-2" v-if="delivery.data.expense != null">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Expenses
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+                            <div class="card">
+                                <div class="p-2 relative overflow-x-auto">
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <tr>
+                                            <th scope="col" class="heading-font">
+                                                Details
+                                            </th>
+                                            <th scope="col" class="heading-font text-right">
+                                               Cost
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr
+                                            class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                        >
+                                            <th scope="row"
+                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                                Product
+                                            </th>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{  numberWithCommas(delivery.data.expense.contents.product) }}
+                                            </td>
+                                        </tr>
+                                        <tr
+                                            class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                        >
+                                            <th scope="row"
+                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                                Transportation
+                                            </th>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{  numberWithCommas(delivery.data.expense.contents.transportation) }}
+                                            </td>
+                                        </tr>
+                                        <tr
+                                            class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                        >
+                                            <th scope="row"
+                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                                Other
+                                            </th>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{  numberWithCommas(delivery.data.expense.contents.other) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="pt-4 pr-1 text-base heading-font font-bold text-right"></th>
+                                            <td class="pt-4 pr-1 text-base font-bold text-right">
+                                                {{ numberWithCommas(delivery.data.expense.total) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                {{delivery.data.expense.contents.comments}}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 
 
                     <div v-if="delivery.data.notes != null" class="page-section">
@@ -349,10 +491,13 @@ import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
 import DeliveryStatus from "@/Components/DeliveryStatus.vue";
+import {Money} from 'v-money'
+import SaleStatus from "@/Components/SaleStatus.vue";
 
 export default {
     props: ['delivery'],
     components: {
+        SaleStatus,
         DeliveryStatus,
         AppLayout,
         DoughnutChart,
@@ -366,6 +511,7 @@ export default {
         JetValidationErrors,
         JetLabel,
         JetInput,
+        Money
     },
     data() {
         return {
@@ -376,14 +522,29 @@ export default {
             denyDialog: false,
             deleteDialog: false,
             showDialog: false,
+            completeDialog: false,
             showLogs: false,
             form: this.$inertia.form({
                 quantity: 0,
                 photo: "",
                 recipientName: "",
                 recipientPhoneNumber: "",
+                product: 0,
+                transportation: 0,
+                other: 0,
+                comments: "",
             }),
+            moneyMaskOptions: {
+                decimal: '.',
+                thousands: ',',
+                prefix: 'MK ',
+                suffix: '',
+                precision: 2,
+                masked: false
+            },
             quantityValidation: null,
+            productValidation: false,
+            transportationValidation: false,
         }
     },
     created() {
@@ -428,6 +589,34 @@ export default {
                         document.getElementById('photo').value = ""
                     },
                 })
+        },
+        complete() {
+            this.productValidation = false
+            this.transportationValidation = false
+
+
+            if(this.form.product === 0){
+                this.productValidation = true
+            // }else if (this.form.transportation === 0){
+            //     this.transportationValidation = true
+            }else {
+                this.form
+                    .transform(data => ({
+                        ...data,
+
+                    }))
+                    .post(this.route('deliveries.complete', {'id': this.delivery.data.id}), {
+                        // preserveScroll: true,
+                        onSuccess: () => {
+                            this.completeDialog = false
+                            this.form.product = 0
+                            this.form.transportation = 0
+                            this.form.other = 0
+                            this.form.comments = ""
+                            document.getElementById('photo').value = ""
+                        },
+                    })
+            }
         },
         cancelDelivery() {
             this.form

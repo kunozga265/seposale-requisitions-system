@@ -77,6 +77,13 @@
                   class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
           </div>
           </a>
+          <a :href="route('deliveries.index',{filter:'delivered'})">
+          <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'success':headline==='delivered'}">
+              <div>Delivered</div>
+              <i v-show="headline === 'delivered'"
+                  class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+          </div>
+          </a>
           <a :href="route('deliveries.index',{filter:'completed'})">
           <div class="ml-1 flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold " :class="{'success':headline==='completed'}">
               <div>Completed</div>

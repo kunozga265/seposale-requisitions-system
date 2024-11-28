@@ -158,6 +158,10 @@
                                     <div class="text-gray-600 font-semibold">Balance</div>
                                     <div>MK{{ numberWithCommas(sale.data.balance) }}</div>
                                 </div>
+                                <div v-if="sale.data.expense != null" class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Profit</div>
+                                    <div :class="{'text-red-500':profit(sale.data.expense.total)<0, 'text-green-500':profit(sale.data.expense.total)>0, }">MK{{ profit(sale.data.expense.total) }}</div>
+                                </div>
 
                                 <!--                <div class="border-b px-4 py-3 flex justify-between text-sm">-->
                                 <!--                  <div class="text-gray-600 font-semibold">Site Location</div>-->
@@ -401,6 +405,80 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="page-section md:col-span-2" v-if="sale.data.expense != null">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Expenses
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+                            <div class="card">
+                                <div class="p-2 relative overflow-x-auto">
+                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                        <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <tr>
+                                            <th scope="col" class="heading-font">
+                                                Details
+                                            </th>
+                                            <th scope="col" class="heading-font text-right">
+                                                Cost
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr
+                                            class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                        >
+                                            <th scope="row"
+                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                                Product
+                                            </th>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{  numberWithCommas(sale.data.expense.contents.product) }}
+                                            </td>
+                                        </tr>
+                                        <tr
+                                            class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                        >
+                                            <th scope="row"
+                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                                Transportation
+                                            </th>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{  numberWithCommas(sale.data.expense.contents.transportation) }}
+                                            </td>
+                                        </tr>
+                                        <tr
+                                            class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                        >
+                                            <th scope="row"
+                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                                Other
+                                            </th>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{  numberWithCommas(sale.data.expense.contents.other) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th class="pt-4 pr-1 text-base heading-font font-bold text-right"></th>
+                                            <td class="pt-4 pr-1 text-base font-bold text-right">
+                                                {{ numberWithCommas(sale.data.expense.total) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                {{sale.data.expense.contents.comments}}
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="page-section md:col-span-2">
                         <div class="page-section-header">
                             <div class="page-section-title">
@@ -606,6 +684,7 @@ import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
 import {Money} from 'v-money'
 import DeliveryStatus from "@/Components/DeliveryStatus.vue";
+import {red} from "tailwindcss/colors";
 
 
 export default {
@@ -687,6 +766,9 @@ export default {
 
     },
     computed: {
+        red() {
+            return red
+        },
         userId() {
             if (parseInt(this.userIndex) > 0) {
                 return this.users.data[this.userIndex].id
@@ -722,7 +804,7 @@ export default {
         },
         amountValidation() {
             return this.sale.data.balance >= this.receiptAmount;
-        }
+        },
     },
     watch: {
         fullPaymentCheck() {
@@ -735,6 +817,17 @@ export default {
         }
     },
     methods: {
+        profit(expenses){
+            let total = []
+
+            for (let x in this.sale.data.products) {
+                if(this.sale.data.products[x].paymentStatus > 0){
+                    total += this.sale.data.products[x].amount
+                }
+            }
+
+            return total - expenses;
+        },
         generateInvoice() {
             this.$inertia.post(this.route('invoices.generate', {'id': this.sale.data.id}))
         },

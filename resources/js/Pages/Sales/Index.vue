@@ -216,7 +216,7 @@
                 </div>
                 <div v-else class="page-section">
 
-                    <div  class="page-section-header">
+                    <div class="page-section-header">
                         <div class="page-section-title">
                             Records
                         </div>
@@ -305,6 +305,8 @@
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-right">Balance</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-right">Expenses</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-right">Profit</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Delivery Status</th>
                                     </tr>
@@ -348,6 +350,8 @@
                                         </th>
                                         <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
                                         <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
+                                        <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
+                                        <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
                                         <th scope="col" class="p-2 pb-4 heading-font text-left"><select
                                             v-model="form.paymentStatus"
                                             id="payment-status"
@@ -376,8 +380,12 @@
                                     <tr
                                         v-for="(sale,index) in filteredSales" :key="index">
                                         <td class="p-2 text-left">{{ getDate(sale.date * 1000) }}</td>
-                                        <td class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200" @click="navigateToSale(sale.id)">{{ sale.code }}</td>
-                                        <td class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200" @click="navigateToClient(sale.client.id)">{{ sale.client.name }}</td>
+                                        <td class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                            @click="navigateToSale(sale.id)">{{ sale.code }}
+                                        </td>
+                                        <td class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                            @click="navigateToClient(sale.client.id)">{{ sale.client.name }}
+                                        </td>
                                         <td class="p-2 text-left ">{{ sale.product.description }}</td>
                                         <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.amount.toFixed(2))
@@ -387,10 +395,35 @@
                                                 numberWithCommas(sale.product.balance.toFixed(2))
                                             }}
                                         </td>
-                                        <td class="">
-                                            <sale-status class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200" @clickEvent="navigateToSale(sale.id)" :status="sale.product.paymentStatus" :is-solo="true"/>
+                                        <td class="p-2 text-right">
+                                            <span v-if=" sale.product.delivery != null">
+                                                <span v-if=" sale.product.delivery.expense != null">
+                                                {{
+                                                        numberWithCommas(sale.product.delivery.expense.total.toFixed(2))
+                                                    }}
+                                                    </span>
+                                                <span v-else>-</span>
+                                            </span>
                                         </td>
-                                        <td class="hover:bg-gray-100 cursor-pointer ml-1  transition ease-in-out duration-200" v-if=" sale.product.delivery != null">
+                                        <td class="p-2 text-right">
+                                             <span v-if=" sale.product.delivery != null">
+                                                <span
+                                                    v-if=" sale.product.delivery.expense != null && sale.product.paymentStatus > 0">
+                                                {{
+                                                        numberWithCommas(sale.product.amount - sale.product.delivery.expense.total)
+
+                                                 }}</span>
+                                                <span v-else>-</span>
+                                            </span>
+                                        </td>
+                                        <td class="">
+                                            <sale-status
+                                                class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                                @clickEvent="navigateToSale(sale.id)"
+                                                :status="sale.product.paymentStatus" :is-solo="true"/>
+                                        </td>
+                                        <td class="hover:bg-gray-100 cursor-pointer ml-1  transition ease-in-out duration-200"
+                                            v-if=" sale.product.delivery != null">
                                             <delivery-status
                                                 @clickEvent="sale.product.delivery.status > 0 ? navigateToDelivery(sale.product.delivery.id) : navigateToSale(sale.id)"
                                                 :productCompound=" sale.product"

@@ -552,6 +552,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' => ['employee','management']
         ])->name('deliveries.cancel');
 
+        Route::post('/complete/{id}', [
+            "uses"  => "App\Http\Controllers\DeliveryController@complete",
+            'roles' => ['employee','management']
+        ])->name('deliveries.complete');
+
         Route::get('/print/{id}', [
             "uses"  => "App\Http\Controllers\DeliveryController@print",
             'roles' =>['employee','management']

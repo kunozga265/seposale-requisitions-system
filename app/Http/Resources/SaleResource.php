@@ -24,6 +24,7 @@ class SaleResource extends JsonResource
                 "id" => $this->invoice->id,
                 'code' => (new AppController())->getZeroedNumber($this->invoice->code,$this->invoice->revision),
             ] : null,
+            "expense" => new ExpenseResource($this->expense),
             'total' => floatval($this->total),
             'balance' => floatval($this->balance),
             'date' => $this->date,
