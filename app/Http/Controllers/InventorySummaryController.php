@@ -131,7 +131,7 @@ class InventorySummaryController extends Controller
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename = "INVENTORY-SUMMARY#" . (new AppController())->getZeroedNumber($summary->code) . " - " . date('Ymd', $summary->date);
+            $filename = "DAILY-REPORT#" . (new AppController())->getZeroedNumber($summary->code) . " - " . date('Ymd', $summary->date);
 
             $now_d = \Illuminate\Support\Carbon::createFromTimestamp($summary->date, 'Africa/Lusaka')->format('F j, Y');
             $now_t = Carbon::createFromTimestamp($summary->date, 'Africa/Lusaka')->format('H:i');
