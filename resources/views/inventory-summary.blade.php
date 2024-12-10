@@ -121,7 +121,7 @@
                 {{$date}}
             </div>
         </div>
-        <div style="font-size: 25px; font-weight: normal; margin-top:0px">Inventory Summary:
+        <div style="font-size: 25px; font-weight: normal; margin-top:0px">Daily Report:
             <span
                 style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span>
         </div>
