@@ -432,6 +432,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sites.summaries.show');
 
+        Route::get('/inventories/print/{id}', [
+            "uses"  => "App\Http\Controllers\InventorySummaryController@print",
+            'roles' =>['employee','management']
+        ])->name('sites.summaries.print');
+
         Route::post('/{code}/sales/store', [
             "uses"  => "App\Http\Controllers\SiteSaleController@store",
             'roles' =>['employee','management']

@@ -43,9 +43,9 @@
             <!--      </a>-->
             <!--      </span>-->
 
-            <!--            <a :href="route('sales.print',{'id':sale.data.id})" target="_blank">-->
-            <!--                <primary-button>Print</primary-button>-->
-            <!--            </a>-->
+                        <a :href="route('sites.summaries.print',{'id':summary.data.id})" target="_blank">
+                            <primary-button>Print</primary-button>
+                        </a>
 
         </template>
 

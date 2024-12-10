@@ -8,6 +8,7 @@ use App\Http\Resources\InventorySummaryResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\InventorySummary;
 use App\Models\Site;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -116,6 +117,45 @@ class InventorySummaryController extends Controller
             "site_id" => $site->id,
             "date" => $today,
         ]);
+    }
+
+    public function print(Request $request, $id)
+    {
+        //find out if the request is valid
+        $summary = InventorySummary::find($id);
+
+        if (is_object($summary)) {
+
+            /*
+                        $pdf=App::make('dompdf.wrapper');
+                        $pdf->loadHTML('request');
+                        return $pdf->stream('Request Form');*/
+
+            $filename = "INVENTORY-SUMMARY#" . (new AppController())->getZeroedNumber($summary->code) . " - " . date('Ymd', $summary->date);
+
+            $now_d = \Illuminate\Support\Carbon::createFromTimestamp($summary->date, 'Africa/Lusaka')->format('F j, Y');
+            $now_t = Carbon::createFromTimestamp($summary->date, 'Africa/Lusaka')->format('H:i');
+
+
+
+
+            $pdf = PDF::loadView('inventory-summary', [
+                'code' => (new AppController())->getZeroedNumber($summary->code),
+                'date' => $now_d,
+                'time' => $now_t,
+                'summary' => $summary,
+            ]);
+            return $pdf->download("$filename.pdf");
+
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('dashboard')->with('error', 'Sale not found');
+            }
+        }
     }
 
 

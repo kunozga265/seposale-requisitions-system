@@ -44,6 +44,20 @@ class SiteSaleSummary extends Model
         }
         return 3;
     }
+
+    public function getFullPaymentStatus()
+    {
+        if (isset($this->balance)) {
+            if ($this->balance == $this->amount) {
+                return "Unpaid";
+            } elseif ($this->balance > 0 && $this->balance < $this->amount) {
+                return "Partially Paid";
+            } elseif ($this->balance == 0) {
+                return "Paid";
+            }
+        }
+        return 3;
+    }
     public function getCollectionStatus()
     {
 
