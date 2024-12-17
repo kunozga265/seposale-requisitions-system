@@ -79,6 +79,8 @@
                         </div>
                         <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
                                class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                        <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
+                        </div>
                     </div>
 
 

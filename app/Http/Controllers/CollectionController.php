@@ -29,6 +29,7 @@ class CollectionController extends Controller
             //Validate all the important attributes
             $request->validate([
                 'quantity' => ['required'],
+                'photo' => ['required'],
             ]);
 
 
