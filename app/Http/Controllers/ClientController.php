@@ -71,6 +71,7 @@ class ClientController extends Controller
         ]);
 
         $client = Client::create([
+            'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
             'name' => ucwords($request->name),
             'phone_number' => $request->phoneNumber,
             'email' => $request->email,

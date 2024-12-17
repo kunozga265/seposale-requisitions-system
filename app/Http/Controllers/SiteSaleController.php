@@ -155,6 +155,7 @@ class SiteSaleController extends Controller
                 ]);
 
                 $client = Client::create([
+                    'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
                     'name' => $request->name,
                     'phone_number' => $request->phoneNumber,
                     'email' => $request->email,
@@ -166,6 +167,7 @@ class SiteSaleController extends Controller
 
             $sale = SiteSale::create([
                 'code' => $this->getCodeNumber(),
+                'serial' =>  (new AppController())->generateUniqueCode("SITESALE"),
                 'status' => 0,
                 'client_id' => $client->id,
                 'total' => $request->total,

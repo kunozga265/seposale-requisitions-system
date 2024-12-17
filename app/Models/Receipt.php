@@ -37,6 +37,7 @@ class Receipt extends Model
     }
 
     protected $fillable=[
+        "serial",
         "client_id",
         "sale_id",
         "site_sale_id",

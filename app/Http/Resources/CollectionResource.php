@@ -15,6 +15,7 @@ class CollectionResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             "id" => intval($this->id),
             "code" => (new AppController())->getZeroedNumber($this->code),

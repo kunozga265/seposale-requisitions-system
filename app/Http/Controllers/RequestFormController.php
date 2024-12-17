@@ -420,7 +420,7 @@ class RequestFormController extends Controller
             }
 
             $requestForm=RequestForm::create([
-                'code'                          =>  (new AppController())->generateUniqueCode(),
+                'code'                          =>  (new AppController())->generateUniqueCode("REQUESTFORM"),
                 'code_alt'                      =>  $this->getCodeRequestFormNumber(),
                 //Requested information
                 'type'                          =>  $request->type,
@@ -480,7 +480,7 @@ class RequestFormController extends Controller
 
 
         $requestForm=RequestForm::create([
-            'code'                          =>  (new AppController())->generateUniqueCode(),
+            'code'                          =>  (new AppController())->generateUniqueCode("REQUESTFORM"),
             'code_alt'                      =>  $this->getCodeRequestFormNumber(),
             //Requested information
             'type'                          =>  $request->type,
@@ -543,7 +543,7 @@ class RequestFormController extends Controller
 
 
             $requestForm=RequestForm::create([
-                'code'                          =>  (new AppController())->generateUniqueCode(),
+                'code'                          =>  (new AppController())->generateUniqueCode("REQUESTFORM"),
                 'code_alt'                      =>  $this->getCodeRequestFormNumber(),
                 //Requested information
                 'type'                          =>  $request->type,

@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
 //         $this->call(SummaryTableSeeder::class);
 //         $this->call(RequestFormTableSeeder::class);
 //         $this->call(DeliveryTableSeeder::class);
-         $this->call(SitesTableSeeder::class);
-         $this->call(InventoryTableSeeder::class);
+//         $this->call(SitesTableSeeder::class);
+//         $this->call(InventoryTableSeeder::class);
+         $this->call(SerialSeeder::class);
     }
 }

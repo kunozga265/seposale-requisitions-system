@@ -18,6 +18,7 @@ class CreateQuotationsTable extends Migration
 
             //Customer
             $table->integer("code");
+            $table->string("serial")->unique();
             $table->integer("client_id");
             $table->string("location")->nullable();
             $table->string("recipient_name")->nullable();

@@ -23,6 +23,7 @@ class Quotation extends Model
 
     protected $fillable = [
         "code",
+        "serial",
         "client_id",
         "location",
         "recipient_name",

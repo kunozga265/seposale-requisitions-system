@@ -96,6 +96,7 @@ class QuotationController extends Controller
             ]);
 
             $client = Client::create([
+                'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
                 'name' => $request->name,
                 'phone_number' => $request->phoneNumber,
                 'email' => $request->email,
@@ -107,7 +108,7 @@ class QuotationController extends Controller
 
             return Quotation::create([
                 'code' => $this->getCodeNumber(),
-
+                'serial' =>  (new AppController())->generateUniqueCode("QUOTATION"),
                 //Customer Details
                 'client_id' => $client->id,
                 'location' => $request->location,

@@ -51,7 +51,8 @@
                         <div class="text-mute text-sm">
                             Quantity
                         </div>
-                        <jet-input min="0" :max="quantityBalance" type="number" step="0.01" class="block w-full" v-model="form.quantity"/>
+                        <jet-input min="0" :max="quantityBalance" type="number" step="0.01" class="block w-full"
+                                   v-model="form.quantity"/>
                     </div>
 
                     <div v-show="product.collectionStatus < 2" class="mb-4">
@@ -72,23 +73,28 @@
                         </div>
                     </div>
 
-                  <div v-if="product.collectionStatus < 2" class="mb-4 md:col-span-2">
-                    <div class="text-mute text-sm mb-1">
-                      Upload Collection Receipt
+                    <div v-if="product.collectionStatus < 2" class="mb-4 md:col-span-2">
+                        <div class="text-mute text-sm mb-1">
+                            Upload Collection Receipt
+                        </div>
+                        <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                               class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
                     </div>
-                    <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
-                           class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
-                  </div>
 
 
                     <div class="mb-4 md:col-span-2">
                         <div @click="showLogs = !showLogs" class="text-mute transition-all ease-in">
-                            <i class="text-lg mdi" :class="{'mdi-menu-down':!showLogs, 'mdi-menu-up': showLogs}"></i> Collections
+                            <i class="text-lg mdi" :class="{'mdi-menu-down':!showLogs, 'mdi-menu-up': showLogs}"></i>
+                            Collections
                             ({{ product.collections.length }})
                         </div>
                         <div v-show="showLogs" class=" transition-all ease-in">
-                            <div class="ml-5 mb-1 flex text-xs text-mute" v-for="(collection, index) in  product.collections" :key="index">
-                                <div style="width:120px" class="text-gray-500">{{ getDate(collection.date*1000) }}:</div>
+                            <div class="ml-5 mb-1 flex text-xs text-mute"
+                                 v-for="(collection, index) in  product.collections" :key="index">
+                                <div style="width:120px" class="text-gray-500">{{
+                                        getDate(collection.date * 1000)
+                                    }}:
+                                </div>
                                 <div class="">{{ collection.message }}</div>
                                 <div class="ml-4" v-if="collection.photo != null">
                                     <a :href="fileUrl(collection.photo)" target="_blank">
@@ -102,41 +108,42 @@
                         </div>
                     </div>
 
-<!--                  <div v-if="product.collectionStatus < 2" @click="openDeleteDialog"-->
-<!--                       class="mb-4 md:col-span-2 text-red-500 text-sm cursor">-->
-<!--                    <i-->
-<!--                        class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 "></i>-->
-<!--                    Cancel Collection-->
-<!--                  </div>-->
+                    <!--                  <div v-if="product.collectionStatus < 2" @click="openDeleteDialog"-->
+                    <!--                       class="mb-4 md:col-span-2 text-red-500 text-sm cursor">-->
+                    <!--                    <i-->
+                    <!--                        class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 "></i>-->
+                    <!--                    Cancel Collection-->
+                    <!--                  </div>-->
 
-                  <dialog-modal :show="deleteDialog" @close="deleteDialog=false">
-                    <template #title>
-                      Cancel collection for {{ product.inventory.name }}
-                    </template>
+                    <dialog-modal :show="deleteDialog" @close="deleteDialog=false">
+                        <template #title>
+                            Cancel collection for {{ product.inventory.name }}
+                        </template>
 
-                    <template #content>
-                      Are you sure you want to cancel this collection?
-                    </template>
+                        <template #content>
+                            Are you sure you want to cancel this collection?
+                        </template>
 
-                    <template #footer>
-                      <secondary-button @click.native="deleteDialog=false">
-                        Cancel
-                      </secondary-button>
+                        <template #footer>
+                            <secondary-button @click.native="deleteDialog=false">
+                                Cancel
+                            </secondary-button>
 
-                      <danger-button class="ml-2" @click.native="cancelCollection">
-                        <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-                             viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                              fill="#E5E7EB"/>
-                          <path
-                              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                              fill="currentColor"/>
-                        </svg>
-                        Proceed
-                      </danger-button>
-                    </template>
-                  </dialog-modal>
+                            <danger-button class="ml-2" @click.native="cancelCollection">
+                                <svg v-show="form.processing" role="status"
+                                     class="inline w-4 h-4 mr-3 text-white animate-spin"
+                                     viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="#E5E7EB"/>
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentColor"/>
+                                </svg>
+                                Proceed
+                            </danger-button>
+                        </template>
+                    </dialog-modal>
 
                 </div>
             </template>
@@ -166,9 +173,6 @@
     </div>
 
 
-
-
-
 </template>
 
 <script>
@@ -184,19 +188,19 @@ export default {
     components: {DangerButton, PrimaryButton, DialogModal, JetInput, SecondaryButton},
     props: ['product', "client", "isSolo"],
     emits: ['clickEvent'],
-    data(){
-      return{
-        deleteDialog: false,
-          showDialog:false,
-          showLogs: true,
-          form: this.$inertia.form({
-              quantity: 0,
-              photo: "",
-              collectedBy: "",
-              phoneNumber: "",
-          }),
-          quantityValidation: null,
-      }
+    data() {
+        return {
+            deleteDialog: false,
+            showDialog: false,
+            showLogs: true,
+            form: this.$inertia.form({
+                quantity: 0,
+                photo: "",
+                collectedBy: "",
+                phoneNumber: "",
+            }),
+            quantityValidation: null,
+        }
     },
     computed: {
         quantityBalance() {
@@ -241,9 +245,9 @@ export default {
                     break;
             }
 
-          if(this.product.trashed){
-            statusClass = "approved";
-          }
+            if (this.product.trashed) {
+                statusClass = "approved";
+            }
 
             if (this.isSolo) {
                 return statusClass + " clear-background";
@@ -264,12 +268,12 @@ export default {
                     return "";
             }
         },
-        getStatusMessage(status){
-          if(this.product.trashed){
-            return "Closed";
-          }
+        getStatusMessage(status) {
+            if (this.product.trashed) {
+                return "Closed";
+            }
 
-            switch (parseInt(status)){
+            switch (parseInt(status)) {
                 case 0:
                     return "Not Collected";
                 case 1:
@@ -282,41 +286,42 @@ export default {
                     return "";
             }
         },
-      photoUpload(file) {
-        const reader = new FileReader();
-        if (file) {
-          reader.readAsDataURL(file);
-          reader.onload = (e) => {
-            axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
-              type: "COLLECTION_NOTE",
-              file: e.target.result
-            }).then(res => {
-              this.form.photo = res.data.file
+        photoUpload(file) {
+            const reader = new FileReader();
+            if (file) {
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+                        type: "COLLECTION_NOTE",
+                        file: e.target.result
+                    }).then(res => {
+                        this.form.photo = res.data.file
+                        console.log(res.data.file)
 
-            }).catch(function (res) {
-              // this.form.errors.push(res.data.message)
-            })
-          };
-        }
-      },
-      openDeleteDialog() {
-        this.showDialog = false
-        this.deleteDialog = true
-      },
-      cancelCollection() {
-        this.form
-            .transform(data => ({
-              ...data,
-              recipient_name: this.form.collectedBy,
-              recipient_phone_number: this.form.recipientPhoneNumber,
-            }))
-            .post(this.route('collections.cancel', {'id': this.product.id}), {
-              // preserveScroll: true,
-              onSuccess: () => {
-                this.deleteDialog = false
-              },
-            })
-      },
+                    }).catch(function (res) {
+                        // this.form.errors.push(res.data.message)
+                    })
+                };
+            }
+        },
+        openDeleteDialog() {
+            this.showDialog = false
+            this.deleteDialog = true
+        },
+        cancelCollection() {
+            this.form
+                .transform(data => ({
+                    ...data,
+                    recipient_name: this.form.collectedBy,
+                    recipient_phone_number: this.form.recipientPhoneNumber,
+                }))
+                .post(this.route('collections.cancel', {'id': this.product.id}), {
+                    // preserveScroll: true,
+                    onSuccess: () => {
+                        this.deleteDialog = false
+                    },
+                })
+        },
     }
 }
 </script>

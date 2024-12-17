@@ -46,6 +46,7 @@ class CollectionController extends Controller
             $inventorySummary = (new InventorySummaryController())->getSummary($summary->sale->site->id);
 
             $collection = Collection::create([
+                'serial' =>  (new AppController())->generateUniqueCode("COLLECTION"),
                 "code" => $this->getCodeNumber(),
                 "client_id" => $summary->sale->client->id,
                 "photo" => $request->photo,

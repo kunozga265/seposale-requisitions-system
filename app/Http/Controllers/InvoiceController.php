@@ -56,7 +56,7 @@ class InvoiceController extends Controller
 
         $invoice = Invoice::create([
             'code' => $this->getCodeNumber(),
-
+            'serial' =>  (new AppController())->generateUniqueCode("INVOICE"),
             //Customer Details
             'name' => $request->name,
             'phone_number' => $request->phoneNumber,
@@ -115,6 +115,7 @@ class InvoiceController extends Controller
                 $invoice = Cache::lock($user->id . ':invoices:store', 10)->get(function () use ($user, $request, $sale) {
 
                     return Invoice::create([
+                        'serial' =>  (new AppController())->generateUniqueCode("INVOICE"),
                         'code' => $this->getCodeNumber(),
                         'revision' => 0,
                         'client_id' => $sale->client->id,

@@ -42,6 +42,7 @@ class Collection extends Model
 
     protected $fillable= [
         "code",
+        "serial",
         "client_id",
         "photo",
         "collected_by",

@@ -17,6 +17,7 @@ class CreateSiteSalesTable extends Migration
             Schema::create('site_sales', function (Blueprint $table) {
                 $table->id();
                 $table->integer("code")->unique();
+                $table->string("serial")->unique();
                 $table->integer("status");
                 $table->integer("client_id");
                 $table->double("total");

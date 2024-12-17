@@ -17,6 +17,7 @@ class CreateReceiptsTable extends Migration
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
             $table->integer("client_id");
+            $table->string("serial")->unique();
             $table->integer("sale_id")->nullable();
             $table->integer("site_sale_id")->nullable();
             $table->integer("payment_method_id");

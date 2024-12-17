@@ -124,6 +124,7 @@ class ReceiptController extends Controller
 
                 $receipt = Receipt::create([
                     'code' => $this->getCodeReceiptNumber(),
+                    'serial' =>  (new AppController())->generateUniqueCode("RECEIPT"),
                     'client_id' => $sale->client->id,
                     "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
                     "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,

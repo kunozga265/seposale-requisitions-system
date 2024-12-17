@@ -43,6 +43,7 @@ class SiteSale extends Model
 
     protected $fillable = [
         "code",
+        "serial",
         "status",
         "client_id",
         "total",

@@ -17,6 +17,7 @@ class CreateCollectionsTable extends Migration
         Schema::create('collections', function (Blueprint $table) {
             $table->id();
             $table->integer("code")->unique();
+            $table->string("serial")->unique();
             $table->integer("client_id");
             $table->string("photo")->nullable();
             $table->string("collected_by")->nullable();

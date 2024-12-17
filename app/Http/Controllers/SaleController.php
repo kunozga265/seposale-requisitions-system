@@ -193,6 +193,7 @@ class SaleController extends Controller
                 ]);
 
                 $client = Client::create([
+                    'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
                     'name' => $request->name,
                     'phone_number' => $request->phoneNumber,
                     'email' => $request->email,
@@ -202,7 +203,7 @@ class SaleController extends Controller
 
 
             $sale = Sale::create([
-                'code' => (new AppController())->generateUniqueCode(true),
+                'serial' => (new AppController())->generateUniqueCode("SALE"),
                 'code_alt' => $this->getSaleCodeNumber(),
                 'status' => 0,
                 'client_id' => $client->id,
@@ -265,6 +266,7 @@ class SaleController extends Controller
 
                 if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
                     Delivery::create([
+                        'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
                         "status" => 0,
                         "quantity_delivered" => 0,
                         "summary_id" => $summary->id,
@@ -319,7 +321,7 @@ class SaleController extends Controller
                 $sale = Cache::lock($user->id . ':sales:store', 10)->get(function () use ($quotation, $user, $request) {
 
                     $sale = Sale::create([
-                        'code' => (new AppController())->generateUniqueCode(true),
+                        'serial' => (new AppController())->generateUniqueCode("SALE"),
                         'code_alt' => $this->getSaleCodeNumber(),
                         'status' => 0,
                         'client_id' => $quotation->client->id,
@@ -383,6 +385,7 @@ class SaleController extends Controller
 
                         if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
                             Delivery::create([
+                                'serial' =>  (new AppController())->generateUniqueCode("DELIVERY"),
                                 "status" => 0,
                                 "quantity_delivered" => 0,
                                 "summary_id" => $summary->id,
@@ -504,6 +507,7 @@ class SaleController extends Controller
                     ]);
 
                     $client = Client::create([
+                        'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
                         'name' => $request->name,
                         'phone_number' => $request->phoneNumber,
                         'email' => $request->email,
@@ -572,6 +576,7 @@ class SaleController extends Controller
 
                     if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
                         Delivery::create([
+                            'serial' =>  (new AppController())->generateUniqueCode("DELIVERY"),
                             "status" => 0,
                             "quantity_delivered" => 0,
                             "summary_id" => $summary->id,

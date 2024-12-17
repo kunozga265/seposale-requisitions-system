@@ -49,6 +49,7 @@ class Sale extends Model
 
     protected $fillable = [
         "code",
+        "serial",
         "code_alt",
         "status",
         "client_id",
