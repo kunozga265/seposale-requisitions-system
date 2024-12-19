@@ -49,11 +49,31 @@
 
         </template>
 
+        <div class="mx-9 flex">
+
+            <div
+                @click="section='sales'"
+                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                :class="{'info':section==='sales'}">
+                <div>Sales</div>
+                <i v-show="section === 'sales'"
+                   class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+            </div>
+
+            <div @click="section='collections'"
+                 class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                 :class="{'info':section==='collections'}">
+                <div>Collections</div>
+                <i v-show="section === 'collections'"
+                   class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+            </div>
+        </div>
+
         <div class="py-6">
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
 
-                    <div class="page-section">
+                    <div class="page-section" v-if="section==='collections'">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Collections
@@ -101,7 +121,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="page-section">
+                    <div class="page-section" v-else-if="section==='sales'">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Sales
@@ -187,6 +207,7 @@
                                             class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                         <tr>
                                             <!--                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>-->
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Client</th>
 <!--                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>-->
@@ -265,7 +286,7 @@
 
                                         <tr
                                             v-for="(sale,index) in filteredSales" :key="index">
-                                            <!--                                            <td class="p-2 text-left">{{ getDate(sale.date * 1000) }}</td>-->
+                                                                                        <td class="p-2 text-left">{{ getDate(sale.date * 1000) }}</td>
                                             <td class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                                 @click="navigateToSale(sale.id)">{{ sale.code }}
                                             </td>
@@ -349,6 +370,7 @@ export default {
     },
     data() {
         return {
+            section:"sales",
             form: this.$inertia.form({
                 dates: null,
                 code: "",
