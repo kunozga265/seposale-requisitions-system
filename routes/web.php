@@ -427,12 +427,17 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sites.sales.create');
 
+        Route::get('/{code}/inventories/{id}', [
+            "uses"  => "App\Http\Controllers\InventoryController@show",
+            'roles' =>['employee','management']
+        ])->name('sites.inventories.show');
+
         Route::get('/{code}/daily-reports/{id}', [
             "uses"  => "App\Http\Controllers\InventorySummaryController@show",
             'roles' =>['employee','management']
         ])->name('sites.summaries.show');
 
-        Route::get('/inventories/print/{id}', [
+        Route::get('/daily-reports/print/{id}', [
             "uses"  => "App\Http\Controllers\InventorySummaryController@print",
             'roles' =>['employee','management']
         ])->name('sites.summaries.print');

@@ -147,7 +147,7 @@
           </div>
           <div class="page-section-content ">
             <div class="grid grid-cols-1 md:grid-cols-2">
-              <inertia-link :href="route('sales.show',{id:inventory.id})"
+              <inertia-link :href="route('sites.inventories.show',{code:site.data.code, id:inventory.id})"
                             v-for="(inventory, index) in site.data.inventories" :key="index">
                 <div class="app-card">
                   <div class="header lg:flex justify-between items-center border-b">
