@@ -17,9 +17,11 @@ class InvoiceResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'serial' => $this->serial,
             'code' => (new AppController())->getZeroedNumber($this->code, $this->revision),
             'sale' => new SaleResource($this->sale),
             'date' => $this->created_at->getTimestamp(),
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
         ];
     }
 }

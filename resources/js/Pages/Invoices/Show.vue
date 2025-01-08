@@ -20,9 +20,12 @@
         </template>
 
        <template #actions >
+         <div class="flex items-center">
+         <whatsapp template="invoice" :serial="invoice.data.serial" :sent="invoice.data.whatsapp"/>
            <a :href="route('invoices.print',{'id':invoice.data.id})" target="_blank">
-               <primary-button>Print</primary-button>
+               <primary-button class="ml-1">Print</primary-button>
            </a>
+         </div>
 <!--           <a :href="route('invoices.edit',{'id':invoice.data.id})">-->
 <!--               <primary-button>Edit</primary-button>-->
 <!--           </a>-->
@@ -240,10 +243,12 @@
     import JetValidationErrors from '@/Jetstream/ValidationErrors'
     import JetLabel from "@/Jetstream/Label";
     import JetInput from "@/Jetstream/Input";
+    import Whatsapp from "@/Components/Whatsapp.vue";
 
     export default {
         props:['invoice'],
         components: {
+          Whatsapp,
             AppLayout,
             DoughnutChart,
             PieChart,

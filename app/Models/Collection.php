@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\AppController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -39,6 +40,11 @@ class Collection extends Model
         return $this->hasMany(SystemLog::class);
     }
 
+    public function formattedCode()
+    {
+        return (new AppController())->getZeroedNumber($this->code);
+    }
+
 
     protected $fillable= [
         "code",
@@ -55,5 +61,6 @@ class Collection extends Model
         "balance",
         "user_id",
         "date",
+        "whatsapp",
     ];
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\AppController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -41,6 +42,10 @@ class SiteSale extends Model
         return $this->belongsTo(InventorySummary::class);
     }
 
+    public function formattedCode()
+    {
+        return (new AppController())->getZeroedNumber($this->code);
+    }
     protected $fillable = [
         "code",
         "serial",
@@ -53,5 +58,6 @@ class SiteSale extends Model
         "user_id",
         "site_id",
         "inventory_summary_id",
+        "whatsapp",
     ];
 }

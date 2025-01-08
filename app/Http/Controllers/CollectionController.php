@@ -91,6 +91,9 @@ class CollectionController extends Controller
                 "editable" => false
             ]);
 
+            //send whatsapp notification
+            (new NotificationController())->processWhatsappMessage("collection",$collection->serial);
+
 
             if ((new AppController())->isApi($request))
                 //API Response

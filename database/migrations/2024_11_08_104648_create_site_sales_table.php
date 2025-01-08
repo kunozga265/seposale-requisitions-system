@@ -27,6 +27,7 @@ class CreateSiteSalesTable extends Migration
                 $table->integer("user_id");
                 $table->integer("site_id");
                 $table->integer("inventory_summary_id");
+                $table->boolean("whatsapp")->nullable();
                 $table->softDeletes();
                 $table->timestamps();
             });

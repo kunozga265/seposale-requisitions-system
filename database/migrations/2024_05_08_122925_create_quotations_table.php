@@ -29,6 +29,7 @@ class CreateQuotationsTable extends Migration
             $table->json("quotes")->nullable();
             $table->integer("user_id");
             $table->integer("sale_id")->nullable();
+            $table->boolean("whatsapp")->nullable();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

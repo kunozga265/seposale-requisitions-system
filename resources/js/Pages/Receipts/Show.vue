@@ -29,9 +29,12 @@
     </template>
 
     <template #actions>
+      <div class="flex items-center">
+      <whatsapp template="receipt" :serial="receipt.data.serial" :sent="receipt.data.whatsapp"/>
       <a :href="route('receipts.print',{'id':receipt.data.id})" target="_blank">
-        <primary-button>Print</primary-button>
+        <primary-button class="ml-1">Print</primary-button>
       </a>
+      </div>
       <!--           <a :href="route('invoices.edit',{'id':invoice.data.id})">-->
       <!--               <primary-button>Edit</primary-button>-->
       <!--           </a>-->
@@ -257,11 +260,13 @@ import requestStatus from "@/Components/RequestStatus";
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
+import Whatsapp from "@/Components/Whatsapp.vue";
 // import {Head} from '@inertiajs/inertia-vue'
 
 export default {
   props: ['receipt', 'sale','siteSale'],
   components: {
+    Whatsapp,
     AppLayout,
     DoughnutChart,
     PieChart,

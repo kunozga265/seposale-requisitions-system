@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\AppController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -47,6 +48,11 @@ class Sale extends Model
         return $this->hasOne(Quotation::class);
     }
 
+    public function formattedCode()
+    {
+        return (new AppController())->getZeroedNumber($this->code_alt);
+    }
+
     protected $fillable = [
         "code",
         "serial",
@@ -63,5 +69,6 @@ class Sale extends Model
         "recipient_profession",
         "recipient_phone_number",
         "user_id",
+        "whatsapp",
     ];
 }

@@ -25,6 +25,7 @@ class CreateDeliveriesTable extends Migration
                 $table->double("due_date")->nullable();
                 $table->integer("summary_id");
                 $table->json("notes")->nullable();
+                $table->boolean("whatsapp")->nullable();
                 $table->timestamps();
             });
         }

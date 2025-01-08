@@ -25,6 +25,8 @@ class ReceiptResource extends JsonResource
             "information"           => json_decode($this->information),
             'generatedBy'           => new UserResource($this->user),
             "date"                  => $this->date,
+            'serial'                => $this->serial,
+            'whatsapp'              => $this->whatsapp != null ? intval($this->whatsapp) : false ,
         ];
     }
 }

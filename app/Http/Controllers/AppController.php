@@ -16,6 +16,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\PersonalAccessToken;
 use Intervention\Image\ImageManager;
@@ -166,39 +167,39 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (Sale::where('serial', $code)->exists());
-        }elseif ($type=="SITESALE"){
+        } elseif ($type == "SITESALE") {
             do {
                 $code = $this->getNewCode();
             } while (SiteSale::where('serial', $code)->exists());
-        }elseif ($type=="REQUESTFORM"){
+        } elseif ($type == "REQUESTFORM") {
             do {
                 $code = $this->getNewCode();
             } while (RequestForm::where('code', $code)->exists());
-        }elseif ($type=="INVOICE"){
+        } elseif ($type == "INVOICE") {
             do {
                 $code = $this->getNewCode();
             } while (Invoice::where('serial', $code)->exists());
-        }elseif ($type=="QUOTATION"){
+        } elseif ($type == "QUOTATION") {
             do {
                 $code = $this->getNewCode();
             } while (Quotation::where('serial', $code)->exists());
-        }elseif ($type=="RECEIPT"){
+        } elseif ($type == "RECEIPT") {
             do {
                 $code = $this->getNewCode();
             } while (Receipt::where('serial', $code)->exists());
-        }elseif ($type=="DELIVERY"){
+        } elseif ($type == "DELIVERY") {
             do {
                 $code = $this->getNewCode();
             } while (Delivery::where('serial', $code)->exists());
-        }elseif ($type=="COLLECTION"){
+        } elseif ($type == "COLLECTION") {
             do {
                 $code = $this->getNewCode();
             } while (Collection::where('serial', $code)->exists());
-        }elseif ($type=="CLIENT"){
+        } elseif ($type == "CLIENT") {
             do {
                 $code = $this->getNewCode();
             } while (Client::where('serial', $code)->exists());
-        }else{
+        } else {
             return null;
         }
 

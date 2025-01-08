@@ -31,6 +31,7 @@ class CreateSalesTable extends Migration
                 $table->string("recipient_profession")->nullable();
                 $table->string("recipient_phone_number")->nullable();
                 $table->integer("user_id");
+                $table->boolean("whatsapp")->nullable();
                 $table->timestamps();
                 $table->timestamp('deleted_at')->nullable();
             });

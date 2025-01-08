@@ -481,6 +481,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses" => "App\Http\Controllers\NotificationController@index",
             'roles' => ['employee', 'management']
         ])->name('notifications');
+
+        Route::post('/whatsapp', [
+            "uses" => "App\Http\Controllers\NotificationController@sendWhatsappMessage",
+            'roles' => ['employee', 'management']
+        ])->name('notifications.whatsapp');
     });
 
     Route::group(['prefix'=>'receipts'],function() {

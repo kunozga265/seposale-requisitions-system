@@ -519,3 +519,12 @@ th.heading-font{
     text-decoration-line: line-through;
 }
 
+.whatsapp-button{
+    display: flex;
+    background-color: #55CD6C;
+    padding: 10px 20px;
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 14px;
+    align-items: center;
+}

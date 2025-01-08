@@ -30,6 +30,7 @@ class CreateCollectionsTable extends Migration
             $table->double("balance");
             $table->integer("user_id");
             $table->double("date");
+            $table->boolean("whatsapp")->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

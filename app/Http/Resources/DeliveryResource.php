@@ -18,6 +18,7 @@ class DeliveryResource extends JsonResource
     {
         return [
             "id" => intval($this->id),
+            'serial' => $this->serial,
             'code' => (new AppController())->getZeroedNumber($this->code),
             "status" => intval($this->status),
             "photo" => $this->photo,
@@ -32,6 +33,7 @@ class DeliveryResource extends JsonResource
             "due" => $this->status == 1 ? Carbon::createFromTimestamp($this->due_date)->diffForHumans() : null,
             "overdue" => $this->status == 1 ? $this->overdue() : false,
             "logs" => SystemLogResource::collection($this->logs),
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
         ];
     }
 }

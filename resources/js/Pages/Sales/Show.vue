@@ -36,6 +36,8 @@
             <!--        <primary-button>Print Invoice</primary-button>-->
             <!--      </a>-->
             <!--      </span>-->
+          <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
+            <whatsapp template="sales_order" :serial="sale.data.serial" :sent="sale.data.whatsapp"/>
 
             <a :href="route('sales.print',{'id':sale.data.id})" target="_blank">
                 <primary-button>Print</primary-button>
@@ -45,6 +47,7 @@
             </a>
             <danger-button v-if="sale.data.status == 1" @click.native="closeDialog=true">Close</danger-button>
             <danger-button v-if="sale.data.editable" @click.native="deleteDialog=true">Delete</danger-button>
+          </div>
 
         </template>
 
@@ -685,11 +688,13 @@ import JetInput from "@/Jetstream/Input";
 import {Money} from 'v-money'
 import DeliveryStatus from "@/Components/DeliveryStatus.vue";
 import {red} from "tailwindcss/colors";
+import Whatsapp from "@/Components/Whatsapp.vue";
 
 
 export default {
     props: ['sale', 'paymentMethods', 'users'],
     components: {
+      Whatsapp,
         DeliveryStatus,
         AppLayout,
         DoughnutChart,

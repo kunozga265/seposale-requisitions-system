@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\AppController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -36,6 +37,28 @@ class Receipt extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function listOfProducts()
+    {
+        $list = "";
+
+        $products = json_decode($this->information);
+        for ($i= 0; $i < count($products); $i++){
+           if($i < (count($products) - 1)){
+               $list.= $products[$i]->name.", ";
+           }else{
+               $list.= $products[$i]->name;
+           }
+        }
+
+        return $list;
+
+    }
+
+    public function formattedCode()
+    {
+        return (new AppController())->getZeroedNumber($this->code);
+    }
+
     protected $fillable=[
         "serial",
         "client_id",
@@ -48,5 +71,6 @@ class Receipt extends Model
         "information",
         "reference",
         "date",
+        "whatsapp",
     ];
 }

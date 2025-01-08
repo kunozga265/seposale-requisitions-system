@@ -15,8 +15,11 @@ class QuotationResource extends JsonResource
      */
     public function toArray($request)
     {
+
+
         return [
             'id' => $this->id,
+            'serial' => $this->serial,
             'code' => (new AppController())->getZeroedNumber($this->code),
             'client' => new ClientResource($this->client),
             'location' => $this->location,
@@ -29,6 +32,7 @@ class QuotationResource extends JsonResource
             'quotes' => json_decode($this->quotes),
             'date' => $this->created_at->getTimestamp(),
             'hasSale' => $this->sale_id != null,
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
         ];
     }
 

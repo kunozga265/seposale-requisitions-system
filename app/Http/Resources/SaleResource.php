@@ -17,6 +17,7 @@ class SaleResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'serial' => $this->serial,
             'code' => "LL".(new AppController())->getZeroedNumber($this->code_alt),
             'status' => intval($this->status),
             'client' => $this->client,
@@ -39,6 +40,7 @@ class SaleResource extends JsonResource
             'receipts' => ReceiptResource::collection($this->receipts),
             'generatedBy' => new UserResource($this->user),
             'delivery' => new DeliveryResource($this->delivery),
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
 
         ];
     }

@@ -31,6 +31,8 @@
         </template>
 
         <template #actions>
+          <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
+          <whatsapp v-show="delivery.data.status === 4" template="delivery" :serial="delivery.data.serial" :sent="delivery.data.whatsapp"/>
             <a :href="route('deliveries.print',{'id':delivery.data.id})" target="_blank">
                 <primary-button>Print</primary-button>
             </a>
@@ -39,7 +41,7 @@
                            <primary-button v-show="delivery.data.status === 2"  @click.native="completeDialog=true">Complete</primary-button>
             <!--           </a>-->
             <danger-button v-if="delivery.data.status === 1" @click.native="deleteDialog=true">Cancel</danger-button>
-
+          </div>
         </template>
 
         <dialog-modal :show="showDialog" @close="showDialog=false">
@@ -493,10 +495,12 @@ import JetInput from "@/Jetstream/Input";
 import DeliveryStatus from "@/Components/DeliveryStatus.vue";
 import {Money} from 'v-money'
 import SaleStatus from "@/Components/SaleStatus.vue";
+import Whatsapp from "@/Components/Whatsapp.vue";
 
 export default {
     props: ['delivery'],
     components: {
+      Whatsapp,
         SaleStatus,
         DeliveryStatus,
         AppLayout,

@@ -20,6 +20,7 @@ class CreateInvoicesTable extends Migration
             $table->integer("revision");
             $table->integer("client_id");
             $table->integer("sale_id");
+            $table->boolean("whatsapp")->nullable();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });
