@@ -595,7 +595,7 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //Client Name
-                                        "text" => $sale->client->name
+                                        "text" => $sale->client->getName()
                                     ],
                                     [
                                         "type" => "text",
@@ -660,7 +660,7 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //Client Name
-                                        "text" => $quotation->client->name
+                                        "text" => $quotation->client->getName()
                                     ]
                                 ]
                             ],
@@ -715,7 +715,7 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //Client Name
-                                        "text" => $invoice->client->name
+                                        "text" => $invoice->client->getName()
                                     ],
                                     [
                                         "type" => "text",
@@ -783,11 +783,11 @@ class NotificationController extends Controller
                             [
                                 "type" => "body",
                                 "parameters" => [
-//                                    [
-//                                        "type" => "text",
-//                                        //Client Name
-//                                        "text" => $receipt->client->name
-//                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Client Name
+                                        "text" => $receipt->client->getName()
+                                    ],
                                     [
                                         "type" => "text",
                                         //Products
@@ -861,7 +861,7 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //Client Name
-                                        "text" => $delivery->summary->sale->client->name
+                                        "text" => $delivery->summary->sale->client->getName()
                                     ],
                                     [
                                         "type" => "text",
@@ -880,17 +880,17 @@ class NotificationController extends Controller
                                     ],
                                 ]
                             ],
-//                            [
-//                                "type" => "button",
-//                                "sub_type" => "url",
-//                                "index" => "0",
-//                                "parameters" => [
-//                                    [
-//                                        "type" => "text",
-//                                        "text" => "{$delivery->summary->sale->client->serial}/deliveries/{$delivery->serial}"
-//                                    ]
-//                                ]
-//                            ]
+                            [
+                                "type" => "button",
+                                "sub_type" => "url",
+                                "index" => "0",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        "text" => "{$delivery->summary->sale->client->serial}/deliveries/{$delivery->serial}"
+                                    ]
+                                ]
+                            ]
                         ]
                     ]
                 ];
@@ -932,7 +932,7 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //Client Name
-                                        "text" => $collection->client->name
+                                        "text" => $collection->client->getName()
                                     ],
                                     [
                                         "type" => "text",

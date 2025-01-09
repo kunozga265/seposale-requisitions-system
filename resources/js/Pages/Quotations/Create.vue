@@ -581,7 +581,8 @@ export default {
         this.addRecordQuantity = this.product.quantity
         this.addRecordUnitCost = this.product.cost / this.product.quantity
       }
-    }
+    },
+
   },
   methods: {
     submit() {

@@ -84,6 +84,18 @@
                   <div>{{ client.data.name }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Organisation</div>
+                  <div>
+                    <input checked id="backdate" type="checkbox" disabled
+                           v-model="client.data.organisation"
+                           class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                  </div>
+                </div>
+                <div v-show="client.data.organisation" class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Alias Name</div>
+                  <div>{{ client.data.alias }}</div>
+                </div>
+                <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Phone Number</div>
                   <div>{{ client.data.phoneNumber }}</div>
                 </div>

@@ -16,6 +16,15 @@ class Client extends Model
         return $this->hasMany(Sale::class);
     }
 
+    public function getName()
+    {
+        if($this->organisation != null && $this->alias != null){
+            return "{$this->alias} ({$this->name})";
+        }else{
+            return $this->name;
+        }
+    }
+
     protected $fillable = [
         'serial',
         'name',

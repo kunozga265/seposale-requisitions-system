@@ -62,9 +62,11 @@
 
                     <tr>
                       <th scope="col" class="p-2 pb-0 heading-font text-left">Name</th>
+                      <th scope="col" class="p-2 pb-0 heading-font text-center">Organisation</th>
                       <th scope="col" class="p-2 pb-0 heading-font text-left">Phone Number</th>
                       <th scope="col" class="p-2 pb-0 heading-font text-left">Email</th>
-                      <th scope="col" class="p-2 pb-0 heading-font text-left">Address</th>
+<!--                      <th scope="col" class="p-2 pb-0 heading-font text-left">Address</th>-->
+                      <th scope="col" class="p-2 pb-0 heading-font text-left">Alias</th>
                     </tr>
 
                     </thead>
@@ -75,9 +77,17 @@
                         class="border-b cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                         v-for="(client,index) in filteredClients" :key="index">
                       <td class="p-2 text-left ">{{ client.name }}</td>
+                      <td class="p-2 text-center ">
+
+                          <input checked id="backdate" type="checkbox" disabled
+                                 v-model="client.organisation"
+                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+
+                      </td>
                       <td class="p-2 text-left ">{{ client.phoneNumber }}</td>
                       <td class="p-2 text-left ">{{ client.email }}</td>
-                      <td class="p-2 text-left ">{{ client.address }}</td>
+<!--                      <td class="p-2 text-left ">{{ client.address }}</td>-->
+                      <td class="p-2 text-left ">{{ client.alias }}</td>
                     </tr>
                     </tbody>
                   </table>
@@ -130,7 +140,11 @@ export default {
       /* Filter Sales By Client*/
       if (this.form.name.length !== 0) {
         filtered = (filtered).filter((client) => {
-          return client.name.toLowerCase().includes(this.form.name.toLowerCase())
+          if(client.alias){
+            return client.name.toLowerCase().includes(this.form.name.toLowerCase()) || client.alias.toLowerCase().includes(this.form.name.toLowerCase())
+          }else {
+            return client.name.toLowerCase().includes(this.form.name.toLowerCase())
+          }
         })
       }
 
