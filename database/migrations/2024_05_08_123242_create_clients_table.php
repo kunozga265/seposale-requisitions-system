@@ -20,6 +20,8 @@ class CreateClientsTable extends Migration
             $table->string("phone_number")->nullable();
             $table->string("email")->nullable();
             $table->string("address")->nullable();
+            $table->boolean("organisation");
+            $table->string("alias")->nullable();
             $table->timestamps();
             $table->timestamp('deleted_at')->nullable();
         });

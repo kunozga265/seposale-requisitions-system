@@ -22,9 +22,11 @@ class Client extends Model
         'phone_number',
         'email',
         'address',
+        "organisation",
+        "alias"
     ];
 
-    protected $hidden=[
+    protected $hidden = [
         "created_at",
         "updated_at",
     ];

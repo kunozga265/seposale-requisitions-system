@@ -13,17 +13,21 @@
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                   clip-rule="evenodd"></path>
           </svg>
-          <a :href="route('quotations.index')" class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+          <a :href="route('quotations.index')"
+             class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
             Quotations
           </a>
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                  clip-rule="evenodd"></path>
+          </svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
                         #{{ quotation.data.code }}
                     </span>
         </div>
       </li>
     </template>
-
 
 
     <div class="py-6">
@@ -70,6 +74,12 @@
                     </select>
                   </div>
                   <div v-if="client != null" class="grid grid-cols-1 md:grid-cols-2">
+                    <div class="p-2 mb-2 md:col-span-2" v-show="client.organisation">
+                      <jet-label for="alias-name" value="Alias Name"/>
+                      <jet-input id="alias-name" type="text" class="block w-full"
+                                 v-model="client.alias"
+                                 autocomplete="seposale-customer-alias-name" disabled/>
+                    </div>
                     <div class="p-2 mb-2">
                       <jet-label for="phoneNumber" value="Phone Number"/>
                       <jet-input id="phoneNumber" type="text" class="block w-full"
@@ -94,10 +104,27 @@
                 <div v-else class="grid grid-cols-1 md:grid-cols-2">
 
                   <div class="p-2 mb-2 md:col-span-2">
-                    <jet-label for="name" value="Name"/>
+                    <div class="flex justify-between">
+                      <jet-label for="name" value="Name"/>
+                      <div class="flex items-center mb-2">
+                        <input checked id="backdate" type="checkbox" value=""
+                               v-model="form.organisation"
+                               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="backdate"
+                               class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Organisation</label>
+                      </div>
+                    </div>
+
                     <jet-input id="name" type="text" class="block w-full"
                                v-model="form.name"
                                autocomplete="seposale-customer-name"/>
+                  </div>
+
+                  <div v-show="form.organisation" class="p-2 mb-2 md:col-span-2">
+                    <jet-label for="alias=name" value="Alias Name"/>
+                    <jet-input id="alias-name" type="text" class="block w-full"
+                               v-model="form.alias"
+                               autocomplete="seposale-customer-alias-name"/>
                   </div>
 
                   <div class="p-2 mb-2">
@@ -380,7 +407,6 @@
         </div>
 
 
-
       </template>
 
       <template #footer>
@@ -408,7 +434,7 @@ import PrimaryButton from "@/Jetstream/Button.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 
 export default {
-  props: ["quotation","products","clients"],
+  props: ["quotation", "products", "clients"],
   components: {
     DialogModal, PrimaryButton,
     AppLayout,
@@ -433,10 +459,12 @@ export default {
         phoneNumber: "",
         email: "",
         address: "",
+        organisation: false,
+        alias: "",
         location: this.quotation.data.location,
-          recipientName: this.quotation.data.recipientName,
-          recipientProfession: this.quotation.data.recipientProfession,
-          recipientPhoneNumber: this.quotation.data.recipientPhoneNumber,
+        recipientName: this.quotation.data.recipientName,
+        recipientProfession: this.quotation.data.recipientProfession,
+        recipientPhoneNumber: this.quotation.data.recipientPhoneNumber,
         information: this.quotation.data.information,
       }),
       quotes: this.quotation.data.quotes,
@@ -444,12 +472,7 @@ export default {
     }
   },
   created() {
-    for(let x in this.clients.data){
-      if(this.clients.data[x].id === this.quotation.data.client.id){
-        this.clientIndex = x
-        break
-      }
-    }
+   this.setClient();
 
   },
   computed: {
@@ -480,8 +503,8 @@ export default {
 
       return products;
     },
-    product(){
-      return  this.allProducts[this.productIndex];
+    product() {
+      return this.allProducts[this.productIndex];
     },
     totalCost() {
       let totalCost = 0
@@ -512,14 +535,14 @@ export default {
           this.error = "Enter customer name"
           return false
         }
-      }else  {
+      } else {
         if (parseInt(this.clientIndex) < 0 || this.client == null) {
           this.error = "Select client"
           return false
         }
       }
 
-     if (isNaN(this.totalCost)) {
+      if (isNaN(this.totalCost)) {
         this.error = "Enter valid breakdown details"
         return false
       } else if (this.totalCost <= 0) {
@@ -530,32 +553,47 @@ export default {
 
     },
   },
-  watch:{
-    productIndex(){
-      if(this.productIndex === -1 || this.productIndex === "-1"){
+  watch: {
+    productIndex() {
+      if (this.productIndex === -1 || this.productIndex === "-1") {
         this.addRecordUnits = ""
         this.addRecordQuantity = 0
         this.addRecordUnitCost = 0
-      }else{
+      } else {
         this.addRecordUnits = this.product.unit
         this.addRecordQuantity = this.product.quantity
-        this.addRecordUnitCost = this.product.cost/this.product.quantity
+        this.addRecordUnitCost = this.product.cost / this.product.quantity
+      }
+    },
+    checkClient(){
+      if(this.checkClient == "existing"){
+        this.setClient()
+      }else{
+        this.clientIndex = -1
       }
     }
   },
   methods: {
+    setClient(){
+      for (let x in this.clients.data) {
+        if (this.clients.data[x].id === this.quotation.data.client.id) {
+          this.clientIndex = x
+          break
+        }
+      }
+    },
     submit() {
       this.form
           .transform(data => ({
             ...data,
             total: this.totalCost,
             quotes: this.quoteFiles,
-            client_id:this.client == null ? null : this.client.id,
+            client_id: this.client == null ? null : this.client.id,
             recipient_name: this.form.recipientName,
             recipient_profession: this.form.recipientProfession,
             recipient_phone_number: this.form.recipientPhoneNumber,
           }))
-          .post(this.route('quotations.update',{id:this.quotation.data.id}))
+          .post(this.route('quotations.update', {id: this.quotation.data.id}))
     },
     addRecord() {
 

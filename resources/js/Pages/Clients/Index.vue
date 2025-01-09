@@ -20,11 +20,11 @@
     </template>
 
     <template #actions>
-            <inertia-link :href="route('clients.create')">
-              <primary-button>
-                New Client
-              </primary-button>
-            </inertia-link>
+      <inertia-link :href="route('clients.create')">
+        <primary-button>
+          New Client
+        </primary-button>
+      </inertia-link>
     </template>
 
     <div class="py-6">
@@ -43,42 +43,48 @@
               No Clients Found
             </div>
             <div v-else>
-              <div class="">
-                <div
-                    class="user"
-                    v-for="(client,index) in clients.data"
-                    :key="index"
-                    @click="navigateToClient(client.id)"
-                >
-                  <div class="flex justify-between items-center">
-                    <div class="">
-                      <div class="name">{{ client.name }}</div>
-                      <div class="position">{{ client.phoneNumber }}</div>
-                    </div>
-                    <div
-                        class=" h-10 w-10 flex justify-center items-center rounded-full text-sm bg-blue-50 text-blue-600 border-blue-600 font-bold cursor">
-                      {{ client.sales.length }}
-                    </div>
+              <div class="card">
+                <div class="p-2 mb-2 relative ">
+                  <div  class="p-2 pb-4 heading-font text-left relative">
+                    <button v-show="form.name.length > 0" @click="form.name = ''"
+                            class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
+                      <i class="mdi mdi-close"></i>
+                    </button>
+                    <jet-input id="code" type="text" class="block w-full"
+                               placeholder="Search Name..."
+                               v-model="form.name"
+                               autocomplete="seposale-filter-code"/>
+
                   </div>
-                  <div>
-                                <span
-                                    v-if="client.email"
-                                    class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase"
-                                >
-                                    {{ client.email }}
-                                </span>
-                    <span
-                        v-if="client.address"
-                        class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase"
-                    >
-                                    {{ client.address }}
-                                </span>
-                  </div>
+                  <table class="w-full  text-left text-gray-500 dark:text-gray-400">
+                    <thead
+                        class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+
+                    <tr>
+                      <th scope="col" class="p-2 pb-0 heading-font text-left">Name</th>
+                      <th scope="col" class="p-2 pb-0 heading-font text-left">Phone Number</th>
+                      <th scope="col" class="p-2 pb-0 heading-font text-left">Email</th>
+                      <th scope="col" class="p-2 pb-0 heading-font text-left">Address</th>
+                    </tr>
+
+                    </thead>
+                    <tbody class="pt-8">
+
+                    <tr
+                        @click="navigateToClient(client.id)"
+                        class="border-b cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                        v-for="(client,index) in filteredClients" :key="index">
+                      <td class="p-2 text-left ">{{ client.name }}</td>
+                      <td class="p-2 text-left ">{{ client.phoneNumber }}</td>
+                      <td class="p-2 text-left ">{{ client.email }}</td>
+                      <td class="p-2 text-left ">{{ client.address }}</td>
+                    </tr>
+                    </tbody>
+                  </table>
                 </div>
 
-
               </div>
-              <pagination :object="clients"/>
+<!--              <pagination :object="clients"/>-->
             </div>
           </div>
         </div>
@@ -95,19 +101,41 @@ import Request from "@/Components/Request";
 import PrimaryButton from "@/Jetstream/Button";
 import RequestStatus from "@/Components/RequestStatus.vue";
 import Pagination from "@/Components/Pagination.vue";
+import SaleStatus from "@/Components/SaleStatus.vue";
+import DeliveryStatus from "@/Components/DeliveryStatus.vue";
+import JetInput from "@/Jetstream/Input.vue";
 
 export default {
   props: [
     'clients',
   ],
   components: {
+    JetInput, DeliveryStatus, SaleStatus,
     Pagination,
     RequestStatus,
     AppLayout,
     PrimaryButton
   },
   data() {
-    return {}
+    return {
+      form:this.$inertia.form({
+        name:""
+      })
+    }
+  },
+  computed:{
+    filteredClients() {
+      let filtered = this.clients.data
+
+      /* Filter Sales By Client*/
+      if (this.form.name.length !== 0) {
+        filtered = (filtered).filter((client) => {
+          return client.name.toLowerCase().includes(this.form.name.toLowerCase())
+        })
+      }
+
+      return filtered
+    },
   },
   methods: {
     navigateToClient(id) {

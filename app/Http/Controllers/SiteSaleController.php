@@ -160,6 +160,8 @@ class SiteSaleController extends Controller
                     'phone_number' => $request->phoneNumber,
                     'email' => $request->email,
                     'address' => $request->address,
+                    'organisation' => $request->organisation,
+                    'alias' => $request->alias,
                 ]);
             }
 

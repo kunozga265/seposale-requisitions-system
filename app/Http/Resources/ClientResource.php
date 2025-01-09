@@ -20,6 +20,8 @@ class ClientResource extends JsonResource
             "email" => $this->email,
             "address" => $this->address,
             "phoneNumber" => $this->phone_number,
+            "organisation" => intval($this->organisation),
+            "alias" => $this->alias,
             "sales" => SaleResource::collection($this->sales),
 //            "quotations" => QuotationResource::collection($this->sales),
         ];

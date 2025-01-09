@@ -101,6 +101,8 @@ class QuotationController extends Controller
                 'phone_number' => $request->phoneNumber,
                 'email' => $request->email,
                 'address' => $request->address,
+                'organisation' => $request->organisation,
+                'alias' => $request->alias,
             ]);
         }
 
@@ -223,10 +225,13 @@ class QuotationController extends Controller
                 ]);
 
                 $client = Client::create([
+                    'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
                     'name' => $request->name,
                     'phone_number' => $request->phoneNumber,
                     'email' => $request->email,
                     'address' => $request->address,
+                    'organisation' => $request->organisation,
+                    'alias' => $request->alias,
                 ]);
             }
 

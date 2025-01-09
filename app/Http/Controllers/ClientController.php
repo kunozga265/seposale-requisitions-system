@@ -76,6 +76,8 @@ class ClientController extends Controller
             'phone_number' => $request->phoneNumber,
             'email' => $request->email,
             'address' => $request->address,
+            'organisation' => $request->organisation,
+            'alias' => $request->alias,
         ]);
 
         if ((new AppController())->isApi($request))
@@ -118,6 +120,8 @@ class ClientController extends Controller
                 'phone_number' => $request->phoneNumber,
                 'email' => $request->email,
                 'address' => $request->address,
+                'organisation' => $request->organisation,
+                'alias' => $request->alias,
             ]);
 
 

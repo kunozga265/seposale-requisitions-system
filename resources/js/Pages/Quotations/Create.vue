@@ -64,6 +64,12 @@
                     </select>
                   </div>
                   <div v-if="client != null" class="grid grid-cols-1 md:grid-cols-2">
+                    <div class="p-2 mb-2 md:col-span-2" v-show="client.organisation">
+                      <jet-label for="alias-name" value="Alias Name"/>
+                      <jet-input id="alias-name" type="text" class="block w-full"
+                                 v-model="client.alias"
+                                 autocomplete="seposale-customer-alias-name" disabled/>
+                    </div>
                     <div class="p-2 mb-2">
                       <jet-label for="phoneNumber" value="Phone Number"/>
                       <jet-input id="phoneNumber" type="text" class="block w-full"
@@ -88,10 +94,27 @@
                 <div v-else class="grid grid-cols-1 md:grid-cols-2">
 
                   <div class="p-2 mb-2 md:col-span-2">
-                    <jet-label for="name" value="Name"/>
+                    <div class="flex justify-between">
+                      <jet-label for="name" value="Name"/>
+                      <div class="flex items-center mb-2">
+                        <input checked id="backdate" type="checkbox" value=""
+                               v-model="form.organisation"
+                               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="backdate"
+                               class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Organisation</label>
+                      </div>
+                    </div>
+
                     <jet-input id="name" type="text" class="block w-full"
                                v-model="form.name"
                                autocomplete="seposale-customer-name"/>
+                  </div>
+
+                  <div v-show="form.organisation" class="p-2 mb-2 md:col-span-2">
+                    <jet-label for="alias=name" value="Alias Name"/>
+                    <jet-input id="alias-name" type="text" class="block w-full"
+                               v-model="form.alias"
+                               autocomplete="seposale-customer-alias-name"/>
                   </div>
 
                   <div class="p-2 mb-2">
@@ -217,7 +240,7 @@
                         <jet-input type="number" step="0.01" class="block w-full" v-model="info.quantity"/>
                       </td>
                       <td class="py-2 pr-1">
-                        <jet-input type="number" step="0.01"  class="block w-full" v-model="info.unitCost"/>
+                        <jet-input type="number" step="0.01" class="block w-full" v-model="info.unitCost"/>
                       </td>
                       <td class="py-2 pr-1">
                         <div
@@ -435,6 +458,8 @@ export default {
         phoneNumber: '',
         email: '',
         address: '',
+        organisation: false,
+        alias: '',
         location: '',
         recipientName: '',
         recipientProfession: '',
