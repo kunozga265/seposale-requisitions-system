@@ -157,7 +157,8 @@ class SiteSaleController extends Controller
                 $client = Client::create([
                     'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
                     'name' => $request->name,
-                    'phone_number' => $request->phoneNumber,
+                    'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+                    'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
                     'email' => $request->email,
                     'address' => $request->address,
                     'organisation' => $request->organisation,

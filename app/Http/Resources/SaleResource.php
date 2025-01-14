@@ -20,7 +20,7 @@ class SaleResource extends JsonResource
             'serial' => $this->serial,
             'code' => "LL".(new AppController())->getZeroedNumber($this->code_alt),
             'status' => intval($this->status),
-            'client' => $this->client,
+            'client' => $this->client->toRawResource(),
             'invoice' => $this->invoice != null ? [
                 "id" => $this->invoice->id,
                 'code' => (new AppController())->getZeroedNumber($this->invoice->code,$this->invoice->revision),

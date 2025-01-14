@@ -59,7 +59,7 @@ class InvoiceController extends Controller
             'serial' =>  (new AppController())->generateUniqueCode("INVOICE"),
             //Customer Details
             'name' => $request->name,
-            'phone_number' => $request->phoneNumber,
+            'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
             'email' => $request->email,
             'address' => $request->address,
             'location' => $request->location,
@@ -205,7 +205,7 @@ class InvoiceController extends Controller
             $invoice->update([
                 //Customer Details
                 'name' => $request->name,
-                'phone_number' => $request->phoneNumber,
+                'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                 'email' => $request->email,
                 'address' => $request->address,
                 'location' => $request->location,

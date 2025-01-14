@@ -73,7 +73,8 @@ class ClientController extends Controller
         $client = Client::create([
             'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
             'name' => ucwords($request->name),
-            'phone_number' => $request->phoneNumber,
+            'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+            'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
             'email' => $request->email,
             'address' => $request->address,
             'organisation' => $request->organisation,
@@ -117,7 +118,8 @@ class ClientController extends Controller
 
             $client->update([
                 'name' => ucwords($request->name),
-                'phone_number' => $request->phoneNumber,
+                'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+                'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
                 'email' => $request->email,
                 'address' => $request->address,
                 'organisation' => $request->organisation,
@@ -134,6 +136,26 @@ class ClientController extends Controller
             }
         } else {
             return Redirect::back()->with('error', 'Quotation not found');
+        }
+    }
+
+    public function cleanPhoneNumber($subject)
+    {
+        if (isset($subject)) {
+            //remove every space
+            $number = trim(str_replace(" ", "", $subject));
+            //remove plus sign
+            $number = trim(str_replace("+", "", $number));
+            //if local number, replace with the right code
+            if ($number[0] === "0") {
+                $number[0] = "-";
+                $number = str_replace("-", "", $number);
+                $number = "265{$number}";
+            }
+
+            return $number;
+        }else{
+            return null;
         }
     }
 

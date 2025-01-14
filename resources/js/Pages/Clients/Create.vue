@@ -62,24 +62,33 @@
                                                autocomplete="seposale-customer-alias-name"/>
                                   </div>
 
-                                    <div class="p-2 mb-2">
-                                        <jet-label for="phoneNumber" value="Phone Number"/>
-                                        <jet-input id="phoneNumber" type="text" class="block w-full"
-                                                   v-model="form.phoneNumber"
-                                                   autocomplete="seposale-customer-phone-number"/>
-                                    </div>
-                                    <div class="p-2 mb-2">
-                                        <jet-label for="email" value="Email"/>
-                                        <jet-input id="email" type="email" class="block w-full"
-                                                   v-model="form.email"
-                                                   autocomplete="seposale-customer-email"/>
-                                    </div>
-                                    <div class="p-2 mb-2 md:col-span-2">
-                                        <jet-label for="address" value="Address"/>
-                                        <jet-input id="address" type="text" class="block w-full"
-                                                   v-model="form.address"
-                                                   autocomplete="seposale-customer-address"/>
-                                    </div>
+                                  <div class="p-2 mb-2">
+                                    <whatsapp-label title="Phone Number"/>
+                                    <jet-input id="phoneNumber" type="text" class="block w-full"
+                                               v-model="form.phoneNumber"
+                                               autocomplete="seposale-customer-phone-number"/>
+                                  </div>
+
+                                  <div class="p-2 mb-2">
+                                    <jet-label for="phoneNumber" value="Phone Number (Secondary)"/>
+                                    <jet-input id="phoneNumber" type="text" class="block w-full"
+                                               v-model="form.phoneNumberOther"
+                                               autocomplete="seposale-customer-phone-number-other"/>
+                                  </div>
+
+                                  <div class="p-2 mb-2">
+                                    <jet-label for="email" value="Email"/>
+                                    <jet-input id="email" type="email" class="block w-full"
+                                               v-model="form.email"
+                                               autocomplete="seposale-customer-email"/>
+                                  </div>
+
+                                  <div class="p-2 mb-2">
+                                    <jet-label for="address" value="Address"/>
+                                    <jet-input id="address" type="text" class="block w-full"
+                                               v-model="form.address"
+                                               autocomplete="seposale-customer-address"/>
+                                  </div>
 
 
                                 </div>
@@ -127,10 +136,12 @@ import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import PrimaryButton from "@/Jetstream/Button.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 import {Money} from "v-money";
+import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 
 export default {
     props: ["products", "clients"],
     components: {
+      WhatsappLabel,
         Money,
         DialogModal, PrimaryButton,
         AppLayout,
@@ -153,6 +164,7 @@ export default {
             form: this.$inertia.form({
                 name: '',
                 phoneNumber: '',
+                phoneNumberOther: '',
                 email: '',
                 address: '',
               organisation: false,

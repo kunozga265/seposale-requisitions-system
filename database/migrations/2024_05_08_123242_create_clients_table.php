@@ -18,6 +18,7 @@ class CreateClientsTable extends Migration
             $table->string("serial")->unique();
             $table->string("name");
             $table->string("phone_number")->nullable();
+            $table->string("phone_number_other")->nullable();
             $table->string("email")->nullable();
             $table->string("address")->nullable();
             $table->boolean("organisation");

@@ -25,10 +25,25 @@ class Client extends Model
         }
     }
 
+    public function toRawResource()
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            "phone_number" => $this->phone_number != null ? "+{$this->phone_number}" : null,
+            "phone_number_other" => $this->phone_number_other != null ? "+{$this->phone_number_other}" : null,
+            'email' => $this->email,
+            'address' => $this->address,
+            "organisation" => $this->organisation,
+            "alias" => $this->alias
+        ];
+    }
+
     protected $fillable = [
         'serial',
         'name',
         'phone_number',
+        'phone_number_other',
         'email',
         'address',
         "organisation",
