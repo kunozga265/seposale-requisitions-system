@@ -560,7 +560,7 @@ class NotificationController extends Controller
      * @param bool $check
      * @return bool
      */
-    public function processWhatsappMessage(string $template, string $serial): bool
+    public function processWhatsappMessage(string $template, string $serial, string $notify = null): bool
     {
         $check = false;
 
@@ -905,10 +905,17 @@ class NotificationController extends Controller
 
             case "collection":
                 $collection = Collection::where('serial', $serial)->first();
+
+                if($notify=="team"){
+                    $phone_number = env('WHATSAPP_SALES_NUMBER');
+                }else{
+                    $phone_number = $collection->client->phone_number;
+                }
+
                 $body = [
                     "messaging_product" => "whatsapp",
                     "recipient_type" => "individual",
-                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $collection->client->phone_number,
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
                     "type" => "template",
                     "template" => [
                         "name" => $template,

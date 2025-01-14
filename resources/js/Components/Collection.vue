@@ -110,6 +110,23 @@
                         </div>
                     </div>
 
+                   <div>
+                       <div class="text-mute text-sm mb-1">
+                           Who to notify
+                       </div>
+                       <div class="flex items-center mb-4">
+                           <input id="default-radio-1" type="radio" value="client" v-model="form.notify"
+                                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                           <label for="default-radio-1"
+                                  class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Client</label>
+
+                           <input checked id="default-radio-2" type="radio" value="team" v-model="form.notify"
+                                  class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                           <label for="default-radio-2"
+                                  class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Sales Team</label>
+                       </div>
+                   </div>
+
                     <!--                  <div v-if="product.collectionStatus < 2" @click="openDeleteDialog"-->
                     <!--                       class="mb-4 md:col-span-2 text-red-500 text-sm cursor">-->
                     <!--                    <i-->
@@ -200,6 +217,7 @@ export default {
                 photo: "",
                 collectedBy: "",
                 phoneNumber: "",
+                notify: "client",
             }),
             quantityValidation: null,
         }

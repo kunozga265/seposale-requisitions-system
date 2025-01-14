@@ -92,7 +92,7 @@ class CollectionController extends Controller
             ]);
 
             //send whatsapp notification
-            (new NotificationController())->processWhatsappMessage("collection",$collection->serial);
+            (new NotificationController())->processWhatsappMessage("collection",$collection->serial, notify: $request->notify);
 
 
             if ((new AppController())->isApi($request))
