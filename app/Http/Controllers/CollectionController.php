@@ -117,6 +117,16 @@ class CollectionController extends Controller
 //                return response()->json(new SaleResource($summary));
             } else {
 
+                $balance = $summary->quantity - $summary->collected;
+                $inventory_available_stock = $summary->inventory->available_stock;
+                $inventory_uncollected_stock = $summary->inventory->uncollected_stock;
+
+                $summary->inventory->update([
+                    'available_stock'=>$inventory_available_stock + $balance,
+                    'uncollected_stock'=>$inventory_uncollected_stock - $balance,
+
+                ]);
+
                 $summary->delete();
 
                 //Logging

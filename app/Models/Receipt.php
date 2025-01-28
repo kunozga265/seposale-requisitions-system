@@ -62,11 +62,11 @@ class Receipt extends Model
 
             foreach ($information as $info) {
                 if($this->sale != null){
-                    $summary = Summary::find($info->id);
+                    $summary = Summary::where('id',$info->id)->withTrashed()->first();
                     $product_id = $summary->product->id;
                     $product_name = $summary->product->name;
                 }elseif ($this->siteSale !=null){
-                    $summary = SiteSaleSummary::find($info->id);
+                    $summary = SiteSaleSummary::where('id',$info->id)->withTrashed()->first();
                     $product_id = $summary->inventory->id;
                     $product_name = $summary->inventory->name;
                 }

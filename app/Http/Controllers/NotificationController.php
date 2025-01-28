@@ -837,7 +837,7 @@ class NotificationController extends Controller
                 $body = [
                     "messaging_product" => "whatsapp",
                     "recipient_type" => "individual",
-                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $delivery->client->phone_number,
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $delivery->summary->sale->client->phone_number,
                     "type" => "template",
                     "template" => [
                         "name" => $template,

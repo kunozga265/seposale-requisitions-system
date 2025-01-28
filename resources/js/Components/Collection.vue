@@ -47,7 +47,7 @@
                         </div>
                     </div>
 
-                    <div v-show="product.collectionStatus < 2" class="mb-4">
+                    <div v-show="product.collectionStatus < 2 && !product.trashed" class="mb-4">
                         <div class="text-mute text-sm">
                             Quantity
                         </div>
@@ -55,7 +55,7 @@
                                    v-model="form.quantity"/>
                     </div>
 
-                    <div v-show="product.collectionStatus < 2" class="mb-4">
+                    <div v-show="product.collectionStatus < 2  && !product.trashed" class="mb-4">
                         <div class="text-mute text-sm">
                             Collected By
                         </div>
@@ -64,7 +64,7 @@
                         </div>
                     </div>
 
-                    <div v-show="product.collectionStatus < 2" class="mb-4">
+                    <div v-show="product.collectionStatus < 2  && !product.trashed" class="mb-4">
                         <div class="text-mute text-sm">
                             Phone Number
                         </div>
@@ -73,7 +73,7 @@
                         </div>
                     </div>
 
-                    <div v-if="product.collectionStatus < 2" class="mb-4 md:col-span-2">
+                    <div v-if="product.collectionStatus < 2  && !product.trashed" class="mb-4 md:col-span-2">
                         <div class="text-mute text-sm mb-1">
                             Upload Collection Receipt
                         </div>
@@ -110,7 +110,7 @@
                         </div>
                     </div>
 
-                   <div>
+                   <div v-show="!product.trashed" >
                        <div class="text-mute text-sm mb-1">
                            Who to notify
                        </div>
@@ -127,12 +127,12 @@
                        </div>
                    </div>
 
-                    <!--                  <div v-if="product.collectionStatus < 2" @click="openDeleteDialog"-->
-                    <!--                       class="mb-4 md:col-span-2 text-red-500 text-sm cursor">-->
-                    <!--                    <i-->
-                    <!--                        class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 "></i>-->
-                    <!--                    Cancel Collection-->
-                    <!--                  </div>-->
+                                      <div v-if="product.collectionStatus < 2 && !product.trashed" @click="openDeleteDialog"
+                                           class="mb-4 md:col-span-2 text-red-500 text-sm cursor">
+                                        <i
+                                            class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 "></i>
+                                        Cancel Collection
+                                      </div>
 
                     <dialog-modal :show="deleteDialog" @close="deleteDialog=false">
                         <template #title>
@@ -174,7 +174,7 @@
                 <secondary-button @click.native="showDialog=false">
                     close
                 </secondary-button>
-                <primary-button v-show="product.collectionStatus < 2" @click.native="submit">
+                <primary-button v-show="product.collectionStatus < 2 && !product.trashed" @click.native="submit">
                     <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
                          viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -341,6 +341,8 @@ export default {
                         this.deleteDialog = false
                     },
                 })
+
+            this.deleteDialog = false
         },
     }
 }
