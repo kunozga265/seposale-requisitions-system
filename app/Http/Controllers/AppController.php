@@ -2,22 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\DeliveryResource;
+use App\Http\Resources\ReceiptResource;
+use App\Http\Resources\ReportResource;
+use App\Http\Resources\RequestFormResource;
+use App\Http\Resources\SaleResource;
+use App\Http\Resources\SiteResource;
 use App\Models\Client;
 use App\Models\Collection;
 use App\Models\Delivery;
 use App\Models\Invoice;
+use App\Models\Project;
 use App\Models\Quotation;
 use App\Models\Receipt;
+use App\Models\Report;
 use App\Models\RequestForm;
 use App\Models\Role;
 use App\Models\Sale;
+use App\Models\Site;
 use App\Models\SiteSale;
+use App\Models\Summary;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Laravel\Sanctum\PersonalAccessToken;
 use Intervention\Image\ImageManager;
 
@@ -29,6 +41,171 @@ class AppController extends Controller
     public $paginate = 20;
     public $OTHER_PRODUCT_ID = 7;
     public $SERVICES_PRODUCT_ID = 8;
+
+
+    public function dashboard(Request $request)
+    {
+        //get user
+        $user = (new AppController())->getAuthUser($request);
+
+        //get reports for the year
+        $year = date('Y');
+        $reports = Report::where('year', $year)->get();
+
+        $dashboardReports = [
+            'data' => []
+        ];
+
+
+        /*        if($user->hasRole('management') || $user->hasRole('administrator')){
+        //            $active=RequestForm::orderBy('dateRequested','desc')->where('approvalStatus','<',4)->get();
+                    $active=[];
+                }else
+                    $active = RequestForm::where('user_id',$user->id)->where('approvalStatus','<',4)->orderBy('dateRequested','desc')->get();*/
+        $active = RequestForm::where('user_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
+        $activeCount = $active->count();
+
+        $awaitingInitiationCount = 0;
+        $awaitingReconciliationCount = 0;
+
+        //Contracts Manager
+        if ($user->hasRole('management') && $user->hasRole('employee')) {
+            $toApproveAsManager = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->get();
+            $toApproveAsEmployee = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $toApprove = $toApproveAsManager->merge($toApproveAsEmployee);
+
+            $awaitingApprovalCount = $toApprove->count();
+
+            $dashboardReports = ReportResource::collection($reports);
+        } //Normal Manager
+        else if ($user->hasRole('management')) {
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->get();
+            $awaitingApprovalCount = $toApprove->count();
+
+            $dashboardReports = ReportResource::collection($reports);
+
+        } else
+            if ($user->hasRole('accountant')) {
+
+                $toReconcile = RequestForm::where('approvalStatus', 3)->orderBy('dateRequested', 'desc')->get();
+                $toInitiate = RequestForm::where('approvalStatus', 1)->orderBy('dateRequested', 'desc')->get();
+                $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+
+                $awaitingApprovalCount = $toApprove->count();
+                $awaitingInitiationCount = $toInitiate->count();
+                $awaitingReconciliationCount = $toReconcile->count();
+
+                //Merge
+                $toApprove = $toApprove->merge($toInitiate);
+                $toApprove = $toApprove->merge($toReconcile);
+
+                foreach ($reports as $report) {
+                    $dashboardReports['data'][] = [
+                        'id' => $report->id,
+                        'year' => $report->year,
+                        'month' => $report->month,
+                        'requestsCount' => $report->requestForms()->where('user_id', $user->id)->count(),
+                    ];
+                }
+
+                if ((new AppController())->isApi($request))
+                    $dashboardReports = $dashboardReports['data'];
+            } else {
+                $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+                $awaitingApprovalCount = $toApprove->count();
+
+                foreach ($reports as $report) {
+                    $dashboardReports['data'][] = [
+                        'id' => $report->id,
+                        'year' => $report->year,
+                        'month' => $report->month,
+                        'requestsCount' => $report->requestForms()->where('user_id', $user->id)->count(),
+                    ];
+                }
+                if ((new AppController())->isApi($request))
+                    $dashboardReports = $dashboardReports['data'];
+            }
+
+        $totalCount = $toApprove->count() + $active->count();
+
+
+        $unverifiedUsers = (new AppController())->getRoleUsers('unverified');
+        $unverifiedVehicles = Vehicle::where('verified', 0)->get();
+        $unverifiedProjects = Project::where('verified', 0)->get();
+
+        //deliveries
+        $deliveriesUnderway = Delivery::where("status", 1)->orderBy("due_date", "asc")->get();
+        $deliveriesUncompleted = Delivery::where("status", 2)->orderBy("due_date", "asc")->get();
+
+
+        //one stop shops
+        $sites = Site::orderBy("name", "asc")->get();
+
+        //receipts
+        $allReceipts = Receipt::where("sale_id", "!=", null)->orderBy("date", "asc")->get();
+
+        //generate sales
+        $sales = Sale::where("status", "<", 2)->orderBy("date", "desc")->get();
+
+        //
+//        $salesAwaitingInitiation = Sale::where("status","<",2)->orderBy("date","desc")->get();
+
+        $salesAwaitingInitiation = [];
+        $summaries = Summary::all();
+        foreach ($summaries as $summary) {
+            if ($summary->delivery != null) {
+                if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status == 0) {
+                    $salesAwaitingInitiation [] = $summary;
+                }
+            }
+        }
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json([
+                'toApprove' => RequestFormResource::collection($toApprove),
+                'active' => RequestFormResource::collection($active),
+                'sales' => SaleResource::collection($sales),
+                'deliveriesUnderway' => DeliveryResource::collection($deliveriesUnderway),
+                'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
+                'sites' => SiteResource::collection($sites),
+                'allReceipts' => ReceiptResource::collection($allReceipts),
+
+                //counts
+                'awaitingApprovalCount' => $awaitingApprovalCount,
+                'awaitingInitiationCount' => $awaitingInitiationCount,
+                'awaitingReconciliationCount' => $awaitingReconciliationCount,
+                'activeCount' => $activeCount,
+                'totalCount' => $totalCount,
+                'unverifiedUsersCount' => $unverifiedUsers->count(),
+                'unverifiedVehiclesCount' => $unverifiedVehicles->count(),
+                'unverifiedProjectsCount' => $unverifiedProjects->count(),
+                'dashboardReports' => $dashboardReports
+            ]);
+        else {
+            //Web Response
+            return Inertia::render('Dashboard', [
+                'toApprove' => RequestFormResource::collection($toApprove),
+                'active' => RequestFormResource::collection($active),
+                'sales' => SaleResource::collection($sales),
+                'deliveriesUnderway' => DeliveryResource::collection($deliveriesUnderway),
+                'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
+                'shops' => SiteResource::collection($sites),
+                'allReceipts' => ReceiptResource::collection($allReceipts),
+
+                //counts
+                'awaitingApprovalCount' => $awaitingApprovalCount,
+                'awaitingInitiationCount' => $awaitingInitiationCount,
+                'awaitingReconciliationCount' => $awaitingReconciliationCount,
+                'activeCount' => $activeCount,
+                'totalCount' => $totalCount,
+                'unverifiedUsersCount' => $unverifiedUsers->count(),
+                'unverifiedVehiclesCount' => $unverifiedVehicles->count(),
+                'unverifiedProjectsCount' => $unverifiedProjects->count(),
+                'dashboardReports' => $dashboardReports
+            ]);
+        }
+    }
 
     public function getAuthUser(Request $request)
     {

@@ -1,16 +1,16 @@
 <template>
     <div @click="showDialog=true" class="flex justify-start items-center" :class="getStatusClass()">
-        <div>
-            <i class="mdi text-xl" :class="getStatusIcon()"></i>
+        <div                                                                                                                           >
+            <i class="mdi" :class="getStatusIcon()" ></i>
         </div>
-        <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">
+        <div class="ml-3 letter-spacing-normal" style="letter-spacing: normal" :class="{'text-xl': !isSolo, 'text-xs':isSolo}">
             {{ getStatusMessage(this.product.collectionStatus) }}
         </div>
 
         <dialog-modal :show="showDialog" @close="showDialog=false">
 
             <template #title>
-                <div class="flex justify-between">
+                <div class="flex justify-between" >
                     {{ product.name }}
                 </div>
 

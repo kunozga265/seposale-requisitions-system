@@ -729,9 +729,7 @@ export default {
 
             this.$inertia.get(this.route('deliveries.show', {'id': id}))
         },
-        getTimestampFromDate(date) {
-            return new Date(date).getTime() / 1000
-        },
+
     }
 }
 </script>

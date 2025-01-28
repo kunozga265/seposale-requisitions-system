@@ -70,6 +70,10 @@ button{
     padding: 15px;
 }
 
+.card.mb-0{
+    margin-bottom: 0;
+}
+
 .page-section-header{
     position: relative;
     color: #868e96;
@@ -527,4 +531,52 @@ th.heading-font{
     color: white;
     font-size: 14px;
     align-items: center;
+}
+
+
+/* Dashboard */
+.bank-accounts .record:last-child{
+    border-bottom-width:0px;
+}
+
+.profit-loss .bar{
+    margin-left: 140px;
+}
+
+
+.profit-loss .bar.positive{
+    background-color: #22c55e;
+}
+
+.profit-loss .bar.negative{
+    background-color: #ed0b4b;
+}
+
+.text-green{
+    color: #22c55e;
+}
+
+.text-yellow{
+    color: #eab308;
+}
+
+.text-red{
+    color: #ed0b4b;
+}
+
+
+.text-blue{
+    color: #1a56db;
+}
+
+
+.bg-red{
+    background-color: #ed0b4b;
+}
+
+.bg-yellow{
+    background-color: #eab308;
+}
+.bg-green{
+    background-color: #22c55e;
 }

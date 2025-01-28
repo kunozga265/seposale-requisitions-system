@@ -5,7 +5,7 @@
                 <i class="mdi text-xl" :class="getStatusIcon()"></i>
             </div>
             <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">
-                {{getStatusMessage() }}
+                {{getInventoryStatusMessage(status) }}
             </div>
         </div>
 <!--        <div class="flex justify-start items-center" :class="getDeliveryStatusClass()">-->
@@ -62,18 +62,7 @@ export default {
           }else
             return statusClass;
         },
-        getStatusMessage(){
-            switch (this.status){
-                case 0:
-                  return "Out of stock";
-                case 1:
-                    return "Need to restock";
-                case 2:
-                  return "Available";
-                default:
-                    return "";
-            }
-        },
+
         getStatusIcon(){
             switch (this.status){
                 case 0:

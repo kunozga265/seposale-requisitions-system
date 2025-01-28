@@ -54,6 +54,39 @@ class Receipt extends Model
 
     }
 
+    public function information()
+    {
+        $summaries = [];
+        if($this->information != null) {
+            $information = json_decode($this->information);
+
+            foreach ($information as $info) {
+                if($this->sale != null){
+                    $summary = Summary::find($info->id);
+                    $product_id = $summary->product->id;
+                    $product_name = $summary->product->name;
+                }elseif ($this->siteSale !=null){
+                    $summary = SiteSaleSummary::find($info->id);
+                    $product_id = $summary->inventory->id;
+                    $product_name = $summary->inventory->name;
+                }
+
+                $summaries[] = [
+                    "id" => $info->id,
+                    "name" => $info->name,
+                    "balance" => $info->balance,
+                    "amount" => $info->amount,
+                    "product_id" => $product_id,
+                    "product_name" => $product_name,
+                ];
+            }
+
+            return $summaries;
+        }else{
+            return null;
+        }
+    }
+
     public function formattedCode()
     {
         return (new AppController())->getZeroedNumber($this->code);

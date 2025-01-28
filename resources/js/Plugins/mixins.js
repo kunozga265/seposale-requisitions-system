@@ -48,6 +48,21 @@ Vue.mixin({
                     return "";
             }
         },
+        getInventoryStatusMessage(status){
+            switch (status){
+                case 0:
+                    return "Out of stock";
+                case 1:
+                    return "Need to restock";
+                case 2:
+                    return "Available";
+                default:
+                    return "";
+            }
+        },
+        getTimestampFromDate(date) {
+            return new Date(date).getTime() / 1000
+        },
         getDate(timestamp,time=false){
             let date = new Date(timestamp);
             const month=date.getMonth()+1

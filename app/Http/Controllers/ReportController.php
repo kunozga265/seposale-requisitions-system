@@ -130,12 +130,13 @@ class ReportController extends Controller
             }
 
         }else{
+            dump("Here");
             $requestForms = RequestForm::whereIn('type',$requestType)
                 ->whereIn('approvalStatus',$requestStatus)
-//                    ->where('dateRequested','>=',$startDate)
-//                    ->where('dateRequested','<=',$endDate)
-                ->where('approvedDate','>=',$startDate)
-                ->where('approvedDate','<=',$endDate)
+                    ->where('dateRequested','>=',$startDate)
+                    ->where('dateRequested','<=',$endDate)
+//                ->where('approvedDate','>=',$startDate)
+//                ->where('approvedDate','<=',$endDate)
                 ->get();
         }
 
@@ -159,6 +160,9 @@ class ReportController extends Controller
             ];
         }
         $filename = "Requests-Export-".date("d-m-Y-H-i").".xlsx";
+
+        dd($type, $requestType, $requestStatus, $startDate, $endDate, $data, $requestForms);
+
         return Excel::download(new RequestsExport($data),$filename);
 
     }

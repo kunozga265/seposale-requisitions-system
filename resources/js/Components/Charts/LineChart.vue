@@ -1,40 +1,39 @@
 <template>
-    <Pie
-        :chart-options="chartOptions"
-        :chart-data="chartData"
-        :chart-id="chartId"
-        :dataset-id-key="datasetIdKey"
-        :plugins="plugins"
-        :css-classes="cssClasses"
-        :styles="styles"
-        :width="width"
-        :height="height"
+    <LineChartGenerator
+    :chart-options="chartOptions"
+    :chart-data="chartData"
+    :chart-id="chartId"
+    :dataset-id-key="datasetIdKey"
+    :plugins="plugins"
+    :css-classes="cssClasses"
+    :styles="styles"
+    :width="width"
+    :height="height"
     />
 </template>
 
 <script>
-import {Pie} from  'vue-chartjs/legacy'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
+import {Line as LineChartGenerator} from  'vue-chartjs/legacy'
+import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, ArcElement, PointElement } from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
+ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, ArcElement, PointElement)
 
 export default {
-    name: "PieChart",
+    name: "LineChart",
 
     components:{
-        Pie
+        LineChartGenerator
     },
     props: {
         chartOptions: {
             type: Object,
-            default: () => {}
         },
         chartData: {
             type: Object,
         },
         chartId: {
             type: String,
-            default: 'pie-chart'
+            default: 'line-chart'
         },
         datasetIdKey: {
             type: String,
@@ -46,7 +45,7 @@ export default {
         },
         height: {
             type: Number,
-            default: 48
+            default: 300
         },
         cssClasses: {
             default: '',

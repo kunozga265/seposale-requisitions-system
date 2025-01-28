@@ -27,7 +27,7 @@ use Inertia\Inertia;
 Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     Route::get('/', [
-        "uses"  => "App\Http\Controllers\RequestFormController@dashboard",
+        "uses"  => "App\Http\Controllers\AppController@dashboard",
     ])->name('dashboard');
 
     Route::get('/all-requests', [

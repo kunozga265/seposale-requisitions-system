@@ -22,7 +22,7 @@ class ReceiptResource extends JsonResource
             "amount"                => $this->amount,
             "client"                => $this->client,
             "reference"             => $this->reference,
-            "information"           => json_decode($this->information),
+            "information"           => $this->information(),
             'generatedBy'           => new UserResource($this->user),
             "date"                  => $this->date,
             'serial'                => $this->serial,
