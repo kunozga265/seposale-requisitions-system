@@ -17,6 +17,7 @@ class SummaryResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "client" => $this->sale->client,
             "product" => $this->product,
             "variant" => $this->variant,
             "variantId" => intval($this->product_variant_id),

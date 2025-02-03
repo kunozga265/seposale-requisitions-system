@@ -416,6 +416,19 @@
                                     </div>
                                 </div>
 
+                                <div class="card mb-0 bank-accounts">
+                                    <div class="heading-font mb-4">Client Undelivered</div>
+                                    <div class="text-xs mb-1 text-gray-500">Sum Total</div>
+                                    <div class="heading-font font-bold text-xl mb-4">MK123,456,789.00</div>
+                                    <div v-for="i in 4"
+                                         class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
+                                        <div class="flex items-center">
+                                            <div class="h-8 w-8 bg-gray-100 rounded-full"></div>
+                                            <div class="ml-3 text-sm ">National Bank {{ i }}</div>
+                                        </div>
+                                        <div class="heading-font text-xs text-gray-500">MK1,500,000.00</div>
+                                    </div>
+                                </div>
 
                             </div>
 
@@ -489,28 +502,34 @@
                                 <div class="card mb-0 md:col-span-2 lg:col-span-1">
                                     <div class="flex justify-between mb-4">
                                         <div class="heading-font mb-4">Pending Deliveries</div>
-                                        <div
+                                        <inertia-link
+                                            :href="route('sales.index',{'section':'tabular'})"
+                                            v-show="salesAwaitingInitiation.data.length > 5"
                                             class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
-                                            <div>5+ More</div>
-                                        </div>
+                                            <div>{{
+                                                    salesAwaitingInitiation.data.length > 5 ? (salesAwaitingInitiation.data.length - 5) + '+ More' : ''
+                                                }}
+                                            </div>
+                                        </inertia-link>
                                     </div>
 
-                                    <div v-for="i in 6"
+                                    <div v-if="index < 5" v-for="(sale,index) in salesAwaitingInitiation.data"
+                                         :key="index"
                                          class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
                                             <div
                                                 class="h-8 w-8 bg-gray-100 rounded-full flex justify-center items-center">
-                                                <div class="text-xs text-gray-500">{{ i }}</div>
+                                                <div class="text-xs text-gray-500">{{ index + 1 }}</div>
                                             </div>
                                             <div class="ml-3 text-sm ">
-                                                <div class="text-sm">John Doe #{{ i }}</div>
+                                                <div class="text-sm">{{sale.client.name}}</div>
                                                 <div class="text-xs text-gray-500" v-if="true">
                                                     <i class="mdi mdi mdi-adjust text-xs text-gray-500"></i>
-                                                    Quarry Stone
+                                                    {{productName(sale)}}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="heading-font text-xs text-gray-500">25 Tonnes</div>
+                                        <div class="heading-font text-xs text-gray-500">{{ sale.quantity}} {{ sale.units}}{{ sale.quantity !== 1 ? "s" : ""}}</div>
                                     </div>
                                 </div>
 
@@ -1071,6 +1090,7 @@ export default {
         'deliveriesUncompleted',
         'shops',
         'allReceipts',
+        'salesAwaitingInitiation',
     ],
     components: {
         Collection,

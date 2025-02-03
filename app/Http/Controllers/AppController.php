@@ -8,6 +8,7 @@ use App\Http\Resources\ReportResource;
 use App\Http\Resources\RequestFormResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteResource;
+use App\Http\Resources\SummaryResource;
 use App\Models\Client;
 use App\Models\Collection;
 use App\Models\Delivery;
@@ -148,17 +149,25 @@ class AppController extends Controller
         $sales = Sale::where("status", "<", 2)->orderBy("date", "desc")->get();
 
         //
-//        $salesAwaitingInitiation = Sale::where("status","<",2)->orderBy("date","desc")->get();
+//        $salesAwaitingDeliver = Sale::where("status","<",2)->orderBy("date","desc")->get();
 
         $salesAwaitingInitiation = [];
+        $undeliveredClients = [];
         $summaries = Summary::all();
         foreach ($summaries as $summary) {
             if ($summary->delivery != null) {
                 if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status == 0) {
                     $salesAwaitingInitiation [] = $summary;
                 }
+                if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status < 3) {
+                    $undeliveredClients [] = $summary;
+                }
             }
+
         }
+
+        //group by client
+
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -170,6 +179,8 @@ class AppController extends Controller
                 'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
                 'sites' => SiteResource::collection($sites),
                 'allReceipts' => ReceiptResource::collection($allReceipts),
+                'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
+                'undeliveredClients' => $undeliveredClients,
 
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,
@@ -192,6 +203,8 @@ class AppController extends Controller
                 'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
                 'shops' => SiteResource::collection($sites),
                 'allReceipts' => ReceiptResource::collection($allReceipts),
+                'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
+                'undeliveredClients' => $undeliveredClients,
 
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,
