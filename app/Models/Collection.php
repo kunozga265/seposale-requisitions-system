@@ -32,7 +32,7 @@ class Collection extends Model
 
     public function siteSaleSummary()
     {
-        return $this->belongsTo(SiteSaleSummary::class);
+        return $this->belongsTo(SiteSaleSummary::class)->withTrashed();
     }
 
     public function logs()

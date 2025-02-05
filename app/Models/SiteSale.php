@@ -46,6 +46,12 @@ class SiteSale extends Model
     {
         return (new AppController())->getZeroedNumber($this->code);
     }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
     protected $fillable = [
         "code",
         "serial",
@@ -59,5 +65,7 @@ class SiteSale extends Model
         "site_id",
         "inventory_summary_id",
         "whatsapp",
+        "payment_method_id",
+        "reference",
     ];
 }

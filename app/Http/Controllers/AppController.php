@@ -152,7 +152,8 @@ class AppController extends Controller
 //        $salesAwaitingDeliver = Sale::where("status","<",2)->orderBy("date","desc")->get();
 
         $salesAwaitingInitiation = [];
-        $undeliveredClients = [];
+
+        $undeliveredSales = [];
         $summaries = Summary::all();
         foreach ($summaries as $summary) {
             if ($summary->delivery != null) {
@@ -160,14 +161,44 @@ class AppController extends Controller
                     $salesAwaitingInitiation [] = $summary;
                 }
                 if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status < 3) {
-                    $undeliveredClients [] = $summary;
+                    $undeliveredSales [] = $summary;
                 }
             }
 
         }
 
-        //group by client
+        $sortSales = [];
+        foreach ($undeliveredSales as $undeliveredSale){
+            $sortSales [] = [
+                "id" => $undeliveredSale->id,
+                "client" => $undeliveredSale->sale->client,
+                "product" => $undeliveredSale->product,
+                "variant" => $undeliveredSale->variant,
+                "quantity" => $undeliveredSale->quantity,
+                "description" => $undeliveredSale->description,
+                "units" => $undeliveredSale->units,
+                "due" => $undeliveredSale->amount - $undeliveredSale->balance,
+            ];
+        }
 
+        //group undelivered clients by client
+        $groupedClients = array_reduce($sortSales, function ($carry, $item) {
+            $carry[$item['client']['id']][] = $item;
+            return $carry;
+        }, []);
+
+        $undeliveredClients = [];
+        foreach ($groupedClients as $groupedClient){
+            $sum = 0;
+            foreach ($groupedClient as $item){
+                $sum += $item["due"];
+            }
+
+            $undeliveredClients [] = [
+                "client" => $groupedClient[0]["client"],
+                "amount" => $sum
+            ];
+        }
 
         if ((new AppController())->isApi($request))
             //API Response

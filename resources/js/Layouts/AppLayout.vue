@@ -45,7 +45,7 @@
 
               <li>
                 <div @click="requests = !requests"
-                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ">
                   <div>
                     <i class="text-lg mdi mdi-book-alphabet"></i>
                     <span class="ml-3">Requests</span>
@@ -98,7 +98,7 @@
 
               <li>
                 <div @click="sales = !sales"
-                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
                     <i class="text-lg mdi mdi-finance"></i>
                     <span class="ml-3">Sales</span>
@@ -144,7 +144,7 @@
 
               <li>
                 <div @click="sites = !sites"
-                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
                     <i class="text-lg mdi mdi-shopping"></i>
                     <span class="ml-3">One Stop Shops</span>

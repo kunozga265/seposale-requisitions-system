@@ -182,8 +182,8 @@
             <th class="shade">Product</th>
             <th class="shade" style="text-align: right">Quantity</th>
             <th class="shade" style="text-align: right">Amount</th>
-            <th class="shade" style="text-align: right">Balance</th>
-            <th class="shade">Payment Status</th>
+{{--            <th class="shade" style="text-align: right">Balance</th>--}}
+            <th class="shade">Payment Method</th>
 {{--            <th class="shade">Collected</th>--}}
 {{--            <th class="shade">Collection Status</th>--}}
         </tr>
@@ -196,9 +196,13 @@
                 <td style="text-align: left">{{$sale->client->name}}</td>
                 <td style="text-align: left">{{$product->inventory->name}}</td>
                 <td style="text-align: right">{{$product->quantity}}</td>
-                <td style="text-align: right">{{$product->amount}}</td>
-                <td style="text-align: right">{{$product->balance}}</td>
-                <td style="text-align: left">{{$product->getFullPaymentStatus()}}</td>
+                <td style="text-align: right">{{number_format($product->amount,2)}}</td>
+{{--                <td style="text-align: right">{{$product->balance}}</td>--}}
+                @if($sale->paymentMethod != null)
+                <td style="text-align: left">{{$sale->paymentMethod->name}}</td>
+                @else
+                    <td style="text-align: left">-</td>
+                @endif
 {{--                <td style="text-align: left">{{$product->collected}}</td>--}}
 {{--                <td style="text-align: left">{{$product->getCollectionStatus()}}</td>--}}
 
@@ -208,6 +212,11 @@
 
         </tbody>
     </table>
+
+    <div style="text-align: right; margin-top: 12px">
+        <div style="font-size: 18px; font-weight: normal">{{number_format($sum,2)}}</div>
+        <div>Cash at hand</div>
+    </div>
 
     <div class="heading" >Collections</div>
     <table class="summary">

@@ -136,7 +136,13 @@ class InventorySummaryController extends Controller
             $now_d = \Illuminate\Support\Carbon::createFromTimestamp($summary->date, 'Africa/Lusaka')->format('F j, Y');
             $now_t = Carbon::createFromTimestamp($summary->date, 'Africa/Lusaka')->format('H:i');
 
-
+            $sum = 0;
+            foreach ($summary->sales as $sale){
+                if($sale->paymentMethod != null)
+                if($sale->paymentMethod->id == 1){
+                    $sum += $sale->total;
+                }
+            }
 
 
             $pdf = PDF::loadView('inventory-summary', [
@@ -144,6 +150,7 @@ class InventorySummaryController extends Controller
                 'date' => $now_d,
                 'time' => $now_t,
                 'summary' => $summary,
+                'sum' => $sum,
             ]);
             return $pdf->download("$filename.pdf");
 

@@ -210,8 +210,10 @@
                                             <div class="heading-font" style="font-weight: 600;">Deliveries Awaiting
                                                 Initiation
                                             </div>
-                                            <div class="text-sm text-gray-400">{{ unverifiedUsersCount }}
-                                                {{ unverifiedUsersCount == 1 ? 'Delivery' : 'Deliveries' }}
+                                            <div class="text-sm text-gray-400">{{ salesAwaitingInitiation.data.length }}
+                                                {{
+                                                    salesAwaitingInitiation.data.length == 1 ? 'Delivery' : 'Deliveries'
+                                                }}
                                             </div>
                                         </div>
                                     </div>
@@ -225,8 +227,8 @@
                                         <div class="ml-4">
                                             <div class="heading-font" style="font-weight: 600;">Uncompleted Deliveries
                                             </div>
-                                            <div class="text-sm text-gray-400">{{ unverifiedUsersCount }}
-                                                {{ unverifiedUsersCount == 1 ? 'Delivery' : 'Deliveries' }}
+                                            <div class="text-sm text-gray-400">{{ deliveriesUnderway.data.length }}
+                                                {{ deliveriesUnderway.data.length == 1 ? 'Delivery' : 'Deliveries' }}
                                             </div>
                                         </div>
                                     </div>
@@ -238,10 +240,10 @@
                                             <i class="mdi mdi-garage text-yellow" style="font-size: 32px;"></i>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="heading-font" style="font-weight: 600;">Njewa One Stop Shop
+                                            <div class="heading-font" style="font-weight: 600;">One Stop Shops
                                             </div>
-                                            <div class="text-sm text-gray-400">{{ awaitingApprovalCount }}
-                                                {{ awaitingApprovalCount == 1 ? 'Collection' : 'Collections' }}
+                                            <div class="text-sm text-gray-400">{{ totalCollectionsPending }}
+                                                {{ totalCollectionsPending == 1 ? 'Collection' : 'Collections' }}
                                             </div>
                                         </div>
                                     </div>
@@ -378,7 +380,7 @@
                                         </div>
                                     </div>
                                     <div class="text-xs mb-1 text-gray-500">Total Receivables</div>
-                                    <div class="heading-font font-bold text-xl mb-4 text-green">+ MK123,456,789.00</div>
+                                    <div class="heading-font font-bold text-xl mb-4 text-green">MK123,456,789.00</div>
                                     <div v-for="i in 4"
                                          class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
@@ -402,7 +404,7 @@
                                         </div>
                                     </div>
                                     <div class="text-xs mb-1 text-gray-500">Total Payables</div>
-                                    <div class="heading-font font-bold text-xl mb-4 text-red">- MK123,456,789.00</div>
+                                    <div class="heading-font font-bold text-xl mb-4 text-red">MK123,456,789.00</div>
                                     <div v-for="i in 4"
                                          class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
@@ -417,16 +419,37 @@
                                 </div>
 
                                 <div class="card mb-0 bank-accounts">
-                                    <div class="heading-font mb-4">Client Undelivered</div>
+                                    <div class="flex justify-between">
+                                        <div class="heading-font mb-4">Undelivered Clients</div>
+                                        <inertia-link
+                                            :href="route('sales.index',{'section':'tabular'})"
+                                            v-show="undeliveredClients.length > 5"
+                                            class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
+                                            <div>{{
+                                                    undeliveredClients.length > 5 ? (undeliveredClients.length - 5) + '+ More' : ''
+                                                }}
+                                            </div>
+                                        </inertia-link>
+                                    </div>
                                     <div class="text-xs mb-1 text-gray-500">Sum Total</div>
-                                    <div class="heading-font font-bold text-xl mb-4">MK123,456,789.00</div>
-                                    <div v-for="i in 4"
+                                    <div class="heading-font font-bold text-xl mb-4 text-red">
+                                        MK{{ numberWithCommas(undeliveredClientsTotal) }}
+                                    </div>
+
+                                    <div v-if="index < 5"
+                                         :key="index"
+                                         v-for="(info, index) in undeliveredClients"
                                          class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
-                                            <div class="h-8 w-8 bg-gray-100 rounded-full"></div>
-                                            <div class="ml-3 text-sm ">National Bank {{ i }}</div>
+                                            <div
+                                                class="h-8 w-8 bg-gray-100 rounded-full flex justify-center items-center">
+                                                <div class="text-xs text-gray-500">{{ index + 1 }}</div>
+                                            </div>
+                                            <div class="ml-3 text-sm ">{{ info.client.name }}</div>
                                         </div>
-                                        <div class="heading-font text-xs text-gray-500">MK1,500,000.00</div>
+                                        <div class="heading-font text-xs text-gray-500">
+                                            MK{{ numberWithCommas(info.amount) }}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -522,14 +545,16 @@
                                                 <div class="text-xs text-gray-500">{{ index + 1 }}</div>
                                             </div>
                                             <div class="ml-3 text-sm ">
-                                                <div class="text-sm">{{sale.client.name}}</div>
+                                                <div class="text-sm">{{ sale.client.name }}</div>
                                                 <div class="text-xs text-gray-500" v-if="true">
                                                     <i class="mdi mdi mdi-adjust text-xs text-gray-500"></i>
-                                                    {{productName(sale)}}
+                                                    {{ productName(sale) }}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="heading-font text-xs text-gray-500">{{ sale.quantity}} {{ sale.units}}{{ sale.quantity !== 1 ? "s" : ""}}</div>
+                                        <div class="heading-font text-xs text-gray-500">{{ sale.quantity }}
+                                            {{ sale.units }}{{ sale.quantity !== 1 ? "s" : "" }}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1091,6 +1116,7 @@ export default {
         'shops',
         'allReceipts',
         'salesAwaitingInitiation',
+        'undeliveredClients',
     ],
     components: {
         Collection,
@@ -1347,6 +1373,22 @@ export default {
         }
     },
     computed: {
+        totalCollectionsPending() {
+            let total = 0;
+
+            for (let x in this.shops.data) {
+                total += this.shops.data[x].pendingCollections.length
+            }
+
+            return total
+        },
+        undeliveredClientsTotal() {
+            let sum = 0;
+            for (let x in this.undeliveredClients) {
+                sum += this.undeliveredClients[x].amount
+            }
+            return sum
+        },
         selectedShop() {
             return this.shops.data[this.shopIndex]
         },
@@ -1430,7 +1472,7 @@ export default {
             return {
                 datasets: [{
                     data: data,
-                    backgroundColor: ['#1a56db', '#ed0b4b', '#b1bbc9', '#e3ebf6'],
+                    backgroundColor: ['#3375bf', '#4aa4a3', '#492d8a', '#e7632a','#ed0b4b','#62bdf9','#e0f96a','#8ef96d'],
                 }],
                 labels: labels
             }
@@ -1518,6 +1560,7 @@ export default {
                 labels: labels
             }
         },
+
 
     },
     methods: {

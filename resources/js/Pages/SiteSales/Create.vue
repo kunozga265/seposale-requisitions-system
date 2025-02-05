@@ -292,6 +292,36 @@
             </div>
           </div>
 
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
+               Payment Method
+              </div>
+            </div>
+            <div class="page-section-content flex justify-center">
+
+              <div class="card  w-full sm:max-w-md md:max-w-3xl">
+
+                <div class="mb-4">
+                  <jet-label for="paymentMethod" value="Select Payment Method"/>
+                  <select v-model="paymentMethodIndex" id="paymentMethod"
+                          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                          required>
+                    <option v-for="(paymentMethod, index) in paymentMethods" :value="index"
+                            :key="index">
+                      {{ paymentMethod.name }}
+                    </option>
+                  </select>
+                </div>
+                <div class="mb-4">
+                  <jet-label for="reference" value="Reference"/>
+                  <jet-input type="text" class="block w-full" v-model="form.reference"/>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
           <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
             <div v-show="!validation" id="toast-danger"
                  class="flex items-center w-full max-w-xs p-4 mb-4 text-red-700 bg-red-100 rounded-lg shadow dark:text-red-400 dark:bg-red-800"
@@ -392,7 +422,7 @@ import DialogModal from "@/Jetstream/DialogModal.vue";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 
 export default {
-  props: ["site", "products", "clients"],
+  props: ["site", "products", "clients","paymentMethods"],
   components: {
     WhatsappLabel,
     DialogModal, PrimaryButton,
@@ -415,6 +445,7 @@ export default {
 
       productIndex: -1,
       clientIndex: -1,
+      paymentMethodIndex: -1,
 
       backdateCheck: false,
       date: null,
@@ -432,6 +463,7 @@ export default {
         recipientProfession: '',
         recipientPhoneNumber: '',
         information: [],
+        reference: "",
 
       }),
       quotes: [],
@@ -445,6 +477,12 @@ export default {
 
   },
   computed: {
+    paymentMethod() {
+      if (parseInt(this.paymentMethodIndex) > 0) {
+        return this.paymentMethods[this.paymentMethodIndex]
+      } else
+        return null
+    },
     addRecordTotal() {
       return this.addRecordUnitCost * this.addRecordQuantity
     },
@@ -524,6 +562,9 @@ export default {
       } else if (this.totalCost <= 0) {
         this.error = "Enter products and services"
         return false
+      } else if (this.paymentMethod == null){
+        this.error = "Select Payment Method"
+        return false
       } else
         return true
 
@@ -564,6 +605,7 @@ export default {
             recipient_name: this.form.recipientName,
             recipient_profession: this.form.recipientProfession,
             recipient_phone_number: this.form.recipientPhoneNumber,
+            payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
           }))
           .post(this.route('sites.sales.store', {code: this.site.code}))
     },

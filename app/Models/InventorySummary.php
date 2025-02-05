@@ -29,6 +29,11 @@ class InventorySummary extends Model
         return $this->hasMany(Collection::class);
     }
 
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
     public function totalSales()
     {
         $sum = 0;

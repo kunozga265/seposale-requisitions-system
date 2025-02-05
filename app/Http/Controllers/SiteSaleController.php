@@ -69,9 +69,11 @@ class SiteSaleController extends Controller
         if (is_object($site)) {
             $products = $site->inventories()->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
+            $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
             return Inertia::render('SiteSales/Create', [
                 "products" => InventoryResource::collection($products),
                 "clients" => ClientResource::collection($clients),
+                 'paymentMethods' => $payment_methods,
                 "site" => $site,
             ]);
         } else {
@@ -131,6 +133,7 @@ class SiteSaleController extends Controller
             $request->validate([
                 'products' => ['required'],
                 'total' => ['required'],
+                'payment_method_id' => ['required'],
             ]);
 
             //get client info
@@ -181,6 +184,8 @@ class SiteSaleController extends Controller
                 'user_id' => $user->id,
                 'site_id' => $site->id,
                 'inventory_summary_id' => $inventorySummary->id,
+                'payment_method_id' => $request->payment_method_id,
+                'reference' => $request->reference,
             ]);
 
 //            //Logging

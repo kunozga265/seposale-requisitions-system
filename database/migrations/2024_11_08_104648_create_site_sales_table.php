@@ -28,6 +28,8 @@ class CreateSiteSalesTable extends Migration
                 $table->integer("site_id");
                 $table->integer("inventory_summary_id");
                 $table->boolean("whatsapp")->nullable();
+                $table->integer("payment_method_id");
+                $table->string("reference")->nullable();
                 $table->softDeletes();
                 $table->timestamps();
             });
