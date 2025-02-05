@@ -24,6 +24,8 @@ class SiteSaleResource extends JsonResource
             'total' => floatval($this->total),
             'balance' => floatval($this->balance),
             'date' => $this->date,
+            'paymentMethod' => $this->paymentMethod,
+            'reference' => $this->reference,
             'site' => [
                 "code" => $this->site->code
             ],

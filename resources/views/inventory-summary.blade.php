@@ -213,10 +213,12 @@
         </tbody>
     </table>
 
+    @if($sum != 0)
     <div style="text-align: right; margin-top: 12px">
         <div style="font-size: 18px; font-weight: normal">{{number_format($sum,2)}}</div>
         <div>Cash at hand</div>
     </div>
+    @endif
 
     <div class="heading" >Collections</div>
     <table class="summary">

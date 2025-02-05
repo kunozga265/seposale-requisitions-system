@@ -147,6 +147,16 @@
                   <div>MK{{ numberWithCommas(sale.data.balance) }}</div>
                 </div>
 
+                <div v-if="sale.data.paymentMethod != null" class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Payment Method</div>
+                  <div>{{ sale.data.paymentMethod.name}}</div>
+                </div>
+
+                <div v-if="sale.data.reference != null" class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Reference</div>
+                  <div>{{sale.data.reference}}</div>
+                </div>
+
                 <!--                <div class="border-b px-4 py-3 flex justify-between text-sm">-->
                 <!--                  <div class="text-gray-600 font-semibold">Site Location</div>-->
                 <!--                  <div>{{ sale.data.location }}</div>-->
