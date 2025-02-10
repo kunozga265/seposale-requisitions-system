@@ -200,6 +200,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('request-forms.store');
 
+        Route::post('/store/delivery/{summary_id}', [
+            "uses"  => "App\Http\Controllers\RequestFormController@storeFromDelivery",
+            'roles' =>['employee','management']
+        ])->name('request-forms.store.delivery');
+
         Route::get('/view/{id}', [
             "uses"  => "App\Http\Controllers\RequestFormController@show",
             'roles' =>['employee','management']

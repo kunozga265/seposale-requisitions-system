@@ -42,6 +42,11 @@ class RequestForm extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function delivery()
+    {
+        return $this->belongsTo(Delivery::class);
+    }
+
     protected $fillable=[
         "code",
         "code_alt",
@@ -50,6 +55,7 @@ class RequestForm extends Model
         "project_id",
         "information",
         "total",
+        "delivery_id",
         "user_id",
         "dateRequested",
         "dateInitiated",

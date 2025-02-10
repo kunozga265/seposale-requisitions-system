@@ -20,7 +20,7 @@ class RequestFormResource extends JsonResource
     {
         //get user
         $user=(new AppController())->getAuthUser($request);
-        $canEdit=$this->editable && $this->user->id == $user->id;
+        $canEdit=$this->editable && $this->user->id == $user->id && $this->delivery == null;
         $canDelete=$this->editable && $this->user->id == $user->id && ($this->approvedBy->isEmpty()) && $this->deniedBy == null;
         $canDiscard=$this->editable && $this->user->id == $user->id && (!($this->approvedBy->isEmpty()) || $this->deniedBy != null);
         $canInitiate=$this->approvalStatus==1 && $user->hasRole('accountant');
@@ -36,127 +36,41 @@ class RequestFormResource extends JsonResource
         $canApproveOrDeny=$this->user->id != $user->id && $this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
 
 
-        switch ($this->type){
-
-            case "REQUISITION":
-            case "PETTY_CASH":
-                return [
-                    'id'                                  =>  $this->id,
-                    'code'                                =>  (new AppController())->getZeroedNumber($this->code_alt),
-                    'type'                                =>  $this->type,
-                    'personCollectingAdvance'             =>  $this->personCollectingAdvance,
-                    'purpose'                             =>  $this->purpose,
-                    'project'                             =>  new ProjectResource($this->project),
-                    'information'                         =>  json_decode($this->information),
-                    'total'                               =>  $this->total,
-                    'requestedBy'                         =>  new UserResource($this->user),
-                    'dateRequested'                       =>  $this->dateRequested,
-                    'nextPositionToApprove'              =>  $this->approvalPosition($this->stagesApprovalPosition),
-                    'stagesApprovalStatus'                =>  $this->stagesApprovalStatus,
-                    'currentStage'                        =>  $this->currentStage,
-                    'totalStages'                         =>  $this->totalStages,
-                    'stages'                              =>  json_decode($this->stages),
-                    'approvalStatus'                      =>  intval($this->approvalStatus),
-                    'approvedDate'                        =>  $this->approvedDate,
-                    'dateInitiated'                       =>  $this->dateInitiated,
-                    'dateReconciled'                      =>  $this->dateReconciled,
-                    'status'                              =>  $this->getApprovalStatus($this->approvalStatus),
-                    'statusMessage'                       =>  (new RequestFormController())->getStatusMessage($this),
-                    'approvedBy'                          =>  new UserResource($this->approvalBy),
-                    'deniedBy'                            =>  $this->deniedBy,
-                    'editable'                            =>  $this->editable,
-                    'remarks'                             =>  json_decode($this->remarks),
-                    'quotes'                              =>  json_decode($this->quotes),
-                    'receipts'                            =>  json_decode($this->receipts),
-                    'canEdit'                             =>  $canEdit,
-                    'canDelete'                           =>  $canDelete,
-                    'canDiscard'                          =>  $canDiscard,
-                    'canApproveOrDeny'                    =>  $canApproveOrDeny,
-                    'canInitiate'                         =>  $canInitiate,
-                    'canReconcile'                        =>  $canReconcile,
-                ];
-
-            case "VEHICLE_MAINTENANCE":
-                return [
-                    'id'                                  =>  $this->id,
-                    'code'                                =>  $this->code,
-                    'type'                                =>  $this->type,
-                    'assessedBy'                          =>  $this->assessedBy,
-                    'vehicle'                             =>  new VehicleResource($this->vehicle),
-                    'information'                         =>  json_decode($this->information),
-                    'total'                               =>  $this->total,
-                    'requestedBy'                         =>  new UserResource($this->user),
-                    'dateRequested'                       =>  $this->dateRequested,
-                    'nextPositionToApprove'              =>  $this->approvalPosition($this->stagesApprovalPosition),
-                    'stagesApprovalStatus'                =>  $this->stagesApprovalStatus,
-                    'currentStage'                        =>  $this->currentStage,
-                    'totalStages'                         =>  $this->totalStages,
-                    'stages'                              =>  json_decode($this->stages),
-                    'approvalStatus'                      =>  intval($this->approvalStatus),
-                    'approvedDate'                        =>  $this->approvedDate,
-                    'dateInitiated'                       =>  $this->dateInitiated,
-                    'dateReconciled'                      =>  $this->dateReconciled,
-                    'status'                              =>  $this->getApprovalStatus($this->approvalStatus),
-                    'statusMessage'                       =>  (new RequestFormController())->getStatusMessage($this),
-                    'approvedBy'                          =>  new UserResource($this->approvalBy),
-                    'deniedBy'                            =>  $this->deniedBy,
-                    'editable'                            =>  $this->editable,
-                    'remarks'                             =>  json_decode($this->remarks),
-                    'quotes'                              =>  json_decode($this->quotes),
-                    'receipts'                            =>  json_decode($this->receipts),
-                    'canEdit'                             =>  $canEdit,
-                    'canDelete'                           =>  $canDelete,
-                    'canDiscard'                          =>  $canDiscard,
-                    'canApproveOrDeny'                    =>  $canApproveOrDeny,
-                    'canInitiate'                         =>  $canInitiate,
-                    'canReconcile'                        =>  $canReconcile,
-                ];
-
-            case "FUEL":
-                return [
-                    'id'                                  =>  $this->id,
-                    'type'                                =>  $this->type,
-                    'code'                                =>  $this->code,
-                    'driverName'                          =>  $this->driverName,
-                    'fuelRequestedLitres'                 =>  $this->fuelRequestedLitres,
-                    'fuelRequestedMoney'                  =>  $this->fuelRequestedMoney,
-                    'purpose'                             =>  $this->purpose,
-                    'vehicle'                             =>  new VehicleResource($this->vehicle),
-                    'mileage'                             =>  $this->mileage,
-                    'project'                             =>  new ProjectResource($this->project),
-                    'lastRefillDate'                      =>  $this->lastRefillDate,
-                    'lastRefillFuelReceived'              =>  $this->lastRefillFuelReceived,
-                    'lastRefillMileageCovered'            =>  $this->lastRefillMileageCovered,
-                    'requestedBy'                         =>  new UserResource($this->user),
-                    'dateRequested'                       =>  $this->dateRequested,
-                    'nextPositionToApprove'              =>  $this->approvalPosition($this->stagesApprovalPosition),
-                    'stagesApprovalStatus'                =>  $this->stagesApprovalStatus,
-                    'currentStage'                        =>  $this->currentStage,
-                    'totalStages'                         =>  $this->totalStages,
-                    'stages'                              =>  json_decode($this->stages),
-                    'approvalStatus'                      =>  intval($this->approvalStatus),
-                    'approvedDate'                        =>  $this->approvedDate,
-                    'dateInitiated'                       =>  $this->dateInitiated,
-                    'dateReconciled'                      =>  $this->dateReconciled,
-                    'status'                              =>  $this->getApprovalStatus($this->approvalStatus),
-                    'statusMessage'                       =>  (new RequestFormController())->getStatusMessage($this),
-                    'approvedBy'                          =>  new UserResource($this->approvalBy),
-                    'deniedBy'                            =>  $this->deniedBy,
-                    'editable'                            =>  $this->editable,
-                    'remarks'                             =>  json_decode($this->remarks),
-                    'quotes'                              =>  json_decode($this->quotes),
-                    'receipts'                            =>  json_decode($this->receipts),
-                    'canEdit'                             =>  $canEdit,
-                    'canDelete'                           =>  $canDelete,
-                    'canDiscard'                          =>  $canDiscard,
-                    'canApproveOrDeny'                    =>  $canApproveOrDeny,
-                    'canInitiate'                         =>  $canInitiate,
-                    'canReconcile'                        =>  $canReconcile,
-                ];
-
-            default:
-                return [];
-        }
+        return [
+            'id'                                  =>  $this->id,
+            'code'                                =>  (new AppController())->getZeroedNumber($this->code_alt),
+            'type'                                =>  $this->type,
+            'personCollectingAdvance'             =>  $this->personCollectingAdvance,
+            'purpose'                             =>  $this->purpose,
+            'project'                             =>  new ProjectResource($this->project),
+            'information'                         =>  json_decode($this->information),
+            'total'                               =>  $this->total,
+            'requestedBy'                         =>  new UserResource($this->user),
+            'dateRequested'                       =>  $this->dateRequested,
+            'nextPositionToApprove'              =>  $this->approvalPosition($this->stagesApprovalPosition),
+            'stagesApprovalStatus'                =>  $this->stagesApprovalStatus,
+            'currentStage'                        =>  $this->currentStage,
+            'totalStages'                         =>  $this->totalStages,
+            'stages'                              =>  json_decode($this->stages),
+            'approvalStatus'                      =>  intval($this->approvalStatus),
+            'approvedDate'                        =>  $this->approvedDate,
+            'dateInitiated'                       =>  $this->dateInitiated,
+            'dateReconciled'                      =>  $this->dateReconciled,
+            'status'                              =>  $this->getApprovalStatus($this->approvalStatus),
+            'statusMessage'                       =>  (new RequestFormController())->getStatusMessage($this),
+            'approvedBy'                          =>  new UserResource($this->approvalBy),
+            'deniedBy'                            =>  $this->deniedBy,
+            'editable'                            =>  $this->editable,
+            'remarks'                             =>  json_decode($this->remarks),
+            'quotes'                              =>  json_decode($this->quotes),
+            'receipts'                            =>  json_decode($this->receipts),
+            'canEdit'                             =>  $canEdit,
+            'canDelete'                           =>  $canDelete,
+            'canDiscard'                          =>  $canDiscard,
+            'canApproveOrDeny'                    =>  $canApproveOrDeny,
+            'canInitiate'                         =>  $canInitiate,
+            'canReconcile'                        =>  $canReconcile,
+        ];
     }
 
     public function approvalPosition($positionId){

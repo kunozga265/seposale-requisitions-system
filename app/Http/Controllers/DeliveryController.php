@@ -3,11 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DeliveryResource;
+use App\Http\Resources\RequestFormResource;
 use App\Http\Resources\SaleResource;
 use App\Models\Delivery;
 use App\Models\Expense;
+use App\Models\Payable;
 use App\Models\Summary;
+use App\Models\Supplier;
 use App\Models\SystemLog;
+use App\Models\Transporter;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -58,6 +62,8 @@ class DeliveryController extends Controller
     {
         //find out if the request is valid
         $delivery = Delivery::find($id);
+        $transporters = Transporter::orderBy("name","asc")->get();
+        $suppliers = Supplier::orderBy("name","asc")->get();
 
         if (is_object($delivery)) {
             if ((new AppController())->isApi($request)) {
@@ -67,6 +73,9 @@ class DeliveryController extends Controller
                 //Web Response
                 return Inertia::render('Deliveries/Show', [
                     'delivery' => new DeliveryResource($delivery),
+                    'requestForms' => RequestFormResource::collection($delivery->requestForms),
+                    'transporters' => $transporters,
+                    'suppliers' => $suppliers,
                 ]);
             }
         } else {
@@ -160,9 +169,6 @@ class DeliveryController extends Controller
                 ]);
 
 
-
-
-
                 $message = $summary->delivery->status == 2 ?
                     "{$request->quantity} delivered. Delivery Completed." :
                     "{$request->quantity} delivered. {$balance} is yet to be delivered.";
@@ -238,26 +244,26 @@ class DeliveryController extends Controller
             } else {
 
                 $request->validate([
-                    'product' => ['required'],
+//                    'product' => ['required'],
 //                    'transportation' => ['required'],
                 ]);
 
+                foreach ($request->payables as $payable){
+                    Payable::create([
+                        "description" => $payable["name"],
+                        "total" => $payable["amount"],
+                        "date" => $payable["date"],
+                        "contents" => json_encode([]),
+                        "expense_type_id" => env('OPERATIONS_EXPENSE_TYPE_ID'),
+                        "transporter_id" => $payable["transporterId"] ?? null,
+                        "supplier_id" => $payable["supplierId"] ?? null,
+                        "delivery_id" => $delivery->id,
+                        "sale_id" => $delivery->summary->sale->id,
+                    ]);
+                }
+
                 $delivery->update([
-                   "status" => 4
-                ]);
-
-                $total = $request->product + $request->transportation + $request->other;
-
-                Expense::create([
-                    "total" => $total,
-                    "contents" => json_encode([
-                        "product" => $request->product,
-                        "transportation" => $request->transportation,
-                        "other" => $request->other,
-                        "comments" => $request->comments,
-                    ]),
-                    "sale_id" => $delivery->summary->sale->id ,
-                    "delivery_id" => $delivery->id,
+                    "status" => 4
                 ]);
 
                 //Logging

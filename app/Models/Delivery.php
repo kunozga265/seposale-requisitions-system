@@ -30,9 +30,13 @@ class Delivery extends Model
     {
         return $this->hasMany(SystemLog::class);
     }
-    public function expense()
+    public function requestForms()
     {
-        return $this->hasOne(Expense::class);
+        return $this->hasMany(RequestForm::class);
+    }
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
     }
 
     public function overdue()

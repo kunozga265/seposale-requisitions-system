@@ -26,6 +26,8 @@ class CreateRequestsTable extends Migration
             $table->json("information")->nullable();
             $table->double("total")->nullable();
 
+            $table->integer("e")->nullable();
+
             //Person requesting
             $table->string("user_id");
             $table->double("dateRequested");

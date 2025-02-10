@@ -176,7 +176,45 @@
       </template>
 
       <template #content>
-        Are you sure you want to initiate this request?
+        <div class="mb-4">
+          <div class="heading-font text-">Fill in expense details;</div>
+          <div v-show="!initiationValidation" class="flex items-center w-full text-red">
+            <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{ error }}</div>
+          </div>
+        </div>
+
+        <div class="mb-4" v-for="(product,index) in form.information" :key="index">
+          <div class="flex justify-between">
+            <jet-label for="amount" :value="product.details"/>
+            <div class="flex items-center mb-2">
+
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <select
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                  v-model="product.expenseTypeId"
+              >
+                <option value="0">
+                  Select Type
+                </option>
+                <option :key="index" v-for="(expense,index) in expenseTypes" :value="expense.id">{{ expense.name }}
+                </option>
+              </select>
+              <div class="mt-1 text-xs text-gray-500">
+                MK{{ numberWithCommas(product.totalCost) }}
+              </div>
+            </div>
+
+            <vue-date-time-picker
+                :key="index"
+                color="#1a56db"
+                v-model="product.date"
+                :min-date="minDate"
+            />
+          </div>
+        </div>
       </template>
 
       <template #footer>
@@ -184,7 +222,7 @@
           Cancel
         </secondary-button>
 
-        <primary-button class="ml-2" @click.native="initiate" :disabled="form.processing">
+        <primary-button v-show="initiationValidation" class="ml-2" @click.native="initiate" :disabled="form.processing">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
                viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -512,9 +550,9 @@
                     >
                       <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                         {{ info.details }}
-                          <div class="text-sm text-mute sm:hidden">
-                              {{ numberWithCommas(info.quantity) }} x  {{ numberWithCommas(info.unitCost) }}
-                          </div>
+                        <div class="text-sm text-mute sm:hidden">
+                          {{ numberWithCommas(info.quantity) }} x {{ numberWithCommas(info.unitCost) }}
+                        </div>
                       </th>
                       <td v-if="request.data.type ==='MATERIALS'" class="py-2 pr-1 hidden sm:table-cell">
                         {{ info.units }}
@@ -781,10 +819,12 @@ import requestStatus from "@/Components/RequestStatus";
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
+import {Money} from "v-money";
 
 export default {
-  props: ['request'],
+  props: ['request', 'expenseTypes'],
   components: {
+    Money,
     AppLayout,
     DoughnutChart,
     PieChart,
@@ -814,14 +854,29 @@ export default {
         remarks: '',
         lastRefillFuelReceived: '',
         lastRefillMileageCovered: '',
+        information: []
       }),
-      date: null,
       minDate: new Date(this.request.data.dateRequested * 1000).toISOString().substr(0, 10),
+      date: null,
       receiptUploads: [],
+      error: ""
     }
   },
   created() {
-
+    for (let x in this.request.data.information) {
+      this.form.information.push({
+        details: this.request.data.information[x].details,
+        quantity: this.request.data.information[x].quantity,
+        totalCost: this.request.data.information[x].totalCost,
+        unitCost: this.request.data.information[x].unitCost,
+        units: this.request.data.information[x].units,
+        expenseTypeId: this.request.data.information[x].expenseTypeId ?? 0,
+        transporterId: this.request.data.information[x].transporterId ?? 0,
+        supplierId: this.request.data.information[x].supplierId ?? 0,
+        comments: this.request.data.information[x].comments ?? "",
+        date: null
+      })
+    }
   },
   computed: {
     attachment() {
@@ -870,9 +925,31 @@ export default {
     },
     lastRefillDate() {
       return this.date ? (new Date(this.date).getTime()) / 1000 : null
+    },
+    initiationValidation() {
+      let check = true
+      for (let x in this.form.information) {
+        if (this.form.information[x].expenseTypeId == 0) {
+          this.error = "Select expense type for " + this.form.information[x].details
+          check = false
+          break
+        } else if (this.form.information[x].date == null) {
+          this.error = "Enter date for " + this.form.information[x].details
+          check = false
+          break
+        }
+      }
+      return check
     }
   },
   methods: {
+    formatInformation() {
+      let information = this.form.information
+      for (let x in information) {
+        information[x].date = this.getTimestampFromDate(information[x].date)
+      }
+      return information
+    },
     printRequest() {
       this.$inertia.get(this.route('request-forms.print', {'id': this.request.data.id}))
     },
@@ -912,7 +989,13 @@ export default {
           })
     },
     initiate() {
+
+
       this.form
+          .transform(data => ({
+            ...data,
+            "information": this.formatInformation(),
+          }))
           .post(this.route('request-forms.initiate', {'id': this.request.data.id}), {
             onSuccess: () => this.initiateDialog = false,
           })

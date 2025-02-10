@@ -61,49 +61,6 @@
                                         <textarea id="purpose" v-model="form.purpose" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" ></textarea>
                                     </div>
 
-
-                                    <!-- <div v-if="form.type !== 'VEHICLE_MAINTENANCE'" class="p-2 mb-2"
-                                        :class="{ 'md:col-span-2': form.type === 'FUEL' }">
-                                        <jet-label for="project" value="Project Name" />
-                                        <select v-model="projectIndex" id="project"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                            required>
-                                            <option value="-1">None</option>
-                                            <option v-for="(project, index) in projects.data" :value="index" :key="index"
-                                                v-if="project.verified == 1 && project.status == 1">
-                                                {{ project.name }}
-                                            </option>
-                                        </select>
-                                    </div> -->
-                                    <!-- <div class="p-2 mb-2" v-if="project && form.type !== 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="projectClient" value="Project Client" />
-                                        <jet-input id="projectClient" type="text" class="block w-full" v-model="project.client" disabled/>
-                                    </div>
-                                    <div class="p-2 mb-2" v-if="project && form.type !== 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="projectSite" value="Project Site" />
-                                        <jet-input id="projectSite" type="text" class="block w-full" v-model="project.site" disabled/>
-                                    </div>
-
-                                    <div class="p-2 mb-2" v-if="form.type === 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="assessedBy" value="Assessed By" />
-                                        <jet-input id="assessedBy" type="text" class="block w-full" v-model="form.assessedBy"/>
-                                    </div>
-
-                                    <div class="p-2 mb-2" v-if="form.type === 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="vehicleMaintenanceVehicleId" value="Vehicle Registration" />
-                                        <select v-model="vehicleMaintenanceVehicleId" id="vehicleMaintenanceVehicleId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"  required>
-                                            <option value="-1">Select Vehicle Registration</option>
-                                            <option
-                                                v-for="(vehicle,index) in vehicles.data"
-                                                :value="vehicle.id"
-                                                :key="index"
-                                                v-if="vehicle.verified==1 && vehicle.status==1"
-                                            >
-                                                {{ vehicle.vehicleRegistrationNumber}}
-                                            </option>
-                                        </select>
-                                    </div> -->
-
                                 </div>
                             </div>
                         </div>
@@ -240,86 +197,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- <div v-if="form.type ==='FUEL'" class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Details
-                            </div>
-                        </div>
-                        <div class="page-section-content flex justify-center">
-
-                            <div class="card w-full sm:max-w-md md:max-w-3xl">
-                                <div class="grid grid-cols-1 md:grid-cols-2">
-
-                                    <div class="p-2 mb-2" :class="{ 'md:col-span-2': fuelVehicle==null}">
-                                        <jet-label for="fuelVehicleId" value="Vehicle Registration" />
-                                        <select v-model="fuelVehicleIndex" id="fuelVehicleId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"  required>
-                                            <option value="-1">Select Vehicle Registration</option>
-                                            <option
-                                                v-for="(vehicle,index) in vehicles.data"
-                                                :value="index"
-                                                :key="index"
-                                                v-if="vehicle.verified==1 && vehicle.status==1"
-                                            >
-                                                {{ vehicle.vehicleRegistrationNumber}}
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div class="p-2 mb-2" v-if="fuelVehicle">
-                                        <jet-label for="fuelVehicleMileage" value="Mileage" />
-                                      <div class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                                            {{numberWithCommas(fuelVehicle.mileage)}}
-                                        </div>
-                                        <jet-input id="fuelVehicleMileage" type="text" class="block w-full" v-model="form.fuelVehicleMileage"/>
-                                    </div>
-
-                                    <div class="p-2 mb-2 md:col-span-2">
-                                        <jet-label for="driverName" value="Driver Name" />
-                                        <jet-input id="driverName" type="text" class="block w-full" v-model="form.driverName" required/>
-                                    </div>
-
-                                    <div class="p-2 mb-2">
-                                        <jet-label for="fuelRequestedLitres" value="Fuel Requested (In Litres)" />
-                                        <jet-input id="fuelRequestedLitres" type="text" class="block w-full" v-model="form.fuelRequestedLitres" required/>
-                                    </div>
-
-                                    <div class="p-2 mb-2">
-                                        <jet-label for="fuelRequestedMoney" value="Fuel Requested (Money Equivalent)"/>
-                                        <div class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                                            {{numberWithCommas(fuelRequestedMoney)}}
-                                        </div>
-                                        <span v-if="fuelVehicle" class="text-sm text-gray-600">@ K{{numberWithCommas(fuelVehicle.gas.perLitre)}}/Litre</span>
-                                    </div>
-
-                                    <div class="p-2 mb-2 md:col-span-2">
-                                        <jet-label for="purpose" value="Purpose" />
-                                        <textarea id="purpose" v-model="form.purpose" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required></textarea>
-                                    </div>
-
-                                    <div class="p-2 mb-2 md:col-span-2">
-                                        <jet-label for="lastRefillDate" value="Last Refill Date" />
-                                        <vue-date-time-picker
-                                            color="#1a56db"
-                                            v-model="date"
-                                            :maxDate="today"
-                                        />
-                                    </div>
-                                     <div class="p-2 mb-2">
-                                        <jet-label for="lastRefillFuelReceived" value="Last Refill Fuel Received" />
-                                        <jet-input id="lastRefillFuelReceived" type="text" class="mt-1 block w-full" v-model="form.lastRefillFuelReceived" autocomplete="geoserve-vehicle-lastRefillFuelReceived"/>
-                                    </div>
-                                     <div class="p-2 mb-2">
-                                        <jet-label for="lastRefillMileageCovered" value="Last Refill Mileage Covered" />
-                                        <jet-input id="lastRefillMileageCovered" type="text" class="mt-1 block w-full" v-model="form.lastRefillMileageCovered" autocomplete="geoserve-vehicle-lastRefillMileageCovered"/>
-                                    </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
 
                     <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
                         <div v-show="!validation" id="toast-danger"
@@ -477,56 +354,6 @@ export default {
                     return true
 
             }
-            // else if (this.form.type === 'VEHICLE_MAINTENANCE') {
-            //     if (this.vehicleMaintenanceVehicleId === '-1' || this.vehicleMaintenanceVehicleId === -1) {
-            //         this.error = "Select vehicle registration"
-            //         return false
-            //     } else if (isNaN(this.totalCost)) {
-            //         this.error = "Enter valid breakdown details"
-            //         return false
-            //     } else if (this.totalCost <= 0) {
-            //         this.error = "Enter breakdown details"
-            //         return false
-            //     } else
-            //         return true
-
-            // } else if (this.form.type === 'FUEL') {
-            //     if (this.fuelVehicle === null) {
-            //         this.error = "Select vehicle registration"
-            //         return false
-            //     } else if (this.form.fuelVehicleMileage === '' || this.form.fuelVehicleMileage.length === 0) {
-            //         this.error = "Enter vehicle's mileage"
-            //         return false
-            //     } else if (isNaN(this.form.fuelVehicleMileage)) {
-            //         this.error = "Mileage should be a number without commas and spaces"
-            //         return false
-            //     } else if (this.form.driverName === '' || this.form.driverName.length === 0) {
-            //         this.error = "Enter a driver's name"
-            //         return false
-            //     } else if (this.form.fuelRequestedLitres === '' || this.form.fuelRequestedLitres == 0 || this.form.fuelRequestedLitres.length === 0) {
-            //         this.error = "Enter fuel requested (in litres)"
-            //         return false
-            //     } else if (isNaN(this.form.fuelRequestedLitres)) {
-            //         this.error = "Fuel requested (in litres) should be a number without commas and spaces"
-            //         return false
-            //     } else if (this.fuelRequestedMoney === 0) {
-            //         this.error = "Fuel Requested (money equivalent) cannot be 0"
-            //         return false
-            //         /* }else if(isNaN(this.form.fuelRequestedMoney)) {
-            //              this.error = "Fuel requested (money equivalent) should be a number"
-            //              return false*/
-            //     } else if (this.form.purpose === '' || this.form.purpose.length === 0) {
-            //         this.error = "Enter the purpose"
-            //         return false
-            //     } else if (isNaN(this.form.lastRefillFuelReceived)) {
-            //         this.error = "Last Refill Fuel Received should be a number without commas and spaces"
-            //         return false
-            //     } else if (isNaN(this.form.lastRefillMileageCovered)) {
-            //         this.error = "Last Refill Mileage Covered should be a number without commas and spaces"
-            //         return false
-            //     } else
-            //         return true
-            // }
             else {
                 this.error = "Select request type"
                 return false

@@ -43,6 +43,34 @@
                 </a>
               </li>
 
+                <li v-if="checkRole($page.props.auth.data,'accountant') || checkRole($page.props.auth.data,'management')">
+                    <div @click="accounts = !accounts"
+                         class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        <div>
+                            <i class="text-lg mdi mdi-finance"></i>
+                            <span class="ml-3">Sales</span>
+                        </div>
+                        <div>
+                            <i class="text-lg mdi" :class="{'mdi-menu-down':!accounts, 'mdi-menu-up': accounts}"></i>
+                        </div>
+                    </div>
+                    <ul v-show="accounts">
+                        <li>
+                            <a :href="route('sales.index',{section:'tabular'})"
+                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                                All
+                            </a>
+                        </li>
+                        <li >
+                            <a :href="route('finance')"
+                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Pending Requisitions
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
               <li>
                 <div @click="requests = !requests"
                      class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ">
@@ -67,12 +95,7 @@
                       Approved
                     </a>
                   </li>
-                  <li v-if="checkRole($page.props.auth.data,'accountant') || checkRole($page.props.auth.data,'management')">
-                    <a :href="route('finance')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                      Finance
-                    </a>
-                  </li>
+
                 </ul>
               </li>
               <!--                            <li>-->
@@ -376,6 +399,7 @@ export default {
       showingNavigationDropdown: false,
       open: false,
       requests: false,
+      accounts: false,
       sales: false,
       sites: false,
       operations: false,

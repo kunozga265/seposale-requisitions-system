@@ -1034,6 +1034,7 @@
                                   </div>
                                 </div>
                               </div>
+                              -->
                               <div class="page-section">
                                 <div class="page-section-header">
                                   <div class="page-section-title">
@@ -1071,7 +1072,7 @@
                                     </div>
                                   </div>
                                 </div>
-                              </div>-->
+                              </div>
                 </div>
             </div>
         </div>
