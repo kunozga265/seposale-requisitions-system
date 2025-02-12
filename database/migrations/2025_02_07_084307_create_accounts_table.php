@@ -13,10 +13,17 @@ class CreateAccountsTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('accounts')) {
         Schema::create('accounts', function (Blueprint $table) {
             $table->id();
+            $table->string("name");
+            $table->string("number")->nullable();
+            $table->string("branch")->nullable();
+            $table->string("type")->nullable();
+            $table->double("balance");
             $table->timestamps();
         });
+    }
     }
 
     /**

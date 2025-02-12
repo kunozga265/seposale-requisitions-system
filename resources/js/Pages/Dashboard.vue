@@ -1141,22 +1141,6 @@ export default {
     data() {
         return {
             shopIndex: 0,
-            series: [{
-                name: 'Sales',
-                data: [{
-                    x: new Date('2019-04-12').getTime(),
-                    y: 12890781
-                }, {
-                    x: new Date('2019-04-15').getTime(),
-                    y: 8000000
-                }, {
-                    x: new Date('2019-05-1').getTime(),
-                    y: 340000
-                }, {
-                    x: new Date('2019-5-29').getTime(),
-                    y: 7800000
-                }]
-            }],
             chartOptionsApex: {
                 chart: {
                     type: 'area',

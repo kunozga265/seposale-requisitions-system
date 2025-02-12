@@ -47,6 +47,11 @@ class RequestForm extends Model
         return $this->belongsTo(Delivery::class);
     }
 
+    public function payables()
+    {
+        return $this->hasMany(Payable::class, "request_id","id");
+    }
+
     protected $fillable=[
         "code",
         "code_alt",

@@ -13,6 +13,7 @@ class CreateTransportersTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('transporters')) {
         Schema::create('transporters', function (Blueprint $table) {
             $table->id();
             $table->string("name");
@@ -25,6 +26,7 @@ class CreateTransportersTable extends Migration
             $table->string("make")->nullable();
             $table->timestamps();
         });
+    }
     }
 
     /**

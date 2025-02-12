@@ -47,8 +47,8 @@
                     <div @click="accounts = !accounts"
                          class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                         <div>
-                            <i class="text-lg mdi mdi-finance"></i>
-                            <span class="ml-3">Sales</span>
+                            <i class="text-lg mdi mdi-bank"></i>
+                            <span class="ml-3">Accounts</span>
                         </div>
                         <div>
                             <i class="text-lg mdi" :class="{'mdi-menu-down':!accounts, 'mdi-menu-up': accounts}"></i>
@@ -58,13 +58,25 @@
                         <li>
                             <a :href="route('sales.index',{section:'tabular'})"
                                class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                All
+                                Banks
                             </a>
                         </li>
                         <li >
                             <a :href="route('finance')"
                                class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                                 Pending Requisitions
+                            </a>
+                        </li>
+                        <li>
+                            <a :href="route('payables.index')"
+                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Payables
+                            </a>
+                        </li>
+                        <li>
+                            <a :href="route('expenses.index')"
+                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Expenses
                             </a>
                         </li>
 
@@ -155,15 +167,18 @@
                       Quotations
                     </a>
                   </li>
-                  <li>
-                    <a :href="route('clients.index')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                      Clients
-                    </a>
-                  </li>
+
 
                 </ul>
               </li>
+
+                <li>
+                    <a :href="route('clients.index')"
+                       class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+                        <i class="text-lg mdi mdi-account-group"></i>
+                        <span class="ml-3">Clients</span>
+                    </a>
+                </li>
 
               <li>
                 <div @click="sites = !sites"

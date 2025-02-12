@@ -15,9 +15,19 @@ class ExpenseResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id"            => $this->id,
-            "total"            => $this->total,
-            "contents"            => json_decode($this->contents),
+            "id"                    => $this->id,
+            "code"                  => $this->formattedCode(),
+            "payee"                 => $this->payee(),
+            "description"           => $this->description,
+            "total"                 => $this->total,
+            "date"                  => $this->date,
+            "contents"              => json_decode($this->contents),
+            "expenseType"           => $this->expenseType,
+            "sale"                  => $this->sale,
+            "delivery"              => $this->delivery,
+            "requestForm"           => new RequestFormResource($this->requestForm),
+            "transporter"           => $this->transporter,
+            "supplier"              => $this->supplier,
         ];
     }
 }

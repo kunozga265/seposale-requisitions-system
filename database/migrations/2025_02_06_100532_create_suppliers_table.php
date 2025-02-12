@@ -13,6 +13,7 @@ class CreateSuppliersTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('suppliers')) {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string("name");
@@ -22,6 +23,7 @@ class CreateSuppliersTable extends Migration
             $table->string("email")->nullable();
             $table->timestamps();
         });
+    }
     }
 
     /**

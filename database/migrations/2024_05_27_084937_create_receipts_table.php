@@ -16,6 +16,7 @@ class CreateReceiptsTable extends Migration
         if (!Schema::hasTable('receipts')) {
         Schema::create('receipts', function (Blueprint $table) {
             $table->id();
+            $table->integer("account_id");
             $table->integer("client_id");
             $table->string("serial")->unique();
             $table->integer("sale_id")->nullable();

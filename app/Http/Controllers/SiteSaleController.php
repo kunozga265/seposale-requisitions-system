@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\InventoryResource;
 use App\Http\Resources\SiteSaleResource;
+use App\Models\Account;
 use App\Models\Client;
 use App\Models\Inventory;
 use App\Models\InventorySummary;
@@ -30,6 +31,7 @@ class SiteSaleController extends Controller
             //find out if the request is valid
             $sale = SiteSale::withTrashed()->find($id);
             $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
+            $accounts = Account::all();
 
             if (is_object($sale)) {
                 if ((new AppController())->isApi($request)) {
@@ -40,6 +42,7 @@ class SiteSaleController extends Controller
                     return Inertia::render('SiteSales/Show', [
                         'sale' => new SiteSaleResource($sale),
                         'paymentMethods' => $payment_methods,
+                          'accounts' => $accounts,
                         "site" => $site,
                     ]);
                 }

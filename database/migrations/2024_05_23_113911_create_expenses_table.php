@@ -16,6 +16,7 @@ class CreateExpensesTable extends Migration
         if(!Schema::hasTable('expenses')){
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
+            $table->integer("code");
             $table->string("description");
             $table->double("total");
             $table->double("date");
@@ -26,6 +27,8 @@ class CreateExpensesTable extends Migration
             $table->integer("request_id")->nullable();
             $table->integer("transporter_id")->nullable();
             $table->integer("supplier_id")->nullable();
+            $table->integer("account_id");
+            $table->string("reference")->nullable();
             $table->timestamps();
         });
     }

@@ -13,11 +13,13 @@ class CreateExpenseTypesTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('expense_types')) {
         Schema::create('expense_types', function (Blueprint $table) {
             $table->id();
             $table->string("name");
             $table->timestamps();
         });
+    }
     }
 
     /**

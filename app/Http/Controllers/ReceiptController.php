@@ -79,6 +79,7 @@ class ReceiptController extends Controller
 
                 //Validate all the important attributes
                 $request->validate([
+                    'account_id' => ['required'],
                     'payment_method_id' => ['required'],
                     'information' => ['required'],
                     'type' => ['required'],
@@ -128,6 +129,7 @@ class ReceiptController extends Controller
                     'client_id' => $sale->client->id,
                     "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
                     "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
+                    'account_id' => $request->account_id,
                     'payment_method_id' => $request->payment_method_id,
                     'amount' => $total,
                     'reference' => strtoupper($request->reference),
@@ -140,6 +142,11 @@ class ReceiptController extends Controller
                     "balance" => $new_balance,
                     "editable" => false,
                     "status" => $new_balance == 0 ? 2 : 1
+                ]);
+
+                $balance =  $receipt->account->balance + $receipt->amount;
+                $receipt->account->update([
+                    "balance" => $balance
                 ]);
 
                 //Logging

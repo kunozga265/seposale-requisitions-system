@@ -295,7 +295,7 @@ export default {
 
             switch (parseInt(status)) {
                 case 0:
-                    return "Not Collected";
+                    return this.numberWithCommas(this.product.quantity) +" Uncollected";
                 case 1:
                     return this.numberWithCommas(this.product.quantity - this.product.collected) + " Remaining";
                 case 2:

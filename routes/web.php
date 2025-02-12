@@ -205,6 +205,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('request-forms.store.delivery');
 
+        Route::post('/store/payable', [
+            "uses"  => "App\Http\Controllers\RequestFormController@storeFromPayable",
+            'roles' =>['accountant','management']
+        ])->name('request-forms.store.payable');
+
         Route::get('/view/{id}', [
             "uses"  => "App\Http\Controllers\RequestFormController@show",
             'roles' =>['employee','management']
@@ -547,6 +552,74 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\ClientController@update",
             'roles' =>['employee','management']
         ])->name('clients.update');
+
+    });
+
+    Route::group(['prefix'=>'payables'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\PayableController@index",
+            'roles' =>['accountant','management']
+        ])->name('payables.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\ClientController@create",
+            'roles' =>['employee','management']
+        ])->name('clients.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ClientController@store",
+            'roles' =>['employee','management']
+        ])->name('clients.store');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\ClientController@show",
+            'roles' => ['employee', 'management']
+        ])->name('clients.show');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ClientController@edit",
+            'roles' =>['employee','management']
+        ])->name('clients.edit');
+
+        Route::post('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ClientController@update",
+            'roles' =>['employee','management']
+        ])->name('clients.update');
+
+    });
+
+    Route::group(['prefix'=>'expenses'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\ExpenseController@index",
+            'roles' =>['accountant','management']
+        ])->name('expenses.index');
+
+//        Route::get('/create', [
+//            "uses"  => "App\Http\Controllers\ExpenseController@create",
+//            'roles' =>['accountant','management']
+//        ])->name('expenses.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ExpenseController@store",
+            'roles' =>['employee','management']
+        ])->name('expenses.store');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\ExpenseController@show",
+            'roles' => ['employee', 'management']
+        ])->name('expenses.show');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ExpenseController@edit",
+            'roles' =>['employee','management']
+        ])->name('expenses.edit');
+
+        Route::post('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ExpenseController@update",
+            'roles' =>['employee','management']
+        ])->name('expenses.update');
 
     });
 

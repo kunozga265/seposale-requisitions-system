@@ -9,6 +9,7 @@ use App\Http\Resources\SaleResource;
 use App\Http\Resources\VehicleResource;
 use App\Models\Expense;
 use App\Models\ExpenseType;
+use App\Models\Payable;
 use App\Models\Position;
 use App\Models\Project;
 use App\Models\Report;
@@ -595,6 +596,109 @@ class RequestFormController extends Controller
         } else {
             return Redirect::back()->with('error', 'Delivery not found');
         }
+
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     */
+    public function storeFromPayable(Request $request)
+    {
+        //get user
+        $user = (new AppController())->getAuthUser($request);
+        $stagesApprovalPosition = null;
+
+
+        //Validate all the important attributes
+        $request->validate([
+            'payables' => ['required'],
+            'total' => ['required'],
+        ]);
+
+        //get stages
+        if (is_object($user->position)) {
+            $stages = json_decode($user->position->approvalStages);
+        } else
+            return response()->json(['message' => "User position unknown"], 404);
+
+        $stagesCount = count($stages);
+        if ($stagesCount > 0) {
+            $stagesApprovalPosition = $stages[0]->position;
+        }
+
+        $information = [];
+        $total = 0;
+        foreach ($request->payables as $payable) {
+
+            $information [] = [
+                "details" => $payable["description"],
+                "units" => 'Unit',
+                "quantity" => 1,
+                "unitCost" => $payable["total"],
+                "totalCost" => $payable["total"],
+                "expenseTypeId" => env('OPERATIONS_EXPENSE_TYPE_ID'),
+                "transporterId" => $payable["transporter"] != null ? $payable["transporter"]["id"] : null,
+                "supplierId" => $payable["supplier"] != null ? $payable["supplier"]["id"] : null,
+            ];
+        }
+
+        $requestForm = RequestForm::create([
+            'code' => (new AppController())->generateUniqueCode("REQUESTFORM"),
+            'code_alt' => $this->getCodeRequestFormNumber(),
+            //Requested information
+            'type' => "REQUISITION",
+            'personCollectingAdvance' => $request->personCollectingAdvance,
+            'purpose' => "Payables for {$request->payables[0]["description"]}",
+            'information' => json_encode($information),
+            'total' => $request->total,
+
+            'delivery_id' => null,
+
+            //Requested by
+            'user_id' => $user->id,
+            'dateRequested' => Carbon::now()->getTimestamp(),
+
+            //Stages
+            'stagesApprovalPosition' => $stagesApprovalPosition,
+            'stagesApprovalStatus' => $stagesCount == 0,
+            'currentStage' => $stagesCount == 0 ? null : 1,
+            'totalStages' => $stagesCount == 0 ? null : $stagesCount,
+            'stages' => json_encode($stages),
+            'quotes' => json_encode($request->quotes ?? []),
+            'remarks' => json_encode([]),
+            'receipts' => json_encode([]),
+
+            //Management Approval
+            'approvalStatus' => 0,
+            'editable' => true,
+        ]);
+
+        //attach requisition to payables
+        foreach ($request->payables as $payable) {
+            $_payable = Payable::find($payable["id"]);
+            $_payable->update([
+                "request_id" => $requestForm->id
+            ]);
+        }
+
+
+        //Run notifications
+        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+
+        $report = (new ReportController())->getCurrentReport();
+        $report->requestForms()->attach($requestForm);
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(new RequestFormResource($requestForm), 201);
+        else {
+            //Web Response
+            return Redirect::route('dashboard')->with('success', 'Request created!');
+        }
+
 
     }
 
@@ -1299,11 +1403,12 @@ class RequestFormController extends Controller
                     //create expenses
                     foreach ($request->information as $info) {
                         $sale_id = null;
-                        if ($requestForm->delivery_id != null){
+                        if ($requestForm->delivery_id != null) {
                             $sale_id = $requestForm->delivery->summary->sale->id;
                         }
 
                         Expense::create([
+                            "code" => (new ExpenseController())->getCodeNumber(),
                             "description" => $info["details"],
                             "total" => $info["totalCost"],
                             "date" => $info["date"],
@@ -1316,6 +1421,7 @@ class RequestFormController extends Controller
                             "supplier_id" => $info["supplierId"],
                             "delivery_id" => $requestForm->delivery_id,
                             "sale_id" => $sale_id,
+
                         ]);
                     }
 
@@ -1326,6 +1432,12 @@ class RequestFormController extends Controller
                         'dateInitiated' => Carbon::now()->getTimestamp(),
                         'approvalStatus' => 3
                     ]);
+
+                    foreach($requestForm->payables as $payable){
+                        $payable->update([
+                            "paid" => true
+                        ]);
+                    }
 
                     (new NotificationController())->notifyUser($requestForm, "INITIATED");
                     (new NotificationController())->notifyFinance($requestForm, "WAITING_RECONCILE");

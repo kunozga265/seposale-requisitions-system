@@ -92,6 +92,12 @@ class Receipt extends Model
         return (new AppController())->getZeroedNumber($this->code);
     }
 
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
+    }
+
+
     protected $fillable=[
         "serial",
         "client_id",
@@ -105,5 +111,6 @@ class Receipt extends Model
         "reference",
         "date",
         "whatsapp",
+        "account_id",
     ];
 }

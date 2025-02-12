@@ -9,6 +9,7 @@ use App\Http\Resources\RequestFormResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteResource;
 use App\Http\Resources\SummaryResource;
+use App\Models\Account;
 use App\Models\Client;
 use App\Models\Collection;
 use App\Models\Delivery;
@@ -148,6 +149,9 @@ class AppController extends Controller
         //generate sales
         $sales = Sale::where("status", "<", 2)->orderBy("date", "desc")->get();
 
+        //accounts
+        $accounts = Account::all();
+
         //
 //        $salesAwaitingDeliver = Sale::where("status","<",2)->orderBy("date","desc")->get();
 
@@ -212,7 +216,7 @@ class AppController extends Controller
                 'allReceipts' => ReceiptResource::collection($allReceipts),
                 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
                 'undeliveredClients' => $undeliveredClients,
-
+                'accounts' => $accounts,
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,
                 'awaitingInitiationCount' => $awaitingInitiationCount,
@@ -236,6 +240,7 @@ class AppController extends Controller
                 'allReceipts' => ReceiptResource::collection($allReceipts),
                 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
                 'undeliveredClients' => $undeliveredClients,
+                'accounts' => $accounts,
 
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,

@@ -405,17 +405,32 @@
 
                     />
                   </div>
-                  <div class="mb-4">
-                    <jet-label for="paymentMethod" value="Select Payment Method"/>
-                    <select v-model="paymentMethodIndex" id="paymentMethod"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            required>
-                      <option v-for="(paymentMethod, index) in paymentMethods" :value="index"
-                              :key="index">
-                        {{ paymentMethod.name }}
-                      </option>
-                    </select>
-                  </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+                        <div class="mb-4">
+                            <jet-label for="paymentMethod" value="Select Account"/>
+                            <select v-model="accountIndex" id="paymentMethod"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                    required>
+                                <option v-for="(account, index) in accounts" :value="index"
+                                        :key="index">
+                                    {{ account.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <jet-label for="paymentMethod" value="Select Payment Method"/>
+                            <select v-model="paymentMethodIndex" id="paymentMethod"
+                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                    required>
+                                <option v-for="(paymentMethod, index) in paymentMethods" :value="index"
+                                        :key="index">
+                                    {{ paymentMethod.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                   <div class="mb-4">
                     <jet-label for="reference" value="Reference"/>
                     <jet-input type="text" class="block w-full" v-model="form.reference"/>
@@ -539,7 +554,7 @@ import Collection from "@/Components/Collection.vue";
 
 
 export default {
-  props: ['site', 'sale', 'paymentMethods', 'users'],
+  props: ['site', 'sale', 'paymentMethods', 'accounts'],
   components: {
     Collection,
     AppLayout,
@@ -569,6 +584,7 @@ export default {
       deleteDialog: false,
       closeDialog: false,
       paymentMethodIndex: -1,
+        accountIndex: -1,
       backdateCheck: false,
 
       fullPaymentCheck: false,
@@ -626,6 +642,12 @@ export default {
       } else
         return null
     },
+      account() {
+          if (parseInt(this.accountIndex) >= 0) {
+              return this.accounts[this.accountIndex]
+          } else
+              return null
+      },
     receiptAmount() {
       let sum = 0;
       for (let x in this.form.information) {
@@ -673,6 +695,7 @@ export default {
           .transform(data => ({
             ...data,
             payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
+              account_id: this.account == null ? null : this.account.id,
             date: this.getTimestampFromDate(this.date),
             type: "SITE",
           }))

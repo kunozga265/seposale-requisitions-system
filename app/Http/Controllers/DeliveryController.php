@@ -250,6 +250,7 @@ class DeliveryController extends Controller
 
                 foreach ($request->payables as $payable){
                     Payable::create([
+                        "code" => (new PayableController())->getCodeNumber(),
                         "description" => $payable["name"],
                         "total" => $payable["amount"],
                         "date" => $payable["date"],
@@ -259,6 +260,7 @@ class DeliveryController extends Controller
                         "supplier_id" => $payable["supplierId"] ?? null,
                         "delivery_id" => $delivery->id,
                         "sale_id" => $delivery->summary->sale->id,
+                        "paid" => false,
                     ]);
                 }
 

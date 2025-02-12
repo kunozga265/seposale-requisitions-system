@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\PayableController;
+use App\Models\Expense;
+use App\Models\Payable;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -30,7 +34,15 @@ class DatabaseSeeder extends Seeder
 //         $this->call(SerialSeeder::class);
 //         $this->call(ClientTableSeeder::class);
 //         $this->call(ExpenseTypeTableSeeder::class);
-         $this->call(SupplierTableSeeder::class);
-         $this->call(TransporterTableSeeder::class);
+//         $this->call(SupplierTableSeeder::class);
+//         $this->call(TransporterTableSeeder::class);
+         $this->call(AccountTableSeeder::class);
+
+//        $expenses = Payable::all();
+//        foreach ($expenses as $expense) {
+//            $expense->update([
+//                "code" => (new PayableController())->getCodeNumber(),
+//            ]);
+//        }
     }
 }

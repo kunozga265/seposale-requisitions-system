@@ -13,19 +13,24 @@ class CreatePayablesTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('payables')) {
         Schema::create('payables', function (Blueprint $table) {
             $table->id();
+            $table->integer("code");
             $table->string("description");
             $table->double("total");
             $table->double("date");
             $table->json("contents");
             $table->integer("expense_type_id");
+            $table->integer("request_id")->nullable();
             $table->integer("sale_id")->nullable();
             $table->integer("delivery_id")->nullable();
             $table->integer("transporter_id")->nullable();
             $table->integer("supplier_id")->nullable();
+            $table->boolean("paid");
             $table->timestamps();
         });
+    }
     }
 
     /**

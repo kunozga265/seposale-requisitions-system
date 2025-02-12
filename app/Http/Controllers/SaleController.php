@@ -7,6 +7,7 @@ use App\Http\Resources\ProductResource;
 use App\Http\Resources\QuotationResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\UserResource;
+use App\Models\Account;
 use App\Models\Client;
 use App\Models\Delivery;
 use App\Models\PaymentMethod;
@@ -429,6 +430,7 @@ class SaleController extends Controller
         //find out if the request is valid
         $sale = sale::withTrashed()->find($id);
         $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
+        $accounts = Account::all();
         $users = User::orderBy("firstName")->get();
 
         if (is_object($sale)) {
@@ -440,6 +442,7 @@ class SaleController extends Controller
                 return Inertia::render('Sales/Show', [
                     'sale' => new SaleResource($sale),
                     'paymentMethods' => $payment_methods,
+                    'accounts' => $accounts,
                     'users' => UserResource::collection($users),
                 ]);
             }
