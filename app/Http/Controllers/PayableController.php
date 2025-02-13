@@ -13,6 +13,11 @@ class PayableController extends Controller
 {
     public function index(Request $request)
     {
+        return Inertia::render('Payables/Index', $this->getPayables());
+    }
+
+    public function getPayables()
+    {
         $payables = Payable::where("paid",0)->orderBy("date","asc")->get();
         $suppliers = [];
         $transporters = [];
@@ -39,20 +44,58 @@ class PayableController extends Controller
             return $carry;
         }, []);
 
+        $all = [];
+        $total = 0;
 
-//        dd((new AppController())->generateCompound(DeliveryResource::collection($deliveries)));
-
-        if ((new AppController())->isApi($request))
-            //API Response
-            return response()->json(PayableResource::collection($payables));
-        else {
-            //Web Response
-            return Inertia::render('Payables/Index', [
-                "transporters" => $groupedTransporters,
-                "suppliers" => $groupedSuppliers,
-
-            ]);
+        foreach ($groupedTransporters as $groupedTransporter){
+            $sum = 0;
+            $name = $groupedTransporter[0]["description"];
+            $items = [];
+            foreach ($groupedTransporter as $item){
+                $items [] = $item;
+                $sum += $item["total"];
+            }
+            $all[]=[
+                "name" => $name,
+                "category" => "Transporter",
+                "items" => $items,
+                "total" => $sum,
+            ];
+            $total += $sum;
         }
+
+        foreach ($groupedSuppliers as $groupedSupplier){
+            $sum = 0;
+            $name = $groupedSupplier[0]["description"];
+            $items = [];
+            foreach ($groupedSupplier as $item){
+                $items [] = $item;
+                $sum += $item["total"];
+            }
+            $all[]=[
+                "name" => $name,
+                "category" => "Supplier",
+                "items" => $items,
+                "total" => $sum,
+            ];
+            $total += $sum;
+        }
+
+        usort($all, function($a, $b) {
+            if ($a['total'] < $b['total']) {
+                return 1;
+            } elseif ($a['total'] > $b['total']) {
+                return -1;
+            }
+            return 0;
+        });
+
+        return [
+            "transporters" => $groupedTransporters,
+            "suppliers" => $groupedSuppliers,
+            "all" => $all,
+            "total" => $total,
+        ];
     }
 
     private function convertToArray($arr)

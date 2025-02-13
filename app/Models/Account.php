@@ -21,6 +21,7 @@ class Account extends Model
     protected $fillable=[
         "name",
         "number",
+        "photo",
         "branch",
         "type",
         "balance",

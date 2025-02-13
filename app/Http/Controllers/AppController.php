@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DeliveryResource;
+use App\Http\Resources\ExpenseResource;
 use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\ReportResource;
 use App\Http\Resources\RequestFormResource;
@@ -13,7 +14,9 @@ use App\Models\Account;
 use App\Models\Client;
 use App\Models\Collection;
 use App\Models\Delivery;
+use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\Payable;
 use App\Models\Project;
 use App\Models\Quotation;
 use App\Models\Receipt;
@@ -136,8 +139,8 @@ class AppController extends Controller
         $unverifiedProjects = Project::where('verified', 0)->get();
 
         //deliveries
-        $deliveriesUnderway = Delivery::where("status", 1)->orderBy("due_date", "asc")->get();
-        $deliveriesUncompleted = Delivery::where("status", 2)->orderBy("due_date", "asc")->get();
+        $deliveriesUnderway = Delivery::where("status", 1)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
+        $deliveriesUncompleted = Delivery::where("status", 2)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
 
 
         //one stop shops
@@ -152,13 +155,14 @@ class AppController extends Controller
         //accounts
         $accounts = Account::all();
 
-        //
-//        $salesAwaitingDeliver = Sale::where("status","<",2)->orderBy("date","desc")->get();
+        //expenses
+        $expenses = Expense::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date","asc")->get();
 
         $salesAwaitingInitiation = [];
+        $salesAwaitingPayment = [];
 
         $undeliveredSales = [];
-        $summaries = Summary::all();
+        $summaries = Summary::where("date",">=",env('TIMESTAMP_CUTOFF'))->get();
         foreach ($summaries as $summary) {
             if ($summary->delivery != null) {
                 if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status == 0) {
@@ -167,42 +171,18 @@ class AppController extends Controller
                 if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status < 3) {
                     $undeliveredSales [] = $summary;
                 }
+                if (($summary->getPaymentStatus() == 0) && ($summary->delivery->status == 2 || $summary->delivery->status == 4)) {
+                    $salesAwaitingPayment [] = $summary;
+                }
             }
 
         }
 
-        $sortSales = [];
-        foreach ($undeliveredSales as $undeliveredSale){
-            $sortSales [] = [
-                "id" => $undeliveredSale->id,
-                "client" => $undeliveredSale->sale->client,
-                "product" => $undeliveredSale->product,
-                "variant" => $undeliveredSale->variant,
-                "quantity" => $undeliveredSale->quantity,
-                "description" => $undeliveredSale->description,
-                "units" => $undeliveredSale->units,
-                "due" => $undeliveredSale->amount - $undeliveredSale->balance,
-            ];
-        }
+        $undeliveredClients = $this->groupSales($undeliveredSales, false);
+        $receivables = $this->groupSales($salesAwaitingPayment, true);
+        $payables = (new PayableController())->getPayables();
 
-        //group undelivered clients by client
-        $groupedClients = array_reduce($sortSales, function ($carry, $item) {
-            $carry[$item['client']['id']][] = $item;
-            return $carry;
-        }, []);
 
-        $undeliveredClients = [];
-        foreach ($groupedClients as $groupedClient){
-            $sum = 0;
-            foreach ($groupedClient as $item){
-                $sum += $item["due"];
-            }
-
-            $undeliveredClients [] = [
-                "client" => $groupedClient[0]["client"],
-                "amount" => $sum
-            ];
-        }
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -217,6 +197,9 @@ class AppController extends Controller
                 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
                 'undeliveredClients' => $undeliveredClients,
                 'accounts' => $accounts,
+                'receivables' => $receivables,
+                'expenses' => $expenses,
+                'payables' => $payables,
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,
                 'awaitingInitiationCount' => $awaitingInitiationCount,
@@ -241,6 +224,9 @@ class AppController extends Controller
                 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
                 'undeliveredClients' => $undeliveredClients,
                 'accounts' => $accounts,
+                'receivables' => $receivables,
+                'expenses' =>ExpenseResource::collection($expenses),
+                'payables' => $payables,
 
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,
@@ -533,5 +519,68 @@ class AppController extends Controller
             }
         }
         return $sorted;
+    }
+
+    private function groupSales($sales, $isReceivable)
+    {
+        $sortSales = [];
+        foreach ($sales as $sale){
+            $sortSales [] = [
+                "id" => $sale->id,
+                "client" => $sale->sale->client,
+                "product" => $sale->product,
+                "variant" => $sale->variant,
+                "quantity" => $sale->quantity,
+                "description" => $sale->description,
+                "units" => $sale->units,
+                "due" => $sale->amount - $sale->balance,
+                "amount" => $sale->amount,
+            ];
+        }
+
+        //group undelivered clients by client
+        $clients = array_reduce($sortSales, function ($carry, $item) {
+            $carry[$item['client']['id']][] = $item;
+            return $carry;
+        }, []);
+
+        $compound_object = [];
+        foreach ($clients as $client){
+            $due = 0;
+            $principal = 0;
+            foreach ($client as $item){
+                $due += $item["due"];
+                $principal += $item["amount"];
+            }
+
+            $compound_object [] = [
+                "client" => $client[0]["client"],
+                "due" => $due,
+                "principal" => $principal,
+            ];
+        }
+
+        if($isReceivable) {
+            usort($compound_object, function ($a, $b) {
+                if ($a['principal'] < $b['principal']) {
+                    return 1;
+                } elseif ($a['principal'] > $b['principal']) {
+                    return -1;
+                }
+                return 0;
+            });
+        }else{
+            usort($compound_object, function ($a, $b) {
+                if ($a['due'] < $b['due']) {
+                    return 1;
+                } elseif ($a['due'] > $b['due']) {
+                    return -1;
+                }
+                return 0;
+            });
+        }
+
+        return $compound_object;
+
     }
 }

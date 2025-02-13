@@ -580,3 +580,14 @@ th.heading-font{
 .bg-green{
     background-color: #22c55e;
 }
+
+.image-placeholder{
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.bank-accounts .image-placeholder{
+    min-width: 32px;
+    height: 32px;
+}

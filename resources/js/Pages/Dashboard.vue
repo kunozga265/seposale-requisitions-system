@@ -316,39 +316,61 @@
                         </div>
                         <div class="page-section-content">
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">
+
                                 <div class="card mb-0 bank-accounts">
                                     <div class="heading-font mb-4">Bank Accounts</div>
                                     <div class="text-xs mb-1 text-gray-500">Sum Total</div>
-                                    <div class="heading-font font-bold text-xl mb-4">MK123,456,789.00</div>
-                                    <div v-for="i in 4"
-                                         class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
+                                    <div class="heading-font font-bold text-xl mb-4">
+                                        MK{{ numberWithCommas(accountsTotal) }}
+                                    </div>
+                                    <div
+                                        v-for="(account,index) in accounts" :key="index"
+                                        class="record p-2 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
-                                            <div class="h-8 w-8 bg-gray-100 rounded-full"></div>
-                                            <div class="ml-3 text-sm ">National Bank {{ i }}</div>
+                                            <img :src="fileUrl(account.photo)"
+                                                 class="h-8 rounded flex justify-center items-center" alt="">
+                                            <!--                      <div-->
+                                            <!--                          :style="{ backgroundImage:`url(${fileUrl(account.photo)})` }"-->
+
+                                            <!--                          class="image-placeholder bg-gray-100 rounded-full flex justify-center items-center"-->
+                                            <!--                      >-->
+                                            <!--                        <div class="text-xs"-->
+                                            <!--                        >-->
+
+                                            <!--                        </div>-->
+                                            <!--                      </div>-->
+                                            <div class="ml-3 text-sm ">
+                                                <div class="text-sm">{{ account.name }}</div>
+                                                <div class="text-xs text-gray-500">
+                                                    {{ account.number }}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="heading-font text-xs text-gray-500">MK1,500,000.00</div>
+                                        <div class="heading-font text-xs text-gray-500">
+                                            MK{{ numberWithCommas(account.balance) }}
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="card profit-loss mb-0">
                                     <div class="heading-font mb-4">Profit & Loss</div>
-                                    <div class="text-xs mb-1 text-gray-500">Net Profit for January 2024</div>
-                                    <div class="heading-font font-bold text-xl mb-1">MK123,456,789.00</div>
-                                    <div class="text-xs mb-1 text-gray-500"><span
-                                        class="font-bold text-green">Up 100%</span> from last month
+                                    <div class="text-xs mb-1 text-gray-500">Net Profit</div>
+                                    <div class="heading-font font-bold text-xl mb-1" :class="{'text-red': financialPosition.net < 0, 'text-green': financialPosition.net > 0, }">MK{{ numberWithCommas(financialPosition.net) }}</div>
+                                    <div class="text-xs mb-1 text-gray-500">
+<!--                                        <span class="font-bold text-green">Up 100%</span> from last month-->
                                     </div>
                                     <div class="mb-4"></div>
                                     <div class="mb-2">
-                                        <div class="heading-font text-base">MK123,456.00</div>
+                                        <div class="heading-font text-base">MK{{ numberWithCommas(financialPosition.income) }}</div>
                                         <div class="relative">
                                             <div class="absolute text-sm text-gray-500">Income</div>
                                             <div class="bar positive rounded h-8 "></div>
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="heading-font text-base">MK456,789.00</div>
+                                        <div class="heading-font text-base">MK{{ numberWithCommas(financialPosition.expenditure) }}</div>
                                         <div class="relative">
-                                            <div class="absolute text-sm text-gray-500">Expenses</div>
+                                            <div class="absolute text-sm text-gray-500">Expenditure</div>
                                             <div class="bar negative rounded h-8 "></div>
                                         </div>
                                     </div>
@@ -357,8 +379,8 @@
 
                                 <div class="card mb-0 profit-loss">
                                     <div class="heading-font mb-4">Expenses</div>
-                                    <div class="text-xs mb-1 text-gray-500">Spending for last 30 days</div>
-                                    <div class="heading-font font-bold text-xl mb-4">MK123,456,789.00</div>
+                                    <div class="text-xs mb-1 text-gray-500">Sum Total</div>
+                                    <div class="heading-font font-bold text-xl mb-4 text-red">MK{{numberWithCommas(expensesTotal)}}</div>
 
                                     <div>
                                         <PieChart
@@ -371,50 +393,81 @@
                                     </div>
                                 </div>
 
-                                <div class="card mb-0 profit-loss">
+
+
+                                <div class="card mb-0 bank-accounts">
                                     <div class="flex justify-between">
-                                        <div class="heading-font mb-4">Receivables</div>
-                                        <div
+                                        <div class="heading-font mb-4">Total Receivables</div>
+                                        <inertia-link
+                                            :href="route('sales.index',{'section':'tabular'})"
+                                            v-show="receivables.length > 5"
                                             class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
-                                            <div>5+ More</div>
-                                        </div>
+                                            <div>{{
+                                                    receivables.length > 5 ? (receivables.length - 5) + '+ More' : ''
+                                                }}
+                                            </div>
+                                        </inertia-link>
                                     </div>
-                                    <div class="text-xs mb-1 text-gray-500">Total Receivables</div>
-                                    <div class="heading-font font-bold text-xl mb-4 text-green">MK123,456,789.00</div>
-                                    <div v-for="i in 4"
+                                    <div class="text-xs mb-1 text-gray-500">Sum Total</div>
+                                    <div class="heading-font font-bold text-xl mb-4 text-green">
+                                        MK{{ numberWithCommas(receivablesTotal) }}
+                                    </div>
+
+                                    <div v-if="index < 5"
+                                         :key="index"
+                                         v-for="(info, index) in receivables"
                                          class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
                                             <div
                                                 class="h-8 w-8 bg-gray-100 rounded-full flex justify-center items-center">
-                                                <div class="text-xs text-gray-500">{{ i }}</div>
+                                                <div class="text-xs text-gray-500">{{ index + 1 }}</div>
                                             </div>
-                                            <div class="ml-3 text-sm ">John Doe #{{ i }}</div>
+                                            <div class="ml-3 text-sm ">{{ info.client.name }}</div>
                                         </div>
-                                        <div class="heading-font text-xs text-gray-500">MK1,500,000.00</div>
+                                        <div class="heading-font text-xs text-gray-500">
+                                            MK{{ numberWithCommas(info.principal) }}
+                                        </div>
                                     </div>
-
                                 </div>
 
-                                <div class="card mb-0 profit-loss">
+                                <div class="card mb-0 bank-accounts">
                                     <div class="flex justify-between">
                                         <div class="heading-font mb-4">Payables</div>
-                                        <div
+                                        <inertia-link
+                                            :href="route('payables.index',)"
+                                            v-show="payables.all.length > 5"
                                             class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
-                                            <div>5+ More</div>
-                                        </div>
+                                            <div>{{
+                                                    payables.all.length > 5 ? (payables.all.length - 5) + '+ More' : ''
+                                                }}
+                                            </div>
+                                        </inertia-link>
                                     </div>
-                                    <div class="text-xs mb-1 text-gray-500">Total Payables</div>
-                                    <div class="heading-font font-bold text-xl mb-4 text-red">MK123,456,789.00</div>
-                                    <div v-for="i in 4"
+                                    <div class="text-xs mb-1 text-gray-500">Total Due</div>
+                                    <div class="heading-font font-bold text-xl mb-4 text-red">
+                                        MK{{ numberWithCommas(payables.total) }}
+                                    </div>
+
+                                    <div v-if="index < 5"
+                                         :key="index"
+                                         v-for="(info, index) in payables.all"
                                          class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
                                             <div
                                                 class="h-8 w-8 bg-gray-100 rounded-full flex justify-center items-center">
-                                                <div class="text-xs text-gray-500">{{ i }}</div>
+                                                <div class="text-xs text-gray-500">{{ index + 1 }}</div>
                                             </div>
-                                            <div class="ml-3 text-sm ">John Doe #{{ i }}</div>
+                                            <div class="ml-3 text-sm ">
+                                                <div class="text-sm ">{{ info.name }}</div>
+                                                <div class="text-xs text-gray-500">
+                                                    {{ info.category }}
+                                                </div>
+                                            </div>
+
                                         </div>
-                                        <div class="heading-font text-xs text-gray-500">MK1,500,000.00</div>
+                                        <div class="heading-font text-xs text-gray-500">
+                                            MK{{ numberWithCommas(info.total) }}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -422,7 +475,7 @@
                                     <div class="flex justify-between">
                                         <div class="heading-font mb-4">Undelivered Clients</div>
                                         <inertia-link
-                                            :href="route('sales.index',{'section':'tabular'})"
+                                            :href="route('deliveries.index', )"
                                             v-show="undeliveredClients.length > 5"
                                             class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
                                             <div>{{
@@ -431,7 +484,7 @@
                                             </div>
                                         </inertia-link>
                                     </div>
-                                    <div class="text-xs mb-1 text-gray-500">Sum Total</div>
+                                    <div class="text-xs mb-1 text-gray-500">Total Due</div>
                                     <div class="heading-font font-bold text-xl mb-4 text-red">
                                         MK{{ numberWithCommas(undeliveredClientsTotal) }}
                                     </div>
@@ -448,7 +501,7 @@
                                             <div class="ml-3 text-sm ">{{ info.client.name }}</div>
                                         </div>
                                         <div class="heading-font text-xs text-gray-500">
-                                            MK{{ numberWithCommas(info.amount) }}
+                                            MK{{ numberWithCommas(info.due) }}
                                         </div>
                                     </div>
                                 </div>
@@ -1035,44 +1088,46 @@
                                 </div>
                               </div>
                               -->
-                              <div class="page-section">
-                                <div class="page-section-header">
-                                  <div class="page-section-title">
-                                    Awaiting your action
-                                  </div>
+                    <div class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Awaiting your action
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
+                                <request
+                                    v-for="(request,index) in toApprove.data"
+                                    :key="index"
+                                    :request="request"
+                                />
+                                <div v-if="toApprove.data.length === 0"
+                                     class="text-center text-gray-400 md:col-span-2 text-sm">
+                                    No Requests To Approve
                                 </div>
-                                <div class="page-section-content">
-                                  <div class="grid grid-cols-1 md:grid-cols-2">
-                                    <request
-                                        v-for="(request,index) in toApprove.data"
-                                        :key="index"
-                                        :request="request"
-                                    />
-                                    <div v-if="toApprove.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
-                                      No Requests To Approve
-                                    </div>
-                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Active Requests
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
+                                <request
+                                    v-for="(request,index) in active.data"
+                                    :key="index"
+                                    :request="request"
+                                />
+                                <div v-if="active.data.length === 0"
+                                     class="text-center text-gray-400 md:col-span-2 text-sm">
+                                    No Active Requests
                                 </div>
-                              </div>
-                              <div class="page-section">
-                                <div class="page-section-header">
-                                  <div class="page-section-title">
-                                    Active Requests
-                                  </div>
-                                </div>
-                                <div class="page-section-content">
-                                  <div class="grid grid-cols-1 md:grid-cols-2">
-                                    <request
-                                        v-for="(request,index) in active.data"
-                                        :key="index"
-                                        :request="request"
-                                    />
-                                    <div v-if="active.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
-                                      No Active Requests
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1118,6 +1173,10 @@ export default {
         'allReceipts',
         'salesAwaitingInitiation',
         'undeliveredClients',
+        'accounts',
+        'receivables',
+        'expenses',
+        'payables',
     ],
     components: {
         Collection,
@@ -1194,19 +1253,6 @@ export default {
                         }
                     }
                 }
-            },
-            expensesData: {
-                datasets: [{
-                    data: [
-                        60,
-                        20,
-                        45
-                        // this.vehicleMaintenanceRequestsCount,
-                        //  this.fuelRequestsCount
-                    ],
-                    backgroundColor: ['#1a56db', '#ed0b4b', '#b1bbc9', '#e3ebf6'],
-                }],
-                labels: ['Salaries', 'Operations', 'Stationary']
             },
             expensesChartOptions: {
                 plugins: {
@@ -1358,6 +1404,42 @@ export default {
         }
     },
     computed: {
+        //unfiltered position
+        financialPosition(){
+            //get sales
+            let sales = 0
+            for (let x in this.allReceipts.data) {
+                sales += this.allReceipts.data[x].amount
+            }
+
+            //get receivables
+            let receivables = this.receivablesTotal
+
+            //get expenses
+            let expenses = this.expensesTotal
+
+            //get payables
+            let payables = this.payables.total
+
+            //get undelivered clients
+            let undeliveredClientsTotal = this.undeliveredClientsTotal
+
+            const income = sales + receivables
+            const expenditure = expenses + payables + undeliveredClientsTotal
+            return {
+                income: income,
+                expenditure: expenditure,
+                net: income - expenditure,
+            }
+        },
+        accountsTotal() {
+            let total = 0;
+
+            for (let x in this.accounts) {
+                total += this.accounts[x].balance
+            }
+            return total
+        },
         totalCollectionsPending() {
             let total = 0;
 
@@ -1367,10 +1449,17 @@ export default {
 
             return total
         },
+        receivablesTotal() {
+            let sum = 0;
+            for (let x in this.receivables) {
+                sum += this.receivables[x].principal
+            }
+            return sum
+        },
         undeliveredClientsTotal() {
             let sum = 0;
             for (let x in this.undeliveredClients) {
-                sum += this.undeliveredClients[x].amount
+                sum += this.undeliveredClients[x].due
             }
             return sum
         },
@@ -1457,7 +1546,7 @@ export default {
             return {
                 datasets: [{
                     data: data,
-                    backgroundColor: ['#3375bf', '#4aa4a3', '#492d8a', '#e7632a','#ed0b4b','#62bdf9','#e0f96a','#8ef96d'],
+                    backgroundColor: ['#3375bf', '#4aa4a3', '#492d8a', '#e7632a', '#ed0b4b', '#62bdf9', '#e0f96a', '#8ef96d'],
                 }],
                 labels: labels
             }
@@ -1544,6 +1633,41 @@ export default {
                 }],
                 labels: labels
             }
+        },
+        filteredCategories() {
+            return this.expenses.data.reduce(function (arr, expense) {
+                (arr[expense.expenseType.id] = arr[expense.expenseType.id] || []).push(expense);
+                return arr;
+            }, {})
+        },
+        expensesData() {
+            let labels = []
+            let data = []
+            let sum = 0
+
+            for (let x in this.filteredCategories) {
+                sum = 0
+                labels.push(this.filteredCategories[x][0].expenseType.name)
+                for (let y in this.filteredCategories[x]) {
+                    sum += this.filteredCategories[x][y].total
+                }
+                data.push(sum)
+            }
+
+            return {
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['#4aa4a3', '#492d8a', '#e7632a','#ed0b4b','#62bdf9', '#3375bf', '#e0f96a','#8ef96d'],
+                }],
+                labels: labels
+            }
+        },
+        expensesTotal() {
+            let sum = 0
+            for (let x in this.expenses.data) {
+                sum += this.expenses.data[x].total
+            }
+            return sum
         },
 
 
