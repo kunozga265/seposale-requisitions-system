@@ -139,8 +139,8 @@ class AppController extends Controller
         $unverifiedProjects = Project::where('verified', 0)->get();
 
         //deliveries
-        $deliveriesUnderway = Delivery::where("status", 1)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
-        $deliveriesUncompleted = Delivery::where("status", 2)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
+        $deliveriesUnderway = Delivery::where("status", 1)->where("due_date",">",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
+        $deliveriesUncompleted = Delivery::where("status", 2)->where("due_date",">",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
 
 
         //one stop shops
@@ -156,13 +156,13 @@ class AppController extends Controller
         $accounts = Account::all();
 
         //expenses
-        $expenses = Expense::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date","asc")->get();
+        $expenses = Expense::where("date",">",env('TIMESTAMP_CUTOFF'))->orderBy("date","asc")->get();
 
         $salesAwaitingInitiation = [];
         $salesAwaitingPayment = [];
 
         $undeliveredSales = [];
-        $summaries = Summary::where("date",">=",env('TIMESTAMP_CUTOFF'))->get();
+        $summaries = Summary::where("date",">",env('TIMESTAMP_CUTOFF'))->get();
         foreach ($summaries as $summary) {
             if ($summary->delivery != null) {
                 if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status == 0) {
