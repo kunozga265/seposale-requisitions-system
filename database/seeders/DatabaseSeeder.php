@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
 //         $this->call(InventoryTableSeeder::class);
 //         $this->call(SerialSeeder::class);
 //         $this->call(ClientTableSeeder::class);
-//         $this->call(ExpenseTypeTableSeeder::class);
+         $this->call(ExpenseTypeTableSeeder::class);
 //         $this->call(SupplierTableSeeder::class);
 //         $this->call(TransporterTableSeeder::class);
          $this->call(AccountTableSeeder::class);
