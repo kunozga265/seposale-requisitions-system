@@ -1171,6 +1171,7 @@ export default {
         'deliveriesUncompleted',
         'shops',
         'allReceipts',
+        'allSales',
         'salesAwaitingInitiation',
         'undeliveredClients',
         'accounts',
@@ -1408,8 +1409,8 @@ export default {
         financialPosition(){
             //get sales
             let sales = 0
-            for (let x in this.allReceipts.data) {
-                sales += this.allReceipts.data[x].amount
+            for (let x in this.allSales.data) {
+                sales += this.allSales.data[x].amount
             }
 
             //get receivables

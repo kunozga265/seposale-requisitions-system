@@ -149,6 +149,8 @@ class AppController extends Controller
         //receipts
         $allReceipts = Receipt::where("sale_id", "!=", null)->where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date", "asc")->get();
 
+        $allSales = Receipt::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date", "asc")->get();
+
         //generate sales
         $sales = Sale::where("status", "<", 2)->orderBy("date", "desc")->get();
 
@@ -194,6 +196,7 @@ class AppController extends Controller
                 'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
                 'sites' => SiteResource::collection($sites),
                 'allReceipts' => ReceiptResource::collection($allReceipts),
+                'allSales' => ReceiptResource::collection($allSales),
                 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
                 'undeliveredClients' => $undeliveredClients,
                 'accounts' => $accounts,
@@ -221,6 +224,7 @@ class AppController extends Controller
                 'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
                 'shops' => SiteResource::collection($sites),
                 'allReceipts' => ReceiptResource::collection($allReceipts),
+                'allSales' => ReceiptResource::collection($allSales),
                 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
                 'undeliveredClients' => $undeliveredClients,
                 'accounts' => $accounts,
