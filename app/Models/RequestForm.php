@@ -52,6 +52,11 @@ class RequestForm extends Model
         return $this->hasMany(Payable::class, "request_id","id");
     }
 
+    public function expense()
+    {
+        return $this->hasOne(Expense::class, "request_id","id");
+    }
+
     protected $fillable=[
         "code",
         "code_alt",

@@ -183,6 +183,27 @@
           </div>
         </div>
 
+        <div class="mb-4">
+          <jet-label for="paymentMethod" value="Select Account"/>
+          <select v-model="accountIndex" id="paymentMethod"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                  required>
+            <option v-for="(account, index) in accounts" :value="index"
+                    :key="index">
+              {{ account.name }}
+            </option>
+          </select>
+          <div v-if="account != null" class="mt-1 text-xs text-gray-500"
+               :class="{'text-red-500':!balanceValidate}">Balance:
+            MK{{ numberWithCommas(account.balance) }}
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <jet-label for="reference" value="Reference"/>
+          <jet-input type="text" class="block w-full" v-model="form.reference"/>
+        </div>
+
         <div class="mb-4" v-for="(product,index) in form.information" :key="index">
           <div class="flex justify-between">
             <jet-label for="amount" :value="product.details"/>
@@ -822,7 +843,7 @@ import JetInput from "@/Jetstream/Input";
 import {Money} from "v-money";
 
 export default {
-  props: ['request', 'expenseTypes'],
+  props: ['request', 'expenseTypes', 'accounts'],
   components: {
     Money,
     AppLayout,
@@ -849,8 +870,11 @@ export default {
       attachmentDialog: false,
       attachmentIndex: null,
       attachmentType: '',
+
+      accountIndex: -1,
       denyDialog: false,
       form: this.$inertia.form({
+        reference: '',
         remarks: '',
         lastRefillFuelReceived: '',
         lastRefillMileageCovered: '',
@@ -879,6 +903,19 @@ export default {
     }
   },
   computed: {
+    account() {
+      if (parseInt(this.accountIndex) >= 0) {
+        return this.accounts[this.accountIndex]
+      } else
+        return null
+    },
+    balanceValidate() {
+      if(this.account != null){
+        return this.account.balance >= this.request.data.total
+      }else{
+        return false
+      }
+    },
     attachment() {
       if (this.attachmentIndex !== null) {
         if (this.attachmentType === 'quote')
@@ -927,6 +964,19 @@ export default {
       return this.date ? (new Date(this.date).getTime()) / 1000 : null
     },
     initiationValidation() {
+      if(this.account == null){
+        this.error = "Select an account"
+        return false
+      }else if(!this.balanceValidate){
+        this.error = "Not enough funds in this account"
+        return false
+      }
+      else if(this.form.reference.length === 0 || this.form.reference === ""){
+        this.error = "Enter a reference"
+        return false
+      }
+
+
       let check = true
       for (let x in this.form.information) {
         if (this.form.information[x].expenseTypeId == 0) {
@@ -995,6 +1045,7 @@ export default {
           .transform(data => ({
             ...data,
             "information": this.formatInformation(),
+            account_id: this.account == null ? null : this.account.id,
           }))
           .post(this.route('request-forms.initiate', {'id': this.request.data.id}), {
             onSuccess: () => this.initiateDialog = false,

@@ -7,6 +7,7 @@ use App\Http\Resources\ReportResource;
 use App\Http\Resources\RequestFormResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\VehicleResource;
+use App\Models\Account;
 use App\Models\Expense;
 use App\Models\ExpenseType;
 use App\Models\Payable;
@@ -1004,6 +1005,7 @@ class RequestFormController extends Controller
         //find out if the request is valid
         $requestForm = RequestForm::find($id);
         $expenseTypes = ExpenseType::orderBy("name", "asc")->get();
+        $accounts = Account::all();
 
         if (is_object($requestForm)) {
             if ((new AppController())->isApi($request)) {
@@ -1013,7 +1015,8 @@ class RequestFormController extends Controller
                 //Web Response
                 return Inertia::render('RequestForms/Show', [
                     'request' => new RequestFormResource($requestForm),
-                    'expenseTypes' => $expenseTypes
+                    'expenseTypes' => $expenseTypes,
+                    'accounts' => $accounts,
                 ]);
             }
         } else {
@@ -1397,7 +1400,9 @@ class RequestFormController extends Controller
                 if ($requestForm->dateInitiated == null) {
 
                     $request->validate([
-                        'information' => 'required'
+                        'information' => 'required',
+                        'account_id' => 'required',
+                        'reference' => 'required',
                     ]);
 
                     //create expenses
@@ -1407,7 +1412,7 @@ class RequestFormController extends Controller
                             $sale_id = $requestForm->delivery->summary->sale->id;
                         }
 
-                        Expense::create([
+                        $expense = Expense::create([
                             "code" => (new ExpenseController())->getCodeNumber(),
                             "description" => $info["details"],
                             "total" => $info["totalCost"],
@@ -1421,8 +1426,15 @@ class RequestFormController extends Controller
                             "supplier_id" => $info["supplierId"],
                             "delivery_id" => $requestForm->delivery_id,
                             "sale_id" => $sale_id,
-
+                            "account_id" => $request->account_id,
+                            "reference" => $request->reference,
                         ]);
+
+                        $balance =  $expense->account->balance - $expense->total;
+                        $expense->account->update([
+                            "balance" => $balance
+                        ]);
+
                     }
 
                     $requestForm->update([
@@ -1433,7 +1445,7 @@ class RequestFormController extends Controller
                         'approvalStatus' => 3
                     ]);
 
-                    foreach($requestForm->payables as $payable){
+                    foreach ($requestForm->payables as $payable) {
                         $payable->update([
                             "paid" => true
                         ]);
