@@ -132,7 +132,7 @@
                         Please enter following details
                     </div>
                     <div v-if="!transferValidation" class="flex items-center w-full text-red">
-                        <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{ error }}</div>
+                        <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{ transferError }}</div>
                     </div>
                 </div>
 
@@ -397,11 +397,13 @@ export default {
             transferDialog: false,
             accountIndex: -1,
             error: "",
+            transferError: "",
             denyDialog: false,
             deleteDialog: false,
             form: this.$inertia.form({
                 dates: "",
                 type: "",
+                reference: "",
                 reference_to: "",
                 reference_from: "",
                 reference_fee: "",
@@ -482,16 +484,16 @@ export default {
         transferValidation() {
 
          if (this.form.amount == 0) {
-                this.error = "Enter amount"
+                this.transferError = "Enter amount"
                 return false
             }else if (this.form.reference_from.length == 0 || this.form.reference_from == "") {
-                this.error = "Enter source reference"
+                this.transferError = "Enter source reference"
                 return false
             } else if (this.selectedAccount == null) {
-                this.error = "Select an account"
+                this.transferError = "Select an account"
                 return false
             }else if (this.form.reference_to.length == 0 || this.form.reference_to == "") {
-                this.error = "Enter destination reference"
+                this.transferError = "Enter destination reference"
                 return false
             }
 
