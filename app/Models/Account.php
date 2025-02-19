@@ -17,6 +17,20 @@ class Account extends Model
     {
         return $this->hasMany(Receipt::class);
     }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+//    public function transactions()
+//    {
+//        $transactions = [];
+//        foreach ($this->expenses as $expense){
+//            $transactions[]=[
+//
+//            ];
+//        }
+//    }
 
     protected $fillable=[
         "name",

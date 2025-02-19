@@ -11,6 +11,7 @@ use App\Models\SiteSale;
 use App\Models\SiteSaleSummary;
 use App\Models\Summary;
 use App\Models\SystemLog;
+use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -147,6 +148,19 @@ class ReceiptController extends Controller
                 $balance =  $receipt->account->balance + $receipt->amount;
                 $receipt->account->update([
                     "balance" => $balance
+                ]);
+
+                Transaction::create([
+                    "date" => $receipt->date,
+                    "reference" => strtoupper($receipt->reference),
+                    "description" => $receipt->listOfProducts(),
+                    "from_to" => $receipt->client->name,
+                    "expense_id" => null,
+                    "receipt_id" => $receipt->id,
+                    "account_id" => $receipt->account->id,
+                    "total" => $receipt->amount,
+                    "balance" => $balance,
+                    "type" => "CREDIT",
                 ]);
 
                 //Logging

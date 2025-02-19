@@ -14,33 +14,34 @@ class ExpenseTypeTableSeeder extends Seeder
      */
     public function run()
     {
-        ExpenseType::create([
-            "name" => "Salary"
-        ]);
 
-        ExpenseType::create([
-            "name" => "Operations"
-        ]);
+        $expenses = [
+            "Advertising and Marketing",
+            "Operations",
+            "Bank Charges",
+            "Charitable Contributions",
+            "Computer and Internet",
+            "Ofiice Supplies",
+            "Equipment Rental",
+            "Telephone and Internet",
+            "Travel",
+            "Dues and Subscription",
+            "Office",
+            "Other General Administrative",
+            "Rent or Lease Payments",
+            "Stationery and Printing",
+            "Utilities",
+            "Long Term Investments",
+            "Furniture and Fixtures",
+            "Office Items",
+            "Direct Labour Cost",
+        ];
 
-        ExpenseType::create([
-            "name" => "Stationary"
-        ]);
+        foreach ($expenses as $expense) {
 
-        ExpenseType::create([
-            "name" => "Transportation"
-        ]);
-
-        ExpenseType::create([
-            "name" => "Other"
-        ]);
-
-        ExpenseType::create([
-            "name" => "Airtime"
-        ]);
-
-        ExpenseType::create([
-            "name" => "Bills"
-        ]);
-
+            ExpenseType::create([
+                "name" => $expense
+            ]);
+        }
     }
 }

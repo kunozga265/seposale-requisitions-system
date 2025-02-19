@@ -623,6 +623,55 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     });
 
+    Route::group(['prefix'=>'transactions'],function() {
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\TransactionController@store",
+            'roles' =>['accountant','management']
+        ])->name('transactions.store');
+
+    });
+
+    Route::group(['prefix'=>'accounts'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\AccountController@index",
+            'roles' =>['accountant','management']
+        ])->name('accounts.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\AccountController@create",
+            'roles' =>['accountant','management']
+        ])->name('accounts.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\AccountController@store",
+            'roles' =>['accountant','management']
+        ])->name('accounts.store');
+
+        Route::post('/transfer/{id}', [
+            "uses"  => "App\Http\Controllers\AccountController@transfer",
+            'roles' =>['accountant','management']
+        ])->name('accounts.transfer');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\AccountController@show",
+            'roles' => ['accountant', 'management']
+        ])->name('accounts.show');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\AccountController@edit",
+            'roles' =>['accountant','management']
+        ])->name('accounts.edit');
+
+        Route::post('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\AccountController@update",
+            'roles' =>['accountant','management']
+        ])->name('accounts.update');
+
+    });
+
+
     Route::group(['prefix'=>'deliveries'],function() {
 
         Route::get('/', [

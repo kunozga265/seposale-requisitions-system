@@ -17,6 +17,8 @@ use App\Models\Report;
 use App\Models\RequestForm;
 use App\Models\Sale;
 use App\Models\Summary;
+use App\Models\Transaction;
+use App\Models\Transporter;
 use App\Models\User;
 use App\Models\Vehicle;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -1433,6 +1435,39 @@ class RequestFormController extends Controller
                         $balance =  $expense->account->balance - $expense->total;
                         $expense->account->update([
                             "balance" => $balance
+                        ]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        Transaction::create([
+                            "date" => $expense->date,
+                            "reference" => strtoupper($expense->reference),
+                            "description" => $expense->description,
+                            "from_to" => $expense->description,
+                            "expense_id" => $expense->id,
+                            "receipt_id" => null,
+                            "account_id" => $expense->account->id,
+                            "total" => $expense->total,
+                            "balance" => $balance,
+                            "type" => "DEBIT",
                         ]);
 
                     }

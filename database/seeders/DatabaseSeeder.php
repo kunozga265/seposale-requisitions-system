@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
          $this->call(ExpenseTypeTableSeeder::class);
 //         $this->call(SupplierTableSeeder::class);
 //         $this->call(TransporterTableSeeder::class);
-         $this->call(AccountTableSeeder::class);
+//         $this->call(AccountTableSeeder::class);
 
 //        $expenses = Payable::all();
 //        foreach ($expenses as $expense) {

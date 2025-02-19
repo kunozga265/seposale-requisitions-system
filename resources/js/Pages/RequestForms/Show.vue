@@ -233,6 +233,7 @@
                 color="#1a56db"
                 v-model="product.date"
                 :min-date="minDate"
+                :max-date="maxDate"
             />
           </div>
         </div>
@@ -881,6 +882,7 @@ export default {
         information: []
       }),
       minDate: new Date(this.request.data.dateRequested * 1000).toISOString().substr(0, 10),
+      maxDate: new Date().toISOString().substr(0, 10),
       date: null,
       receiptUploads: [],
       error: ""

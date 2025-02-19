@@ -16,13 +16,18 @@ class AccountResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "photo" => $this->photo,
             "name" => $this->name,
             "number" => $this->number,
             "branch" => $this->branch,
             "type" => $this->type,
             "balance" => $this->balance,
-            "expenses" => ExpenseResource::collection($this->expenses),
-            "receipts" => ReceiptResource::collection($this->receipts),
+//            "expenses" => ExpenseResource::collection($this->expenses),
+//            "receipts" => ReceiptResource::collection($this->receipts),
+            "transactions" => TransactionResource::collection($this->transactions()->orderBy("date","desc")->get()),
+
         ];
     }
+
+
 }
