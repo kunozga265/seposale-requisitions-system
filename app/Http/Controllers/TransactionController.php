@@ -45,6 +45,10 @@ class TransactionController extends Controller
                 "type" => $request->type,
             ]);
 
+            $account->update([
+                "balance" => $balance,
+            ]);
+
             return Redirect::back()->with("success","Transaction recorded successfully");
 
         } else {
