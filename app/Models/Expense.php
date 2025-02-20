@@ -53,7 +53,9 @@ class Expense extends Model
     {
         $payee = "-";
         if($this->transporter == null && $this->supplier == null){
-            $payee = $this->requestForm->user->fullName();
+            if($this->requestForm != null) {
+                $payee = $this->requestForm->user->fullName();
+            }
         }else if($this->transporter != null){
             $payee = $this->transporter->name;
         }else if($this->supplier != null){
