@@ -1405,6 +1405,7 @@ class RequestFormController extends Controller
                         'information' => 'required',
                         'account_id' => 'required',
                         'reference' => 'required',
+                        'from_to' => 'required',
                     ]);
 
                     //create expenses
@@ -1432,36 +1433,17 @@ class RequestFormController extends Controller
                             "reference" => $request->reference,
                         ]);
 
-                        $balance =  $expense->account->balance - $expense->total;
+                        $balance = $expense->account->balance - $expense->total;
                         $expense->account->update([
                             "balance" => $balance
                         ]);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                         Transaction::create([
                             "date" => $expense->date,
                             "reference" => strtoupper($expense->reference),
                             "description" => $expense->description,
-                            "from_to" => $expense->description,
+                            "from_to" => $request->from_to,
                             "expense_id" => $expense->id,
                             "receipt_id" => null,
                             "account_id" => $expense->account->id,

@@ -203,6 +203,12 @@
           <jet-label for="reference" value="Reference"/>
           <jet-input type="text" class="block w-full" v-model="form.reference"/>
         </div>
+          <div class="mb-4">
+              <jet-label for="person" value="From/To"/>
+              <jet-input id="person" type="text" class="block w-full"
+                         v-model="form.fromTo"
+                         autocomplete="person"/>
+          </div>
 
         <div class="mb-4" v-for="(product,index) in form.information" :key="index">
           <div class="flex justify-between">
@@ -876,6 +882,7 @@ export default {
       denyDialog: false,
       form: this.$inertia.form({
         reference: '',
+          fromTo: "",
         remarks: '',
         lastRefillFuelReceived: '',
         lastRefillMileageCovered: '',
@@ -976,6 +983,9 @@ export default {
       else if(this.form.reference.length === 0 || this.form.reference === ""){
         this.error = "Enter a reference"
         return false
+      } else if(this.form.fromTo.length === 0 || this.form.fromTo === ""){
+        this.error = "Enter a payee"
+        return false
       }
 
 
@@ -1048,6 +1058,7 @@ export default {
             ...data,
             "information": this.formatInformation(),
             account_id: this.account == null ? null : this.account.id,
+              from_to: this.form.fromTo,
           }))
           .post(this.route('request-forms.initiate', {'id': this.request.data.id}), {
             onSuccess: () => this.initiateDialog = false,

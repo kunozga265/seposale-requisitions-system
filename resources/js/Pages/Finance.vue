@@ -116,7 +116,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2">
+
                     <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
@@ -124,14 +124,17 @@
                             </div>
                         </div>
                         <div class="page-section-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
                             <request
                                 v-for="(request,index) in awaitingInitiation.data"
                                 :key="index"
                                 :request="request"
                             />
+                            </div>
                             <div v-if="awaitingInitiation.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
                                 No Requests Awaiting Initiation
                             </div>
+
                         </div>
                     </div>
                     <div class="page-section">
@@ -141,11 +144,13 @@
                             </div>
                         </div>
                         <div class="page-section-content">
+                            <div class="grid grid-cols-1 md:grid-cols-2">
                             <request
                                 v-for="(request,index) in awaitingReconciliation.data"
                                 :key="index"
                                 :request="request"
                             />
+                            </div>
                             <div v-if="awaitingReconciliation.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
                                 No Requests Awaiting Reconciliation
                             </div>
@@ -190,7 +195,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+
     </app-layout>
 </template>
 
