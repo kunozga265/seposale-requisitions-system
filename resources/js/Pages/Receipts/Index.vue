@@ -64,9 +64,10 @@
                     </div>
                     <div>
                       <div class="name font-normal ml-3 flex justify-between">
+                        <div>{{receipt.client.name}}</div>
                         <div>{{receipt.paymentMethod}}</div>
-                        <div>Issued By {{ receipt.generatedBy.firstName }} {{ receipt.generatedBy.middleName }}
-                          {{ receipt.generatedBy.lastName }}</div>
+<!--                        <div>Issued By {{ receipt.generatedBy.firstName }} {{ receipt.generatedBy.middleName }}-->
+<!--                          {{ receipt.generatedBy.lastName }}</div>-->
 
                       </div>
                     </div>
