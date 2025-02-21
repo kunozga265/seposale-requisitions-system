@@ -92,8 +92,8 @@ class AppController extends Controller
         } else
             if ($user->hasRole('accountant')) {
 
-                $toReconcile = RequestForm::where('approvalStatus', 3)->orderBy('dateRequested', 'desc')->get();
-                $toInitiate = RequestForm::where('approvalStatus', 1)->orderBy('dateRequested', 'desc')->get();
+                $toReconcile = RequestForm::where('approvalStatus', 3)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
+                $toInitiate = RequestForm::where('approvalStatus', 1)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
                 $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
 
                 $awaitingApprovalCount = $toApprove->count();
