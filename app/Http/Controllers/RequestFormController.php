@@ -126,8 +126,8 @@ class RequestFormController extends Controller
         $vehicleMaintenanceRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'VEHICLE_MAINTENANCE')->count();
         $fuelRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'FUEL')->count();
 
-        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->get();
-        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->get();
+        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->get();
+        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->get();
         $reconciled = RequestForm::where('approvalStatus', 4)->paginate((new AppController())->paginate);
 
         $awaitingInitiationCount = $awaitingInitiation->count();
