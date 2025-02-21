@@ -26,7 +26,7 @@ class TransactionController extends Controller
         if (is_object($account)) {
 
 
-            if ($request->type) {
+            if ($request->type == "CREDIT") {
                 $balance = $account->balance + $request->total;
             }else{
                 $balance = $account->balance - $request->total;
