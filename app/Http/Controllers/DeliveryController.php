@@ -26,19 +26,19 @@ class DeliveryController extends Controller
     {
         $filter = strtolower($request->query("filter"));
         if($filter == "all"){
-            $deliveries = Delivery::where("status", ">", 0)->orderBy("due_date","asc")->paginate(100);
+            $deliveries = Delivery::where("status", ">", 0)->orderBy("due_date","desc")->paginate(100);
             $headline = "all";
         }else if ($filter == "completed"){
-            $deliveries = Delivery::where("status", 4)->orderBy("due_date","asc")->paginate(100);
+            $deliveries = Delivery::where("status", 4)->orderBy("due_date","desc")->paginate(100);
             $headline = "completed";
         }else if ($filter == "cancelled"){
-            $deliveries = Delivery::where("status", 3)->orderBy("due_date","asc")->paginate(100);
+            $deliveries = Delivery::where("status", 3)->orderBy("due_date","desc")->paginate(100);
             $headline = "cancelled";
         }else if ($filter == "delivered"){
-            $deliveries = Delivery::where("status", 2)->orderBy("due_date","asc")->paginate(100);
+            $deliveries = Delivery::where("status", 2)->orderBy("due_date","desc")->paginate(100);
             $headline = "delivered";
         }else{
-            $deliveries = Delivery::where("status", 1)->orderBy("due_date","asc")->paginate(100);
+            $deliveries = Delivery::where("status", 1)->orderBy("due_date","desc")->paginate(100);
             $headline = "processing";
         }
 

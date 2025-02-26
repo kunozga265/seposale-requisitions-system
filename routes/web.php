@@ -722,4 +722,50 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     });
 
+    Route::group(['prefix'=>'products'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\ProductController@index",
+            'roles' =>['employee','management']
+        ])->name('products.index');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\ProductController@show",
+            'roles' => ['employee', 'management']
+        ])->name('products.show');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\ProductController@create",
+            'roles' => ['employee','management']
+        ])->name('products.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ProductController@store",
+            'roles' => ['employee','management']
+        ])->name('products.store');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ProductController@addVariant",
+            'roles' => ['employee','management']
+        ])->name('products.add-variant');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ProductController@editVariant",
+            'roles' => ['employee','management']
+        ])->name('products.edit-price');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ProductController@edit",
+            'roles' => ['employee','management']
+        ])->name('products.edit');
+
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\DeliveryController@update",
+            'roles' => ['employee','management']
+        ])->name('products.update');
+
+
+
+    });
+
 });

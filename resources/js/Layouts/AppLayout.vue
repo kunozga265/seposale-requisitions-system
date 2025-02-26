@@ -88,7 +88,7 @@
                      class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ">
                   <div>
                     <i class="text-lg mdi mdi-book-alphabet"></i>
-                    <span class="ml-3">Requests</span>
+                    <span class="ml-3">Requisitions</span>
                   </div>
                   <div>
                     <i class="text-lg mdi" :class="{'mdi-menu-down':!requests, 'mdi-menu-up': requests}"></i>
@@ -165,6 +165,12 @@
                     <a :href="route('quotations.index')"
                        class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Quotations
+                    </a>
+                  </li>
+                  <li>
+                    <a :href="route('products.index')"
+                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Products
                     </a>
                   </li>
 
