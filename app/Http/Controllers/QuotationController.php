@@ -318,8 +318,8 @@ class QuotationController extends Controller
 
             $filename="QUOTATION#".(new AppController())->getZeroedNumber($quotation->code)." - ".$quotation->client->name."-".date('Ymd');
 
-            $now_d=Carbon::now('Africa/Lusaka')->format('F j, Y');
-            $now_t=Carbon::now('Africa/Lusaka')->format('H:i');
+            $now_d=Carbon::createFromTimestamp($quotation->created_at->getTimestamp(),'Africa/Lusaka')->format('F j, Y');
+            $now_t=Carbon::createFromTimestamp($quotation->created_at->getTimestamp(),'Africa/Lusaka')->format('H:i');
 
             $total_in_words = SpellNumber::value($quotation->total)
                 ->locale('en')
