@@ -119,16 +119,16 @@ class SiteSaleController extends Controller
             }
         }
 
-        //Check if materials are not out of stock
-        if ($out_of_stock) {
-            if ((new AppController())->isApi($request)) {
-                //API Response
-                return response()->json(['message' => $error_message], 404);
-            } else {
-                //Web Response
-                return Redirect::back()->with('error', $error_message);
-            }
-        }
+//        //Check if materials are not out of stock
+//        if ($out_of_stock) {
+//            if ((new AppController())->isApi($request)) {
+//                //API Response
+//                return response()->json(['message' => $error_message], 404);
+//            } else {
+//                //Web Response
+//                return Redirect::back()->with('error', $error_message);
+//            }
+//        }
 
         $sale = Cache::lock($user->id . ':sites.sales:store', 10)->get(function () use ($site, $user, $request) {
 
@@ -230,7 +230,13 @@ class SiteSaleController extends Controller
             return response()->json(new SiteSaleResource($sale), 201);
         else {
             //Web Response
-            return Redirect::route('sites.overview', ['code' => $site->code])->with('success', 'Sale created!');
+            if ($out_of_stock) {
+                    return Redirect::route('sites.overview', ['code' => $site->code])->with('warning', 'Sales created. But sold unavailable stock!');
+
+            }else{
+                return Redirect::route('sites.overview', ['code' => $site->code])->with('success', 'Sale created!');
+            }
+
         }
 
     }
