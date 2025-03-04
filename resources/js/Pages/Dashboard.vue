@@ -321,7 +321,8 @@
                                     <div class="heading-font mb-4">Bank Accounts</div>
                                     <div class="text-xs mb-1 text-gray-500">Sum Total</div>
                                     <div class="heading-font font-bold text-xl mb-4">
-                                        MK{{ numberWithCommas(accountsTotal) }}
+                                        MK{{ numberWithCommas(accountsTotal.toFixed(2)) }}
+
                                     </div>
                                     <div
                                         v-for="(account,index) in accounts" :key="index"
