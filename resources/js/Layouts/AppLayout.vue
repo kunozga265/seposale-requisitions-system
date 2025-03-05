@@ -208,12 +208,34 @@
                 </ul>
               </li>
 
-               <li>
-                 <a :href="route('deliveries.index')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                     <i class="text-lg mdi mdi-dump-truck"></i>
-                     <span class="ml-3">Operations</span>
-                 </a>
-             </li>
+
+
+                <li>
+                    <div @click="operations = !operations"
+                         class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        <div>
+                            <i class="text-lg mdi mdi-dump-truck"></i>
+                            <span class="ml-3">Operations</span>
+                        </div>
+                        <div>
+                            <i class="text-lg mdi" :class="{'mdi-menu-down':!operations, 'mdi-menu-up': operations}"></i>
+                        </div>
+                    </div>
+                    <ul v-show="operations">
+                        <li>
+                            <a :href="route('deliveries.index')"
+                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Deliveries
+                            </a>
+                        </li>
+                        <li>
+                            <a :href="route('transporters.index')"
+                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                                Transporters
+                            </a>
+                        </li>
+                    </ul>
+                </li>
 
 <!--               <li>-->
 <!--                   <div @click="operations = !operations"-->

@@ -562,30 +562,30 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['accountant','management']
         ])->name('payables.index');
 
-        Route::get('/create', [
-            "uses"  => "App\Http\Controllers\ClientController@create",
-            'roles' =>['employee','management']
-        ])->name('clients.create');
-
-        Route::post('/store', [
-            "uses"  => "App\Http\Controllers\ClientController@store",
-            'roles' =>['employee','management']
-        ])->name('clients.store');
-
-        Route::get('/view/{id}', [
-            "uses" => "App\Http\Controllers\ClientController@show",
-            'roles' => ['employee', 'management']
-        ])->name('clients.show');
-
-        Route::get('/edit/{id}', [
-            "uses"  => "App\Http\Controllers\ClientController@edit",
-            'roles' =>['employee','management']
-        ])->name('clients.edit');
-
-        Route::post('/edit/{id}', [
-            "uses"  => "App\Http\Controllers\ClientController@update",
-            'roles' =>['employee','management']
-        ])->name('clients.update');
+//        Route::get('/create', [
+//            "uses"  => "App\Http\Controllers\ClientController@create",
+//            'roles' =>['employee','management']
+//        ])->name('clients.create');
+//
+//        Route::post('/store', [
+//            "uses"  => "App\Http\Controllers\ClientController@store",
+//            'roles' =>['employee','management']
+//        ])->name('clients.store');
+//
+//        Route::get('/view/{id}', [
+//            "uses" => "App\Http\Controllers\ClientController@show",
+//            'roles' => ['employee', 'management']
+//        ])->name('clients.show');
+//
+//        Route::get('/edit/{id}', [
+//            "uses"  => "App\Http\Controllers\ClientController@edit",
+//            'roles' =>['employee','management']
+//        ])->name('clients.edit');
+//
+//        Route::post('/edit/{id}', [
+//            "uses"  => "App\Http\Controllers\ClientController@update",
+//            'roles' =>['employee','management']
+//        ])->name('clients.update');
 
     });
 
@@ -744,12 +744,12 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' => ['employee','management']
         ])->name('products.store');
 
-        Route::post('/store', [
+        Route::post('/add-variant', [
             "uses"  => "App\Http\Controllers\ProductController@addVariant",
             'roles' => ['employee','management']
         ])->name('products.add-variant');
 
-        Route::post('/store', [
+        Route::post('/edit-variant', [
             "uses"  => "App\Http\Controllers\ProductController@editVariant",
             'roles' => ['employee','management']
         ])->name('products.edit-price');
@@ -764,7 +764,39 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' => ['employee','management']
         ])->name('products.update');
 
+    });
 
+    Route::group(['prefix'=>'transporter'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\TransporterController@index",
+            'roles' =>['employee','management']
+        ])->name('transporters.index');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\TransporterController@show",
+            'roles' => ['employee', 'management']
+        ])->name('transporters.show');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\TransporterController@create",
+            'roles' => ['employee','management']
+        ])->name('transporters.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\TransporterController@store",
+            'roles' => ['employee','management']
+        ])->name('transporters.store');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\TransporterController@edit",
+            'roles' => ['employee','management']
+        ])->name('transporters.edit');
+
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\DeliveryController@update",
+            'roles' => ['employee','management']
+        ])->name('transporters.update');
 
     });
 

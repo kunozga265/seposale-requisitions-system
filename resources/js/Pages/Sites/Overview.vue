@@ -154,33 +154,34 @@
                     <div>
 
                       <div class="type">{{ inventory.name }}</div>
-                      <div class="name">{{ inventory.units }}s</div>
-
-
-                    </div>
-                    <div class="lg:flex ">
-                      <div class="flex items-center justify-e">
-                        <div class="name">Available:</div>
-                        <div class="w-12 ml-2">
+<!--                      <div class="name">{{ inventory.units }}s</div>-->
+                        <div class="lg:flex">
+                            <div class="flex items-center justify-e">
+                                <div class="name">Available:</div>
+                                <div class="w-12 ml-2">
                                                       <span
                                                           class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                                          numberWithCommas(inventory.availableStock)
-                                                        }}</span>
+                                                              numberWithCommas(inventory.availableStock)
+                                                          }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-e">
+                                <div class="name">Uncollected:</div>
+                                <div class="w-12 ml-2"><span
+                                    class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
+                                        numberWithCommas(inventory.uncollectedStock)
+                                    }}</span></div>
+                            </div>
+
                         </div>
-                      </div>
-                      <div class="flex items-center justify-e">
-                        <div class="name">Uncollected:</div>
-                        <div class="w-12 ml-2"><span
-                            class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                            numberWithCommas(inventory.uncollectedStock)
-                          }}</span></div>
-                      </div>
-                      <div class="total">
-                        {{
-                          numberWithCommas(inventory.availableStock + inventory.uncollectedStock)
-                        }}
-                      </div>
+
                     </div>
+                      <div class="total">
+                          {{
+                              numberWithCommas(inventory.availableStock + inventory.uncollectedStock)
+                          }}
+                      </div>
+
 
                   </div>
 
