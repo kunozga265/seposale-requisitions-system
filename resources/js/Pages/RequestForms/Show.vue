@@ -204,7 +204,7 @@
           <jet-input type="text" class="block w-full" v-model="form.reference"/>
         </div>
           <div class="mb-4">
-              <jet-label for="person" value="From/To"/>
+              <jet-label for="person" value="To"/>
               <jet-input id="person" type="text" class="block w-full"
                          v-model="form.fromTo"
                          autocomplete="person"/>

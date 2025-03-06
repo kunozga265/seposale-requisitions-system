@@ -74,7 +74,7 @@
                                autocomplete="bank-reference"/>
                 </div>
                 <div class="mb-4">
-                    <jet-label for="person" value="From/To"/>
+                    <jet-label for="person" :value="form.type === 'CREDIT' ? 'From' : 'To'" />
                     <jet-input id="person" type="text" class="block w-full"
                                v-model="form.fromTo"
                                autocomplete="person"/>
