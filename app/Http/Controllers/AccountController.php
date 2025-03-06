@@ -109,6 +109,8 @@ class AccountController extends Controller
             ]);
 
             if (isset($request->fee) && $request->fee != 0) {
+
+                $balanceFrom = $balanceFrom - $request->fee;
                 $expense = Expense::create([
                     "code" => (new ExpenseController())->getCodeNumber(),
                     "description" => "Interbank Transfer Fee",
