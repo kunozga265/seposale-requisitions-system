@@ -187,8 +187,9 @@
                                         <td class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                           >{{ expense.code }}
                                         </td>
-                                        <td @click="navigateToRequisition(expense.requestForm.id)" class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                                          >{{ expense.requestForm.code }}
+                                        <td v-if="expense.requestForm != null" class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                          >
+                                            <span  @click="navigateToRequisition(expense.requestForm.id)">{{ expense.requestForm.code }}</span>
                                         </td>
                                         <td class="p-2 text-left "
                                             >{{ expense.payee }}
