@@ -18,6 +18,10 @@ class Inventory extends Model
     {
         return $this->hasMany(Collection::class);
     }
+    public function batches()
+    {
+        return $this->hasMany(Batch::class);
+    }
 
     protected $fillable = [
         "name",

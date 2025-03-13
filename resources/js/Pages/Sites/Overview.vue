@@ -72,7 +72,12 @@
             </div>
             <div class="mb-4">
               <jet-label for="quantity" value="Quantity"/>
-              <jet-input type="number" step="0.01" class="block w-full" v-model="form.quantity"/>
+              <jet-input type="number" step="0.01" class="block w-full" v-model="form.quantity" required/>
+            </div>
+            <div class="mb-4">
+              <jet-label for="quantity" value="Total Cost"/>
+              <jet-input type="number" step="0.01" class="block w-full" v-model="form.total" required/>
+                <div class="text-gray-500 text-xs" >Product + Transport Cost</div>
             </div>
             <div class="mb-4">
               <jet-label for="comments" value="Comments"/>
@@ -472,6 +477,7 @@ export default {
 
         inventoryId: 0,
         quantity: 0,
+        total: 0,
         comments: "",
         date: "",
         photo: "",

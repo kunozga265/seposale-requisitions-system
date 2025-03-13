@@ -201,7 +201,7 @@
                 <!--                <danger-button @click.native="showDialog=false">-->
                 <!--                    Cancel-->
                 <!--                </danger-button>-->
-                <secondary-button @click.native="addTransationDialog=false">
+                <secondary-button @click.native="transferDialog=false">
                     close
                 </secondary-button>
                 <primary-button v-show="transferValidation"

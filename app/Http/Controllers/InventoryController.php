@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BatchResource;
 use App\Http\Resources\CollectionResource;
 use App\Http\Resources\InventoryResource;
 use App\Http\Resources\SiteSaleSummaryResource;
+use App\Models\Batch;
 use App\Models\Inventory;
 use App\Models\Site;
 use App\Models\SystemLog;
@@ -38,12 +40,13 @@ class InventoryController extends Controller
             }
 
             if (is_object($inventory)){
+                $batches = $inventory->batches()->orderBy("date", "desc")->get();
                 return Inertia::render('Inventories/Show', [
                     "site" => $site,
                     "inventory" => new InventoryResource($inventory),
                     "sales" => $sales,
-                    "batches" => [],
                     "collections" => CollectionResource::collection($inventory->collections),
+                    "batches" => BatchResource::collection($batches),
                 ]);
 
             }else {
@@ -76,7 +79,8 @@ class InventoryController extends Controller
 
             //Validate all the important attributes
             $request->validate([
-                'quantity' => ['required'],
+                'total' => ['required',"numeric","gt:0"],
+                'quantity' => ['required',"numeric","gt:0"],
                 'date' => ['required'],
             ]);
 
@@ -85,6 +89,20 @@ class InventoryController extends Controller
             $inventory->update([
                 'available_stock' => $availableStock
             ]);
+
+
+
+            Batch::create([
+                "date" => $request->date,
+                "price" =>  $request->total/$request->quantity,
+                "quantity" => $request->quantity,
+                "balance" =>  $request->quantity,
+                "photo" => $request->photo ?? null,
+                "comments" => $request->comments,
+                "inventory_id" => $inventory->id,
+                "user_id" => Auth::id(),
+            ]);
+
 
             //Logging
             SystemLog::create([

@@ -67,11 +67,82 @@
                 <i v-show="section === 'collections'"
                    class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
             </div>
+            <div @click="section='batches'"
+                 class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                 :class="{'info':section==='batches'}">
+                <div>Batches</div>
+                <i v-show="section === 'batches'"
+                   class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+            </div>
         </div>
 
         <div class="py-6">
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
+
+                <div class="page-section" v-if="section==='batches'">
+                    <div class="page-section-header">
+                        <div class="page-section-title">
+                            Batches
+                        </div>
+                    </div>
+
+                    <div class="page-section-content">
+                        <div class="card default-table overflow-x-auto">
+                            <table class="w-full  text-left text-gray-500 dark:text-gray-400">
+                                <thead
+                                    class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">Unit Price</th>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">Quantity</th>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">Total</th>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">Balance</th>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">File Download</th>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">Comments</th>
+                                    <th scope="col" class="p-2 pb-0 heading-font text-left">Recorded By</th>
+                                </tr>
+                                </thead>
+                                <tbody class="pt-8">
+                                <tr
+                                    class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                    v-for="(item,index) in batches.data" :key="index">
+                                    <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
+                                    <td class="p-2 text-left ">
+                                        {{ numberWithCommas(item.price) }}
+                                    </td>
+                                    <td class="p-2 text-left ">
+                                        {{ numberWithCommas(item.quantity) }}
+                                    </td>
+                                    <td class="p-2 text-left ">
+                                        {{ numberWithCommas(item.price * item.quantity) }}
+                                    </td>
+                                    <td class="p-2 text-left ">
+                                        {{ numberWithCommas(item.balance) }}
+                                    </td>
+
+                                    <td class="p-2 text-left ">
+                                        <span v-if="item.photo == null">-</span>
+                                        <a v-else :href="fileUrl(item.photo)" target="_blank">
+                                            <span class="text-blue-700 text-xs font-bold">Download</span>
+                                            <i class="text-blue-700 font-bold mdi mdi-download"></i>
+                                        </a>
+                                    </td>
+                                    <td class="p-2 text-left ">{{
+                                            item.comments
+                                        }}
+                                    </td>
+                                    <td class="p-2 text-left ">{{
+                                            item.user.fullName
+                                        }}
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="page-section" v-if="section==='collections'">
                     <div class="page-section-header">
@@ -123,6 +194,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="page-section" v-else-if="section==='sales'">
                     <div class="page-section-header">
                         <div class="page-section-title">
@@ -357,7 +429,7 @@ import Collection from "@/Components/Collection.vue";
 
 
 export default {
-    props: ['site', 'inventory', 'sales', 'collections'],
+    props: ['site', 'inventory', 'sales', 'collections','batches'],
     components: {
         Collection,
         AppLayout,
