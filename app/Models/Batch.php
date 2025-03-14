@@ -25,8 +25,9 @@ class Batch extends Model
         "price",
         "quantity",
         "balance",
-        "inventory_id",
         "comments",
         "photo",
+        "inventory_id",
+        "stock_id",
     ];
 }

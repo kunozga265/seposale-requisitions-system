@@ -53,6 +53,21 @@
             vertical-align: top;
         }
 
+        table.summary{
+            margin-bottom: 36px;
+        }
+
+        table.summary td, table.summary th {
+            border: 1px solid;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.summary th {
+            background-color: rgb(217, 217, 217);
+            text-transform: none;
+        }
+
         .heading {
             font-family: 'Rubik', sans-serif;
             font-size: 14px;
@@ -180,23 +195,65 @@
 
 
     @if(isset($receipt->information))
-        <table id="products">
-            {{--        <tr>--}}
-            {{--            <th>Product</th>--}}
-            {{--            <th>Amount</th>--}}
-            {{--        </tr>--}}
-            <tr>
-                <td class="b-0" colspan="2">
-                    <p class="heading">Products and Services</p>
-                </td>
-            </tr>
+{{--        <table id="products">--}}
+{{--            --}}{{--        <tr>--}}
+{{--            --}}{{--            <th>Product</th>--}}
+{{--            --}}{{--            <th>Amount</th>--}}
+{{--            --}}{{--        </tr>--}}
+{{--            <tr>--}}
+{{--                <td class="b-0" colspan="2">--}}
+{{--                    <p class="heading">Products and Services</p>--}}
+{{--                </td>--}}
+{{--            </tr>--}}
 
+{{--            @foreach(json_decode($receipt->information) as $info)--}}
+{{--                <tr style="border-bottom: 1px solid black">--}}
+{{--                    <td class="b-0">{{$info->name}}</td>--}}
+{{--                    <td class="b-0">MK {{number_format($info->amount,2)}}</td>--}}
+{{--                </tr>--}}
+{{--            @endforeach--}}
+{{--        </table>--}}
+    <div> <p class="heading" style="margin-bottom: 12px">Products and Services</p></div>
+
+        <table class="summary">
+            <thead>
+            <tr>
+                <th class="shade">Details</th>
+                <th class="shade" style="text-align: center">Units</th>
+                <th class="shade" style="text-align: center">Quantity</th>
+                <th class="shade" style="text-align: right">Unit Cost</th>
+                <th class="shade" style="text-align: right">Total Cost</th>
+            </tr>
+            </thead>
+            <tbody>
             @foreach(json_decode($receipt->information) as $info)
-                <tr style="border-bottom: 1px solid black">
-                    <td class="b-0">{{$info->name}}</td>
-                    <td class="b-0">MK {{number_format($info->amount,2)}}</td>
+                <tr>
+                    <td style="text-transform: none">{{$info->name}}</td>
+                    <td style="text-align: center">
+                        @if(isset($info->units))
+                            <span>{{$info->units}}</span>
+                        @else
+                            <span>-</span>
+                        @endif
+                    </td>
+                    <td style="text-align: center">
+                        @if(isset($info->cost))
+                            <span>{{number_format($info->amount/$info->cost,2)}}</span>
+                        @else
+                            <span>-</span>
+                        @endif
+                    </td>
+                    <td style="text-align: right">
+                        @if(isset($info->cost))
+                            <span>{{number_format($info->cost,2)}}</span>
+                        @else
+                            <span>-</span>
+                        @endif
+                    </td>
+                    <td style="text-align: right">{{number_format($info->amount,2)}}</td>
                 </tr>
             @endforeach
+            </tbody>
         </table>
     @endif
 

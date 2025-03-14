@@ -21,7 +21,8 @@ class CreateBatchesTable extends Migration
             $table->double("balance");
             $table->string("comments")->nullable();
             $table->string("photo")->nullable();
-            $table->integer("inventory_id");
+            $table->integer("inventory_id")->nullable();
+            $table->integer("stock_id")->nullable();
             $table->integer("user_id");
             $table->timestamps();
         });

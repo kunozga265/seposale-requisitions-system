@@ -462,6 +462,15 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sites.sales.show');
 
+        Route::group(['prefix'=>'production'],function() {
+
+            Route::get('/{code}', [
+                "uses"  => "App\Http\Controllers\StockController@index",
+                'roles' =>['employee','management']
+            ])->name('production.index');
+
+        });
+
     });
 
     Route::group(['prefix'=>'collections'],function() {
@@ -766,7 +775,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     });
 
-    Route::group(['prefix'=>'transporter'],function() {
+    Route::group(['prefix'=>'transporters'],function() {
 
         Route::get('/', [
             "uses"  => "App\Http\Controllers\TransporterController@index",
@@ -799,5 +808,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
         ])->name('transporters.update');
 
     });
+
+
 
 });

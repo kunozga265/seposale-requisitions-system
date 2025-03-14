@@ -90,8 +90,6 @@ class InventoryController extends Controller
                 'available_stock' => $availableStock
             ]);
 
-
-
             Batch::create([
                 "date" => $request->date,
                 "price" =>  $request->total/$request->quantity,
