@@ -808,7 +808,8 @@ export default {
                 name: this.sale.data.products[x].description,
                 balance: this.sale.data.products[x].balance != null && this.sale.data.products[x].balance > 0 ? this.sale.data.products[x].balance : this.sale.data.products[x].amount,
                 amount: 0,
-
+                cost: this.sale.data.products[x].variant.cost,
+                units: this.sale.data.products[x].units,
             })
         }
 

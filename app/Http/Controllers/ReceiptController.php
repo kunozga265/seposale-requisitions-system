@@ -124,6 +124,8 @@ class ReceiptController extends Controller
                     }
                 }
 
+                dd($filteredProducts);
+
                 $receipt = Receipt::create([
                     'code' => $this->getCodeReceiptNumber(),
                     'serial' =>  (new AppController())->generateUniqueCode("RECEIPT"),

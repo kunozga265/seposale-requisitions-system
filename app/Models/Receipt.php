@@ -76,6 +76,8 @@ class Receipt extends Model
                     "name" => $info->name,
                     "balance" => $info->balance,
                     "amount" => $info->amount,
+                    "cost" => $info->cost ?? null,
+                    "units" => $info->units ?? null,
                     "product_id" => $product_id,
                     "product_name" => $product_name,
                 ];

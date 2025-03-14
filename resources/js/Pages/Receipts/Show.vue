@@ -190,6 +190,15 @@
                         Details
                       </th>
                       <th scope="col" class="heading-font">
+                        Units
+                      </th>
+                      <th scope="col" class="heading-font">
+                        Quantity
+                      </th>
+                        <th scope="col" class="heading-font">
+                        Unit Cost
+                      </th>
+                      <th scope="col" class="heading-font">
                         Total Cost
                       </th>
                     </tr>
@@ -203,11 +212,26 @@
                       <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                         {{ info.name }}
                       </th>
+                        <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                        <span v-if="info.units == null">-</span>
+                        <span v-else>{{ info.units }}</span>
+                      </th>
+                      <td class="py-2 pr-1">
+                        <span v-if="info.cost == null">-</span>
+                        <span v-else>{{ numberWithCommas((info.amount/info.cost).toFixed(2)) }}</span>
+                      </td>
+                      <td class="py-2 pr-1">
+                        <span v-if="info.cost == null">-</span>
+                        <span v-else>{{ numberWithCommas(info.cost) }}</span>
+                      </td>
                       <td class="py-2 pr-1">
                         {{ numberWithCommas(info.amount) }}
                       </td>
                     </tr>
                     <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                       <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
                       <td class="pt-4 pr-1 text-base font-bold">{{ numberWithCommas(receipt.data.amount) }}</td>
                     </tr>
