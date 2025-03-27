@@ -734,15 +734,15 @@ class RequestFormController extends Controller
             //check if request can be approved, if it is in pending state
             if ($requestForm->approvalStatus == 0) {
                 //check if the user is the owner of the request
-                if ($requestForm->user->id == $user->id) {
-                    if ((new AppController())->isApi($request)) {
-                        //API Response
-                        return response()->json(['message' => "You cannot approve your own request form"], 405);
-                    } else {
-                        //Web Response
-                        return Redirect::back()->with('error', 'You cannot approve your own request form');
-                    }
-                }
+//                if ($requestForm->user->id == $user->id) {
+//                    if ((new AppController())->isApi($request)) {
+//                        //API Response
+//                        return response()->json(['message' => "You cannot approve your own request form"], 405);
+//                    } else {
+//                        //Web Response
+//                        return Redirect::back()->with('error', 'You cannot approve your own request form');
+//                    }
+//                }
 
 
                 //check whether it needs a stage or management approval
