@@ -33,7 +33,8 @@ class RequestFormResource extends JsonResource
             $nextApprove=$user->hasRole('management');
 
 
-        $canApproveOrDeny=$this->user->id != $user->id && $this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
+//        $canApproveOrDeny=$this->user->id != $user->id && $this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
+        $canApproveOrDeny=$this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
 
 
         return [
