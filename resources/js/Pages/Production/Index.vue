@@ -209,7 +209,17 @@
 
 
 
-                    <div class="mb-2 md:col-span-2 text-gray-500 text-xs font-bold">Usage Summary </div>
+                    <div class="mb-2 md:col-span-2 flex justify-between">
+
+                        <div class=" text-gray-500 text-xs font-bold">Usage Summary </div>
+
+                        <div class="flex items-center mb-2 md:col-span-2">
+                            <input checked id="with-sand" type="checkbox" value="" v-model="withSand"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="with-sand" class="ml-1 text-xs font-bold text-blue-600 dark:text-blue-300">With
+                                Sand?</label>
+                        </div>
+                    </div>
 
                     <div class="mb" v-for="(material, index) in form.materials" :key="index">
                         <jet-label for="quantity" :value="material.name" />
@@ -218,7 +228,7 @@
 
                     <div class="my-2 md:col-span-2 text-gray-500 text-xs font-bold">Production Summary</div>
 
-                    <div class="mb" v-for="(inventory, index) in form.inventories" :key="index">
+                    <div class="mb" v-for="(inventory, index) in form.inventories" :key="index + '-inventory'">
                         <jet-label for="quantity" :value="inventory.name" />
                         <jet-input type="number" step="0.01" class="block w-full" v-model="inventory.quantity" />
                     </div>
@@ -345,15 +355,15 @@
                                             </div>
                                         </div> -->
                                         <div v-for="(batch, index) in production.batches"
-                                        class="flex items-center justify-e">
-                                        <div class="name">{{ batch.inventory.name }}</div>
-                                        <div class="p-1 ml-2 mr-4">
-                                            <span
-                                                class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                                    numberWithCommas(batch.quantity)
-                                                }}</span>
+                                            class="flex items-center justify-e">
+                                            <div class="name">{{ batch.inventory.name }}</div>
+                                            <div class="p-1 ml-2 mr-4">
+                                                <span
+                                                    class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
+                                                        numberWithCommas(batch.quantity)
+                                                    }}</span>
+                                            </div>
                                         </div>
-                                    </div>
                                     </div>
 
 
@@ -482,6 +492,7 @@ export default {
             addStockDialog: false,
             maxDate: new Date().toISOString().substr(0, 10),
             productionReportDialog: false,
+            withSand: false,
             form: this.$inertia.form({
                 dates: null,
                 name: "",
@@ -661,8 +672,43 @@ export default {
             for (let y in this.form.materials) {
                 if (this.form.materials[y].type == "pebble-stone") {
                     this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.2).toFixed(2);
-                } else if (this.form.materials[y].type == "quarry-dust") {
-                    this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.6).toFixed(2);
+                }
+                if (this.withSand) {
+                    if (this.form.materials[y].type == "river-sand") {
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.4).toFixed(2);
+                    }
+                    if (this.form.materials[y].type == "quarry-dust") {
+                        this.form.materials[y].quantity = 0;
+                    }
+
+                } else {
+                    if (this.form.materials[y].type == "quarry-dust") {
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.6).toFixed(2);
+                    }
+                    if (this.form.materials[y].type == "river-sand") {
+                        this.form.materials[y].quantity = 0;
+                    }
+                }
+
+            }
+        },
+        withSand() {
+            for (let y in this.form.materials) {
+                if (this.withSand) {
+                    if (this.form.materials[y].type == "river-sand") {
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.4).toFixed(2);
+                    }
+                    if (this.form.materials[y].type == "quarry-dust") {
+                        this.form.materials[y].quantity = 0;
+                    }
+
+                } else {
+                    if (this.form.materials[y].type == "quarry-dust") {
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.6).toFixed(2);
+                    }
+                    if (this.form.materials[y].type == "river-sand") {
+                        this.form.materials[y].quantity = 0;
+                    }
                 }
             }
         }
