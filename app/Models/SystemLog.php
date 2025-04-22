@@ -23,6 +23,7 @@ class SystemLog extends Model
         "request_form_id",
         "collection_id",
         "inventory_id",
+        "material_id",
         "contents",
     ];
 }

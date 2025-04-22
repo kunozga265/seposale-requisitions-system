@@ -23,6 +23,7 @@ class CreateInventoriesTable extends Migration
             $table->double("available_stock");
             $table->double("uncollected_stock");
             $table->double("threshold");
+            $table->boolean("producible");
             $table->timestamps();
             $table->softDeletes();
         });

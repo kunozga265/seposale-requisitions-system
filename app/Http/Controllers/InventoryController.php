@@ -19,27 +19,27 @@ class InventoryController extends Controller
 {
     public function show(Request $request, $code, $id)
     {
-        $site = Site::where("code",$code)->first();
+        $site = Site::where("code", $code)->first();
 
-        if(is_object($site)){
+        if (is_object($site)) {
             //
-            $inventory = $site->inventories()->where("id",$id)->first();
+            $inventory = $site->inventories()->where("id", $id)->first();
 
             $summaries = $inventory->summaries;
             $sales = [];
-            foreach ($summaries as $summary){
-                $sales[]= [
-                  "id"=>$summary->sale->id,
-                  "code"=>(new AppController())->getZeroedNumber($summary->sale->code),
-                  "client"=>$summary->sale->client,
-                  "date"=>$summary->sale->date,
-                  "products"=>[
-                      new SiteSaleSummaryResource($summary)
-                  ],
+            foreach ($summaries as $summary) {
+                $sales[] = [
+                    "id" => $summary->sale->id,
+                    "code" => (new AppController())->getZeroedNumber($summary->sale->code),
+                    "client" => $summary->sale->client,
+                    "date" => $summary->sale->date,
+                    "products" => [
+                        new SiteSaleSummaryResource($summary)
+                    ],
                 ];
             }
 
-            if (is_object($inventory)){
+            if (is_object($inventory)) {
                 $batches = $inventory->batches()->orderBy("date", "desc")->get();
                 return Inertia::render('Inventories/Show', [
                     "site" => $site,
@@ -48,8 +48,7 @@ class InventoryController extends Controller
                     "collections" => CollectionResource::collection($inventory->collections),
                     "batches" => BatchResource::collection($batches),
                 ]);
-
-            }else {
+            } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
                     return response()->json(['message' => "Daily Report not found"], 404);
@@ -58,8 +57,7 @@ class InventoryController extends Controller
                     return Redirect::route('dashboard')->with('error', 'Daily Report not found');
                 }
             }
-
-        }else{
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Site not found"], 404);
@@ -70,21 +68,148 @@ class InventoryController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function store(Request $request, string $code)
     {
 
-        $inventory=Inventory::find($request->inventory_id);
+        $site = Site::where("code", $code)->first();
 
-        if(is_object($inventory)){
+        if (is_object($site)) {
 
             //Validate all the important attributes
             $request->validate([
-                'total' => ['required',"numeric","gt:0"],
-                'quantity' => ['required',"numeric","gt:0"],
+                'name' => ['required'],
+                'units' => ['required'],
+                'threshold' => ['required', "numeric", "gt:0"],
+                'cost' => ['required', "numeric", "gt:0"],
+            ]);
+
+            $inventory = Inventory::create([
+                "name" => $request->name,
+                "units" => $request->units,
+                "cost" => $request->cost,
+                "threshold" => $request->threshold,
+                "producible" => $request->producible,
+                "site_id" => $site->id,
+                "available_stock" => 0,
+                "uncollected_stock" => 0,
+            ]);
+
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "New Inventory Added",
+                "inventory_id" => $inventory->id,
+                "contents" => json_encode([])
+            ]);
+
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(new InventoryResource($inventory), 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('success', "{$inventory->name}: Inventory added!");
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Resource not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Resource not found');
+            }
+        }
+    }
+
+    public function edit(Request $request)
+    {
+
+        $inventory = Inventory::find($request->inventory_id);
+
+        if (is_object($inventory)) {
+
+            //Validate all the important attributes
+            $request->validate([
+                'name' => ['required'],
+                'units' => ['required'],
+                'threshold' => ['required', "numeric", "gt:0"],
+                'cost' => ['required', "numeric", "gt:0"],
+            ]);
+
+            $available_stock = 0;
+            foreach ($request->batches as $batch_object) {
+                $batch = Batch::find($batch_object["id"]);
+                $batch->update([
+                    "balance"=> $batch_object["balance"],
+                ]);
+
+                $available_stock += $batch_object["balance"];
+            }
+
+            $inventory->update([
+                "name" => $request->name,
+                "units" => $request->units,
+                "cost" => $request->cost,
+                "threshold" => $request->threshold,
+                "producible" => $request->producible,
+                'available_stock' => $available_stock,
+                'uncollected_stock' => $request->uncollected_stock,
+            ]);
+
+           
+
+            
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Inventory {$inventory->name} updated",
+                "inventory_id" => $inventory->id,
+                "contents" => json_encode([])
+            ]);
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(new InventoryResource($inventory), 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('success', "{$inventory->name}: Inventories updated!");
+            }
+        } else {
+            return Redirect::back()->with('error', 'Resource not found');
+        }
+    }
+
+    public function update(Request $request)
+    {
+
+        $inventory = Inventory::find($request->inventory_id);
+
+        if (is_object($inventory)) {
+
+            //Validate all the important attributes
+            $request->validate([
+                'total' => ['required', "numeric", "gt:0"],
+                'quantity' => ['required', "numeric", "gt:0"],
                 'date' => ['required'],
             ]);
 
             $availableStock = $inventory->available_stock + $request->quantity;
+
+            //if there is still available stock just append quantity
+            if($inventory->available_stock  >= 0 ){
+                $batch_balance = $request->quantity;
+            }else{
+                //if adding new stock results in a SURPLUS of stock, set batch quantity to surplus
+                if($availableStock >= 0){
+                    $batch_balance = $availableStock;
+                }
+                //if adding new stock results in a DEFICIT of stock, set batch quantity to 0
+                else{
+                    $batch_balance = 0;
+                }
+            }
+
+           
 
             $inventory->update([
                 'available_stock' => $availableStock
@@ -92,9 +217,9 @@ class InventoryController extends Controller
 
             Batch::create([
                 "date" => $request->date,
-                "price" =>  $request->total/$request->quantity,
+                "price" =>  $request->total / $request->quantity,
                 "quantity" => $request->quantity,
-                "balance" =>  $request->quantity,
+                "balance" =>  $batch_balance,
                 "photo" => $request->photo ?? null,
                 "comments" => $request->comments,
                 "inventory_id" => $inventory->id,
@@ -116,11 +241,11 @@ class InventoryController extends Controller
             ]);
 
             //Run notifications
-//        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+            //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
 
 
-//        $report = (new ReportController())->getCurrentReport();
-//        $report->requestForms()->attach($requestForm);
+            //        $report = (new ReportController())->getCurrentReport();
+            //        $report->requestForms()->attach($requestForm);
 
             if ((new AppController())->isApi($request))
                 //API Response
@@ -129,8 +254,8 @@ class InventoryController extends Controller
                 //Web Response
                 return Redirect::back()->with('success', "{$inventory->name}: Inventories updated!");
             }
-        }else {
-            return Redirect::back()->with('error','Resource not found');
+        } else {
+            return Redirect::back()->with('error', 'Resource not found');
         }
     }
 }

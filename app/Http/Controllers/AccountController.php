@@ -17,7 +17,6 @@ class AccountController extends Controller
     {
         $clients = Account::orderBy("name", "asc")->get();
 
-
         if ((new AppController())->isApi($request))
             //API Response
             return response()->json(AccountResource::collection($clients));

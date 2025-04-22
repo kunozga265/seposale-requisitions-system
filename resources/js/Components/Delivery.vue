@@ -18,15 +18,7 @@
 
 
           <div class="mb-4 md:m-0">
-            <div class="grid grid-cols-2 align-center">
-              <div class="name">Ordered Date:</div>
-              <div>
-                          <span
-                              class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                              getDate(delivery.summary.date * 1000)
-                            }}</span>
-              </div>
-            </div>
+          
             <div class="grid grid-cols-2 align-center">
               <div class="name">Due Date:</div>
               <div>

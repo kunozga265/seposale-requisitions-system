@@ -130,6 +130,8 @@ class SiteSaleController extends Controller
 //            }
 //        }
 
+ 
+        
         $sale = Cache::lock($user->id . ':sites.sales:store', 10)->get(function () use ($site, $user, $request) {
 
             //Validate all the important attributes
@@ -202,6 +204,10 @@ class SiteSaleController extends Controller
             //attach products
             foreach ($request->products as $product) {
                 $inventory = Inventory::find($product["id"]);
+                $cost = 0;
+                //update batches
+                $cost += $this->updateBatches($inventory, $product["quantity"]);
+                
                 $available_stock = $inventory->available_stock - $product["quantity"];
                 $uncollected_stock = $inventory->uncollected_stock + $product["quantity"];
 
@@ -217,6 +223,7 @@ class SiteSaleController extends Controller
                     "amount" => $product["totalCost"],
                     "balance" => $product["totalCost"],
                     "collected" => 0,
+                    "cost" => $cost,
                 ]);
             }
 
@@ -239,6 +246,53 @@ class SiteSaleController extends Controller
 
         }
 
+    }
+
+    private function updateBatches(Inventory $inventory, $quantity)
+    {
+        $cost = 0;
+        $total = $quantity;
+        if ($quantity > 0) {
+            do {
+                $batch = $inventory->batches()->where("balance", ">", 0)->orderBy("date", "asc")->first();
+                $count = 0;
+                //get the last batch
+                if (!is_object($batch)) {
+                    $batch = $inventory->batches()->orderBy("date", "desc")->first();     
+                } 
+
+                //if batch is zero, there is nothing to update just return the estimated cost
+                if($batch->balance == 0){
+                    return $cost + $batch->price * $quantity;
+                }
+
+                //check if batch quantity is greater
+                if ($batch->balance >= $quantity) {
+                    $count = $quantity;
+                    $balance = $batch->balance - $quantity;
+                }
+                //this branch if batch balance is lower
+                else {
+                    $count = $batch->balance;
+                    $balance = 0;
+                }
+
+                //update the balance
+                $batch->update([
+                    "balance" => $balance,
+                ]);
+
+                //append cost
+                $cost += $batch->price * $count;
+
+                $quantity -= $count;
+            } while ($quantity > 0);
+
+            return $cost;
+        }else{
+            return 0;
+        }
+    
     }
 
 

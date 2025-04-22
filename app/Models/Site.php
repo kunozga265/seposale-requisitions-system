@@ -30,6 +30,16 @@ class Site extends Model
     {
      return $this->hasMany(Collection::class);
     }
+
+    public function materials()
+    {
+     return $this->hasMany(Material::class);
+    }
+
+    public function productions(){
+        return $this->hasMany(Production::class);
+    }
+
     public function pendingCollections()
     {
         $summaries = SiteSaleSummary::latest()->get();

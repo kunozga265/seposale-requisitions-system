@@ -13,7 +13,7 @@ class Stock extends Model
         "name",
         "units",
         "site_id",
-        "quantity",
-        "threshold",
+//        "quantity",
+//        "threshold",
     ];
 }

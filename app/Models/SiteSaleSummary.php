@@ -77,5 +77,6 @@ class SiteSaleSummary extends Model
         "amount",
         "balance",
         "collected",
+        "cost",
     ];
 }

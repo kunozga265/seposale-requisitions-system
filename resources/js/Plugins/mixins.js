@@ -189,5 +189,26 @@ Vue.mixin({
             else
                 return date.getDate()+ " "+ monthName + ", "+date.getFullYear()
         },
+
+        photoUpload(file) {
+            const reader = new FileReader();
+            var photo = null;
+            if (file) {
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+                        type: "OTHER",
+                        file: e.target.result
+                    }).then(res => {
+                        photo = res.data.file
+                        return photo;
+
+                    }).catch(function (res) {
+                        // this.form.errors.push(res.data.message)
+                    })
+                };
+            }
+            return photo;
+        },
     },
 })

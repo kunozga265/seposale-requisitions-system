@@ -442,6 +442,16 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sites.inventories.show');
 
+        Route::post('/{code}/inventories', [
+            "uses"  => "App\Http\Controllers\InventoryController@store",
+            'roles' =>['employee','management']
+        ])->name('sites.inventories.store');
+
+        Route::post('/{code}/inventories/{id}', [
+            "uses"  => "App\Http\Controllers\InventoryController@edit",
+            'roles' =>['employee','management']
+        ])->name('sites.inventories.edit');
+
         Route::get('/{code}/daily-reports/{id}', [
             "uses"  => "App\Http\Controllers\InventorySummaryController@show",
             'roles' =>['employee','management']
@@ -462,14 +472,27 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sites.sales.show');
 
-        Route::group(['prefix'=>'production'],function() {
+        Route::get('/{code}/production', [
+            "uses"  => "App\Http\Controllers\ProductionController@index",
+            'roles' =>['employee','management']
+        ])->name('production.index');
+        
+        Route::post('/{code}/production/store', [
+            "uses"  => "App\Http\Controllers\ProductionController@store",
+            'roles' =>['employee','management']
+        ])->name('production.store');
 
-            Route::get('/{code}', [
-                "uses"  => "App\Http\Controllers\StockController@index",
-                'roles' =>['employee','management']
-            ])->name('production.index');
+        Route::post('/materials', [
+            "uses"  => "App\Http\Controllers\MaterialController@store",
+            'roles' =>['employee','management']
+        ])->name('materials.store');
 
-        });
+        Route::post('/materials/update-stock', [
+            "uses"  => "App\Http\Controllers\MaterialController@update",
+            'roles' =>['employee','management']
+        ])->name('materials.update');
+
+
 
     });
 

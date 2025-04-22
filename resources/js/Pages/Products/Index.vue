@@ -54,7 +54,7 @@
           </div>
 
           <div class="p-2 mb-2">
-            <jet-label for="description" value="Varint Name"/>
+            <jet-label for="description" value="Variant Name"/>
             <jet-input id="description" type="text" class="block w-full"
                        v-model="form.description" placeholder="e.g. 25 Tonnes"
                        autocomplete="seposale-product-description"/>

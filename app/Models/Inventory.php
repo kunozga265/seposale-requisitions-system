@@ -31,5 +31,6 @@ class Inventory extends Model
         "available_stock",
         "uncollected_stock",
         "threshold",
+        "producible",
     ];
 }
