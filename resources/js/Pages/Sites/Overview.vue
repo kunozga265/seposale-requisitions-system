@@ -252,7 +252,7 @@
                                             <div class="lg:flex">
                                                 <div class="flex items-center justify-e">
                                                     <div class="name">Available:</div>
-                                                    <div class="w-12 ml-2">
+                                                    <div class="ml-2">
                                                         <span
                                                             class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
                                                                 numberWithCommas(inventory.availableStock)
