@@ -161,12 +161,24 @@
                         <td style="text-align: left">{{$inventory->availableStock}}</td>
                     @endforeach
                 </tr>
+                <tr>
+                    <td style="text-transform: none">Physical Count</td>
+                    @foreach($inventories = json_decode($summary->closing_stock) as $inventory)
+                        <td style="text-align: left">{{$inventory->availableStock + $inventory->uncollectedStock}}</td>
+                    @endforeach
+                </tr>
             @else
 
                 <tr>
                     <td style="text-transform: none">Closing</td>
                     @foreach($summary->site->inventories as $inventory)
                         <td style="text-align: left">{{$inventory->available_stock}}</td>
+                    @endforeach
+                </tr>
+                <tr>
+                    <td style="text-transform: none">Physical Count</td>
+                    @foreach($summary->site->inventories as $inventory)
+                        <td style="text-align: left">{{$inventory->available_stock + $inventory->uncollected_stock}}</td>
                     @endforeach
                 </tr>
             @endif
