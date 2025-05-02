@@ -60,6 +60,7 @@ class Delivery extends Model
         "quantity_delivered",
         "tracking_number",
         "summary_id",
+        "site_sale_summary_id",
         "due_date",
         "notes",
         "whatsapp",

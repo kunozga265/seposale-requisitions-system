@@ -37,13 +37,21 @@ class Receipt extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function summaries()
+    {
+        return $this->hasMany(ReceiptSummary::class);
+    }
+
+
+
     public function listOfProducts()
     {
         $list = "";
 
-        $products = json_decode($this->information);
-        for ($i= 0; $i < count($products); $i++){
-           if($i < (count($products) - 1)){
+        // $products = json_decode($this->information);
+        $products = $this->summaries;
+        for ($i= 0; $i < $products->count(); $i++){
+           if($i < ($products->count() - 1)){
                $list.= $products[$i]->name.", ";
            }else{
                $list.= $products[$i]->name;

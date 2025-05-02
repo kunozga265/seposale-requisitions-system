@@ -65,6 +65,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
                     <div class="mb-2">
+                        <jet-label for="product" value="Link Product" />
+                        <select v-model="form.productId" id="product"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required>
+                            <option value="0">---</option>
+                            <option v-for="(product, index) in products.data" :value="product.id" :key="index">
+                                {{ product.name }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
                         <jet-label for="name" value="Name" />
                         <jet-input id="name" type="text" class="block w-full" v-model="form.name"
                             autocomplete="seposale-inventory-name" />
@@ -94,11 +106,11 @@
                             v-model="form.availableStock" autocomplete="seposale-inventory-available-stock" />
                     </div>-->
 
-                    <div v-if="checkRole($page.props.auth.data, 'management')" class="mb-2 md:col-span-2">
+                    <div v-if="checkRole($page.props.auth.data, 'management')" class="mb-2">
                         <jet-label for="uncollected-stock" value="Uncollected Stock" />
                         <jet-input id="uncollected-stock" type="number" step="0.01" class="block w-full"
                             v-model="form.uncollectedStock" autocomplete="seposale-inventory-uncollected-stock" />
-                    </div> 
+                    </div>
 
                     <div class="mb-2 md:col-span-2 text-gray-500 text-xs font-bold">Update Batches</div>
 
@@ -108,16 +120,16 @@
                             <div class="flex items-center">
 
                                 <div class="mr-4">
-                                    <jet-label class="mb-0"  for="batch-item" :value="getDate(batch.date * 1000)" />
+                                    <jet-label class="mb-0" for="batch-item" :value="getDate(batch.date * 1000)" />
                                     <div class="text-xs text-gray-500">MK{{ numberWithCommas(batch.price.toFixed(2))
-                                    }}/{{
-                                        batch.inventory.units }}
-                            </div>
+                                        }}/{{
+                                            batch.inventory.units }}
+                                    </div>
                                 </div>
                                 <jet-input id="batch-item" type="number" step="0.01" class="block w-full mt-0"
                                     v-model="batch.balance" autocomplete="seposale-inventory-uncollected-stock" />
-                                 </div>
-                                 
+                            </div>
+
                         </div>
                     </div>
 
@@ -156,6 +168,12 @@
 
         <div class="mx-9 flex">
 
+            <div @click="section = 'overview'"
+                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                :class="{ 'info': section === 'overview' }">
+                <div>Overview</div>
+                <i v-show="section === 'overview'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+            </div>
             <div @click="section = 'sales'"
                 class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                 :class="{ 'info': section === 'sales' }">
@@ -175,126 +193,50 @@
                 <div>Batches</div>
                 <i v-show="section === 'batches'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
             </div>
+            <div @click="section = 'damages'" v-if="inventory.data.producible"
+                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                :class="{ 'info': section === 'damages' }">
+                <div>Damages</div>
+                <i v-show="section === 'damages'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+            </div>
         </div>
 
         <div class="py-6">
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
 
-                <div class="page-section" v-if="section === 'batches'">
+                <div class="page-section" v-if="section === 'overview'">
                     <div class="page-section-header">
                         <div class="page-section-title">
-                            Batches
+                            Overview
                         </div>
                     </div>
+                    <div class="page-section-content ">
 
-                    <div class="page-section-content">
-                        <div class="card default-table overflow-x-auto">
-                            <table class="w-full  text-left text-gray-500 dark:text-gray-400">
-                                <thead
-                                    class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Unit Price</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Quantity</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Total</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Balance</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">File Download</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Comments</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Recorded By</th>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div v-if="inventory.data.producible" class="card no-shadow">
+                                <div class="heading-font mb-2">Curing Schedule</div>
+                                <table>
+                                    <tr v-for="(batch, index) in awaitingCuration.data">
+
+                                        <!-- <div class="grid grid-cols-2"> -->
+
+                                        <td class="text-sm text-gray-400">{{ getDate(batch.readyDate * 1000) }}
+                                        </td>
+                                        <td class="heading-font text-base text-right" style="font-weight: 600;">{{ batch.quantity
+                                            }}
+                                            {{ inventory.data.units }}{{ batch.quantity == 1 ? '' : 's' }}
+                                        </td>
+                                        <!-- </div> -->
                                     </tr>
-                                </thead>
-                                <tbody class="pt-8">
-                                    <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                                        v-for="(item, index) in batches.data" :key="index">
-                                        <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
-                                        <td class="p-2 text-left ">
-                                            {{ numberWithCommas((item.price).toFixed(2)) }}
-                                        </td>
-                                        <td class="p-2 text-left ">
-                                            {{ numberWithCommas(item.quantity) }}
-                                        </td>
-                                        <td class="p-2 text-left ">
-                                            {{ numberWithCommas((item.price * item.quantity).toFixed(2)) }}
-                                        </td>
-                                        <td class="p-2 text-left ">
-                                            {{ numberWithCommas(item.balance) }}
-                                        </td>
-
-                                        <td class="p-2 text-left ">
-                                            <span v-if="item.photo == null">-</span>
-                                            <a v-else :href="fileUrl(item.photo)" target="_blank">
-                                                <span class="text-blue-700 text-xs font-bold">Download</span>
-                                                <i class="text-blue-700 font-bold mdi mdi-download"></i>
-                                            </a>
-                                        </td>
-                                        <td class="p-2 text-left ">{{
-                                            item.comments
-                                        }}
-                                        </td>
-                                        <td class="p-2 text-left ">{{
-                                            item.user.fullName
-                                        }}
-                                        </td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
+                                </table>
+                            </div>
                         </div>
+
                     </div>
                 </div>
 
-                <div class="page-section" v-if="section === 'collections'">
-                    <div class="page-section-header">
-                        <div class="page-section-title">
-                            Collections
-                        </div>
-                    </div>
-
-                    <div class="page-section-content">
-                        <div class="card default-table overflow-x-auto">
-                            <table class="w-full  text-left text-gray-500 dark:text-gray-400">
-                                <thead
-                                    class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Sale</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Client</th>
-                                        <!--                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Collected By</th>-->
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Quantity</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Balance</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="pt-8">
-                                    <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                                        v-for="(item, index) in collections.data" :key="index">
-                                        <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
-                                        <td class="p-2 text-left">{{ item.siteSaleSummary.sale.code }}</td>
-                                        <td class="p-2 text-left ">{{ item.client.name }}</td>
-                                        <!--                                        <td class="p-2 text-left ">{{-->
-                                        <!--                                                item.collectedBy-->
-                                        <!--                                            }}-->
-                                        <!--                                        </td> -->
-                                        <td class="p-2 text-left ">{{
-                                            item.inventory.name
-                                        }}
-                                        </td>
-                                        <td class="p-2 text-left ">
-                                            {{ numberWithCommas(item.quantity) }}
-                                        </td>
-                                        <td class="p-2 text-left ">
-                                            {{ numberWithCommas(item.balance) }}
-                                        </td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="page-section" v-else-if="section === 'sales'">
+                <div class="page-section" v-if="section === 'sales'">
                     <div class="page-section-header">
                         <div class="page-section-title">
                             Sales
@@ -501,6 +443,170 @@
                     </div>
                 </div>
 
+
+                <div class="page-section" v-else-if="section === 'collections'">
+                    <div class="page-section-header">
+                        <div class="page-section-title">
+                            Collections
+                        </div>
+                    </div>
+
+                    <div class="page-section-content">
+                        <div class="card default-table overflow-x-auto">
+                            <table class="w-full  text-left text-gray-500 dark:text-gray-400">
+                                <thead
+                                    class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Sale</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Client</th>
+                                        <!--                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Collected By</th>-->
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Quantity</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="pt-8">
+                                    <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                        v-for="(item, index) in collections.data" :key="index">
+                                        <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
+                                        <td class="p-2 text-left">{{ item.siteSaleSummary.sale.code }}</td>
+                                        <td class="p-2 text-left ">{{ item.client.name }}</td>
+                                        <!--                                        <td class="p-2 text-left ">{{-->
+                                        <!--                                                item.collectedBy-->
+                                        <!--                                            }}-->
+                                        <!--                                        </td> -->
+                                        <td class="p-2 text-left ">{{
+                                            item.inventory.name
+                                        }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas(item.quantity) }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas(item.balance) }}
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="page-section" v-if="section === 'batches'">
+                    <div class="page-section-header">
+                        <div class="page-section-title">
+                            Batches
+                        </div>
+                    </div>
+
+                    <div class="page-section-content">
+                        <div class="card default-table overflow-x-auto">
+                            <table class="w-full  text-left text-gray-500 dark:text-gray-400">
+                                <thead
+                                    class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Unit Price</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Quantity</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Total</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Balance</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">File Download</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Comments</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Recorded By</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="pt-8">
+                                    <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                        v-for="(item, index) in batches.data" :key="index">
+                                        <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas((item.price).toFixed(2)) }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas(item.quantity) }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas((item.price * item.quantity).toFixed(2)) }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas(item.balance) }}
+                                        </td>
+
+                                        <td class="p-2 text-left ">
+                                            <span v-if="item.photo == null">-</span>
+                                            <a v-else :href="fileUrl(item.photo)" target="_blank">
+                                                <span class="text-blue-700 text-xs font-bold">Download</span>
+                                                <i class="text-blue-700 font-bold mdi mdi-download"></i>
+                                            </a>
+                                        </td>
+                                        <td class="p-2 text-left ">{{
+                                            item.comments
+                                        }}
+                                        </td>
+                                        <td class="p-2 text-left ">{{
+                                            item.user.fullName
+                                        }}
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="page-section" v-if="section === 'damages' && inventory.data.producible">
+                    <div class="page-section-header">
+                        <div class="page-section-title">
+                            Damages
+                        </div>
+                    </div>
+
+                    <div class="page-section-content">
+                        <div class="card default-table overflow-x-auto">
+                            <table class="w-full  text-left text-gray-500 dark:text-gray-400">
+                                <thead
+                                    class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Unit Price</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Quantity</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Total</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Recorded By</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="pt-8">
+                                    <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                        v-for="(item, index) in damages.data" :key="index">
+                                        <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas((item.cost / item.quantity).toFixed(2)) }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas(item.quantity) }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{ numberWithCommas((item.cost).toFixed(2)) }}
+                                        </td>
+
+                                        <td class="p-2 text-left ">{{
+
+                                            }}
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </app-layout>
@@ -525,7 +631,7 @@ import Collection from "@/Components/Collection.vue";
 
 
 export default {
-    props: ['site', 'inventory', 'sales', 'collections', 'batches'],
+    props: ['site', 'inventory', 'sales', 'collections', 'batches', 'awaitingCuration', 'damages','products'],
     components: {
         Collection,
         AppLayout,
@@ -545,7 +651,7 @@ export default {
     },
     data() {
         return {
-            section: "sales",
+            section: "overview",
             editInventoryDialog: false,
             form: this.$inertia.form({
                 dates: null,
@@ -564,7 +670,7 @@ export default {
                 availableStock: this.inventory.data.availableStock,
                 uncollectedStock: this.inventory.data.uncollectedStock,
                 producible: this.inventory.data.producible,
-
+                productId: this.inventory.data.product.id,
                 batches: []
             }),
         }
@@ -653,6 +759,7 @@ export default {
                     inventory_id: this.inventory.data.id,
                     available_stock: this.form.availableStock,
                     uncollected_stock: this.form.uncollectedStock,
+                    product_id: this.form.productId,
                 }))
                 .post(this.route('sites.inventories.edit', { 'code': this.site.code, id: this.inventory.data.id }), {
                     preserveScroll: true,

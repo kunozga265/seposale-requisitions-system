@@ -6,6 +6,7 @@ use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\Receipt;
+use App\Models\ReceiptSummary;
 use App\Models\Sale;
 use App\Models\SiteSale;
 use App\Models\SiteSaleSummary;
@@ -112,6 +113,22 @@ class ReceiptController extends Controller
                     return Redirect::back()->with("error", "Receipt amount is zero");
                 }
 
+
+                $receipt = Receipt::create([
+                    'code' => $this->getCodeReceiptNumber(),
+                    'serial' => (new AppController())->generateUniqueCode("RECEIPT"),
+                    'client_id' => $sale->client->id,
+                    "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
+                    "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
+                    'account_id' => $request->account_id,
+                    'payment_method_id' => $request->payment_method_id,
+                    'amount' => $total,
+                    'reference' => strtoupper($request->reference),
+                    // 'information' => json_encode($filteredProducts),
+                    'user_id' => $user->id,
+                    'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+                ]);
+
                 //Updating data
                 foreach ($filteredProducts as $item) {
                     $amount = $item["amount"];
@@ -121,23 +138,31 @@ class ReceiptController extends Controller
                         $summary->update([
                             "balance" => $balance
                         ]);
+
+                        //create receipt transaction
+                        $ReceiptSummary = ReceiptSummary::create([
+                            "balance" => $balance,
+                            "amount" => $summary->amount,
+                            "cost" => $summary->cost,
+                            "units" => $summary->units,
+                            "receipt_id" => $receipt->id,
+                        ]);
+
+                        switch ($request->type) {
+                            case "ORDINARY":
+                                $ReceiptSummary->update([
+                                    "name" => $summary->description,
+                                    "summary_id" => $summary->id,
+                                ]);
+                                break;
+                            default:
+                                $ReceiptSummary->update([
+                                    "name" => $summary->inventory->name,
+                                    "site_sale_summary_id" => $summary->id,
+                                ]);
+                        }
                     }
                 }
-
-                $receipt = Receipt::create([
-                    'code' => $this->getCodeReceiptNumber(),
-                    'serial' =>  (new AppController())->generateUniqueCode("RECEIPT"),
-                    'client_id' => $sale->client->id,
-                    "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
-                    "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
-                    'account_id' => $request->account_id,
-                    'payment_method_id' => $request->payment_method_id,
-                    'amount' => $total,
-                    'reference' => strtoupper($request->reference),
-                    'information' => json_encode($filteredProducts),
-                    'user_id' => $user->id,
-                    'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
-                ]);
 
                 $sale->update([
                     "balance" => $new_balance,
@@ -167,7 +192,7 @@ class ReceiptController extends Controller
                 SystemLog::create([
                     "user_id" => Auth::id(),
                     "message" => "Receipt #{$receipt->code} created for {$sale->client->name} under Sale #{$sale->code_alt}. Total amount received is {$receipt
-        ->amount}",
+                        ->amount}",
                     "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
                     "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
 
@@ -187,8 +212,6 @@ class ReceiptController extends Controller
         } else {
             return Redirect::back()->with('error', 'Sale not found');
         }
-
-
     }
 
     public function print(Request $request, $id)
@@ -224,7 +247,6 @@ class ReceiptController extends Controller
                 'total_in_words' => $total_in_words
             ]);
             return $pdf->download("$filename.pdf");
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -236,8 +258,6 @@ class ReceiptController extends Controller
                 return Redirect::route('dashboard')->with('error', 'Invoice not found');
             }
         }
-
-
     }
 
 

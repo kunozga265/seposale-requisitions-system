@@ -52,7 +52,7 @@
                             RECORD SALE
                         </jet-dropdown-link>
                         <div class="border-t border-gray-100"></div>
-                      
+
                         <jet-dropdown-link @click.native="addStockDialog = true" as="button" class="text-left">
                             Add Stock
                         </jet-dropdown-link>
@@ -157,6 +157,18 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
                         <div class="mb-2">
+                            <jet-label for="product" value="Link Product" />
+                            <select v-model="form.productId" id="product"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                required>
+                                <option value="0">---</option>
+                                <option v-for="(product, index) in products.data" :value="product.id" :key="index">
+                                    {{ product.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-2">
                             <jet-label for="name" value="Name" />
                             <jet-input id="name" type="text" class="block w-full" v-model="form.name"
                                 autocomplete="seposale-inventory-name" />
@@ -168,7 +180,7 @@
                                 autocomplete="seposale-inventory-unit" />
                         </div>
 
-                        <div class="p-2 mb-2">
+                        <div class="mb-2">
                             <jet-label for="cost" value="Cost" />
                             <jet-input id="cost" type="number" step="0.01" class="block w-full" v-model="form.cost"
                                 autocomplete="seposale-inventory-cost" />
@@ -180,7 +192,7 @@
                                 v-model="form.threshold" autocomplete="seposale-inventory-threshold" />
                         </div>
 
-                        <div class="flex items-center mb-2">
+                        <div class="flex items-center mb-2 md:col-span-2">
                             <input checked id="producible" type="checkbox" value="" v-model="form.producible"
                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                             <label for="producible"
@@ -530,7 +542,8 @@ import JetDropdown from "@/Jetstream/Dropdown.vue";
 export default {
     props: [
         'site',
-        'collections'
+        'collections',
+        'products',
     ],
     components: {
         JetDropdown, JetDropdownLink,
@@ -571,6 +584,7 @@ export default {
                 cost: 0,
                 threshold: 0,
                 producible: false,
+                productId: 0,
 
             }),
             chartOptions: {
@@ -740,8 +754,9 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
+                    product_id: this.form.productId
                 }))
-                .post(this.route('sites.inventories.store', { 'code': this.site.data.code }),{
+                .post(this.route('sites.inventories.store', { 'code': this.site.data.code }), {
                     preserveScroll: true,
                     onSuccess: () => {
                         this.addInventoryDialog = false

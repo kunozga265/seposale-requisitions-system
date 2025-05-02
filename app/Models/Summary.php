@@ -17,6 +17,11 @@ class Summary extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function receiptSummaries()
+    {
+        return $this->hasMany(ReceiptSummary::class);
+    }
+
     public function fullName()
     {
         if($this->variant != null){
@@ -39,6 +44,11 @@ class Summary extends Model
     public function delivery()
     {
         return $this->hasOne(Delivery::class);
+    }
+
+    public function siteSaleSummary()
+    {
+        return $this->hasOne(SiteSaleSummary::class, "id","site_sale_summary_id");
     }
 
     public function getPaymentStatus()
@@ -67,5 +77,7 @@ class Summary extends Model
         "quantity",
         "description",
         "units",
+        "status",
+        "site_sale_summary_id",
     ];
 }

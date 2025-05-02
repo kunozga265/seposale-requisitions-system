@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Http\Resources\SiteResource;
 use App\Http\Resources\SiteSaleSummaryResource;
+use App\Models\Product;
 use App\Models\Site;
 use App\Models\SiteSaleSummary;
 use Illuminate\Http\Request;
@@ -21,11 +23,14 @@ class SiteController extends Controller
                 //API Response
                 return response()->json(new SiteResource($site));
             } else {
+                //get products
+                $products = Product::orderBy("name","asc")->get();
 
                 //Web Response
                 return Inertia::render('Sites/Overview', [
                     'site' => new SiteResource($site),
                     'collections' => $site->pendingCollections(),
+                    "products" => ProductResource::collection($products),
                 ]);
             }
         } else {

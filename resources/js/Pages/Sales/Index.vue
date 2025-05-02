@@ -430,6 +430,9 @@
                                                 :overdue=" sale.product.overdue"
                                                 :is-solo="true"/>
                                         </td>
+                                        <td v-else>
+                                            -
+                                        </td>
 
                                     </tr>
                                     </tbody>

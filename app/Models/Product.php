@@ -16,6 +16,11 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class);
     }
 
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
+
     protected $fillable = [
         "name",
     ];

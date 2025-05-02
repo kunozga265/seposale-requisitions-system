@@ -33,6 +33,7 @@ class Production extends Model
         'date',
         "opening_stock",
         "closing_stock",
+        "expenses",
         "user_id",
         'site_id',
     ];

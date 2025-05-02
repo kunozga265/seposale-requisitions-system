@@ -22,6 +22,7 @@ class BatchResource extends JsonResource
             "balance" => $this->balance,
             "comments" => $this->comments,
             "photo" => $this->photo,
+            "readyDate" => $this->ready_date,
             "inventory" => $this->inventory,
             "user" => new UserResource($this->user),
         ];

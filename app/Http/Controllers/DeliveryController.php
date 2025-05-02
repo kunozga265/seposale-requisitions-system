@@ -25,24 +25,24 @@ class DeliveryController extends Controller
     public function index(Request $request)
     {
         $filter = strtolower($request->query("filter"));
-        if($filter == "all"){
-            $deliveries = Delivery::where("status", ">", 0)->orderBy("due_date","desc")->paginate(100);
+        if ($filter == "all") {
+            $deliveries = Delivery::where("status", ">", 0)->orderBy("due_date", "desc")->paginate(100);
             $headline = "all";
-        }else if ($filter == "completed"){
-            $deliveries = Delivery::where("status", 4)->orderBy("due_date","desc")->paginate(100);
+        } else if ($filter == "completed") {
+            $deliveries = Delivery::where("status", 4)->orderBy("due_date", "desc")->paginate(100);
             $headline = "completed";
-        }else if ($filter == "cancelled"){
-            $deliveries = Delivery::where("status", 3)->orderBy("due_date","desc")->paginate(100);
+        } else if ($filter == "cancelled") {
+            $deliveries = Delivery::where("status", 3)->orderBy("due_date", "desc")->paginate(100);
             $headline = "cancelled";
-        }else if ($filter == "delivered"){
-            $deliveries = Delivery::where("status", 2)->orderBy("due_date","desc")->paginate(100);
+        } else if ($filter == "delivered") {
+            $deliveries = Delivery::where("status", 2)->orderBy("due_date", "desc")->paginate(100);
             $headline = "delivered";
-        }else{
-            $deliveries = Delivery::where("status", 1)->orderBy("due_date","desc")->paginate(100);
+        } else {
+            $deliveries = Delivery::where("status", 1)->orderBy("due_date", "desc")->paginate(100);
             $headline = "processing";
         }
 
-//        dd((new AppController())->generateCompound(DeliveryResource::collection($deliveries)));
+        //        dd((new AppController())->generateCompound(DeliveryResource::collection($deliveries)));
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -50,9 +50,9 @@ class DeliveryController extends Controller
         else {
             //Web Response
             return Inertia::render('Deliveries/Index', [
-//                'deliveries' => (new AppController())->generateCompound(DeliveryResource::collection($deliveries)),
+                //                'deliveries' => (new AppController())->generateCompound(DeliveryResource::collection($deliveries)),
                 'deliveries' => DeliveryResource::collection($deliveries),
-                'headline'=>$headline
+                'headline' => $headline
             ]);
         }
     }
@@ -62,11 +62,20 @@ class DeliveryController extends Controller
     {
         //find out if the request is valid
         $delivery = Delivery::find($id);
-        $transporters = Transporter::orderBy("name","asc")->get();
-        $suppliers = Supplier::orderBy("name","asc")->get();
+        $transporters = Transporter::orderBy("name", "asc")->get();
+        $suppliers = Supplier::orderBy("name", "asc")->get();
 
         if (is_object($delivery)) {
-            if ((new AppController())->isApi($request)) {
+
+            if ($delivery->status == 0) {
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => "Delivery not initiated"], 404);
+                } else {
+                    //Web Response
+                    return Redirect::back()->with('error', 'Delivery not initiated');
+                }
+            } else if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(new DeliveryResource($delivery));
             } else {
@@ -100,25 +109,58 @@ class DeliveryController extends Controller
 
         if (is_object($summary)) {
 
-            if($summary->delivery->status == 0){
+            if ($summary->delivery == null) {
                 //Validate all the important attributes
                 $request->validate([
                     'delivery_date' => ['required'],
                 ]);
 
-                if($this->getPaymentStatus($summary->amount,$summary->balance) == 0){
+                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0) {
                     return Redirect::back()->with("error", "Product has not been paid for. Please update payment status first.");
                 }
 
+                if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
+                    $delivery = Delivery::create([
+                        "code" => $this->getCodeNumber(),
+                        'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
+                        "status" => 1,
+                        "quantity_delivered" => 0,
+                        "summary_id" => $summary->id,
+                        "tracking_number" => uniqid(),
+                        "due_date" => $request->delivery_date,
+                    ]);
+
+                    $summary->update([
+                        "status" => 1 //delivery for sale has been initiated
+                    ]);
+
+                    //Logging
+                    SystemLog::create([
+                        "user_id" => Auth::id(),
+                        "message" => "Delivery for {$summary->fullName()} has been initiated. Quantity to be delivered is {$summary->quantity}",
+                        "delivery_id" => $delivery->id,
+                    ]);
+                }
+            } else if ($summary->delivery->status == 0) {
+                //Validate all the important attributes
+                $request->validate([
+                    'delivery_date' => ['required'],
+                ]);
+
+                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0) {
+                    return Redirect::back()->with("error", "Product has not been paid for. Please update payment status first.");
+                }
 
                 $summary->delivery->update([
                     "code" => $this->getCodeNumber(),
                     "status" => 1,
                     "due_date" => $request->delivery_date,
-//                    "initiated_by" => isset($request->user_id) ? $request->user_id : $user->id
+                    //                    "initiated_by" => isset($request->user_id) ? $request->user_id : $user->id
                 ]);
 
-
+                $summary->update([
+                    "status" => 1 //delivery for sale has been initiated
+                ]);
 
                 //Logging
                 SystemLog::create([
@@ -126,8 +168,7 @@ class DeliveryController extends Controller
                     "message" => "Delivery for {$summary->fullName()} has been initiated. Quantity to be delivered is {$summary->quantity}",
                     "delivery_id" => $summary->delivery->id,
                 ]);
-
-            }else{
+            } else {
                 //Validate all the important attributes
                 $request->validate([
                     'quantity' => ['required'],
@@ -139,21 +180,21 @@ class DeliveryController extends Controller
 
                 $delivered_quantity = $summary->delivery->quantity_delivered;
                 $balance = $summary->quantity - $delivered_quantity;
-                if($request->quantity == 0){
+                if ($request->quantity == 0) {
                     return Redirect::back()->with("error", "Please enter quantity delivered");
-                }else if($balance < $request->quantity){
+                } else if ($balance < $request->quantity) {
                     return Redirect::back()->with("error", "Quantity is more than what is required");
-                }else{
+                } else {
                     $balance -= $request->quantity;
                     $delivered_quantity += $request->quantity;
                 }
 
-                $notes =[];
-                if($summary->delivery->notes != null){
+                $notes = [];
+                if ($summary->delivery->notes != null) {
                     $notes = json_decode($summary->delivery->notes);
                 }
 
-                $notes [] = [
+                $notes[] = [
                     "quantity" => $request->quantity,
                     "balance" => $balance,
                     "photo" => $request->photo,
@@ -185,32 +226,32 @@ class DeliveryController extends Controller
                 "editable" => false
             ]);
 
-            $filter = $summary->delivery->status == 1 ? "processing" : "completed";
+            // $filter = $summary->delivery->status == 1 ? "processing" : "completed";
 
             if ((new AppController())->isApi($request))
                 //API Response
                 return response()->json(new SaleResource($summary), 201);
             else {
                 //Web Response
-                return Redirect::route("deliveries.show",["id"=>$summary->delivery->id])->with('success', 'Delivery updated!');
+                return Redirect::back()->with('success', 'Delivery initiated!');
             }
         } else {
             return Redirect::back()->with('error', 'Delivery not found');
         }
     }
 
-    public function cancel(Request $request,$id)
+    public function cancel(Request $request, $id)
     {
         $delivery = Delivery::find($id);
 
         if (is_object($delivery)) {
             if ((new AppController())->isApi($request)) {
                 //API Response
-//                return response()->json(new SaleResource($delivery));
+                //                return response()->json(new SaleResource($delivery));
             } else {
 
                 $delivery->update([
-                   "status" => 3
+                    "status" => 3
                 ]);
 
                 //Logging
@@ -233,22 +274,22 @@ class DeliveryController extends Controller
         }
     }
 
-    public function complete(Request $request,$id)
+    public function complete(Request $request, $id)
     {
         $delivery = Delivery::find($id);
 
         if (is_object($delivery)) {
             if ((new AppController())->isApi($request)) {
                 //API Response
-//                return response()->json(new SaleResource($delivery));
+                //                return response()->json(new SaleResource($delivery));
             } else {
 
                 $request->validate([
-//                    'product' => ['required'],
-//                    'transportation' => ['required'],
+                    //                    'product' => ['required'],
+                    //                    'transportation' => ['required'],
                 ]);
 
-                foreach ($request->payables as $payable){
+                foreach ($request->payables as $payable) {
                     Payable::create([
                         "code" => (new PayableController())->getCodeNumber(),
                         "description" => $payable["name"],
@@ -288,17 +329,17 @@ class DeliveryController extends Controller
         }
     }
 
-    public function print(Request $request,$id)
+    public function print(Request $request, $id)
     {
         //find out if the request is valid
-        $delivery=Delivery::find($id);
+        $delivery = Delivery::find($id);
 
-        if(is_object($delivery)){
+        if (is_object($delivery)) {
 
-            $filename="DELIVERY-NOTE#".(new AppController())->getZeroedNumber($delivery->code)." - ".$delivery->summary->sale->client->name."-".date('Ymd',$delivery->summary->sale->date);
+            $filename = "DELIVERY-NOTE#" . (new AppController())->getZeroedNumber($delivery->code) . " - " . $delivery->summary->sale->client->name . "-" . date('Ymd', $delivery->summary->sale->date);
 
-            $now_d= \Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('F j, Y');
-            $now_t=Carbon::createFromTimestamp($delivery->summary->sale->date,'Africa/Lusaka')->format('H:i');
+            $now_d = \Illuminate\Support\Carbon::createFromTimestamp($delivery->summary->sale->date, 'Africa/Lusaka')->format('F j, Y');
+            $now_t = Carbon::createFromTimestamp($delivery->summary->sale->date, 'Africa/Lusaka')->format('H:i');
 
             $pdf = PDF::loadView('delivery', [
                 'date'              => $now_d,
@@ -306,16 +347,15 @@ class DeliveryController extends Controller
                 'delivery'           => $delivery,
             ]);
             return $pdf->download("$filename.pdf");
-
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Delivery not found"], 404);
-            }else{
+            } else {
 
 
                 //Web Response
-                return Redirect::route('dashboard')->with('error','Delivery not found');
+                return Redirect::route('dashboard')->with('error', 'Delivery not found');
             }
         }
     }
@@ -333,7 +373,7 @@ class DeliveryController extends Controller
 
     public function getPaymentStatus($amount, $balance): int
     {
-//        dump($balance);
+        //        dump($balance);
         if (isset($balance)) {
             if ($balance == $amount) {
                 return 0;

@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BatchResource;
 use App\Http\Resources\CollectionResource;
+use App\Http\Resources\DamageResource;
 use App\Http\Resources\InventoryResource;
+use App\Http\Resources\ProductResource;
 use App\Http\Resources\SiteSaleSummaryResource;
 use App\Models\Batch;
 use App\Models\Inventory;
+use App\Models\Product;
 use App\Models\Site;
 use App\Models\SystemLog;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -25,28 +29,53 @@ class InventoryController extends Controller
             //
             $inventory = $site->inventories()->where("id", $id)->first();
 
-            $summaries = $inventory->summaries;
-            $sales = [];
-            foreach ($summaries as $summary) {
-                $sales[] = [
-                    "id" => $summary->sale->id,
-                    "code" => (new AppController())->getZeroedNumber($summary->sale->code),
-                    "client" => $summary->sale->client,
-                    "date" => $summary->sale->date,
-                    "products" => [
-                        new SiteSaleSummaryResource($summary)
-                    ],
-                ];
-            }
+
 
             if (is_object($inventory)) {
+                //get sales
+                $summaries = $inventory->summaries()->latest()->get();
+                $sales = [];
+                foreach ($summaries as $summary) {
+                    $sales[] = [
+                        "id" => $summary->sale->id,
+                        "code" => (new AppController())->getZeroedNumber($summary->sale->code),
+                        "client" => $summary->sale->client,
+                        "date" => $summary->sale->date,
+                        "products" => [
+                            new SiteSaleSummaryResource($summary)
+                        ],
+                    ];
+                }
+
+                //get batches
                 $batches = $inventory->batches()->orderBy("date", "desc")->get();
+
+                //get items awaiting curation
+                $awaiting_curation = [];
+                if ($inventory->producible == 1) {
+                    $now = Carbon::now();
+                    $awaiting_curation = $inventory->batches()
+                        ->where("ready_date", "!=", null)
+                        ->where("ready_date", ">=", $now->getTimestamp())
+                        ->orderBy("ready_date", "asc")
+                        ->get();
+                }
+
+                //get damages
+                $damages = $inventory->damages()->orderBy("date", "desc")->get();
+               
+                //get products
+                $products = Product::orderBy("name","asc")->get();
+
                 return Inertia::render('Inventories/Show', [
                     "site" => $site,
                     "inventory" => new InventoryResource($inventory),
                     "sales" => $sales,
                     "collections" => CollectionResource::collection($inventory->collections),
                     "batches" => BatchResource::collection($batches),
+                    "awaitingCuration" => BatchResource::collection($awaiting_curation),
+                    "damages" => DamageResource::collection($damages),
+                    "products" => ProductResource::collection($products),
                 ]);
             } else {
                 if ((new AppController())->isApi($request)) {
@@ -81,6 +110,7 @@ class InventoryController extends Controller
                 'units' => ['required'],
                 'threshold' => ['required', "numeric", "gt:0"],
                 'cost' => ['required', "numeric", "gt:0"],
+                'product_id' => ['required'],
             ]);
 
             $inventory = Inventory::create([
@@ -89,6 +119,7 @@ class InventoryController extends Controller
                 "cost" => $request->cost,
                 "threshold" => $request->threshold,
                 "producible" => $request->producible,
+                "product_id" => $request->product_id,
                 "site_id" => $site->id,
                 "available_stock" => 0,
                 "uncollected_stock" => 0,
@@ -134,13 +165,14 @@ class InventoryController extends Controller
                 'units' => ['required'],
                 'threshold' => ['required', "numeric", "gt:0"],
                 'cost' => ['required', "numeric", "gt:0"],
+                'product_id' => ['required'],
             ]);
 
             $available_stock = 0;
             foreach ($request->batches as $batch_object) {
                 $batch = Batch::find($batch_object["id"]);
                 $batch->update([
-                    "balance"=> $batch_object["balance"],
+                    "balance" => $batch_object["balance"],
                 ]);
 
                 $available_stock += $batch_object["balance"];
@@ -154,11 +186,9 @@ class InventoryController extends Controller
                 "producible" => $request->producible,
                 'available_stock' => $available_stock,
                 'uncollected_stock' => $request->uncollected_stock,
+                'product_id' => $request->product_id,
             ]);
 
-           
-
-            
             //Logging
             SystemLog::create([
                 "user_id" => Auth::id(),
@@ -196,20 +226,18 @@ class InventoryController extends Controller
             $availableStock = $inventory->available_stock + $request->quantity;
 
             //if there is still available stock just append quantity
-            if($inventory->available_stock  >= 0 ){
+            if ($inventory->available_stock  >= 0) {
                 $batch_balance = $request->quantity;
-            }else{
+            } else {
                 //if adding new stock results in a SURPLUS of stock, set batch quantity to surplus
-                if($availableStock >= 0){
+                if ($availableStock >= 0) {
                     $batch_balance = $availableStock;
                 }
                 //if adding new stock results in a DEFICIT of stock, set batch quantity to 0
-                else{
+                else {
                     $batch_balance = 0;
                 }
             }
-
-           
 
             $inventory->update([
                 'available_stock' => $availableStock
@@ -258,4 +286,6 @@ class InventoryController extends Controller
             return Redirect::back()->with('error', 'Resource not found');
         }
     }
+
+   
 }

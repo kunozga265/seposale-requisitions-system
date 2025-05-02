@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Controllers\AppController;
 use App\Http\Controllers\DeliveryController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,7 +19,12 @@ class SummaryResource extends JsonResource
         return [
             "id" => $this->id,
             "client" => $this->sale->client,
-            "product" => $this->product,
+            "product" => [
+                "id" => $this->product,
+                "name" => $this->product->name,
+                "inventories" => InventoryResource::collection($this->product->inventories),
+            ],
+            "isService" => $this->product->id == (new AppController())->SERVICES_PRODUCT_ID,
             "variant" => $this->variant,
             "variantId" => intval($this->product_variant_id),
             "date" => $this->date,
@@ -33,9 +39,9 @@ class SummaryResource extends JsonResource
                 "status" => intval($this->delivery->status),
                 "expense" => new ExpenseResource($this->delivery->expense),
             ] : null,
-            "overdue" => $this->delivery != null ? $this->delivery->overdue() : false
+            "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
+            "status" => intval($this->status),
+            "siteSaleSummary" => new SiteSaleSummaryResource($this->siteSaleSummary),
         ];
     }
-
-
 }

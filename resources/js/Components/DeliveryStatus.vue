@@ -1,5 +1,5 @@
 <template>
-    <div @click="$emit('clickEvent')" class="flex justify-start items-center" :class="getDeliveryStatusClass()">
+    <div @click="$emit('clickEvent')" class="flex justify-start items-center cursor-pointer" :class="getDeliveryStatusClass()">
         <div>
             <i class="mdi text-xl" :class="getDeliveryStatusIcon()"></i>
         </div>

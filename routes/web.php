@@ -387,6 +387,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.store');
 
+        Route::post('/store/make-site-sale', [
+            "uses"  => "App\Http\Controllers\SaleController@makeSiteSale",
+            'roles' =>['employee','management']
+        ])->name('sales.make-site-sale');
+
         Route::get('/view/{id}', [
             "uses"  => "App\Http\Controllers\SaleController@show",
             'roles' =>['employee','management']
@@ -416,6 +421,8 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\SaleController@close",
             'roles' =>['employee','management']
         ])->name('sales.close');
+
+        
 
 
 

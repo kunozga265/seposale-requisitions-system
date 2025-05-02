@@ -225,12 +225,37 @@
                         <jet-label for="quantity" :value="material.name" />
                         <jet-input type="number" step="0.01" class="block w-full" v-model="material.quantity" />
                     </div>
-
+                    
                     <div class="my-2 md:col-span-2 text-gray-500 text-xs font-bold">Production Summary</div>
 
                     <div class="mb" v-for="(inventory, index) in form.inventories" :key="index + '-inventory'">
                         <jet-label for="quantity" :value="inventory.name" />
-                        <jet-input type="number" step="0.01" class="block w-full" v-model="inventory.quantity" />
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+                            <div>
+                                <div class="text-xs text-gray-500">Produced</div>
+                                <jet-input type="number" step="0.01" class="block w-full"
+                                    v-model="inventory.quantity" />
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Damages</div>
+                                <jet-input type="number" step="0.01" class="block w-full" v-model="inventory.damages" />
+                            </div>
+                            <div class="md:col-span-2">
+                                <div class="text-xs text-gray-500">Cure Date</div>
+                                <vue-date-time-picker color="#1a56db" v-model="inventory.date" />
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="my-2 md:col-span-2 text-gray-500 text-xs font-bold">Expenses</div>
+                    <div class="mb-4">
+                        <jet-label for="cementQuantity" value="Labour" />
+                        <jet-input type="number" step="0.01" class="block w-full" v-model="form.labour" required />
+                    </div>
+                    <div class="mb-4">
+                        <jet-label for="cementQuantity" value="Food" />
+                        <jet-input type="number" step="0.01" class="block w-full" v-model="form.food" required />
                     </div>
 
                 </div>
@@ -507,10 +532,12 @@ export default {
                 comments: "",
                 date: "",
                 photo: "",
-
+                
                 reportDate: "",
                 materials: [],
                 inventories: [],
+                labour: 0,
+                food: 0,
 
 
                 code: "",
@@ -589,6 +616,8 @@ export default {
                 "id": this.inventories.data[y].id,
                 "name": this.inventories.data[y].name,
                 "quantity": 0,
+                "damages": 0,
+                "date": null,
             })
 
         }
@@ -673,12 +702,13 @@ export default {
                 if (this.form.materials[y].type == "pebble-stone") {
                     this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.2).toFixed(2);
                 }
+
                 if (this.withSand) {
                     if (this.form.materials[y].type == "river-sand") {
-                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.4).toFixed(2);
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.2).toFixed(2);
                     }
                     if (this.form.materials[y].type == "quarry-dust") {
-                        this.form.materials[y].quantity = 0;
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.4).toFixed(2);
                     }
 
                 } else {
@@ -696,10 +726,10 @@ export default {
             for (let y in this.form.materials) {
                 if (this.withSand) {
                     if (this.form.materials[y].type == "river-sand") {
-                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.4).toFixed(2);
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.2).toFixed(2);
                     }
                     if (this.form.materials[y].type == "quarry-dust") {
-                        this.form.materials[y].quantity = 0;
+                        this.form.materials[y].quantity = (parseFloat(this.cementQuantity) * 0.4).toFixed(2);
                     }
 
                 } else {
@@ -763,7 +793,8 @@ export default {
                 .transform(data => ({
                     ...data,
                     date: (new Date(this.form.reportDate).getTime()) / 1000,
-                    materials: materials
+                    materials: materials,
+                    inventories: this.refactorInventories(),
                 }))
                 .post(this.route('production.store', { code: this.site.code }), {
                     preserveScroll: true,
@@ -772,6 +803,11 @@ export default {
                         this.cementQuantity = 0
                         for (let x in this.form.materials) {
                             this.form.materials[x].quantity = 0
+                        }
+                        for (let x in this.form.inventory) {
+                            this.form.inventory[x].quantity = 0
+                            this.form.inventory[x].damages = 0
+                            this.form.inventory[x].date = null
                         }
                     },
                 })
@@ -839,6 +875,22 @@ export default {
         getInventoryStatus(material) {
             return this.getInventoryStatusMessage(this.getStatus(material))
         },
+        refactorInventories() {
+            let arr = []
+
+            for (let y in this.form.inventories) {
+                arr.push({
+                    "id": this.form.inventories[y].id,
+                    "name": this.form.inventories[y].name,
+                    "quantity": this.form.inventories[y].quantity,
+                    "damages": this.form.inventories[y].damages,
+                    "date": this.getTimestampFromDate(this.form.inventories[y].date),
+                })
+            }
+
+            return arr
+
+        }
     }
 }
 </script>

@@ -31,6 +31,16 @@ class SiteSaleSummary extends Model
         return $this->hasMany(Collection::class,);
     }
 
+    public function receiptSummaries()
+    {
+        return $this->hasMany(ReceiptSummary::class);
+    }
+
+    public function delivery()
+    {
+        return $this->hasOne(Delivery::class);
+    }
+
     public function getPaymentStatus()
     {
         if (isset($this->balance)) {
@@ -78,5 +88,6 @@ class SiteSaleSummary extends Model
         "balance",
         "collected",
         "cost",
+        "status",
     ];
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Controllers\AppController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductionResource extends JsonResource
@@ -16,7 +17,7 @@ class ProductionResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "code" => $this->code,
+            "code" => (new AppController())->getZeroedNumber($this->code),
             "date" => floatval($this->date),
             "openingStock" => json_decode($this->opening_stock),
             "closingStock" => json_decode($this->closing_stock),

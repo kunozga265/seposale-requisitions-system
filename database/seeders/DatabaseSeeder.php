@@ -38,7 +38,8 @@ class DatabaseSeeder extends Seeder
 //         $this->call(TransporterTableSeeder::class);
 //         $this->call(AccountTableSeeder::class);
         //  $this->call(BatchTableSeeder::class);
-         $this->call(MaterialsTypeSeederTable::class);
+        //  $this->call(MaterialsTypeSeederTable::class);
+         $this->call(ReceiptSummariesSeeder::class);
 
 //        $expenses = Payable::all();
 //        foreach ($expenses as $expense) {

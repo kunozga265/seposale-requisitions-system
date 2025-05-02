@@ -13,6 +13,7 @@ use App\Models\PaymentMethod;
 use App\Models\Site;
 use App\Models\SiteSale;
 use App\Models\SiteSaleSummary;
+use App\Models\Summary;
 use App\Models\SystemLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ class SiteSaleController extends Controller
                     return Inertia::render('SiteSales/Show', [
                         'sale' => new SiteSaleResource($sale),
                         'paymentMethods' => $payment_methods,
-                          'accounts' => $accounts,
+                        'accounts' => $accounts,
                         "site" => $site,
                     ]);
                 }
@@ -76,7 +77,7 @@ class SiteSaleController extends Controller
             return Inertia::render('SiteSales/Create', [
                 "products" => InventoryResource::collection($products),
                 "clients" => ClientResource::collection($clients),
-                 'paymentMethods' => $payment_methods,
+                'paymentMethods' => $payment_methods,
                 "site" => $site,
             ]);
         } else {
@@ -119,19 +120,19 @@ class SiteSaleController extends Controller
             }
         }
 
-//        //Check if materials are not out of stock
-//        if ($out_of_stock) {
-//            if ((new AppController())->isApi($request)) {
-//                //API Response
-//                return response()->json(['message' => $error_message], 404);
-//            } else {
-//                //Web Response
-//                return Redirect::back()->with('error', $error_message);
-//            }
-//        }
+        //        //Check if materials are not out of stock
+        //        if ($out_of_stock) {
+        //            if ((new AppController())->isApi($request)) {
+        //                //API Response
+        //                return response()->json(['message' => $error_message], 404);
+        //            } else {
+        //                //Web Response
+        //                return Redirect::back()->with('error', $error_message);
+        //            }
+        //        }
 
- 
-        
+
+
         $sale = Cache::lock($user->id . ':sites.sales:store', 10)->get(function () use ($site, $user, $request) {
 
             //Validate all the important attributes
@@ -163,7 +164,7 @@ class SiteSaleController extends Controller
                 ]);
 
                 $client = Client::create([
-                    'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
+                    'serial' => (new AppController())->generateUniqueCode("CLIENT"),
                     'name' => $request->name,
                     'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                     'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
@@ -178,7 +179,7 @@ class SiteSaleController extends Controller
 
             $sale = SiteSale::create([
                 'code' => $this->getCodeNumber(),
-                'serial' =>  (new AppController())->generateUniqueCode("SITESALE"),
+                'serial' => (new AppController())->generateUniqueCode("SITESALE"),
                 'status' => 0,
                 'client_id' => $client->id,
                 'total' => $request->total,
@@ -193,13 +194,13 @@ class SiteSaleController extends Controller
                 'reference' => $request->reference,
             ]);
 
-//            //Logging
-//            SystemLog::create([
-//                "user_id" => Auth::id(),
-//                "message" => "{$site->name} Sale #{$sale->code} created for {$client->name}. Total amount is {$sale
-//        ->total}",
-//                "sale_id" => $sale->id,
-//            ]);
+            //            //Logging
+            //            SystemLog::create([
+            //                "user_id" => Auth::id(),
+            //                "message" => "{$site->name} Sale #{$sale->code} created for {$client->name}. Total amount is {$sale
+            //        ->total}",
+            //                "sale_id" => $sale->id,
+            //            ]);
 
             //attach products
             foreach ($request->products as $product) {
@@ -207,7 +208,7 @@ class SiteSaleController extends Controller
                 $cost = 0;
                 //update batches
                 $cost += $this->updateBatches($inventory, $product["quantity"]);
-                
+
                 $available_stock = $inventory->available_stock - $product["quantity"];
                 $uncollected_stock = $inventory->uncollected_stock + $product["quantity"];
 
@@ -228,8 +229,6 @@ class SiteSaleController extends Controller
             }
 
             return $sale;
-
-
         });
 
         if ((new AppController())->isApi($request))
@@ -238,14 +237,88 @@ class SiteSaleController extends Controller
         else {
             //Web Response
             if ($out_of_stock) {
-                    return Redirect::route('sites.overview', ['code' => $site->code])->with('warning', 'Sales created. But sold unavailable stock!');
-
-            }else{
+                return Redirect::route('sites.overview', ['code' => $site->code])->with('warning', 'Sales created. But sold unavailable stock!');
+            } else {
                 return Redirect::route('sites.overview', ['code' => $site->code])->with('success', 'Sale created!');
             }
-
         }
+    }
+    public function storeFromSale(Request $request, Summary $summary, Inventory $inventory)
+    {
+        $out_of_stock = $summary->quantity > $inventory->available_stock;
 
+        $siteSaleSummary = Cache::lock(Auth::id() . ':sites.sales:store-from-sale', 10)->get(function () use ($summary, $inventory) {
+
+            $inventory_summary = (new InventorySummaryController())->getSummary($inventory->site->id);
+
+            $sale = SiteSale::create([
+                'code' => $this->getCodeNumber(),
+                'serial' => (new AppController())->generateUniqueCode("SITESALE"),
+                'status' => 0,
+                'client_id' => $summary->sale->client->id,
+                'total' => $summary->amount,
+                'balance' => $summary->balance,
+                'date' => $summary->sale->date,
+                'editable' => false,
+                //Generated by
+                'user_id' => Auth::id(),
+                'site_id' => $inventory->site->id,
+                'inventory_summary_id' => $inventory_summary->id,
+                'payment_method_id' => 0,
+                'reference' => "",
+            ]);
+
+
+
+            $cost = 0;
+            //update batches
+            $cost += $this->updateBatches($inventory, $summary->quantity);
+
+            $available_stock = $inventory->available_stock - $summary->quantity;
+            $uncollected_stock = $inventory->uncollected_stock + $summary->quantity;
+
+            $inventory->update([
+                'available_stock' => $available_stock,
+                'uncollected_stock' => $uncollected_stock,
+            ]);
+
+            $siteSaleSummary = SiteSaleSummary::create([
+                "inventory_id" => $inventory->id,
+                "site_sale_id" => $sale->id,
+                "quantity" => $summary->quantity,
+                "amount" => $summary->amount,
+                "balance" => $summary->balance,
+                "collected" => 0,
+                "cost" => $cost,
+            ]);
+
+            //attach financials
+            foreach ($summary->receiptSummaries as $receiptSummary) {
+             
+                $receiptSummary->update([
+                    "site_sale_summary_id" => $siteSaleSummary->id,
+                ]);
+                $receiptSummary->receipt->update([
+                    "site_sale_id" => $sale->id,
+                ]);
+            }
+
+            return $siteSaleSummary;
+        });
+
+        return $siteSaleSummary;
+
+        // if ((new AppController())->isApi($request))
+        //     //API Response
+        //     return response()->json(new SiteSaleResource($sale), 201);
+        // else {
+        //     //Web Response
+        //     if ($out_of_stock) {
+        //         return Redirect::route('sites.overview', ['code' => $inventory->site->code])->with('warning', 'Sales created. But sold unavailable stock!');
+        //     } else {
+        //         return Redirect::route('sites.overview', ['code' => $inventory->site->code])->with('success', 'Sale created!');
+        //     }
+        // }
     }
 
     private function updateBatches(Inventory $inventory, $quantity)
@@ -258,11 +331,13 @@ class SiteSaleController extends Controller
                 $count = 0;
                 //get the last batch
                 if (!is_object($batch)) {
-                    $batch = $inventory->batches()->orderBy("date", "desc")->first();     
-                } 
+                    $batch = $inventory->batches()->orderBy("date", "desc")->first();
+                }
 
                 //if batch is zero, there is nothing to update just return the estimated cost
-                if($batch->balance == 0){
+                if (!is_object($batch)) {
+                    return $cost + $inventory->cost * $quantity;
+                } else if ($batch->balance == 0) {
                     return $cost + $batch->price * $quantity;
                 }
 
@@ -289,10 +364,9 @@ class SiteSaleController extends Controller
             } while ($quantity > 0);
 
             return $cost;
-        }else{
+        } else {
             return 0;
         }
-    
     }
 
 

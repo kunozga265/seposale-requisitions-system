@@ -174,7 +174,7 @@
               </div>
             </div>
           </div>
-          <div v-if="receipt.data.information != null" class="page-section md:col-span-2">
+          <div v-if="receipt.data.summaries.length > 0" class="page-section md:col-span-2">
             <div class="page-section-header">
               <div class="page-section-title">
                 Products and Services
@@ -206,7 +206,7 @@
                     <tbody>
                     <tr
                         class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                        v-for="(info,index) in receipt.data.information"
+                        v-for="(info,index) in receipt.data.summaries"
                         :key="index"
                     >
                       <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">

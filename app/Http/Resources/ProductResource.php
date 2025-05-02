@@ -18,6 +18,7 @@ class ProductResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "variants" => ProductVariantResource::collection($this->variants),
+            "inventories" => InventoryResource::collection($this->inventories),
         ];
     }
 }

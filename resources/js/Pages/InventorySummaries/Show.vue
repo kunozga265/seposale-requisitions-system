@@ -290,8 +290,8 @@
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Quantity</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Collected</th>
-                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Collection Status
-                                            </th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Collection Status</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Delivery Status</th>
                                         </tr>
                                         <tr>
                                             <!--                                            <th scope="col" class="p-2 pb-4 heading-font text-left">-->
@@ -388,9 +388,16 @@
                                                 }}
                                             </td>
 
-                                            <td class="">
-                                                <collection class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200" :client="sale.client" :product="sale.product" :is-solo="true"/>
+                                            <td class="px-2">
+                                                <collection v-if="sale.product.delivery == null" class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200" :client="sale.client" :product="sale.product" :is-solo="true"/>
+                                                <span v-else>-</span>
                                             </td>
+
+                                            <td class="px-2" v-if="sale.product.delivery != null">
+                                                    <delivery-status 
+                                                        class="mr-1" :productCompound="sale.product"
+                                                        :overdue="sale.product.overdue" :is-solo="true" @clickEvent="navigateToDelivery(sale.product.delivery.id)" />
+                                                </td>
 
                                         </tr>
                                         </tbody>
@@ -421,6 +428,7 @@ import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
 import {Money} from 'v-money'
 import Collection from "@/Components/Collection.vue";
+import DeliveryStatus from "@/Components/DeliveryStatus.vue";
 
 
 export default {
@@ -440,7 +448,9 @@ export default {
         JetValidationErrors,
         JetLabel,
         JetInput,
-        Money
+        Money,
+        DeliveryStatus
+
     },
     data() {
         return {
@@ -534,6 +544,10 @@ export default {
         },
         navigateToClient(id) {
             this.$inertia.get(this.route('clients.show', {'id': id}))
+        },
+        navigateToDelivery(id) {
+            console.log(id)
+            this.$inertia.get(this.route('deliveries.show', { 'id': id }))
         },
     }
 }

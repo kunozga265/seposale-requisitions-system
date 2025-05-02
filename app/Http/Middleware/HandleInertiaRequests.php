@@ -54,6 +54,7 @@ class HandleInertiaRequests extends Middleware
             'flash'=>function() use ($request){
                 return[
                     'info'      =>$request->session()->get('info'),
+                    'warning'      =>$request->session()->get('warning'),
                     'success'   =>$request->session()->get('success'),
                     'error'     =>$request->session()->get('error'),
                 ];

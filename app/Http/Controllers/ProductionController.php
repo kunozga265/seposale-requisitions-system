@@ -8,6 +8,7 @@ use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SiteResource;
 use App\Http\Resources\StockResource;
 use App\Models\Batch;
+use App\Models\Damage;
 use App\Models\Inventory;
 use App\Models\Material;
 use App\Models\Production;
@@ -51,12 +52,12 @@ class ProductionController extends Controller
                 $all = [];
                 foreach ($groupedUsages as $groupedUsage) {
                     $name = $groupedUsage[0]["material"]["name"];
-                    
+
                     $usages = [];
-                    foreach ($groupedUsage as $usage){
-                        $usages [] = $usage;
+                    foreach ($groupedUsage as $usage) {
+                        $usages[] = $usage;
                     }
-                  
+
                     $all[] = [
                         "name" => $name,
                         "usages" => $usages,
@@ -70,7 +71,7 @@ class ProductionController extends Controller
                     'materialsTypes' => $materials_types,
                     'productions' => ProductionResource::collection($productions),
                     'usages' => $all,
-                    'inventories' => InventoryResource::collection($site->inventories()->where('producible',1)->get()),
+                    'inventories' => InventoryResource::collection($site->inventories()->where('producible', 1)->get()),
                 ]);
             }
         } else {
@@ -92,7 +93,8 @@ class ProductionController extends Controller
 
             $request->validate([
                 "materials" => ["required"],
-                // "cement" => ["required"],
+                "labour" => ["required"],
+                "food" => ["required"],
                 "date" => ["required"],
             ]);
 
@@ -103,6 +105,35 @@ class ProductionController extends Controller
                     return Redirect::back()->with("error", "{$material->name} is out of stock");
                 }
             }
+
+            //check if damages can be recorded
+            $total_quantity = 0;
+            foreach ($request->inventories as $inventoryObject) {
+                $total_quantity += $inventoryObject["quantity"];
+
+                if ($inventoryObject["damages"] > 0) {
+                    $inventory = Inventory::find($inventoryObject["id"]);
+
+                    if ($inventory->stock() >= $inventoryObject["damages"]) {
+                        continue;
+                    } else {
+                        return Redirect::back()->with("error", "{$inventory->name} is out of stock cannot record damages");
+                    }
+                }
+                
+                if ($inventoryObject["quantity"] > 0) {
+                    
+                }
+            }
+
+            
+            if ($total_quantity == 0) {
+                return Redirect::back()->with("error", "No materials produced!");
+            }
+
+            // dd("". $total_quantity);
+
+            
 
             $closing_stock = [];
             $opening_stock = [];
@@ -121,6 +152,10 @@ class ProductionController extends Controller
                 "code" => $this->getCodeNumber(),
                 "opening_stock" => json_encode($opening_stock),
                 "closing_stock" => json_encode([]),
+                "expenses" => json_encode([
+                    "labour" => $request->labour,
+                    "food" => $request->food,
+                ]),
                 "date" => $request->date,
                 "user_id" => Auth::id(),
                 "site_id" => $site->id,
@@ -142,10 +177,11 @@ class ProductionController extends Controller
                     $request->date,
                     $production
                 );
+               
             }
 
             //average cost
-            $average_cost = $cost / count($request->materials);
+            $average_cost = ($cost + $request->labour + $request->food)/$total_quantity;
 
             foreach ($site->materials as $material) {
                 $closing_stock[] = [
@@ -163,28 +199,39 @@ class ProductionController extends Controller
 
             //Record materials produced
             foreach ($request->inventories as $inventoryObject) {
+                $inventory = Inventory::find($inventoryObject["id"]);
 
-                $inventory = Inventory::find($inventoryObject["id"]);   
+                if ($inventoryObject["quantity"] > 0) {
 
-                $availableStock = $inventory->available_stock + $inventoryObject["quantity"];
+                    $availableStock = $inventory->available_stock + $inventoryObject["quantity"];
 
-                $inventory->update([
-                    'available_stock' => $availableStock
-                ]);
-    
-                Batch::create([
-                    "date" => $request->date,
-                    "price" =>  $average_cost,
-                    "quantity" => $inventoryObject["quantity"],
-                    "balance" =>  $inventoryObject["quantity"],
-                    "photo" => null,
-                    "comments" => "",
-                    "inventory_id" => $inventory->id,
-                    "production_id" => $production->id,
-                    "user_id" => Auth::id(),
-                ]);
-                
+                    $inventory->update([
+                        'available_stock' => $availableStock
+                    ]);
+
+                    Batch::create([
+                        "date" => $request->date,
+                        "price" =>  $average_cost,
+                        "quantity" => $inventoryObject["quantity"],
+                        "balance" =>  $inventoryObject["quantity"],
+                        "ready_date" =>  $inventoryObject["date"],
+                        "photo" => null,
+                        "comments" => "",
+                        "inventory_id" => $inventory->id,
+                        "production_id" => $production->id,
+                        "user_id" => Auth::id(),
+                    ]);
+                }
+
+                if ($inventoryObject["damages"] > 0) {
+
+                    $this->recordDamages($inventory, $inventoryObject["damages"], $request->date, $production);
+                }
             }
+
+
+
+
 
 
             if ((new AppController())->isApi($request)) {
@@ -257,11 +304,64 @@ class ProductionController extends Controller
                 $quantity -= $count;
             } while ($quantity > 0);
 
-            return $cost/$total;
-        }else{
+            // dump("{$material->name} Cost: ". ($cost / $total));
+
+            return $cost / $total;
+        } else {
             return 0;
         }
-    
+    }
+
+    private function recordDamages($inventory, $quantity, $date, $production)
+    {
+        if ($quantity > 0) {
+            do {
+                $batch = $inventory->batches()->where("balance", ">", 0)->orderBy("date", "asc")->first();
+                $count = 0;
+                if (is_object($batch)) {
+                    //check if batch quantity is greater
+                    if ($batch->balance >= $quantity) {
+                        $count = $quantity;
+                        $balance = $batch->balance - $quantity;
+                    }
+                    //this branch if batch balance is lower
+                    else {
+                        $count = $batch->balance;
+                        $balance = 0;
+                    }
+
+                    // dd("Count: $count", "Quantity Remaining: $quantity", "Batch: $batch", "Balance: $balance");
+
+                    //update the balance
+                    $batch->update([
+                        "balance" => $balance,
+                    ]);
+                    //update the balance
+                    $q = $inventory->quantity - $count;
+                    $inventory->update([
+                        'quantity' => $q
+                    ]);
+
+                    //create a record of the transaction
+                    Damage::create([
+                        "date" => $date,
+                        "batch_id" => $batch->id,
+                        "inventory_id" => $inventory->id,
+                        "quantity" => $count,
+                        "production_id" => $production->id,
+                        "cost" => $batch->price * $count,
+                    ]);
+                } else {
+                    return Redirect::back()->with("error", "{$inventory->name} is out of stock");
+                }
+
+                $quantity -= $count;
+            } while ($quantity > 0);
+
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     private function getCodeNumber()

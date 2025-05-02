@@ -24,6 +24,9 @@ class InventoryResource extends JsonResource
             "uncollectedStock" => floatval($this->uncollected_stock),
             "threshold" => floatval($this->threshold),
             "producible" => $this->producible == 1 ? true : false,
+            "readyStock" => floatval($this->stock()),
+            "product" => $this->product,
+            "site" => $this->site,
         ];
     }
 }

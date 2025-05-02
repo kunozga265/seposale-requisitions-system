@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Account;
 use App\Models\Client;
 use App\Models\Delivery;
+use App\Models\Inventory;
 use App\Models\PaymentMethod;
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -194,7 +195,7 @@ class SaleController extends Controller
                 ]);
 
                 $client = Client::create([
-                    'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
+                    'serial' => (new AppController())->generateUniqueCode("CLIENT"),
                     'name' => $request->name,
                     'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                     'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
@@ -228,32 +229,32 @@ class SaleController extends Controller
             SystemLog::create([
                 "user_id" => Auth::id(),
                 "message" => "Sale #{$sale->code_alt} created for {$client->name}. Total amount is {$sale
-        ->total}",
+                    ->total}",
                 "sale_id" => $sale->id,
             ]);
 
             //attach products
             foreach ($request->products as $product) {
-//            $product_model = Product::find($product["id"]);
+                //            $product_model = Product::find($product["id"]);
                 $product_variant = ProductVariant::find($product["id"]);
-//            if (!is_object($product_variant)) {
-//                $product_model = Product::create([
-//                    "name" => $product["details"],
-//                ]);
-//
-//                $product_variant = ProductVariant::create([
-//                    "unit" => $product["units"],
-//                    "quantity" => 1,
-//                    "cost" => $product["unitCost"],
-//                    "product_id" => $product_model->id
-//                ]);
-//
-//                //Logging
-//                SystemLog::create([
-//                    "user_id" => Auth::id(),
-//                    "message" => "New Product ({$product_model->name}) automatically added into the system.",
-//                ]);
-//            }
+                //            if (!is_object($product_variant)) {
+                //                $product_model = Product::create([
+                //                    "name" => $product["details"],
+                //                ]);
+                //
+                //                $product_variant = ProductVariant::create([
+                //                    "unit" => $product["units"],
+                //                    "quantity" => 1,
+                //                    "cost" => $product["unitCost"],
+                //                    "product_id" => $product_model->id
+                //                ]);
+                //
+                //                //Logging
+                //                SystemLog::create([
+                //                    "user_id" => Auth::id(),
+                //                    "message" => "New Product ({$product_model->name}) automatically added into the system.",
+                //                ]);
+                //            }
 
                 $summary = Summary::create([
                     //If product not found add it under other
@@ -267,21 +268,9 @@ class SaleController extends Controller
                     "description" => $product["details"],
                     "units" => $product["units"],
                 ]);
-
-                if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
-                    Delivery::create([
-                        'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
-                        "status" => 0,
-                        "quantity_delivered" => 0,
-                        "summary_id" => $summary->id,
-                        "tracking_number" => uniqid()
-                    ]);
-                }
             }
 
             return $sale;
-
-
         });
 
         if ((new AppController())->isApi($request))
@@ -289,21 +278,21 @@ class SaleController extends Controller
             return response()->json(new SaleResource($sale), 201);
         else {
             //Web Response
-            return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale created!');
+            return Redirect::route('sales.index', ['section' => 'tabular'])->with('success', 'Sale created!');
         }
 
-//        create delivery note
+        //        create delivery note
 
 
-//        //Create Invoice
-//        (new InvoiceController())->storeFromSale($sale);
+        //        //Create Invoice
+        //        (new InvoiceController())->storeFromSale($sale);
 
         //Run notifications
-//        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+        //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
 
 
-//        $report = (new ReportController())->getCurrentReport();
-//        $report->requestForms()->attach($requestForm);
+        //        $report = (new ReportController())->getCurrentReport();
+        //        $report->requestForms()->attach($requestForm);
 
 
     }
@@ -346,7 +335,7 @@ class SaleController extends Controller
                     SystemLog::create([
                         "user_id" => Auth::id(),
                         "message" => "Sale #{$sale->code_alt} created for {$sale->client->name} from Quotation #{$quotation->code}. Total amount is {$sale
-        ->total}",
+                            ->total}",
                         "sale_id" => $sale->id,
                     ]);
 
@@ -354,26 +343,26 @@ class SaleController extends Controller
 
                     //attach products
                     foreach ($products as $product) {
-//            $product_model = Product::find($product["id"]);
+                        //            $product_model = Product::find($product["id"]);
                         $product_variant = ProductVariant::find($product->id);
-//                    if (!is_object($product_variant)) {
-//                        $product_model = Product::create([
-//                            "name" => $product->details,
-//                        ]);
-//
-//                        $product_variant = ProductVariant::create([
-//                            "unit" => $product->units,
-//                            "quantity" => 1,
-//                            "cost" => $product->unitCost,
-//                            "product_id" => $product_model->id
-//                        ]);
-//
-//                        //Logging
-//                        SystemLog::create([
-//                            "user_id" => Auth::id(),
-//                            "message" => "New Product ({$product_model->name}) automatically added into the system.",
-//                        ]);
-//                    }
+                        //                    if (!is_object($product_variant)) {
+                        //                        $product_model = Product::create([
+                        //                            "name" => $product->details,
+                        //                        ]);
+                        //
+                        //                        $product_variant = ProductVariant::create([
+                        //                            "unit" => $product->units,
+                        //                            "quantity" => 1,
+                        //                            "cost" => $product->unitCost,
+                        //                            "product_id" => $product_model->id
+                        //                        ]);
+                        //
+                        //                        //Logging
+                        //                        SystemLog::create([
+                        //                            "user_id" => Auth::id(),
+                        //                            "message" => "New Product ({$product_model->name}) automatically added into the system.",
+                        //                        ]);
+                        //                    }
 
                         $summary = Summary::create([
                             "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
@@ -389,14 +378,13 @@ class SaleController extends Controller
 
                         if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
                             Delivery::create([
-                                'serial' =>  (new AppController())->generateUniqueCode("DELIVERY"),
+                                'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
                                 "status" => 0,
                                 "quantity_delivered" => 0,
                                 "summary_id" => $summary->id,
                                 "tracking_number" => uniqid()
                             ]);
                         }
-
                     }
 
                     $quotation->update([
@@ -404,11 +392,10 @@ class SaleController extends Controller
                     ]);
 
                     return $sale;
-
                 });
 
-//                //Create Invoice
-//                (new InvoiceController())->storeFromSale($sale);
+                //                //Create Invoice
+                //                (new InvoiceController())->storeFromSale($sale);
 
 
                 //Web Response
@@ -423,6 +410,61 @@ class SaleController extends Controller
                 return Redirect::route('dashboard')->with('error', 'Quotation not found');
             }
         }
+    }
+
+    public function makeSiteSale(Request $request)
+    {
+        $request->validate([
+            "inventory_id"  => "required",
+            "summary_id"  => "required",
+            "delivery_method"  => "required",
+        ]);
+
+        if ($request->delivery_method == "delivery") {
+            $request->validate([
+                "delivery_date"  => "required",
+            ]);
+        }
+
+        $summary = Summary::find($request->summary_id);
+        $inventory = Inventory::find($request->inventory_id);
+
+        $siteSaleSummary = (new SiteSaleController())->storeFromSale($request, $summary, $inventory);
+        $status = 2; //sale has been transferred to oss for collection
+       
+
+        //update delivery details
+
+        if ($request->delivery_method == "delivery" && $summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
+            $delivery = Delivery::create([
+                "code" => (new DeliveryController())->getCodeNumber(),
+                'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
+                "status" => 1,
+                "quantity_delivered" => 0,
+                "summary_id" => $summary->id,
+                "site_sale_summary_id" => $siteSaleSummary->id,
+                "tracking_number" => uniqid(),
+                "due_date" => $request->delivery_date,
+            ]);
+
+            $status = 1; //delivery has been created for the sale
+
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Delivery for {$summary->fullName()} has been initiated. Quantity to be delivered is {$summary->quantity}",
+                "delivery_id" => $delivery->id,
+            ]);
+        }
+
+        $summary->update([
+            "status" => $status,
+            "site_sale_summary_id" => $siteSaleSummary->id  //sale has been transferred to branch
+        ]);
+
+
+        //Web Response
+        return Redirect::back()->with("success", "Sale has been transferred to {$inventory->site->name} Branch!");
     }
 
     public function show(Request $request, $id)
@@ -513,7 +555,7 @@ class SaleController extends Controller
                     ]);
 
                     $client = Client::create([
-                        'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
+                        'serial' => (new AppController())->generateUniqueCode("CLIENT"),
                         'name' => $request->name,
                         'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                         'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
@@ -552,24 +594,24 @@ class SaleController extends Controller
                 //attach products
                 foreach ($request->products as $product) {
                     $product_variant = ProductVariant::find($product["id"]);
-//                if (!is_object($product_variant)) {
-//                    $product_model = Product::create([
-//                        "name" => $product["details"],
-//                    ]);
-//
-//                    $product_variant = ProductVariant::create([
-//                        "unit" => $product["units"],
-//                        "quantity" => 1,
-//                        "cost" => $product["unitCost"],
-//                        "product_id" => $product_model->id
-//                    ]);
-//
-//                    //Logging
-//                    SystemLog::create([
-//                        "user_id" => Auth::id(),
-//                        "message" => "New Product ({$product_model->name}) automatically added into the system.",
-//                    ]);
-//                }
+                    //                if (!is_object($product_variant)) {
+                    //                    $product_model = Product::create([
+                    //                        "name" => $product["details"],
+                    //                    ]);
+                    //
+                    //                    $product_variant = ProductVariant::create([
+                    //                        "unit" => $product["units"],
+                    //                        "quantity" => 1,
+                    //                        "cost" => $product["unitCost"],
+                    //                        "product_id" => $product_model->id
+                    //                    ]);
+                    //
+                    //                    //Logging
+                    //                    SystemLog::create([
+                    //                        "user_id" => Auth::id(),
+                    //                        "message" => "New Product ({$product_model->name}) automatically added into the system.",
+                    //                    ]);
+                    //                }
 
                     $summary = Summary::create([
                         "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
@@ -583,15 +625,15 @@ class SaleController extends Controller
                         "units" => $product["units"],
                     ]);
 
-                    if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
-                        Delivery::create([
-                            'serial' =>  (new AppController())->generateUniqueCode("DELIVERY"),
-                            "status" => 0,
-                            "quantity_delivered" => 0,
-                            "summary_id" => $summary->id,
-                            "tracking_number" => uniqid()
-                        ]);
-                    }
+                    // if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
+                    //     Delivery::create([
+                    //         'serial' =>  (new AppController())->generateUniqueCode("DELIVERY"),
+                    //         "status" => 0,
+                    //         "quantity_delivered" => 0,
+                    //         "summary_id" => $summary->id,
+                    //         "tracking_number" => uniqid()
+                    //     ]);
+                    // }
 
                 }
 
@@ -603,18 +645,18 @@ class SaleController extends Controller
             });
 
             //Run notifications
-//        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+            //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
 
 
-//        $report = (new ReportController())->getCurrentReport();
-//        $report->requestForms()->attach($requestForm);
+            //        $report = (new ReportController())->getCurrentReport();
+            //        $report->requestForms()->attach($requestForm);
 
             if ((new AppController())->isApi($request))
                 //API Response
                 return response()->json(new SaleResource($sale), 201);
             else {
                 //Web Response
-                return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale updated!');
+                return Redirect::route('sales.index', ['section' => 'tabular'])->with('success', 'Sale updated!');
             }
         } else {
             return Redirect::back()->with('error', 'Sale not found');
@@ -654,7 +696,7 @@ class SaleController extends Controller
                 return response()->json(['message' => 'Sale has been deleted']);
             } else {
                 //Web Response
-                return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale has been deleted');
+                return Redirect::route('sales.index', ['section' => 'tabular'])->with('success', 'Sale has been deleted');
             }
         } else {
             if ((new AppController())->isApi($request)) {
@@ -691,7 +733,7 @@ class SaleController extends Controller
                 return response()->json(['message' => 'Sale has been closed']);
             } else {
                 //Web Response
-                return Redirect::route('sales.index',['section'=>'tabular'])->with('success', 'Sale has been closed');
+                return Redirect::route('sales.index', ['section' => 'tabular'])->with('success', 'Sale has been closed');
             }
         } else {
             if ((new AppController())->isApi($request)) {
@@ -737,7 +779,6 @@ class SaleController extends Controller
                 'total_in_words' => $total_in_words
             ]);
             return $pdf->download("$filename.pdf");
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
