@@ -103,7 +103,7 @@
                                     <a :href="fileUrl(collection.photo)" target="_blank">
                                         <!--                                                <div class=" h-10 w-10 flex justify-center items-center rounded-full bg-blue-700 cursor">-->
                                         <span class="text-blue-700 text-xs font-bold">Download</span>
-                                        <i class="text-blue-700 font-bold mdi mdi-download text-white"></i>
+                                        <i class="text-blue-700 font-bold mdi mdi-download"></i>
                                         <!--                                                </div>-->
                                     </a>
                                 </div>

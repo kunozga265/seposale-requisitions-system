@@ -212,8 +212,16 @@
 
                         <template #content>
                             <jet-validation-errors class="mb-4" />
+                            <div v-if="selectedProduct.paymentStatus == 0 && (checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management'))"
+                                class="flex items-center mb-4">
+                                <input checked id="backdate" type="checkbox" v-model="form.waiver"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="backdate"
+                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Waiver</label>
+                            </div>
 
-                            <div v-if="selectedProduct.paymentStatus == 0">
+                            <div v-if="selectedProduct.paymentStatus == 0 && !form.waiver">
+
                                 <div class="mb-4">
                                     Product has not been paid for. Please contact the accounts department to update
                                     payment status.
@@ -229,8 +237,6 @@
                                         class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Outsource
                                         Products?</label>
                                 </div>
-
-
 
                                 <div v-if="outsource">
                                     <div class="mb-2">
@@ -326,7 +332,7 @@
                                 Cancel
                             </secondary-button>
 
-                            <primary-button v-if="selectedProduct.paymentStatus != 0" class="ml-2"
+                            <primary-button v-if="selectedProduct.paymentStatus != 0 || form.waiver" class="ml-2"
                                 @click.native="updateDelivery">
                                 <svg v-show="form.processing" role="status"
                                     class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101"
@@ -426,7 +432,8 @@
                         <div class="page-section-content">
                             <div class="card">
                                 <div class="p-2 relative overflow-x-auto">
-                                    <table class="w-full  default-table text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <table
+                                        class="w-full  default-table text-sm text-left text-gray-500 dark:text-gray-400">
                                         <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                             <tr>
                                                 <th scope="col" class="heading-font">
@@ -504,10 +511,8 @@
                                                     <collection v-if="productCompound.status == 2"
                                                         class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                                         :client="sale.data.client"
-                                                        :product="productCompound.siteSaleSummary" 
-                                                        :is-solo="true" 
-                                                        :disabled="true" 
-                                                        />
+                                                        :product="productCompound.siteSaleSummary" :is-solo="true"
+                                                        :disabled="true" />
                                                     <span v-else>-</span>
                                                 </td>
 
@@ -517,7 +522,7 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                               
+
                                                 <th class="pt-4 pr-1 text-base heading-font font-bold text-right">Total
                                                 </th>
                                                 <td class="pt-4 pr-1 text-base font-bold text-right">
@@ -814,10 +819,9 @@ export default {
                 information: [],
                 inventoryId: 0,
                 deliveryMethod: null,
-
+                waiver: false,
             }),
             selectedProduct: null,
-
             outsource: false,
         }
     },

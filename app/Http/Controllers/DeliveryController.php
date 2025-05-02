@@ -113,9 +113,10 @@ class DeliveryController extends Controller
                 //Validate all the important attributes
                 $request->validate([
                     'delivery_date' => ['required'],
+                    'waiver' => ['required'],
                 ]);
 
-                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0) {
+                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0 && !$request->waiver) {
                     return Redirect::back()->with("error", "Product has not been paid for. Please update payment status first.");
                 }
 
@@ -145,9 +146,10 @@ class DeliveryController extends Controller
                 //Validate all the important attributes
                 $request->validate([
                     'delivery_date' => ['required'],
+                    'waiver' => ['required'],
                 ]);
 
-                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0) {
+                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0 && !$request->waiver) {
                     return Redirect::back()->with("error", "Product has not been paid for. Please update payment status first.");
                 }
 
