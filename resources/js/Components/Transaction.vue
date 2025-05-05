@@ -73,12 +73,22 @@
             <jet-input id="description" type="text" class="block w-full" v-model="form.description"
               autocomplete="description" />
           </div>
-          <div class="mb-2">
+          <div class="mb-2 md:col-span-2">
             <jet-label for="personCollectingAdvance" value="Total" />
             <money
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               v-bind="moneyMaskOptions" v-model="form.total" />
 
+          </div>
+          <div class="mb-2">
+            <jet-label for="receipt_code" value="Receipt Code" />
+            <jet-input id="receipt_code" type="text" class="block w-full" v-model="form.receiptCode"
+              autocomplete="receipt_code" />
+          </div>
+          <div class="mb-2">
+            <jet-label for="expense_code" value="Expense Code" />
+            <jet-input id="expense_code" type="text" class="block w-full" v-model="form.expenseCode"
+              autocomplete="expense_code" />
           </div>
 
         </div>
@@ -181,14 +191,14 @@ export default {
       error: "",
       // date: new Date(this.transaction.date*1000).toISOString().substr(0, 10),
       date: null,
-      expense: this.transaction.receipt,
-      receipt: this.transaction.receipt,
       form: this.$inertia.form({
         type: this.transaction.type,
         reference: this.transaction.reference,
         fromTo: this.transaction.fromTo,
         description: this.transaction.description,
         total: this.transaction.total,
+        expenseCode: this.transaction.expense != null ? this.transaction.expense.code : null,
+        receiptCode: this.transaction.receipt != null ? this.transaction.receipt.code : null,
       }),
       moneyMaskOptions: {
         decimal: '.',
@@ -239,8 +249,8 @@ export default {
           ...data,
           date: this.getTimestampFromDate(this.date),
           from_to: this.form.fromTo,
-          expense_code: this.expense != null? this.expense.code : null,
-          receipt_code: this.receipt != null? this.receipt.code : null,
+          expense_code: this.form.expenseCode,
+          receipt_code: this.form.receiptCode,
         }))
         .post(this.route('transactions.update', { 'id': this.transaction.id }), {
           // preserveScroll: true,
