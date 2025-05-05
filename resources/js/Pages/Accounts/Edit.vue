@@ -1,128 +1,124 @@
 <template>
   <app-layout>
     <template #header>
-      Edit Client
+      Edit Account
     </template>
 
     <template #breadcrumbs>
       <li aria-current="page">
         <div class="flex items-center">
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-               xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"></path>
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
           </svg>
-          <a :href="route('clients.index')" class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-            Clients
+          <a :href="route('accounts.index')"
+            class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+            Accounts
           </a>
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
+          </svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        #{{ client.data.name }}
-                    </span>
+            {{ account.data.name }}
+          </span>
         </div>
       </li>
     </template>
 
-      <div class="py-6">
-          <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-              <form @submit.prevent="submit">
-                  <div class="page-section">
-                      <div class="page-section-header">
-                          <div class="page-section-title">
-                              Details
-                          </div>
-                      </div>
-                      <div class="page-section-content flex justify-center">
+    <div class="py-6">
+      <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <form @submit.prevent="submit">
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
+                Details
+              </div>
+            </div>
+            <div class="page-section-content flex justify-center">
 
-                          <div class="card w-full sm:max-w-md md:max-w-3xl">
+              <div class="card w-full sm:max-w-md md:max-w-3xl">
 
-                              <jet-validation-errors class="mb-4"/>
+                <jet-validation-errors class="mb-4" />
 
-                              <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
-                                <div class="p-2 mb-2 md:col-span-2">
-                                  <div class="flex justify-between">
-                                    <jet-label for="name" value="Name"/>
-                                    <div class="flex items-center mb-2">
-                                      <input checked id="backdate" type="checkbox" value=""
-                                             v-model="form.organisation"
-                                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                      <label for="backdate"
-                                             class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Organisation</label>
-                                    </div>
-                                  </div>
 
-                                  <jet-input id="name" type="text" class="block w-full"
-                                             v-model="form.name"
-                                             autocomplete="seposale-customer-name"/>
-                                </div>
-
-                                <div v-show="form.organisation" class="p-2 mb-2 md:col-span-2">
-                                  <jet-label for="alias=name" value="Alias Name"/>
-                                  <jet-input id="alias-name" type="text" class="block w-full"
-                                             v-model="form.alias"
-                                             autocomplete="seposale-customer-alias-name"/>
-                                </div>
-
-                                <div class="p-2 mb-2">
-                                  <whatsapp-label title="Phone Number"/>
-                                  <jet-input id="phoneNumber" type="text" class="block w-full"
-                                             v-model="form.phoneNumber"
-                                             autocomplete="seposale-customer-phone-number"/>
-                                </div>
-
-                                <div class="p-2 mb-2">
-                                  <jet-label for="phoneNumber" value="Phone Number (Secondary)"/>
-                                  <jet-input id="phoneNumber" type="text" class="block w-full"
-                                             v-model="form.phoneNumberOther"
-                                             autocomplete="seposale-customer-phone-number-other"/>
-                                </div>
-
-                                <div class="p-2 mb-2">
-                                  <jet-label for="email" value="Email"/>
-                                  <jet-input id="email" type="email" class="block w-full"
-                                             v-model="form.email"
-                                             autocomplete="seposale-customer-email"/>
-                                </div>
-
-                                <div class="p-2 mb-2">
-                                  <jet-label for="address" value="Address"/>
-                                  <jet-input id="address" type="text" class="block w-full"
-                                             v-model="form.address"
-                                             autocomplete="seposale-customer-address"/>
-                                </div>
-
-                              </div>
-                          </div>
-                      </div>
+                  <div class="mb-2 ">
+                    <jet-label for="name" value="Account Name" />
+                    <jet-input id="name" type="text" class="block w-full" v-model="form.name"
+                      autocomplete="seposale-customer-name" />
                   </div>
 
-                  <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
-                      <div v-show="!validation" id="toast-danger"
-                           class="flex items-center w-full max-w-xs p-4 mb-4 text-red-700 bg-red-100 rounded-lg shadow dark:text-red-400 dark:bg-red-800"
-                           role="alert">
-                          <div
-                              class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
-                              <i class="mdi mdi-alert-circle text-2xl"></i>
-                          </div>
-                          <div class="ml-3 text-sm font-normal">{{ error }}</div>
-                      </div>
+                  <div class="mb-2">
+                    <jet-label for="number" value="Account Number" />
+                    <jet-input id="number" type="text" class="block w-full" v-model="form.number"
+                      autocomplete="seposale-customer-number" />
                   </div>
 
 
-                  <div class="text-center mt-8">
-                      <div v-show="validation">
-                          <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
-                                      :disabled="form.processing">
-                              Update
-                          </jet-button>
-                          <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
-                      </div>
+                  <div class=" mb-2">
+                    <jet-label for="branch" value="Branch" />
+                    <jet-input id="branch" type="text" class="block w-full" v-model="form.branch"
+                      autocomplete="seposale-customer-branch" />
                   </div>
-              </form>
+
+                  <div class="mb-2">
+                    <jet-label for="type" value="Type" />
+                    <jet-input id="type" type="text" class="block w-full" v-model="form.type"
+                      autocomplete="seposale-customer-type" placeholder="e.g. Savings" />
+                  </div>
+
+                  <div class="mb-2">
+                    <jet-label for="balance" value="Account Balance" />
+                    <money
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                      v-bind="moneyMaskOptions" v-model="form.balance" />
+                  </div>
+
+                  <div class="mb-4">
+                    <div class="text-mute text-sm mb-1">
+                      Upload Photo
+                    </div>
+                    <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                      class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
+                    <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+            </div>
           </div>
+
+          <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
+            <div v-show="!validation" id="toast-danger"
+              class="flex items-center w-full max-w-xs p-4 mb-4 text-red-700 bg-red-100 rounded-lg shadow dark:text-red-400 dark:bg-red-800"
+              role="alert">
+              <div
+                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+                <i class="mdi mdi-alert-circle text-2xl"></i>
+              </div>
+              <div class="ml-3 text-sm font-normal">{{ error }}</div>
+            </div>
+          </div>
+
+
+          <div class="text-center mt-8">
+            <div v-show="validation">
+              <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
+                :disabled="form.processing">
+                Update
+              </jet-button>
+              <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
+            </div>
+          </div>
+        </form>
       </div>
+    </div>
   </app-layout>
 </template>
 
@@ -133,63 +129,96 @@ import JetInput from '@/Jetstream/Input'
 import JetLabel from '@/Jetstream/Label'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import SecondaryButton from '@/Jetstream/SecondaryButton'
-import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import PrimaryButton from "@/Jetstream/Button.vue";
-import DialogModal from "@/Jetstream/DialogModal.vue";
-import WhatsappLabel from "@/Components/WhatsappLabel.vue";
+import { Money } from "v-money";
 
 export default {
-  props: ["client","products","clients"],
-  components: {
-    WhatsappLabel,
-    DialogModal, PrimaryButton,
-    AppLayout,
-    JetInput,
-    JetLabel,
-    JetButton,
-    JetValidationErrors,
-    SecondaryButton,
-    pdf,
-  },
-  data() {
-    return {
-      form: this.$inertia.form({
-        name: this.client.data.name,
-        phoneNumber: this.client.data.phoneNumber,
-        phoneNumberOther: this.client.data.phoneNumberOther,
-        email: this.client.data.email,
-        address: this.client.data.address,
-        organisation: this.client.data.organisation,
-        alias: this.client.data.alias,
-      }),
-      error: '',
-    }
-  },
-  created() {
-
-  },
-  computed: {
-      validation() {
-          if (this.form.name.length === 0) {
-              this.error = "Enter customer name"
-              return false
-          } else
-              return true
-
-      },
-  },
-  watch:{
-
-  },
-  methods: {
-    submit() {
-      this.form
-          .transform(data => ({
-            ...data,
-          }))
-          .post(this.route('clients.update',{id:this.client.data.id}))
+    props: ["account",],
+    components: {
+        Money,
+        PrimaryButton,
+        AppLayout,
+        JetInput,
+        JetLabel,
+        JetButton,
+        JetValidationErrors,
+        SecondaryButton,
+        Money,
     },
-  }
+    data() {
+        return {
+            form: this.$inertia.form({
+                name: this.account.data.name,
+                number: this.account.data.number,
+                photo: null,
+                branch: this.account.data.branch,
+                type: this.account.data.type,
+                balance: this.account.data.balance,
+            }),
+            error: '',
+            moneyMaskOptions: {
+                decimal: '.',
+                thousands: ',',
+                prefix: 'MK ',
+                suffix: '',
+                precision: 2,
+                masked: false
+            },
+        }
+    },
+    created() {
+
+
+    },
+    computed: {
+        validation() {
+            if (this.form.name.length === 0) {
+                this.error = "Enter account name"
+                return false
+            } else if (this.form.number.length === 0) {
+                this.error = "Enter account number"
+                return false
+            } if (this.form.name.type === 0) {
+                this.error = "Enter branch name"
+                return false
+            } else if (this.form.balance == 0) {
+                this.error = "Enter account balance"
+                return false
+            } else
+                return true
+
+        },
+    },
+    watch: {
+
+    },
+    methods: {
+        submit() {
+            this.form
+                .transform(data => ({
+                    ...data,
+                 
+                }))
+                .post(this.route('accounts.update',{id:this.account.data.id}))
+        },
+        photoUpload(file) {
+            const reader = new FileReader();
+            if (file) {
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+                        type: "OTHER",
+                        file: e.target.result
+                    }).then(res => {
+                        this.form.photo = res.data.file
+
+                    }).catch(function (res) {
+                        // this.form.errors.push(res.data.message)
+                    })
+                };
+            }
+        },
+    }
 
 }
 </script>

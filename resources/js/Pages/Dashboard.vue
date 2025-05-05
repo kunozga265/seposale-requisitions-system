@@ -325,6 +325,7 @@
 
                                     </div>
                                     <div
+                                    @click="navigateToAccount(account.id)"
                                         v-for="(account,index) in accounts" :key="index"
                                         class="record p-2 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                         <div class="flex items-center">
@@ -1700,6 +1701,9 @@ export default {
             }
             return status
         },
+        navigateToAccount(id) {
+      this.$inertia.get(this.route('accounts.show', {'id': id}))
+    },
 
 
     }

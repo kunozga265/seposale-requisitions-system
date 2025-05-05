@@ -668,6 +668,16 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\TransactionController@store",
             'roles' =>['accountant','management']
         ])->name('transactions.store');
+      
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\TransactionController@update",
+            'roles' =>['accountant','management']
+        ])->name('transactions.update');
+      
+        Route::post('/delete/{id}', [
+            "uses"  => "App\Http\Controllers\TransactionController@destroy",
+            'roles' =>['accountant','management']
+        ])->name('transactions.delete');
 
     });
 

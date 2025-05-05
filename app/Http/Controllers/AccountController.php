@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class AccountController extends Controller
@@ -55,6 +56,89 @@ class AccountController extends Controller
             }
         }
     }
+
+    public function create(Request $request)
+    {
+        return Inertia::render('Accounts/Create', []);
+    }
+
+    public function store(Request $request)
+    {
+
+        $request->validate([
+            'name' => ['required'],
+            'number' => ['required'],
+            'type' => ['required'],
+            'balance' => ['required'],
+        ]);
+
+        $client = Account::create([
+            "name" => $request->name,
+            "number" => $request->number,
+            "photo" => $request->photo,
+            "branch" => $request->branch,
+            "type" => $request->type,
+            "balance" => $request->balance,
+        ]);
+
+        //Web Response
+        return Redirect::route('accounts.index')->with('success', 'Account created!');
+    }
+
+    public function edit(Request $request, $id)
+    {
+        $account = Account::find($id);
+
+        if (is_object($account)) {
+
+            return Inertia::render('Accounts/Edit', [
+                'account' => new AccountResource($account),
+            ]);
+        } else {
+            return Redirect::back()->with('error', 'Account not found');
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $account = Account::find($id);
+
+        if (is_object($account)) {
+
+            //Validate all the important attributes
+            $request->validate([
+                'name' => ['required'],
+                'number' => ['required'],
+                'type' => ['required'],
+                'balance' => ['required'],
+            ]);
+
+            if (isset($request->photo)) {
+                if (file_exists($account->photo)) {
+                    Storage::disk("public_uploads")->delete($account->photo);
+                }
+                $photo = $request->photo;
+            } else {
+                $photo = $account->photo;
+            }
+
+            $account->update([
+                "name" => $request->name,
+                "photo" => $photo,
+                "number" => $request->number,
+                "branch" => $request->branch,
+                "type" => $request->type,
+                "balance" => $request->balance,
+            ]);
+
+            return Redirect::route('accounts.show', ["id" => $account->id])->with('success', 'Account updated!');
+            
+        } else {
+            return Redirect::back()->with('error', 'Quotation not found');
+        }
+    }
+
 
     public function transfer(Request $request, $id)
     {
@@ -144,7 +228,7 @@ class AccountController extends Controller
                 return response()->json(new AccountResource($accountFrom));
             } else {
                 //Web Response
-                return Redirect::back()->with("success","Successfully recorded the transactions");
+                return Redirect::back()->with("success", "Successfully recorded the transactions");
             }
         } else {
             if ((new AppController())->isApi($request)) {
@@ -156,5 +240,4 @@ class AccountController extends Controller
             }
         }
     }
-
 }

@@ -20,7 +20,7 @@
     </template>
 
     <template #actions>
-      <inertia-link :href="route('clients.create')">
+      <inertia-link :href="route('accounts.create')">
         <primary-button>
           New Account
         </primary-button>
@@ -76,7 +76,7 @@
                         class="border-b cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                         v-for="(account,index) in filteredAccounts" :key="index">
 
-                      <td class="p-2 text-left flex items-center"><img :src="fileUrl(account.photo)" :alt="account.name" class="w-6 rounded-full mr-2"/> {{ account.name }}</td>
+                      <td class="p-2 text-left flex items-center"><img v-show="account.photo != null" :src="fileUrl(account.photo)" :alt="account.name" class="w-6 rounded-full mr-2"/> {{ account.name }}</td>
                       <td class="p-2 text-left ">{{ account.number }}</td>
                       <td class="p-2 text-left ">{{ account.branch }}</td>
                       <td class="p-2 text-left ">{{ account.type }}</td>
