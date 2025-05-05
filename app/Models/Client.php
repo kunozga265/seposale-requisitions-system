@@ -16,6 +16,11 @@ class Client extends Model
         return $this->hasMany(Sale::class);
     }
 
+    public function receipts()
+    {
+        return $this->hasMany(Receipt::class);
+    }
+
     public function getName()
     {
         if($this->organisation != null && $this->alias != null){

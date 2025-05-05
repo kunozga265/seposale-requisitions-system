@@ -177,6 +177,59 @@
               </div>
             </div>
           </div>
+
+          <div class="page-section">
+          <div class="page-section-header">
+            <div class="page-section-title">
+              Receipts
+            </div>
+          </div>
+          <div class="page-section-content">
+
+            <div v-if="receipts.data.length === 0"
+                 class="text-center text-gray-400 md:col-span-2 text-sm">
+              No Receipts Found
+            </div>
+            <div v-else>
+
+              <div class="grid grid-cols-1 md:grid-cols-2">
+                <inertia-link :href="route('receipts.show', {id:receipt.id})" v-for="(receipt, index) in receipts.data" :key="index">
+                  <div class="app-card">
+                    <div class="header justify-between items-center border-b">
+                      <div>
+                        <div>
+                          <span
+                              class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
+                              getDate(receipt.date * 1000)
+                            }}</span>
+                        </div>
+                        <div class="type">#{{ receipt.code }}</div>
+
+
+                      </div>
+                      <div class="flex items-center ">
+                        <div class="currency ">MK</div>
+                        <div class="total">{{ numberWithCommas(receipt.amount) }}</div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="name font-normal ml-3 flex justify-between">
+                        <div>{{receipt.client.name}}</div>
+                        <div>{{receipt.paymentMethod}}</div>
+<!--                        <div>Issued By {{ receipt.generatedBy.firstName }} {{ receipt.generatedBy.middleName }}-->
+<!--                          {{ receipt.generatedBy.lastName }}</div>-->
+
+                      </div>
+                    </div>
+                  </div>
+                </inertia-link>
+              </div>
+
+
+
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
@@ -200,7 +253,7 @@ import SaleStatus from "@/Components/SaleStatus.vue";
 import Pagination from "@/Components/Pagination.vue";
 
 export default {
-  props: ['client', 'sales'],
+  props: ['client', 'sales','receipts'],
   components: {
     Pagination,
     SaleStatus,

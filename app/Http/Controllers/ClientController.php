@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ClientResource;
+use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -37,11 +38,13 @@ class ClientController extends Controller
                 //API Response
                 return response()->json(new ClientResource($client));
             } else {
-                $sales = $client->sales()->paginate(100);
+                $sales = $client->sales()->orderBy("date","desc")->get();
+                $receipts = $client->receipts()->orderBy("date","desc")->get();
                 //Web Response
                 return Inertia::render('Clients/Show', [
                     'client' => new ClientResource($client),
                     'sales' => SaleResource::collection($sales),
+                    'receipts' => ReceiptResource::collection($receipts),
                 ]);
             }
         } else {
