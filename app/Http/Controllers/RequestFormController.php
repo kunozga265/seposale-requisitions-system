@@ -69,7 +69,6 @@ class RequestFormController extends Controller
             //Requests section
             $activeRequests = RequestForm::where('approval_by_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
             $closedRequests = RequestForm::where('approval_by_id', $user->id)->where('approvalStatus', '>', 3)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
-
         } else {
             $totalRequests = $user->approvedRequests->count();
 
@@ -126,8 +125,8 @@ class RequestFormController extends Controller
         $vehicleMaintenanceRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'VEHICLE_MAINTENANCE')->count();
         $fuelRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'FUEL')->count();
 
-        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->get();
-        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->get();
+        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->get();
+        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->get();
         $reconciled = RequestForm::where('approvalStatus', 4)->paginate((new AppController())->paginate);
 
         $awaitingInitiationCount = $awaitingInitiation->count();
@@ -303,7 +302,7 @@ class RequestFormController extends Controller
                 'type' => $request->type,
                 'personCollectingAdvance' => $request->personCollectingAdvance,
                 'purpose' => $request->purpose,
-//                'project_id'                    =>  $request->projectId,
+                //                'project_id'                    =>  $request->projectId,
                 'information' => json_encode($request->information),
                 'total' => $request->total,
 
@@ -328,7 +327,6 @@ class RequestFormController extends Controller
 
             //Run notifications
             (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
-
         } elseif ($request->type == "VEHICLE_MAINTENANCE") {
 
             //Validate all the important attributes
@@ -387,7 +385,6 @@ class RequestFormController extends Controller
 
             //Run notifications
             (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
-
         } elseif ($request->type == "FUEL") {
 
             //Validate all the important attributes
@@ -458,7 +455,6 @@ class RequestFormController extends Controller
 
             //Run notifications
             (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -514,7 +510,7 @@ class RequestFormController extends Controller
             $information = [];
             $total = 0;
             if ($request->expenses["transportation"]["check"]) {
-                $information [] = [
+                $information[] = [
                     "details" => 'Transportation',
                     "units" => 'Unit',
                     "quantity" => 1,
@@ -526,7 +522,7 @@ class RequestFormController extends Controller
                 $total += $request->expenses["transportation"]["amount"];
             }
             if ($request->expenses["product"]["check"]) {
-                $information [] = [
+                $information[] = [
                     "details" => "Product Cost ({$summary->description})",
                     "units" => '',
                     "quantity" => 1,
@@ -538,7 +534,7 @@ class RequestFormController extends Controller
                 $total += $request->expenses["product"]["amount"];
             }
             if ($request->expenses["other"]["check"]) {
-                $information [] = [
+                $information[] = [
                     "details" => $request->expenses["other"]["description"],
                     "units" => '',
                     "quantity" => 1,
@@ -558,7 +554,7 @@ class RequestFormController extends Controller
                 'type' => "REQUISITION",
                 'personCollectingAdvance' => $request->personCollectingAdvance,
                 'purpose' => "Costs under SALE ORDER: #LL{$summary->sale->formattedCode()}",
-//                'project_id'                    =>  $request->projectId,
+                //                'project_id'                    =>  $request->projectId,
                 'information' => json_encode($information),
                 'total' => $total,
 
@@ -599,7 +595,6 @@ class RequestFormController extends Controller
         } else {
             return Redirect::back()->with('error', 'Delivery not found');
         }
-
     }
 
 
@@ -636,7 +631,7 @@ class RequestFormController extends Controller
         $total = 0;
         foreach ($request->payables as $payable) {
 
-            $information [] = [
+            $information[] = [
                 "details" => $payable["description"],
                 "units" => 'Unit',
                 "quantity" => 1,
@@ -701,8 +696,6 @@ class RequestFormController extends Controller
             //Web Response
             return Redirect::route('dashboard')->with('success', 'Request created!');
         }
-
-
     }
 
 
@@ -734,15 +727,15 @@ class RequestFormController extends Controller
             //check if request can be approved, if it is in pending state
             if ($requestForm->approvalStatus == 0) {
                 //check if the user is the owner of the request
-               if ($requestForm->user->id == $user->id) {
-                   if ((new AppController())->isApi($request)) {
-                       //API Response
-                       return response()->json(['message' => "You cannot approve your own request form"], 405);
-                   } else {
-                       //Web Response
-                       return Redirect::back()->with('error', 'You cannot approve your own request form');
-                   }
-               }
+                if ($requestForm->user->id == $user->id) {
+                    if ((new AppController())->isApi($request)) {
+                        //API Response
+                        return response()->json(['message' => "You cannot approve your own request form"], 405);
+                    } else {
+                        //Web Response
+                        return Redirect::back()->with('error', 'You cannot approve your own request form');
+                    }
+                }
 
 
                 //check whether it needs a stage or management approval
@@ -776,7 +769,6 @@ class RequestFormController extends Controller
                             //Web Response
                             return Redirect::back()->with('success', 'Request approved');
                         }
-
                     } else {
                         if ((new AppController())->isApi($request)) {
                             //API Response
@@ -820,7 +812,6 @@ class RequestFormController extends Controller
                                 'editable' => false,
                                 'denied_by_id' => null,
                             ]);
-
                         } //there are no more stages
                         else {
 
@@ -849,7 +840,6 @@ class RequestFormController extends Controller
                             //Web Response
                             return Redirect::back()->with('success', 'Request approved');
                         }
-
                     } else {
                         if ((new AppController())->isApi($request)) {
                             //API Response
@@ -860,7 +850,6 @@ class RequestFormController extends Controller
                         }
                     }
                 }
-
             } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
@@ -870,7 +859,6 @@ class RequestFormController extends Controller
                     return Redirect::back()->with('error', 'Request cannot be approved');
                 }
             }
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -929,7 +917,6 @@ class RequestFormController extends Controller
                             //Web Response
                             return Redirect::back()->with('success', 'Request denied');
                         }
-
                     } else {
                         if ((new AppController())->isApi($request)) {
                             //API Response
@@ -963,7 +950,6 @@ class RequestFormController extends Controller
                             //Web Response
                             return Redirect::back()->with('success', 'Request denied');
                         }
-
                     } else {
                         if ((new AppController())->isApi($request)) {
                             //API Response
@@ -974,7 +960,6 @@ class RequestFormController extends Controller
                         }
                     }
                 }
-
             } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
@@ -984,7 +969,6 @@ class RequestFormController extends Controller
                     return Redirect::back()->with('error', 'Request cannot be denied');
                 }
             }
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -1110,15 +1094,13 @@ class RequestFormController extends Controller
                     $requestForm->update([
                         'personCollectingAdvance' => $request->personCollectingAdvance,
                         'purpose' => $request->purpose,
-//                        'project_id'                    =>  $request->projectId,
+                        //                        'project_id'                    =>  $request->projectId,
                         'information' => json_encode($request->information),
                         'total' => $request->total,
                         'quotes' => json_encode($request->quotes ?? []),
                         'approvalStatus' => 0,
                         'editable' => $approvedByUsers->isEmpty(),
                     ]);
-
-
                 } elseif ($requestForm->type == "VEHICLE_MAINTENANCE") {
 
                     //Validate all the important attributes
@@ -1144,7 +1126,6 @@ class RequestFormController extends Controller
                         'approvalStatus' => 0,
                         'editable' => $approvedByUsers->isEmpty(),
                     ]);
-
                 } elseif ($requestForm->type == "FUEL") {
 
                     //Validate all the important attributes
@@ -1179,7 +1160,6 @@ class RequestFormController extends Controller
                         'approvalStatus' => 0,
                         'editable' => $approvedByUsers->isEmpty(),
                     ]);
-
                 } else {
                     if ((new AppController())->isApi($request)) {
                         //API Response
@@ -1198,9 +1178,7 @@ class RequestFormController extends Controller
                     return Redirect::back()->with('error', 'Request cannot be edited');
                 }
             }
-
-        } else {
-            {
+        } else { {
                 if ((new AppController())->isApi($request)) {
                     //API Response
                     return response()->json(['message' => "Request form not found"], 404);
@@ -1307,7 +1285,6 @@ class RequestFormController extends Controller
                         //Web Response
                         return Redirect::back()->with('success', 'Remark added');
                     }
-
                 } else {
                     if ((new AppController())->isApi($request)) {
                         //API Response
@@ -1326,7 +1303,6 @@ class RequestFormController extends Controller
                     return Redirect::back()->with('error', 'Request cannot be edited');
                 }
             }
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -1415,43 +1391,44 @@ class RequestFormController extends Controller
                             $sale_id = $requestForm->delivery->summary->sale->id;
                         }
 
-                        $expense = Expense::create([
-                            "code" => (new ExpenseController())->getCodeNumber(),
-                            "description" => $info["details"],
-                            "total" => $info["totalCost"],
-                            "date" => $info["date"],
-                            "contents" => json_encode([
-                                "comments" => $info["comments"]
-                            ]),
-                            "expense_type_id" => $info["expenseTypeId"],
-                            "request_id" => $requestForm->id,
-                            "transporter_id" => $info["transporterId"],
-                            "supplier_id" => $info["supplierId"],
-                            "delivery_id" => $requestForm->delivery_id,
-                            "sale_id" => $sale_id,
-                            "account_id" => $request->account_id,
-                            "reference" => $request->reference,
-                        ]);
+                        if ($info["amount"] > 0) {
+                            $expense = Expense::create([
+                                "code" => (new ExpenseController())->getCodeNumber(),
+                                "description" => $info["details"],
+                                "total" => $info["amount"],
+                                "date" => $info["date"],
+                                "contents" => json_encode([
+                                    "comments" => $info["comments"]
+                                ]),
+                                "expense_type_id" => $info["expenseTypeId"],
+                                "request_id" => $requestForm->id,
+                                "transporter_id" => $info["transporterId"],
+                                "supplier_id" => $info["supplierId"],
+                                "delivery_id" => $requestForm->delivery_id,
+                                "sale_id" => $sale_id,
+                                "account_id" => $request->account_id,
+                                "reference" => $request->reference,
+                            ]);
 
-                        $balance = $expense->account->balance - $expense->total;
-                        $expense->account->update([
-                            "balance" => $balance
-                        ]);
+                            $balance = $expense->account->balance - $expense->total;
+                            $expense->account->update([
+                                "balance" => $balance
+                            ]);
 
 
-                        Transaction::create([
-                            "date" => $expense->date,
-                            "reference" => strtoupper($expense->reference),
-                            "description" => $expense->description,
-                            "from_to" => $request->from_to,
-                            "expense_id" => $expense->id,
-                            "receipt_id" => null,
-                            "account_id" => $expense->account->id,
-                            "total" => $expense->total,
-                            "balance" => $balance,
-                            "type" => "DEBIT",
-                        ]);
-
+                            Transaction::create([
+                                "date" => $expense->date,
+                                "reference" => strtoupper($expense->reference),
+                                "description" => $expense->description,
+                                "from_to" => $request->from_to,
+                                "expense_id" => $expense->id,
+                                "receipt_id" => null,
+                                "account_id" => $expense->account->id,
+                                "total" => $expense->total,
+                                "balance" => $balance,
+                                "type" => "DEBIT",
+                            ]);
+                        }
                     }
 
                     $requestForm->update([
@@ -1478,7 +1455,6 @@ class RequestFormController extends Controller
                         //Web Response
                         return Redirect::back()->with('success', 'Request initiated');
                     }
-
                 } else {
                     if ((new AppController())->isApi($request)) {
                         //API Response
@@ -1488,7 +1464,6 @@ class RequestFormController extends Controller
                         return Redirect::back()->with('error', 'Request is already initiated');
                     }
                 }
-
             } elseif ($requestForm->approvalStatus == 0) {
                 if ((new AppController())->isApi($request)) {
                     //API Response
@@ -1497,7 +1472,6 @@ class RequestFormController extends Controller
                     //Web Response
                     return Redirect::back()->with('error', 'Request is still pending');
                 }
-
             } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
@@ -1516,7 +1490,6 @@ class RequestFormController extends Controller
                 return Redirect::back()->with('error', 'Request form not found');
             }
         }
-
     }
 
     public function reconcile(Request $request, $id)
@@ -1568,7 +1541,6 @@ class RequestFormController extends Controller
                         //Web Response
                         return Redirect::back()->with('success', 'Request reconciled');
                     }
-
                 } else {
                     if ((new AppController())->isApi($request)) {
                         //API Response
@@ -1578,7 +1550,6 @@ class RequestFormController extends Controller
                         return Redirect::back()->with('error', 'Request is already reconciled');
                     }
                 }
-
             } elseif ($requestForm->approvalStatus == 0) {
 
                 if ((new AppController())->isApi($request)) {
@@ -1588,7 +1559,6 @@ class RequestFormController extends Controller
                     //Web Response
                     return Redirect::back()->with('error', 'Request cannot be reconciled');
                 }
-
             } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
@@ -1598,7 +1568,6 @@ class RequestFormController extends Controller
                     return Redirect::back()->with('error', 'Request cannot be reconciled');
                 }
             }
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -1608,7 +1577,6 @@ class RequestFormController extends Controller
                 return Redirect::back()->with('error', 'Request form not found');
             }
         }
-
     }
 
     public function findRequestForm(Request $request, $code)
@@ -1663,7 +1631,6 @@ class RequestFormController extends Controller
                 'requestForm' => new RequestFormResource($requestForm)
             ]);
             return $pdf->download("$filename.pdf");
-
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -1688,7 +1655,6 @@ class RequestFormController extends Controller
                 return "Vehicle Maintenance Request";
             default:
                 return "Fuel Request";
-
         }
     }
 

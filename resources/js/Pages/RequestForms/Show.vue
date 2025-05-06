@@ -9,38 +9,37 @@
         <div class="flex items-center">
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"></path>
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
           </svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Request
-                    </span>
+            Request
+          </span>
         </div>
       </li>
     </template>
 
     <template #actions>
-      <a :href="route('request-forms.print',{'id':request.data.id})" target="_blank">
+      <a :href="route('request-forms.print', { 'id': request.data.id })" target="_blank">
         <primary-button>Print</primary-button>
       </a>
 
-      <span v-if="request.data.approvalStatus<4">
-               <primary-button v-if="request.data.canEdit" @click.native="edit">Edit</primary-button>
-               <danger-button v-if="request.data.canDelete" @click.native="deleteDialog=true">Delete</danger-button>
-               <danger-button v-if="request.data.canDiscard" @click.native="discardDialog=true">Discard</danger-button>
+      <span v-if="request.data.approvalStatus < 4">
+        <primary-button v-if="request.data.canEdit" @click.native="edit">Edit</primary-button>
+        <danger-button v-if="request.data.canDelete" @click.native="deleteDialog = true">Delete</danger-button>
+        <danger-button v-if="request.data.canDiscard" @click.native="discardDialog = true">Discard</danger-button>
 
-               <primary-button v-if="request.data.canApproveOrDeny"
-                               @click.native="approveDialog=true">Approve</primary-button>
-               <danger-button v-if="request.data.canApproveOrDeny" @click.native="denyDialog=true">Deny</danger-button>
+        <primary-button v-if="request.data.canApproveOrDeny"
+          @click.native="approveDialog = true">Approve</primary-button>
+        <danger-button v-if="request.data.canApproveOrDeny" @click.native="denyDialog = true">Deny</danger-button>
 
-               <primary-button v-if="request.data.canInitiate"
-                               @click.native="initiateDialog=true">Initiate</primary-button>
-               <primary-button v-if="request.data.canReconcile"
-                               @click.native="reconcileDialog=true">Reconcile</primary-button>
-           </span>
+        <primary-button v-if="request.data.canInitiate" @click.native="initiateDialog = true">Initiate</primary-button>
+        <primary-button v-if="request.data.canReconcile"
+          @click.native="reconcileDialog = true">Reconcile</primary-button>
+      </span>
     </template>
 
-    <dialog-modal :show="deleteDialog" @close="deleteDialog=false">
+    <dialog-modal :show="deleteDialog" @close="deleteDialog = false">
       <template #title>
         Delete Request
       </template>
@@ -51,26 +50,26 @@
       </template>
 
       <template #footer>
-        <secondary-button @click.native="deleteDialog=false">
+        <secondary-button @click.native="deleteDialog = false">
           Cancel
         </secondary-button>
 
         <danger-button class="ml-2" @click.native="deleteRequest">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
           Proceed
         </danger-button>
       </template>
     </dialog-modal>
 
-    <dialog-modal :show="discardDialog" @close="discardDialog=false">
+    <dialog-modal :show="discardDialog" @close="discardDialog = false">
       <template #title>
         Discard Request
       </template>
@@ -81,26 +80,26 @@
       </template>
 
       <template #footer>
-        <secondary-button @click.native="discardDialog=false">
+        <secondary-button @click.native="discardDialog = false">
           Cancel
         </secondary-button>
 
         <danger-button class="ml-2" @click.native="discardRequest">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
           Proceed
         </danger-button>
       </template>
     </dialog-modal>
 
-    <dialog-modal :show="approveDialog" @close="approveDialog=false">
+    <dialog-modal :show="approveDialog" @close="approveDialog = false">
       <template #title>
         Approve Request
       </template>
@@ -112,30 +111,30 @@
         <!--                  <jet-validation-errors class="mb-4" />-->
 
         <textarea v-model="form.remarks" placeholder="Please leave remarks (Optional)"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
       </template>
 
       <template #footer>
-        <secondary-button @click.native="approveDialog=false">
+        <secondary-button @click.native="approveDialog = false">
           Cancel
         </secondary-button>
 
         <primary-button class="ml-2" @click.native="approve" :disabled="form.processing">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
           Proceed
         </primary-button>
       </template>
     </dialog-modal>
 
-    <dialog-modal :show="denyDialog" @close="denyDialog=false">
+    <dialog-modal :show="denyDialog" @close="denyDialog = false">
       <template #title>
         Deny Request
       </template>
@@ -144,33 +143,33 @@
         <div class="mb-2">
           Are you sure you want to deny this request?
         </div>
-        <jet-validation-errors class="mb-4"/>
+        <jet-validation-errors class="mb-4" />
 
         <textarea v-model="form.remarks" placeholder="Please leave remarks (Required)"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
+          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
       </template>
 
       <template #footer>
-        <secondary-button @click.native="denyDialog=false">
+        <secondary-button @click.native="denyDialog = false">
           Cancel
         </secondary-button>
 
         <danger-button class="ml-2" @click.native="denyRequest" :disabled="form.processing">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
 
           Proceed
         </danger-button>
       </template>
     </dialog-modal>
-    <dialog-modal :show="initiateDialog" @close="initiateDialog=false">
+    <dialog-modal :show="initiateDialog" @close="initiateDialog = false">
       <template #title>
         Initiate Request
       </template>
@@ -183,88 +182,98 @@
           </div>
         </div>
 
-        <div class="mb-4">
-          <jet-label for="paymentMethod" value="Select Account"/>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+         
+
+        <div class="mb-2 md:col-span-2">
+          <jet-label for="paymentMethod" value="Select Account" />
           <select v-model="accountIndex" id="paymentMethod"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                  required>
-            <option v-for="(account, index) in accounts" :value="index"
-                    :key="index">
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+            required>
+            <option v-for="(account, index) in accounts" :value="index" :key="index">
               {{ account.name }}
             </option>
           </select>
-          <div v-if="account != null" class="mt-1 text-xs text-gray-500"
-               :class="{'text-red-500':!balanceValidate}">Balance:
+          <div v-if="account != null" class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': !balanceValidate }">
+            Balance:
             MK{{ numberWithCommas(account.balance) }}
           </div>
         </div>
 
-        <div class="mb-4">
-          <jet-label for="reference" value="Reference"/>
-          <jet-input type="text" class="block w-full" v-model="form.reference"/>
+        <div class="mb-2">
+          <jet-label for="reference" value="Reference" />
+          <jet-input type="text" class="block w-full" v-model="form.reference" />
         </div>
-          <div class="mb-4">
-              <jet-label for="person" value="To"/>
-              <jet-input id="person" type="text" class="block w-full"
-                         v-model="form.fromTo"
-                         autocomplete="person"/>
-          </div>
+        <div class="mb-4">
+          <jet-label for="person" value="To" />
+          <jet-input id="person" type="text" class="block w-full" v-model="form.fromTo" autocomplete="person" />
+        </div>
 
-        <div class="mb-4" v-for="(product,index) in form.information" :key="index">
+      </div>
+
+        <div class="mb-4" v-for="(product, index) in form.information" :key="index">
           <div class="flex justify-between">
-            <jet-label for="amount" :value="product.details"/>
+            <jet-label for="amount" :value="product.details" />
             <div class="flex items-center mb-2">
-
+              <div @click="product.amount = product.totalCost"
+                class="cursor flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                :class="{ 'info': product.amount == product.totalCost }">
+                <div>Full Amount</div>
+                <i v-show="product.amount == product.totalCost"
+                  class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+              </div>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="mb-2 md:col-span-1">
+              <!-- <jet-label for="amount" value="amount" /> -->
+              <money
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                v-bind="moneyMaskOptions" v-model="product.amount" />
+                <div class="mt-1 text-xs text-gray-500">
+                MK{{ numberWithCommas(product.totalCost) }}
+              </div>
+
+            </div>
             <div>
               <select
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                  v-model="product.expenseTypeId"
-              >
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                v-model="product.expenseTypeId">
                 <option value="0">
                   Select Type
                 </option>
-                <option :key="index" v-for="(expense,index) in expenseTypes" :value="expense.id">{{ expense.name }}
+                <option :key="index" v-for="(expense, index) in expenseTypes" :value="expense.id">{{ expense.name }}
                 </option>
               </select>
-              <div class="mt-1 text-xs text-gray-500">
-                MK{{ numberWithCommas(product.totalCost) }}
-              </div>
+              
             </div>
 
-            <vue-date-time-picker
-                :key="index"
-                color="#1a56db"
-                v-model="product.date"
-                :min-date="minDate"
-                :max-date="maxDate"
-            />
+            <vue-date-time-picker :key="index" color="#1a56db" v-model="product.date" :min-date="minDate"
+              :max-date="maxDate" />
           </div>
         </div>
       </template>
 
       <template #footer>
-        <secondary-button @click.native="initiateDialog=false">
+        <secondary-button @click.native="initiateDialog = false">
           Cancel
         </secondary-button>
 
         <primary-button v-show="initiationValidation" class="ml-2" @click.native="initiate" :disabled="form.processing">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
           Proceed
         </primary-button>
       </template>
     </dialog-modal>
-    <dialog-modal :show="reconcileDialog" @close="reconcileDialog=false">
+    <dialog-modal :show="reconcileDialog" @close="reconcileDialog = false">
       <template #title>
         Reconcile Request
       </template>
@@ -276,7 +285,7 @@
           <!--                     <span v-if="request.data.type ==='FUEL'">Please submit the following information and upload receipts;</span>-->
           <span>Please upload receipts;</span>
         </div>
-        <jet-validation-errors class="mb-4"/>
+        <jet-validation-errors class="mb-4" />
         <!--                 <div v-if="request.data.type ==='FUEL'">
                              <div class="mb-4">
                                  <jet-label for="lastRefillDate" value="Last Refill Date" />
@@ -297,28 +306,25 @@
                          </div>-->
 
         <div class="mb-4">
-          <jet-label for="receipt" value="Upload receipt"/>
+          <jet-label for="receipt" value="Upload receipt" />
           <input type="file" id="receipt" @input="fileUpload($event.target.files[0])"
-                 class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+            class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4">
-          <div
-              v-for="(receipt,index) in receiptUploads"
-              :key="index"
-          >
+          <div v-for="(receipt, index) in receiptUploads" :key="index">
             <div class="relative" v-if="receipt.ext === 'pdf'">
               <i @click="removeReceipt(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                 class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
+                class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
               <div style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                   class="h-9 w-9 bg-white absolute"></div>
-              <pdf class="w-32" :source="fileUrl(receipt.file)"/>
+                class="h-9 w-9 bg-white absolute"></div>
+              <pdf class="w-32" :source="fileUrl(receipt.file)" />
             </div>
             <div class="relative" v-else>
               <i @click="removeReceipt(index)" style="top:-12px; right:-12px;  z-index: 2;"
-                 class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
+                class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
               <div style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
-                   class="h-9 w-9 bg-white absolute"></div>
+                class="h-9 w-9 bg-white absolute"></div>
               <img class="w-32" :src="fileUrl(receipt.file)" alt="Receipt Image">
             </div>
           </div>
@@ -326,19 +332,19 @@
       </template>
 
       <template #footer>
-        <secondary-button @click.native="reconcileDialog=false">
+        <secondary-button @click.native="reconcileDialog = false">
           Cancel
         </secondary-button>
 
         <primary-button class="ml-2" @click.native="reconcile" :disabled="form.processing">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
           Proceed
         </primary-button>
@@ -349,9 +355,9 @@
       <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
 
-        <request-status class="mb-4" :request="request.data"/>
+        <request-status class="mb-4" :request="request.data" />
         <div class="grid grid-cols-1 md:grid-cols-2">
-          <div class="page-section" :class="{'md:col-span-2': request.data.type!=='FUEL'}">
+          <div class="page-section" :class="{ 'md:col-span-2': request.data.type !== 'FUEL' }">
             <div class="page-section-header">
               <div class="page-section-title">
                 General Details
@@ -364,7 +370,7 @@
                   <div class="text-gray-600 font-semibold">Code</div>
                   <div>{{ request.data.code }}</div>
                 </div>
-                <div v-if="request.data.type!=='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
+                <div v-if="request.data.type !== 'FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Person Collecting Advance</div>
                   <div>{{ request.data.personCollectingAdvance }}</div>
                 </div>
@@ -512,7 +518,7 @@
               </div>
             </div>
           </div>
-          <div v-if="request.data.type==='FUEL'" class="page-section">
+          <div v-if="request.data.type === 'FUEL'" class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
                 Last Refill Details
@@ -522,7 +528,7 @@
               <div class="card p-0">
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Date</div>
-                  <div v-if="request.data.lastRefillDate!==null && request.data.lastRefillDate!==0">
+                  <div v-if="request.data.lastRefillDate !== null && request.data.lastRefillDate !== 0">
                     {{ getDate(request.data.lastRefillDate * 1000, true) }}
                   </div>
                 </div>
@@ -541,7 +547,7 @@
               </div>
             </div>
           </div>
-          <div v-if="request.data.type!=='FUEL'" class="page-section md:col-span-2">
+          <div v-if="request.data.type !== 'FUEL'" class="page-section md:col-span-2">
             <div class="page-section-header">
               <div class="page-section-title">
                 Breakdown
@@ -552,56 +558,55 @@
                 <div class="p-2 relative overflow-x-auto">
                   <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                      <th scope="col" class="heading-font">
-                        Details
-                      </th>
-                      <th v-if="request.data.type ==='MATERIALS'" scope="col" class="heading-font hidden sm:table-cell">
-                        Units
-                      </th>
-                      <th scope="col" class="heading-font hidden sm:table-cell">
-                        Quantity
-                      </th>
-                      <th scope="col" class="heading-font hidden sm:table-cell">
-                        Unit Cost
-                      </th>
-                      <th scope="col" class="heading-font">
-                        Total Cost
-                      </th>
-                    </tr>
+                      <tr>
+                        <th scope="col" class="heading-font">
+                          Details
+                        </th>
+                        <th v-if="request.data.type === 'MATERIALS'" scope="col"
+                          class="heading-font hidden sm:table-cell">
+                          Units
+                        </th>
+                        <th scope="col" class="heading-font hidden sm:table-cell">
+                          Quantity
+                        </th>
+                        <th scope="col" class="heading-font hidden sm:table-cell">
+                          Unit Cost
+                        </th>
+                        <th scope="col" class="heading-font">
+                          Total Cost
+                        </th>
+                      </tr>
                     </thead>
                     <tbody>
-                    <tr
+                      <tr
                         class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                        v-for="(info,index) in request.data.information"
-                        :key="index"
-                    >
-                      <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                        {{ info.details }}
-                        <div class="text-sm text-mute sm:hidden">
-                          {{ numberWithCommas(info.quantity) }} x {{ numberWithCommas(info.unitCost) }}
-                        </div>
-                      </th>
-                      <td v-if="request.data.type ==='MATERIALS'" class="py-2 pr-1 hidden sm:table-cell">
-                        {{ info.units }}
-                      </td>
-                      <td class="py-2 pr-1 hidden sm:table-cell">
-                        {{ numberWithCommas(info.quantity) }}
-                      </td>
-                      <td class="py-2 pr-1 hidden sm:table-cell">
-                        {{ numberWithCommas(info.unitCost) }}
-                      </td>
-                      <td class="py-2 pr-1">
-                        {{ numberWithCommas(info.totalCost) }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="hidden sm:table-cell"></td>
-                      <td class="hidden sm:table-cell" v-if="request.data.type ==='MATERIALS'"></td>
-                      <td class="hidden sm:table-cell"></td>
-                      <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
-                      <td class="pt-4 pr-1 text-base font-bold">{{ numberWithCommas(request.data.total) }}</td>
-                    </tr>
+                        v-for="(info, index) in request.data.information" :key="index">
+                        <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                          {{ info.details }}
+                          <div class="text-sm text-mute sm:hidden">
+                            {{ numberWithCommas(info.quantity) }} x {{ numberWithCommas(info.unitCost) }}
+                          </div>
+                        </th>
+                        <td v-if="request.data.type === 'MATERIALS'" class="py-2 pr-1 hidden sm:table-cell">
+                          {{ info.units }}
+                        </td>
+                        <td class="py-2 pr-1 hidden sm:table-cell">
+                          {{ numberWithCommas(info.quantity) }}
+                        </td>
+                        <td class="py-2 pr-1 hidden sm:table-cell">
+                          {{ numberWithCommas(info.unitCost) }}
+                        </td>
+                        <td class="py-2 pr-1">
+                          {{ numberWithCommas(info.totalCost) }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="hidden sm:table-cell"></td>
+                        <td class="hidden sm:table-cell" v-if="request.data.type === 'MATERIALS'"></td>
+                        <td class="hidden sm:table-cell"></td>
+                        <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
+                        <td class="pt-4 pr-1 text-base font-bold">{{ numberWithCommas(request.data.total) }}</td>
+                      </tr>
                     </tbody>
                   </table>
                   <!--                                <div class="mt-4 text-center">-->
@@ -615,7 +620,7 @@
               </div>
             </div>
           </div>
-          <div v-if="request.data.type !=='FUEL' && request.data.quotes" class="page-section md:col-span-2">
+          <div v-if="request.data.type !== 'FUEL' && request.data.quotes" class="page-section md:col-span-2">
             <div v-show="request.data.quotes.length > 0" class="page-section-header">
               <div class="page-section-title">
                 Attached Quotes
@@ -625,14 +630,11 @@
               <div class="card">
 
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-                  <div
-                      v-for="(quote,index) in this.quotes"
-                      :key="index"
-                  >
-                    <div v-if="quote.ext === 'pdf'" @click="displayAttachment(index,'quote')" class="cursor">
-                      <pdf class="w-32" :source="fileUrl(quote.file)"/>
+                  <div v-for="(quote, index) in this.quotes" :key="index">
+                    <div v-if="quote.ext === 'pdf'" @click="displayAttachment(index, 'quote')" class="cursor">
+                      <pdf class="w-32" :source="fileUrl(quote.file)" />
                     </div>
-                    <div v-else @click="displayAttachment(index,'quote')" class="cursor">
+                    <div v-else @click="displayAttachment(index, 'quote')" class="cursor">
                       <img class="w-32" :src="fileUrl(quote.file)" alt="Quote Image">
                     </div>
 
@@ -652,14 +654,11 @@
               <div class="card">
 
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-                  <div
-                      v-for="(receipt,index) in this.receipts"
-                      :key="index"
-                  >
-                    <div v-if="receipt.ext === 'pdf'" @click="displayAttachment(index,'receipt')" class="cursor">
-                      <pdf class="w-32" :source="fileUrl(receipt.file)"/>
+                  <div v-for="(receipt, index) in this.receipts" :key="index">
+                    <div v-if="receipt.ext === 'pdf'" @click="displayAttachment(index, 'receipt')" class="cursor">
+                      <pdf class="w-32" :source="fileUrl(receipt.file)" />
                     </div>
-                    <div v-else @click="displayAttachment(index,'receipt')" class="cursor">
+                    <div v-else @click="displayAttachment(index, 'receipt')" class="cursor">
                       <img class="w-32" :src="fileUrl(receipt.file)" alt="Receipt Image">
                     </div>
 
@@ -697,11 +696,7 @@
                   </div>
                 </div>
 
-                <div class="card p-0"
-                     v-for="(stage,index) in request.data.stages"
-                     :key="index"
-                     v-if="stage.status"
-                >
+                <div class="card p-0" v-for="(stage, index) in request.data.stages" :key="index" v-if="stage.status">
                   <div class="p-3 text-white text-sm font-semibold bg-system heading-font uppercase rounded-t-lg">
                     <i class="mdi mdi-check-decagram text-white mr-2"></i>
                     Authorised By: {{ stage.positionTitle }}
@@ -764,10 +759,7 @@
             </div>
             <div v-show="request.data.remarks.length > 0" class="page-section-content">
               <div class="">
-                <div class="card p-0"
-                     v-for="(remark,index) in request.data.remarks"
-                     :key="index"
-                >
+                <div class="card p-0" v-for="(remark, index) in request.data.remarks" :key="index">
                   <div class="border-b p-3 text-sm ">
                     {{ remark.comments }}
                   </div>
@@ -784,19 +776,19 @@
                 </div>
               </div>
               <div class="card" v-if="request.data.canEdit">
-                <jet-validation-errors class="mb-4"/>
+                <jet-validation-errors class="mb-4" />
                 <textarea v-model="form.remarks" placeholder="Leave remarks"
-                          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
                 <div>
                   <primary-button class="mt-2" @click.native="addRemarks" :disabled="form.processing">
                     <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-                         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
-                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                          fill="#E5E7EB"/>
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="#E5E7EB" />
                       <path
-                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                          fill="currentColor"/>
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentColor" />
                     </svg>
                     Add remark
                   </primary-button>
@@ -805,11 +797,11 @@
             </div>
           </div>
 
-          <dialog-modal v-if="attachment" :show="attachmentDialog" @close="attachmentDialog=false">
+          <dialog-modal v-if="attachment" :show="attachmentDialog" @close="attachmentDialog = false">
 
             <template #content>
               <div v-if="attachment.ext === 'pdf'">
-                <pdf class="w-full" :source="fileUrl(attachment.file)"/>
+                <pdf class="w-full" :source="fileUrl(attachment.file)" />
               </div>
               <div v-else>
                 <img class="w-full" :src="fileUrl(attachment.file)" alt="Quote Image">
@@ -817,11 +809,11 @@
             </template>
 
             <template #footer>
-              <secondary-button @click.native="attachmentDialog=false">
+              <secondary-button @click.native="attachmentDialog = false">
                 close
               </secondary-button>
               <a :href="fileUrl(attachment.file)" target="_blank">
-                <primary-button @click.native="attachmentDialog=false">
+                <primary-button @click.native="attachmentDialog = false">
                   Print
                 </primary-button>
               </a>
@@ -847,7 +839,7 @@ import requestStatus from "@/Components/RequestStatus";
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
-import {Money} from "v-money";
+import { Money } from "v-money";
 
 export default {
   props: ['request', 'expenseTypes', 'accounts'],
@@ -882,7 +874,7 @@ export default {
       denyDialog: false,
       form: this.$inertia.form({
         reference: '',
-          fromTo: "",
+        fromTo: "",
         remarks: '',
         lastRefillFuelReceived: '',
         lastRefillMileageCovered: '',
@@ -892,7 +884,15 @@ export default {
       maxDate: new Date().toISOString().substr(0, 10),
       date: null,
       receiptUploads: [],
-      error: ""
+      error: "",
+      moneyMaskOptions: {
+        decimal: '.',
+        thousands: ',',
+        prefix: 'MK ',
+        suffix: '',
+        precision: 2,
+        masked: false
+      },
     }
   },
   created() {
@@ -902,6 +902,7 @@ export default {
         quantity: this.request.data.information[x].quantity,
         totalCost: this.request.data.information[x].totalCost,
         unitCost: this.request.data.information[x].unitCost,
+        amount: 0,
         units: this.request.data.information[x].units,
         expenseTypeId: this.request.data.information[x].expenseTypeId ?? 0,
         transporterId: this.request.data.information[x].transporterId ?? 0,
@@ -919,9 +920,9 @@ export default {
         return null
     },
     balanceValidate() {
-      if(this.account != null){
+      if (this.account != null) {
         return this.account.balance >= this.request.data.total
-      }else{
+      } else {
         return false
       }
     },
@@ -973,17 +974,17 @@ export default {
       return this.date ? (new Date(this.date).getTime()) / 1000 : null
     },
     initiationValidation() {
-      if(this.account == null){
+      if (this.account == null) {
         this.error = "Select an account"
         return false
-      }else if(!this.balanceValidate){
+      } else if (!this.balanceValidate) {
         this.error = "Not enough funds in this account"
         return false
       }
-      else if(this.form.reference.length === 0 || this.form.reference === ""){
+      else if (this.form.reference.length === 0 || this.form.reference === "") {
         this.error = "Enter a reference"
         return false
-      } else if(this.form.fromTo.length === 0 || this.form.fromTo === ""){
+      } else if (this.form.fromTo.length === 0 || this.form.fromTo === "") {
         this.error = "Enter a payee"
         return false
       }
@@ -1013,67 +1014,67 @@ export default {
       return information
     },
     printRequest() {
-      this.$inertia.get(this.route('request-forms.print', {'id': this.request.data.id}))
+      this.$inertia.get(this.route('request-forms.print', { 'id': this.request.data.id }))
     },
     edit() {
-      this.$inertia.get(this.route('request-forms.edit', {'id': this.request.data.id}))
+      this.$inertia.get(this.route('request-forms.edit', { 'id': this.request.data.id }))
     },
     approve() {
       this.form
-          .post(this.route('request-forms.approve', {'id': this.request.data.id}), {
-            onSuccess: () => this.approveDialog = false,
-          })
+        .post(this.route('request-forms.approve', { 'id': this.request.data.id }), {
+          onSuccess: () => this.approveDialog = false,
+        })
     },
     deleteRequest() {
       this.form
-          .post(this.route('request-forms.delete', {'id': this.request.data.id}), {
-            preserveScroll: true,
-            onSuccess: () => this.deleteDialog = false,
-          })
+        .post(this.route('request-forms.delete', { 'id': this.request.data.id }), {
+          preserveScroll: true,
+          onSuccess: () => this.deleteDialog = false,
+        })
     },
     discardRequest() {
       this.form
-          .post(this.route('request-forms.discard', {'id': this.request.data.id}), {
-            onSuccess: () => this.discardDialog = false,
-          })
+        .post(this.route('request-forms.discard', { 'id': this.request.data.id }), {
+          onSuccess: () => this.discardDialog = false,
+        })
     },
     denyRequest() {
       this.form
-          .post(this.route('request-forms.deny', {'id': this.request.data.id}), {
-            onSuccess: () => this.denyDialog = false,
-          })
+        .post(this.route('request-forms.deny', { 'id': this.request.data.id }), {
+          onSuccess: () => this.denyDialog = false,
+        })
     },
     addRemarks() {
       this.form
-          .post(this.route('request-forms.add-remarks', {'id': this.request.data.id}), {
-            preserveScroll: true,
-            onSuccess: () => this.form.reset('remarks')
-          })
+        .post(this.route('request-forms.add-remarks', { 'id': this.request.data.id }), {
+          preserveScroll: true,
+          onSuccess: () => this.form.reset('remarks')
+        })
     },
     initiate() {
 
 
       this.form
-          .transform(data => ({
-            ...data,
-            "information": this.formatInformation(),
-            account_id: this.account == null ? null : this.account.id,
-              from_to: this.form.fromTo,
-          }))
-          .post(this.route('request-forms.initiate', {'id': this.request.data.id}), {
-            onSuccess: () => this.initiateDialog = false,
-          })
+        .transform(data => ({
+          ...data,
+          "information": this.formatInformation(),
+          account_id: this.account == null ? null : this.account.id,
+          from_to: this.form.fromTo,
+        }))
+        .post(this.route('request-forms.initiate', { 'id': this.request.data.id }), {
+          onSuccess: () => this.initiateDialog = false,
+        })
     },
     reconcile() {
       this.form
-          .transform(data => ({
-            ...data,
-            receipts: this.receiptFiles,
-            lastRefillDate: this.lastRefillDate
-          }))
-          .post(this.route('request-forms.reconcile', {'id': this.request.data.id}), {
-            onSuccess: () => this.reconcileDialog = false,
-          })
+        .transform(data => ({
+          ...data,
+          receipts: this.receiptFiles,
+          lastRefillDate: this.lastRefillDate
+        }))
+        .post(this.route('request-forms.reconcile', { 'id': this.request.data.id }), {
+          onSuccess: () => this.reconcileDialog = false,
+        })
     },
     displayAttachment(index, type) {
       this.attachmentIndex = index
