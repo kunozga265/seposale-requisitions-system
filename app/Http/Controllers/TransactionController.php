@@ -112,7 +112,8 @@ class TransactionController extends Controller
                 "expense_id" => is_object($expense) ? $expense->id : null,
                 "receipt_id" => is_object($receipt) ? $receipt->id : null,
                 "total" => $request->total,
-                "balance" => $transaction_balance,
+                // "balance" => $transaction_balance,
+                "balance" => $request->balance,
                 "type" => $request->type,
             ]);
 

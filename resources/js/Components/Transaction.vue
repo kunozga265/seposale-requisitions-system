@@ -73,11 +73,18 @@
             <jet-input id="description" type="text" class="block w-full" v-model="form.description"
               autocomplete="description" />
           </div>
-          <div class="mb-2 md:col-span-2">
+          <div class="mb-2 md:col-span-1">
             <jet-label for="personCollectingAdvance" value="Total" />
             <money
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
               v-bind="moneyMaskOptions" v-model="form.total" />
+
+          </div>
+          <div class="mb-2 ">
+            <jet-label for="personCollectingAdvance" value="Balance" />
+            <money
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+              v-bind="moneyMaskOptions" v-model="form.balance" />
 
           </div>
           <div class="mb-2">
@@ -196,6 +203,7 @@ export default {
         reference: this.transaction.reference,
         fromTo: this.transaction.fromTo,
         description: this.transaction.description,
+        balance: this.transaction.balance,
         total: this.transaction.total,
         expenseCode: this.transaction.expense != null ? this.transaction.expense.code : null,
         receiptCode: this.transaction.receipt != null ? this.transaction.receipt.code : null,

@@ -177,6 +177,53 @@
           <div class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
+                One Stop Shop Sales
+              </div>
+            </div>
+            <div class="page-section-content">
+
+              <div v-if="siteSales.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
+                No Sales Found
+              </div>
+              <div v-else>
+
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                  <inertia-link :href="route('sites.sales.show', { code:sale.site.code, id: sale.id })" v-for="(sale, index) in siteSales.data"
+                    :key="index">
+                    <div class="app-card">
+                      <div class="header justify-between items-center border-b">
+                        <div>
+                          <div>
+                            <span
+                              class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
+                                getDate(sale.date * 1000)
+                              }}</span>
+                          </div>
+                          <div class="type">{{ sale.code }}</div>
+                          <div class="name">{{ sale.client.name }}</div>
+
+
+                        </div>
+                        <div class="flex items-center ">
+                          <div class="currency ">MK</div>
+                          <div class="total">{{ numberWithCommas(sale.total) }}</div>
+                        </div>
+                      </div>
+                      <div>
+                        <sale-status :status="sale.status" />
+                      </div>
+                    </div>
+                  </inertia-link>
+                </div>
+
+                <pagination :object="sales" />
+              </div>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
                 Receipts
               </div>
             </div>
@@ -314,7 +361,7 @@
             </div>
           </div>
 
-          
+
 
 
 
