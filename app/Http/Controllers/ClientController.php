@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ClientResource;
+use App\Http\Resources\CollectionResource;
+use App\Http\Resources\InvoiceResource;
+use App\Http\Resources\QuotationResource;
 use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
+use App\Http\Resources\SiteSaleResource;
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -40,11 +44,19 @@ class ClientController extends Controller
             } else {
                 $sales = $client->sales()->orderBy("date","desc")->get();
                 $receipts = $client->receipts()->orderBy("date","desc")->get();
+                $invoices = $client->invoices()->latest()->get();
+                $quotations = $client->quotations()->latest()->get();
+                $siteSales = $client->siteSales()->orderBy("date","desc")->get();
+                $collections = $client->collections()->orderBy("date","desc")->get();
                 //Web Response
                 return Inertia::render('Clients/Show', [
                     'client' => new ClientResource($client),
                     'sales' => SaleResource::collection($sales),
                     'receipts' => ReceiptResource::collection($receipts),
+                    'invoices' => InvoiceResource::collection($invoices),
+                    'quotations' => QuotationResource::collection($quotations),
+                    'siteSales' => SiteSaleResource::collection($siteSales),
+                    'collections' => CollectionResource::collection($collections),
                 ]);
             }
         } else {

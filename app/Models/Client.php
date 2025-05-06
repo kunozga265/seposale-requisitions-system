@@ -21,6 +21,26 @@ class Client extends Model
         return $this->hasMany(Receipt::class);
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function quotations()
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
+    public function siteSales()
+    {
+        return $this->hasMany(SiteSale::class);
+    }
+
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
+    }
+
     public function getName()
     {
         if($this->organisation != null && $this->alias != null){
