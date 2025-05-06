@@ -470,8 +470,8 @@
                                     <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                         v-for="(item, index) in collections.data" :key="index">
                                         <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
-                                        <td class="p-2 text-left">{{ item.siteSaleSummary.sale.code }}</td>
-                                        <td class="p-2 text-left ">{{ item.client.name }}</td>
+                                        <td @click="navigateToSale(item.siteSaleSummary.sale.id)" class="p-2 text-left">{{ item.siteSaleSummary.sale.code }}</td>
+                                        <td @click="navigateToClient(item.client.id)" class="p-2 text-left ">{{ item.client.name }}</td>
                                         <!--                                        <td class="p-2 text-left ">{{-->
                                         <!--                                                item.collectedBy-->
                                         <!--                                            }}-->
