@@ -992,7 +992,7 @@ export default {
 
       let check = true
       for (let x in this.form.information) {
-        if (this.form.information[x].expenseTypeId == 0) {
+        if (this.form.information[x].expenseTypeId == 0 && this.form.information[x].amount > 0) {
           this.error = "Select expense type for " + this.form.information[x].details
           check = false
           break
