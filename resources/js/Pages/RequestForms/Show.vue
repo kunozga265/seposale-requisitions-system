@@ -996,7 +996,7 @@ export default {
           this.error = "Select expense type for " + this.form.information[x].details
           check = false
           break
-        } else if (this.form.information[x].date == null) {
+        } else if (this.form.information[x].date == null && this.form.information[x].amount > 0) {
           this.error = "Enter date for " + this.form.information[x].details
           check = false
           break
