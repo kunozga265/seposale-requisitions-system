@@ -28,6 +28,7 @@ class ReceiptResource extends JsonResource
             "date"                  => $this->date,
             'serial'                => $this->serial,
             'whatsapp'              => $this->whatsapp != null ? intval($this->whatsapp) : false ,
+            'transaction'           => $this->transaction != null ? true : false ,
         ];
     }
 }

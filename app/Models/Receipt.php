@@ -42,6 +42,11 @@ class Receipt extends Model
         return $this->hasMany(ReceiptSummary::class);
     }
 
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
+
 
 
     public function listOfProducts()
