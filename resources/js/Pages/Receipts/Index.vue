@@ -55,7 +55,8 @@
 
                       <tr>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
+                        <th scope="col" class="p-2 pb-0 heading-font text-left">Sale Code</th>
+                        <th scope="col" class="p-2 pb-0 heading-font text-left">Receipt Code</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Client</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Method</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
@@ -71,14 +72,20 @@
                         v-for="(receipt, index) in filteredReceipts" :key="index">
 
                         <td class="p-2 text-left ">{{ getDate(receipt.date * 1000) }}</td>
-                        <div class="type">#{{ receipt.code }}</div>
-                        <td class="p-2 text-left ">{{ receipt.client.name }}</td>
+                        <td>
+                          <span v-if="receipt.sale != null" @click="navigateToSale(receipt.sale.id)" class="p-2 text-left">{{ receipt.sale.code }}
+                          </span>
+                          
+                        </td>
+                        <td class="p-2 text-left">{{ receipt.code }}</td>
+                        <td @click="navigateToClient(receipt.client.id)" class="p-2 text-left ">{{ receipt.client.name
+                        }}
+                        </td>
                         <td class="p-2 text-left ">{{ receipt.paymentMethod }}</td>
                         <td class="p-2 text-left ">{{ receipt.amount }}</td>
                         <td class="p-2 text-left ">{{ receipt.generatedBy.fullName }}</td>
                         <td>
-                          <input id="default-radio-1" :checked="receipt.transaction" type="checkbox"
-                            disabled 
+                          <input id="default-radio-1" :checked="receipt.transaction" type="checkbox" disabled
                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         </td>
 
@@ -198,11 +205,13 @@ export default {
           if (receipt.paymentMethod != null) {
             return receipt.code.toLowerCase().includes(this.search.toLowerCase()) ||
               receipt.client.name.toLowerCase().includes(this.search.toLowerCase()) ||
+              // receipt.sale.code.toLowerCase().includes(this.search.toLowerCase()) ||
               receipt.paymentMethod.toLowerCase().includes(this.search.toLowerCase())
 
           }
           else {
             return receipt.code.toLowerCase().includes(this.search.toLowerCase()) ||
+            // receipt.sale.code.toLowerCase().includes(this.search.toLowerCase()) ||
               receipt.client.name.toLowerCase().includes(this.search.toLowerCase())
 
           }
@@ -215,7 +224,13 @@ export default {
   methods: {
     navigateToInvoice(id) {
       this.$inertia.get(this.route('receipts.show', { 'id': id }))
-    }
+    },
+    navigateToClient(id) {
+      this.$inertia.get(this.route('clients.show', { 'id': id }))
+    },
+    navigateToSale(id) {
+      this.$inertia.get(this.route('sales.show', { 'id': id }))
+    },
   }
 }
 </script>

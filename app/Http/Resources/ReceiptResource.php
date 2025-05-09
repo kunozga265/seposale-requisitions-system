@@ -27,6 +27,10 @@ class ReceiptResource extends JsonResource
             'generatedBy'           => new UserResource($this->user),
             "date"                  => $this->date,
             'serial'                => $this->serial,
+            'sale'                  => $this->sale != null ? [
+                "id" => $this->sale->id,
+                "code" => (new AppController())->getZeroedNumber($this->sale->code_alt),
+            ] : null,
             'whatsapp'              => $this->whatsapp != null ? intval($this->whatsapp) : false ,
             'transaction'           => $this->transaction != null ? true : false ,
         ];
