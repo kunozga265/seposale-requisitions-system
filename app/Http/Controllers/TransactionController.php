@@ -117,7 +117,7 @@ class TransactionController extends Controller
                 "type" => $request->type,
             ]);
 
-            return Redirect::back()->with("success", "Transaction updated successfully");
+            return Redirect::route("accounts.index")->with("success", "Transaction updated successfully");
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
