@@ -19,7 +19,7 @@ class ExpenseResource extends JsonResource
             "code"                  => $this->formattedCode(),
             "payee"                 => $this->payee(),
             "description"           => $this->description,
-            "total"                 => $this->total,
+            "total"                 => floatval($this->total),
             "date"                  => $this->date,
             "contents"              => json_decode($this->contents),
             "expenseType"           => $this->expenseType,

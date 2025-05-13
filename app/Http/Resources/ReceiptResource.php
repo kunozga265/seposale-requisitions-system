@@ -19,7 +19,7 @@ class ReceiptResource extends JsonResource
             "id"                    => $this->id,
             "code"                  => (new AppController())->getZeroedNumber($this->code),
             "paymentMethod"         => $this->paymentMethod->name,
-            "amount"                => $this->amount,
+            "amount"                => floatval($this->amount),
             "client"                => $this->client,
             "reference"             => $this->reference,
             // "information"           => $this->information(),

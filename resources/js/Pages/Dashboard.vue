@@ -1422,7 +1422,7 @@ export default {
             let expenses = this.expensesTotal
 
             //get payables
-            let payables = this.payables.total
+            let payables = parseFloat(this.payables.total)
 
             //get undelivered clients
             let undeliveredClientsTotal = this.undeliveredClientsTotal
@@ -1455,7 +1455,7 @@ export default {
         receivablesTotal() {
             let sum = 0;
             for (let x in this.receivables) {
-                sum += this.receivables[x].principal
+                sum += parseFloat(this.receivables[x].principal)
             }
             return sum
         },
