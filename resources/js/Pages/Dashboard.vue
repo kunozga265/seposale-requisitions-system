@@ -1439,7 +1439,7 @@ export default {
             let total = 0;
 
             for (let x in this.accounts) {
-                total += this.accounts[x].balance
+                total += parseFloat(this.accounts[x].balance)
             }
             return total
         },
