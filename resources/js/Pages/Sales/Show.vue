@@ -836,7 +836,7 @@ export default {
                     name: this.sale.data.products[x].description,
                     balance: balance,
                     amount: 0,
-                    cost: this.sale.data.products[x].variant.cost,
+                    cost: this.sale.data.products[x].amount,
                     units: this.sale.data.products[x].units,
                 })
             }
