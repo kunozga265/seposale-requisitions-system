@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Controllers\AppController;
+use App\Models\InventorySummary;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class InventorySummaryResource extends JsonResource
@@ -25,6 +26,7 @@ class InventorySummaryResource extends JsonResource
             "user" => new UserResource($this->user),
             "totalSales" => $this->totalSales(),
             "collections" => $this->collections->count(),
+            "active" => !InventorySummary::where("created_at", ">",$this->created_at)->exists()
         ];
     }
 }

@@ -473,6 +473,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\SiteSaleController@store",
             'roles' =>['employee','management']
         ])->name('sites.sales.store');
+        
+        Route::post('/sites/sales/delete/{id}', [
+            "uses"  => "App\Http\Controllers\SiteSaleController@destroy",
+            'roles' =>['employee','management']
+        ])->name('sites.sales.delete');
 
         Route::get('/{code}/sales/view/{id}', [
             "uses"  => "App\Http\Controllers\SiteSaleController@show",

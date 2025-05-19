@@ -723,17 +723,17 @@ export default {
     },
     deleteSale() {
       this.form
-          .post(this.route('sales.delete', {'id': this.sale.data.id}), {
+          .post(this.route('sites.sales.delete', {'id': this.sale.data.id}), {
             preserveScroll: true,
             onSuccess: () => this.deleteDialog = false,
           })
     },
     closeSale() {
-      this.form
-          .post(this.route('sales.close', {'id': this.sale.data.id}), {
-            preserveScroll: true,
-            onSuccess: () => this.closeDialog = false,
-          })
+      // this.form
+      //     .post(this.route('sales.close', {'id': this.sale.data.id}), {
+      //       preserveScroll: true,
+      //       onSuccess: () => this.closeDialog = false,
+      //     })
     },
 
     getTimestampFromDate(date) {

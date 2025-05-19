@@ -372,11 +372,50 @@ class SiteSaleController extends Controller
 
     private function getCodeNumber()
     {
-        $last = SiteSale::orderBy("code", "desc")->first();
+        $last = SiteSale::withTrashed()->orderBy("code", "desc")->first();
         if (is_object($last)) {
             return $last->code + 1;
         } else {
             return 1;
+        }
+    }
+
+     public function destroy(Request $request, $id)
+    {
+        //find out if the request is valid
+        $sale = SiteSale::find($id);
+
+        if (is_object($sale)) {
+
+            //detach products
+            foreach ($sale->products as $product) {
+                $product->delete();
+            }
+
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Sale #{$sale->code} has been deleted.",
+                "site_sale_id" => $sale->id,
+            ]);
+
+            $sale->delete();
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => 'Sale has been deleted']);
+            } else {
+                //Web Response
+                return Redirect::route('sites.inventories.show', ['code' => $sale->site->code, "id"=> $sale->inventorySummary->id])->with('success', 'Sale has been deleted');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "sale not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Sale not found');
+            }
         }
     }
 }
