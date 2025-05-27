@@ -71,5 +71,6 @@ class Sale extends Model
         "recipient_phone_number",
         "user_id",
         "whatsapp",
+        "local_purchase_order",
     ];
 }

@@ -155,9 +155,15 @@
             </tr>
         @endif
         <tr>
-            <td class="">Site Location:</td>
+            <td class="">Location:</td>
             <td class="">{{$invoice->sale->location}}</td>
         </tr>
+          @if(isset($invoice->sale->local_purchase_order))
+            <tr>
+                <td class="">Purchase Order:</td>
+                <td class="">{{$invoice->sale->local_purchase_order}}</td>
+            </tr>
+        @endif
 
     </table>
 
@@ -222,6 +228,16 @@
 
 
 </div>
+@foreach($invoice->sale->products as $summary)
+@if(isset($summary->delivery))
+    @if($summary->delivery->notes !=  null)
+    @foreach(json_decode($summary->delivery->notes) as $note)
+        <div style="page-break-after: always"></div>
+        <img style="width: 100%" src="{{public_path()."/".$note->photo}}" alt="">
+    @endforeach
+    @endif
+    @endif
+@endforeach
 
 <div style="page-break-after: always"></div>
 <img style="width: 100%" src="{{storage_path()."/images/our-products.jpg"}}" alt="">

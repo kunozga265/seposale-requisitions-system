@@ -34,6 +34,7 @@ class SaleResource extends JsonResource
             'recipientName' => $this->recipient_name,
             'recipientProfession' => $this->recipient_profession,
             'recipientPhoneNumber' => $this->recipient_phone_number,
+            'localPurchaseOrder' => $this->local_purchase_order,
             'editable' => intval($this->editable),
             'comments' => json_decode($this->comments),
             'products' => SummaryResource::collection($this->products),

@@ -159,6 +159,12 @@
                 <td class="b-0"> {{$sale->client->address}}</td>
             </tr>
         @endif
+         @if(isset($sale->local_purchase_order))
+            <tr>
+                <td class="">Purchase Order:</td>
+                <td class="">{{$sale->local_purchase_order}}</td>
+            </tr>
+        @endif
     </table>
     {{--            </td>--}}
     {{--            <td class="b-0" style="vertical-align: top;">--}}
@@ -199,6 +205,7 @@
                 </td>
             </tr>
         @endif
+        
     </table>
         @endif
     {{--            </td>--}}
