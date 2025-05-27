@@ -181,7 +181,7 @@ export default {
             } if (this.form.name.type === 0) {
                 this.error = "Enter branch name"
                 return false
-            } else if (this.form.balance == 0) {
+            } else if (this.form.balance < 0) {
                 this.error = "Enter account balance"
                 return false
             } else

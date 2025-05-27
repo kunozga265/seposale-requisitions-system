@@ -13,11 +13,16 @@ class Usage extends Model
         return $this->belongsTo(Material::class);
     }
 
+    public function batch(){
+        return $this->belongsTo(Batch::class);
+    }
+
     protected $fillable = [
         "date",
         "quantity",
         "cost",
         "material_id",
         "production_id",
+        "batch_id",
     ];
 }

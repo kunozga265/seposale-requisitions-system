@@ -207,7 +207,7 @@ class SiteSaleController extends Controller
                 $inventory = Inventory::find($product["id"]);
                 $cost = 0;
                 //update batches
-                $cost += $this->updateBatches($inventory, $product["quantity"]);
+                $cost += $this->updateBatches($inventory, $product["quantity"], $sale);
 
                 $available_stock = $inventory->available_stock - $product["quantity"];
                 $uncollected_stock = $inventory->uncollected_stock + $product["quantity"];
@@ -272,7 +272,7 @@ class SiteSaleController extends Controller
 
             $cost = 0;
             //update batches
-            $cost += $this->updateBatches($inventory, $summary->quantity);
+            $cost += $this->updateBatches($inventory, $summary->quantity, $sale);
 
             $available_stock = $inventory->available_stock - $summary->quantity;
             $uncollected_stock = $inventory->uncollected_stock + $summary->quantity;
@@ -321,7 +321,7 @@ class SiteSaleController extends Controller
         // }
     }
 
-    private function updateBatches(Inventory $inventory, $quantity)
+    private function updateBatches(Inventory $inventory, $quantity, SiteSale $sale)
     {
         $cost = 0;
         $total = $quantity;
@@ -356,6 +356,9 @@ class SiteSaleController extends Controller
                 $batch->update([
                     "balance" => $balance,
                 ]);
+
+                //attach batch to sale
+                $sale->batches()->attach($batch);
 
                 //append cost
                 $cost += $batch->price * $count;

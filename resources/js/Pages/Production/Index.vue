@@ -225,7 +225,7 @@
                         <jet-label for="quantity" :value="material.name" />
                         <jet-input type="number" step="0.01" class="block w-full" v-model="material.quantity" />
                     </div>
-                    
+
                     <div class="my-2 md:col-span-2 text-gray-500 text-xs font-bold">Production Summary</div>
 
                     <div class="mb" v-for="(inventory, index) in form.inventories" :key="index + '-inventory'">
@@ -356,29 +356,17 @@
                     </div>
                     <div class="page-section-content">
 
-                        <div class="app-card" v-for="(production, index) in productions.data" :key="index">
+                        <!-- <div @click="navigateToProductionReport(production.code)" class="app-card cursor-pointer"
+                            v-for="(production, index) in productions.data" :key="index">
                             <div class="header justify-between items-center border-b">
                                 <div class="">
-                                    <!-- <div>
-                                        <span
-                                            class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                            getDate(production.date * 1000) }}</span>
-                                    </div> -->
+                                   
                                     <div>
                                         <div class="type">Production #{{ production.code }}</div>
                                         <div class="text-sm">{{ getDate(production.date * 1000) }}</div>
                                     </div>
 
                                     <div class="md:flex">
-                                        <!-- <div v-for="(batch,index) in production.batches" class="grid grid-cols-2 align-center">
-                                            <div class="name">{{ batch.inventory.name }}</div>
-                                            <div>
-                                                <span
-                                                    class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                                       batch.quantity
-                                                    }}</span>
-                                            </div>
-                                        </div> -->
                                         <div v-for="(batch, index) in production.batches"
                                             class="flex items-center justify-e">
                                             <div class="name">{{ batch.inventory.name }}</div>
@@ -393,14 +381,6 @@
 
 
                                 </div>
-                                <!-- <div class="">
-                                    <table>
-                                        <tr v-for="(usage,index) in production.usages">
-                                            <td>{{ usage.name }}</td>
-                                            <td>{{ usage.quantity }}</td>
-                                        </tr>
-                                    </table>
-                                </div> -->
                             </div>
                             <div>
                                 <div class="md:flex px-4">
@@ -418,57 +398,44 @@
 
 
                             </div>
-                        </div>
+                        </div> -->
 
-                        <!-- <div class="card w-full">
+                        <div class="card w-full">
                             <div class="p-2 mb-2 relative ">
                                 <table class="w-full  text-left text-gray-500 dark:text-gray-400">
                                     <thead
                                         class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                    <tr>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Description</th>
-                                        
+                                        <tr>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
+                                            <th v-for="(inventory, index) in inventories.data" scope="col"
+                                                class="p-2 pb-0 heading-font text-left">{{ inventory.name }}</th>
 
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="p-2 pb-4 heading-font text-left">
-                                            <vue-date-time-picker
-                                                v-model="form.dates"
-                                                range
-                                            />
-                                        </th>
-                                        <th scope="col" class="p-2 pb-4 heading-font text-left relative">
-                                            <button v-show="form.code.length > 0" @click="form.code = ''"
-                                                    class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
-                                                <i class="mdi mdi-close"></i>
-                                            </button>
-                                            <jet-input id="code" type="text" class="block w-full"
-                                                       placeholder="Search"
-                                                       v-model="form.code"
-                                                       autocomplete="seposale-filter-code"/>
-
-                                        </th>
-                                       
-                                        <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
-                                    </tr>
-
+                                        </tr>
                                     </thead>
                                     <tbody class="pt-8">
 
-                                    <tr
-                                        v-for="(production,index) in productions.data" :key="index">
-                                        <td class="p-2 text-left">{{ getDate(production.date * 1000) }}</td>
-                                        <td class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                                          >{{ production.code }}
-                                        </td>
-                                        <td class="p-2 text-left "> - </td>
-                                    </tr>
+                                        <tr @click="navigateToProductionReport(production.code)"
+                                            v-for="(production, index) in productions.data" :key="index"
+                                            class="cursor-pointer  hover:bg-gray-100 transition ease-in-out duration-200">
+                                            <td class="p-2 text-left">{{ getDate(production.date * 1000) }}</td>
+                                            <td
+                                                class="p-2 text-left">
+                                                {{ production.code }}
+                                            </td>
+                                            <td v-for="(inventory, index) in inventories.data" class="p-2 text-left ">
+
+                                                <span v-for="(batch, index) in production.batches">
+                                                    <span v-if="batch.inventory.id == inventory.id">
+                                                        {{ numberWithCommas(batch.quantity) }}
+                                                    </span>
+                                                </span>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
 
@@ -532,7 +499,7 @@ export default {
                 comments: "",
                 date: "",
                 photo: "",
-                
+
                 reportDate: "",
                 materials: [],
                 inventories: [],
@@ -746,6 +713,9 @@ export default {
     methods: {
         navigateToRequisition(id) {
             this.$inertia.get(this.route('request-forms.show', { 'id': id }))
+        },
+        navigateToProductionReport(code) {
+            this.$inertia.get(this.route('production.show', { 'code': code }))
         },
         addItem() {
             this.form

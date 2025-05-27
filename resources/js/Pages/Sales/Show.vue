@@ -932,6 +932,20 @@ export default {
                     onSuccess: () => this.newReceiptDialog = false,
                 })
         },
+        attachReceipt() {
+            this.form
+                .transform(data => ({
+                    ...data,
+                    payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
+                    account_id: this.account == null ? null : this.account.id,
+                    date: this.getTimestampFromDate(this.date),
+                    type: "ORDINARY",
+                }))
+                .post(this.route('receipts.attach', { 'id': this.sale.data.id }), {
+                    preserveScroll: true,
+                    onSuccess: () => this.newReceiptDialog = false,
+                })
+        },
         updateDelivery() {
 
             if (this.outsource) {

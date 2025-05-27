@@ -9,6 +9,17 @@ class Damage extends Model
 {
     use HasFactory;
 
+
+    public function inventory()
+    {
+        return $this->belongsTo(Inventory::class);
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(Batch::class);
+    }
+
     protected $fillable = [
         "batch_id",
         "inventory_id",

@@ -28,6 +28,11 @@ class Production extends Model
         return $this->hasMany(Batch::class);
     }
 
+    public function damages()
+    {
+        return $this->hasMany(Damage::class);
+    }
+
     protected $fillable = [
         "code",
         'date',

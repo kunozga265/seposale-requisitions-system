@@ -52,6 +52,11 @@ class SiteSale extends Model
         return $this->belongsTo(PaymentMethod::class);
     }
 
+     public function batches()
+    {
+        return $this->belongsToMany(Batch::class,'site_sales_batches','site_sale_id','batch_id');
+    }
+
     protected $fillable = [
         "code",
         "serial",

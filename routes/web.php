@@ -488,11 +488,26 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\ProductionController@index",
             'roles' =>['employee','management']
         ])->name('production.index');
+
+        Route::get('/{code}/production/show', [
+            "uses"  => "App\Http\Controllers\ProductionController@show",
+            'roles' =>['employee','management']
+        ])->name('production.show');
         
         Route::post('/{code}/production/store', [
             "uses"  => "App\Http\Controllers\ProductionController@store",
             'roles' =>['employee','management']
         ])->name('production.store');
+        
+        Route::post('/{code}/production/delete', [
+            "uses"  => "App\Http\Controllers\ProductionController@destroy",
+            'roles' =>['employee','management']
+        ])->name('production.delete');
+
+           Route::get('/{code}/production/print', [
+            "uses"  => "App\Http\Controllers\ProductionController@print",
+            'roles' =>['employee','management']
+        ])->name('production.print');
 
         Route::post('/materials', [
             "uses"  => "App\Http\Controllers\MaterialController@store",
@@ -553,6 +568,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\ReceiptController@store",
             'roles' =>['employee','management']
         ])->name('receipts.store');
+
+        Route::post('/sale/attach/{id}', [
+            "uses"  => "App\Http\Controllers\ReceiptController@attachReceipt",
+            'roles' =>['employee','management']
+        ])->name('receipts.attach');
 
         Route::get('/print/{id}', [
             "uses"  => "App\Http\Controllers\ReceiptController@print",

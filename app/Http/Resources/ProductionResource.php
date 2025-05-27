@@ -25,6 +25,7 @@ class ProductionResource extends JsonResource
             "site" => $this->site,
             "usages" => UsageResource::collection($this->usages),
             "batches" => BatchResource::collection($this->batches),
+            "damages" => DamageResource::collection($this->damages),
         ];
     }
 }

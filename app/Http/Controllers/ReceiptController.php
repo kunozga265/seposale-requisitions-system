@@ -214,6 +214,63 @@ class ReceiptController extends Controller
         }
     }
 
+    public function attachReceipt(Request $request, $id)
+    {
+
+        $request->validate([
+            "type" => "required"
+        ]);
+
+        $sale = $request->type == "ORDINARY" ? Sale::find($id) : SiteSale::find($id);
+
+        if (is_object($sale)) {
+
+            $receipt = Cache::lock(Auth::id() . ':receipt:store', 10)->get(function () use ($request, $sale) {
+
+                //Validate all the important attributes
+                $request->validate([
+                    'code' => ['required'],
+                ]);
+
+                $receipt = Receipt::where("code", $request->code)->first();
+
+                switch ($request->type) {
+                    case "ORDINARY":
+                        $receipt->update([
+                            "sale_id" => $sale->id
+                        ]);
+                        break;
+                    default:
+                        $receipt->update([
+                            "site_sale_id" => $sale->id
+                        ]);
+                }
+
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Receipt #{$receipt->code} attached to Sale #{$sale->formattedCode()}",
+                    "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
+                    "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
+
+                ]);
+
+                return $receipt;
+            });
+
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json($receipt, 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('success', 'Receipt attached!');
+            }
+        } else {
+            return Redirect::back()->with('error', 'Sale not found');
+        }
+    }
+
     public function print(Request $request, $id)
     {
         //find out if the request is valid

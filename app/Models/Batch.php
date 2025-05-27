@@ -24,6 +24,11 @@ class Batch extends Model
         return $this->belongsTo(Production::class);
     }
 
+      public function siteSales()
+    {
+        return $this->belongsToMany(SiteSale::class,'site_sales_batches','batch_id','site_sale_id');
+    }
+
     protected $fillable = [
         "user_id",
         "date",

@@ -22,6 +22,8 @@ class CreateSiteSaleSummariesTable extends Migration
                 $table->double("amount");
                 $table->double("balance");
                 $table->double("collected");
+                $table->double("cost");
+                $table->integer("status");
                 $table->timestamps();
                 $table->softDeletes();
             });

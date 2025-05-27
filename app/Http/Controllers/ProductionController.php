@@ -15,10 +15,12 @@ use App\Models\Production;
 use App\Models\Site;
 use App\Models\MaterialsType;
 use App\Models\Usage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProductionController extends Controller
 {
@@ -85,6 +87,27 @@ class ProductionController extends Controller
         }
     }
 
+    function show(Request $request, $code)
+    {
+
+        $production = Production::where("code", $code)->first();
+
+        if (is_object($production)) {
+
+            return Inertia::render("Production/Show", [
+                "production" => new ProductionResource($production),
+            ]);
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Production report not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Production report not found');
+            }
+        }
+    }
+
     public function store(Request $request, string $code)
     {
         $site = Site::where("code", $code)->first();
@@ -120,20 +143,19 @@ class ProductionController extends Controller
                         return Redirect::back()->with("error", "{$inventory->name} is out of stock cannot record damages");
                     }
                 }
-                
+
                 if ($inventoryObject["quantity"] > 0) {
-                    
                 }
             }
 
-            
+
             if ($total_quantity == 0) {
                 return Redirect::back()->with("error", "No materials produced!");
             }
 
             // dd("". $total_quantity);
 
-            
+
 
             $closing_stock = [];
             $opening_stock = [];
@@ -177,11 +199,10 @@ class ProductionController extends Controller
                     $request->date,
                     $production
                 );
-               
             }
 
             //average cost
-            $average_cost = ($cost + $request->labour + $request->food)/$total_quantity;
+            $average_cost = ($cost + $request->labour + $request->food) / $total_quantity;
 
             foreach ($site->materials as $material) {
                 $closing_stock[] = [
@@ -293,6 +314,7 @@ class ProductionController extends Controller
                         "cost" => $batch->price * $count,
                         "material_id" => $material->id,
                         "production_id" => $production->id,
+                        "batch_id" => $batch->id,
                     ]);
 
                     //append cost
@@ -337,9 +359,9 @@ class ProductionController extends Controller
                         "balance" => $balance,
                     ]);
                     //update the balance
-                    $q = $inventory->quantity - $count;
+                    $q = $inventory->available_stock - $count;
                     $inventory->update([
-                        'quantity' => $q
+                        'available_stock' => $q
                     ]);
 
                     //create a record of the transaction
@@ -364,6 +386,114 @@ class ProductionController extends Controller
         }
     }
 
+    public function destroy(Request $request, $code)
+    {
+        $production = Production::where("code", $code)->first();
+
+        if (is_object($production)) {
+            //delete new batches
+            //check if any sale where made with this batch
+            foreach ($production->batches as $batch) {
+                if ($batch->siteSales->count() > 0) {
+                    $quantity = 0;
+                    foreach ($batch->siteSales as $sale) {
+                        foreach ($sale->products as $summary) {
+                            if ($summary->inventory->id == $batch->inventory->id) {
+                                $quantity += $summary->quantity;
+                            }
+                        }
+                    }
+
+                    $replacement_batch = $batch->inventory->batches()
+                        ->where("balance", ">=", $quantity)
+                        ->where("id", "!=", $batch->id)
+                        ->orderBy("date", "asc")
+                        ->first();
+
+                    if (is_object($replacement_batch)) {
+                        $balance = $replacement_batch->balance - $quantity;
+                        //update the balance
+                        $replacement_batch->update([
+                            "balance" => $balance,
+                        ]);
+
+                        foreach ($batch->siteSales as $sale) {
+                            $sale->batches()->detach($batch);
+                            $sale->batches()->attach($replacement_batch);
+                        }
+
+                        $quantity = $batch->inventory->available_stock - $batch->quantity;
+                        $batch->inventory->update([
+                            "available_stock" => $quantity
+                        ]);
+
+                        $batch->delete();
+                    } else {
+                        return Redirect::back()->with("error", "Error when deleting batch for {$batch->inventory->name}. There is no other replacement batch found to link to existing sales.");
+                    }
+                } else {
+                    //it can be easily deleted, has no connections anywhere
+                    $quantity = $batch->inventory->available_stock - $batch->quantity;
+                    $batch->inventory->update([
+                        "available_stock" => $quantity
+                    ]);
+                    $batch->delete();
+                }
+            }
+
+            //delete usages
+            foreach ($production->usages as $usage) {
+                //material balance
+                $quantity = $usage->material->quantity + $usage->quantity;
+                $usage->material->update([
+                    "quantity" => $quantity
+                ]);
+
+                //batch linked
+                if ($usage->batch != null) {
+                    $batch = $usage->batch;
+                } else {
+                    $batch = $usage->material->batches()->orderBy("date", "desc")->first();
+                }
+
+                $balance = $batch->balance + $usage->quantity;
+                $batch->update([
+                    "balance" => $balance
+                ]);
+                $usage->delete();
+            }
+
+            //delete damages
+            foreach ($production->damages as $damage) {
+                //inventory balance
+                $quantity = $damage->inventory->available_stock + $damage->quantity;
+                $damage->inventory->update([
+                    "available_stock" => $quantity
+                ]);
+
+                //batch linked
+                $balance = $damage->batch->balance + $damage->quantity;
+                $damage->batch->update([
+                    "balance" => $balance
+                ]);
+                $damage->delete();
+            }
+
+            //delete production
+            $production->delete();
+
+            return Redirect::route("production.index", ["code" => $production->site->code])->with("success", "Successfully deleted the production report");
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Production not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Production report not found');
+            }
+        }
+    }
+
     private function getCodeNumber()
     {
         $last = Production::orderBy("code", "desc")->first();
@@ -383,5 +513,40 @@ class ProductionController extends Controller
             "cost" => $arr->cost,
             "material" => $arr->material,
         ];
+    }
+
+    public function print(Request $request, $code)
+    {
+        //find out if the request is valid
+        $production = Production::where("code", $code)->first();
+
+        if (is_object($production)) {
+
+            /*
+                        $pdf=App::make('dompdf.wrapper');
+                        $pdf->loadHTML('request');
+                        return $pdf->stream('Request Form');*/
+
+            $filename = "PRODUCTION#" . (new AppController())->getZeroedNumber($production->code) . " - " .  date('Ymd', $production->date);
+
+            $date = Carbon::createFromTimestamp($production->date, 'Africa/Lusaka')->format('F j, Y');
+
+            $pdf = PDF::loadView('production', [
+                'code'              => (new AppController())->getZeroedNumber($production->code),
+                'date'              => $date,
+                'production'        => $production,
+            ]);
+
+            return $pdf->download("$filename.pdf");
+            
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Production not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Production report not found');
+            }
+        }
     }
 }
