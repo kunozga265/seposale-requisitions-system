@@ -153,7 +153,7 @@
         </tbody>
     </table>
 
-    <p class="heading">Material Usage</p>
+    <p class="heading">Material Usage & Cost</p>
     <table class="summary">
         <!-- <thead>
             <tr>
@@ -168,6 +168,14 @@
                 <td style="text-align: right; border-left:none;">{{number_format($usage->quantity,2)}}  {{ $usage->material->units }}{{ $usage->quantity == 1 ? "" : "s" }}</td>
             </tr>
             @endforeach
+              <tr>
+                <td style="text-transform: none; border-right: none;">Labour</td>
+                <td style="text-align: right; border-left:none;">MK{{number_format(json_decode($production->expenses)->labour,2)}}</td>
+            </tr>
+              <tr>
+                <td style="text-transform: none; border-right: none;">Food</td>
+                <td style="text-align: right; border-left:none;">MK{{number_format(json_decode($production->expenses)->food,2)}}</td>
+            </tr>
         </tbody>
     </table>
 
