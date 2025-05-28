@@ -123,7 +123,7 @@
                     {{$date}}
                 </div>
             </div>
-            <div style="font-size: 25px; font-weight: normal; margin-top:0px">Production: <span
+            <div style="font-size: 25px; font-weight: normal; margin-top:0px">Production Report: <span
                     style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
   <div>{{ $production->site->name}} One Stop Shop</div>
 
@@ -153,12 +153,12 @@
 
     <p class="heading">Material Usage</p>
     <table class="summary">
-        <thead>
+        <!-- <thead>
             <tr>
                 <th class="shade">Product</th>
                 <th class="shade" style="text-align: right">Quantity</th>
             </tr>
-        </thead>
+        </thead> -->
         <tbody>
             @foreach($production->usages as $usage)
             <tr>
@@ -169,19 +169,40 @@
         </tbody>
     </table>
 
-    <p class="heading">Damages</p>
+    @if ($production->damages->count() > 0)
+      <p class="heading">Damages</p>
     <table class="summary">
-        <thead>
+        <!-- <thead>
             <tr>
                 <th class="shade">Product</th>
                 <th class="shade" style="text-align: right">Quantity</th>
             </tr>
-        </thead>
+        </thead> -->
         <tbody>
             @foreach($production->damages as $damage)
             <tr>
                 <td style="text-transform: none">{{$damage->inventory->name}}</td>
                 <td style="text-align: right">{{number_format($damage->quantity,2)}} {{ $damage->inventory->units }}{{ $damage->quantity == 1 ? "" : "s" }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
+  
+
+    <p class="heading">Stock Remaining</p>
+    <table class="summary">
+        <!-- <thead>
+            <tr>
+                <th class="shade">Product</th>
+                <th class="shade" style="text-align: right">Quantity</th>
+            </tr>
+        </thead> -->
+        <tbody>
+            @foreach(json_decode($production->closing_stock) as $material)
+            <tr>
+                <td style="text-transform: none">{{$material->name}}</td>
+                <td style="text-align: right">{{number_format($material->quantity,2)}} {{ $material->units }}{{ $material->quantity == 1 ? "" : "s" }}</td>
             </tr>
             @endforeach
         </tbody>
