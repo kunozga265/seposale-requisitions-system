@@ -138,6 +138,7 @@
         <thead>
             <tr>
                 <th class="shade">Product</th>
+                <th class="shade">Curing Date</th>
                 <th class="shade" style="text-align: right">Quantity</th>
             </tr>
         </thead>
@@ -145,6 +146,7 @@
            @foreach($production->batches as $batch)
             <tr>
                 <td style="text-transform: none">{{$batch->inventory->name}}</td>
+                <td style="text-transform: none">{{ date("M d, Y", $batch->ready_date) }}</td>
                 <td style="text-align: right">{{number_format($batch->quantity,2)}} {{ $batch->inventory->units }}{{ $batch->quantity == 1 ? "" : "s" }}</td>
             </tr>
             @endforeach
@@ -162,8 +164,8 @@
         <tbody>
             @foreach($production->usages as $usage)
             <tr>
-                <td style="text-transform: none">{{$usage->material->name}}</td>
-                <td style="text-align: right">{{number_format($usage->quantity,2)}}  {{ $usage->material->units }}{{ $usage->quantity == 1 ? "" : "s" }}</td>
+                <td style="text-transform: none; border-right: none;">{{$usage->material->name}}</td>
+                <td style="text-align: right; border-left:none;">{{number_format($usage->quantity,2)}}  {{ $usage->material->units }}{{ $usage->quantity == 1 ? "" : "s" }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -181,8 +183,8 @@
         <tbody>
             @foreach($production->damages as $damage)
             <tr>
-                <td style="text-transform: none">{{$damage->inventory->name}}</td>
-                <td style="text-align: right">{{number_format($damage->quantity,2)}} {{ $damage->inventory->units }}{{ $damage->quantity == 1 ? "" : "s" }}</td>
+                <td style="text-transform: none; border-right: none;">{{$damage->inventory->name}}</td>
+                <td style="text-align: right; border-left:none;">{{number_format($damage->quantity,2)}} {{ $damage->inventory->units }}{{ $damage->quantity == 1 ? "" : "s" }}</td>
             </tr>
             @endforeach
         </tbody>
@@ -201,8 +203,8 @@
         <tbody>
             @foreach(json_decode($production->closing_stock) as $material)
             <tr>
-                <td style="text-transform: none">{{$material->name}}</td>
-                <td style="text-align: right">{{number_format($material->quantity,2)}} {{ $material->units }}{{ $material->quantity == 1 ? "" : "s" }}</td>
+                <td style="text-transform: none; border-right: none;">{{$material->name}}</td>
+                <td style="text-align: right; border-left:none;">{{number_format($material->quantity,2)}} {{ $material->units }}{{ $material->quantity == 1 ? "" : "s" }}</td>
             </tr>
             @endforeach
         </tbody>
