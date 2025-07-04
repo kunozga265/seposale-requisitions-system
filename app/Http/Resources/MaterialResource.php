@@ -21,6 +21,8 @@ class MaterialResource extends JsonResource
             "quantity"=> $this->quantity,
             "threshold"=> $this->threshold,
             "type"=> $this->type,
+            "batchesValue"=> $this->batchesValue(),
+            "inventoryValue" => $this->inventoryAccount != null ? $this->inventoryAccount->balance : 0
         ];
     }
 }

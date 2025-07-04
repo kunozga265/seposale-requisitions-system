@@ -109,7 +109,7 @@ class Receipt extends Model
 
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(AccountingAccount::class,"account_id","id");
     }
 
 

@@ -23,7 +23,7 @@ class SiteSaleSummary extends Model
 
     public function sale()
     {
-        return $this->belongsTo(SiteSale::class,"site_sale_id","id");
+        return $this->belongsTo(SiteSale::class, "site_sale_id", "id");
     }
 
     public function collections()
@@ -39,6 +39,24 @@ class SiteSaleSummary extends Model
     public function delivery()
     {
         return $this->hasOne(Delivery::class);
+    }
+
+    public function deliveryExists()
+    {
+        if ($this->delivery == null) {
+            return false;
+        } else if ($this->delivery->quantity_delivered == 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function formattedUnits($quantity)
+    {
+        $plural = $quantity != 1 ? "s" : "";
+        $formatted = number_format($quantity, 2);
+        return "$formatted {$this->inventory->units}$plural";
     }
 
     public function getPaymentStatus()
@@ -71,13 +89,32 @@ class SiteSaleSummary extends Model
     public function getCollectionStatus()
     {
 
-            if ($this->collected == $this->quantity) {
-                return 2;
-            } elseif ($this->collected > 0 && $this->collected < $this->quantity) {
-                return 1;
-            } else{
-                return 0;
-            }
+        if ($this->collected == $this->quantity) {
+            return 2;
+        } elseif ($this->collected > 0 && $this->collected < $this->quantity) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    public function cost()
+    {
+        return $this->amount / $this->quantity;
+    }
+
+    public function paidBalance()
+    {
+        $total = 0;
+        foreach ($this->collections as $collection) {
+            $total += $collection->quantity * $this->cost();
+        }
+        // dump("Amount ".$this->amount);
+        // dump("Balance ".$this->balance);
+        // dump("Unit Cost ".$this->cost());
+        // dump("Total ".$total);
+
+        return $this->amount - $this->balance - $total;
     }
 
     protected $fillable = [

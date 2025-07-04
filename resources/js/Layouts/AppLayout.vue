@@ -1,20 +1,20 @@
 <template>
   <div>
-    <jet-banner/>
+    <jet-banner />
 
     <div class="min-h-screen bg-gray-100">
 
       <nav class="bg-gray system-nav">
         <!-- Aside -->
-        <aside :class="{'extend': open}" class="bg-gray-50 rounded dark:bg-gray-800 sidebar" aria-label="Sidebar">
+        <aside :class="{ 'extend': open }" class="bg-gray-50 rounded dark:bg-gray-800 sidebar" aria-label="Sidebar">
           <div class="overflow-y-auto ">
             <div class="header">
               <div class="p-2 flex justify-end navigation-buttons">
-                <button @click="open = ! open"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button @click="open = !open"
+                  class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                   <svg class="h-6 w-6" stroke="white" fill="none" viewBox="0 0 24 24">
                     <path class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"/>
+                      d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
@@ -37,73 +37,73 @@
             <ul class="px-10 p-6">
               <li>
                 <a :href="route('dashboard')"
-                   class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+                  class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
                   <i class="text-lg mdi mdi-view-dashboard"></i>
                   <span class="ml-3">Dashboard</span>
                 </a>
               </li>
 
-                <li v-if="checkRole($page.props.auth.data,'accountant') || checkRole($page.props.auth.data,'management')">
-                    <div @click="accounts = !accounts"
-                         class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                        <div>
-                            <i class="text-lg mdi mdi-bank"></i>
-                            <span class="ml-3">Accounts</span>
-                        </div>
-                        <div>
-                            <i class="text-lg mdi" :class="{'mdi-menu-down':!accounts, 'mdi-menu-up': accounts}"></i>
-                        </div>
-                    </div>
-                    <ul v-show="accounts">
-                        <li>
-                            <a :href="route('accounts.index')"
-                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Bank Accounts
-                            </a>
-                        </li>
-                        <li >
-                            <a :href="route('finance')"
-                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Pending Requisitions
-                            </a>
-                        </li>
-                        <li>
-                            <a :href="route('payables.index')"
-                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Payables
-                            </a>
-                        </li>
-                        <li>
-                            <a :href="route('expenses.index')"
-                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Expenses
-                            </a>
-                        </li>
+              <li v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management')">
+                <div @click="accounts = !accounts"
+                  class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  <div>
+                    <i class="text-lg mdi mdi-bank"></i>
+                    <span class="ml-3">Accounting</span>
+                  </div>
+                  <div>
+                    <i class="text-lg mdi" :class="{ 'mdi-menu-down': !accounts, 'mdi-menu-up': accounts }"></i>
+                  </div>
+                </div>
+                <ul v-show="accounts">
+                  <li>
+                    <a :href="route('accounts.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Accounts
+                    </a>
+                  </li>
+                  <li>
+                    <a :href="route('finance')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Pending Requisitions
+                    </a>
+                  </li>
+                  <li>
+                    <a :href="route('payables.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Payables
+                    </a>
+                  </li>
+                  <li>
+                    <a :href="route('expenses.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Expenses
+                    </a>
+                  </li>
 
-                    </ul>
-                </li>
+                </ul>
+              </li>
 
               <li>
                 <div @click="requests = !requests"
-                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ">
+                  class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ">
                   <div>
                     <i class="text-lg mdi mdi-book-alphabet"></i>
                     <span class="ml-3">Requisitions</span>
                   </div>
                   <div>
-                    <i class="text-lg mdi" :class="{'mdi-menu-down':!requests, 'mdi-menu-up': requests}"></i>
+                    <i class="text-lg mdi" :class="{ 'mdi-menu-down': !requests, 'mdi-menu-up': requests }"></i>
                   </div>
                 </div>
                 <ul v-show="requests">
                   <li>
                     <a :href="route('index')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       All
                     </a>
                   </li>
                   <li>
                     <a :href="route('approved')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Approved
                     </a>
                   </li>
@@ -133,43 +133,43 @@
 
               <li>
                 <div @click="sales = !sales"
-                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
                     <i class="text-lg mdi mdi-finance"></i>
                     <span class="ml-3">Sales</span>
                   </div>
                   <div>
-                    <i class="text-lg mdi" :class="{'mdi-menu-down':!sales, 'mdi-menu-up': sales}"></i>
+                    <i class="text-lg mdi" :class="{ 'mdi-menu-down': !sales, 'mdi-menu-up': sales }"></i>
                   </div>
                 </div>
                 <ul v-show="sales">
                   <li>
-                    <a :href="route('sales.index',{section:'tabular'})"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <a :href="route('sales.index', { section: 'tabular' })"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       All
                     </a>
                   </li>
                   <li>
                     <a :href="route('receipts.index')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Receipts
                     </a>
                   </li>
                   <li>
                     <a :href="route('invoices.index')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Invoices
                     </a>
                   </li>
                   <li>
                     <a :href="route('quotations.index')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Quotations
                     </a>
                   </li>
                   <li>
                     <a :href="route('products.index')"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Products
                     </a>
                   </li>
@@ -178,30 +178,30 @@
                 </ul>
               </li>
 
-                <li>
-                    <a :href="route('clients.index')"
-                       class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
-                        <i class="text-lg mdi mdi-account-group"></i>
-                        <span class="ml-3">Clients</span>
-                    </a>
-                </li>
+              <li>
+                <a :href="route('clients.index')"
+                  class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">
+                  <i class="text-lg mdi mdi-account-group"></i>
+                  <span class="ml-3">Clients</span>
+                </a>
+              </li>
 
               <li>
                 <div @click="sites = !sites"
-                     class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
                     <i class="text-lg mdi mdi-shopping"></i>
                     <span class="ml-3">One Stop Shops</span>
                   </div>
                   <div>
-                    <i class="text-lg mdi" :class="{'mdi-menu-down':!sites, 'mdi-menu-up': sites}"></i>
+                    <i class="text-lg mdi" :class="{ 'mdi-menu-down': !sites, 'mdi-menu-up': sites }"></i>
                   </div>
                 </div>
                 <ul v-show="sites">
                   <li v-for="(site, index) in $page.props.sites" :key="index">
-                    <a :href="route('sites.overview',{code:site.code})"
-                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                        {{ site.name }}
+                    <a :href="route('sites.overview', { code: site.code })"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      {{ site.name }}
                     </a>
                   </li>
 
@@ -210,73 +210,74 @@
 
 
 
-                <li>
-                    <div @click="operations = !operations"
-                         class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                        <div>
-                            <i class="text-lg mdi mdi-dump-truck"></i>
-                            <span class="ml-3">Operations</span>
-                        </div>
-                        <div>
-                            <i class="text-lg mdi" :class="{'mdi-menu-down':!operations, 'mdi-menu-up': operations}"></i>
-                        </div>
-                    </div>
-                    <ul v-show="operations">
-                        <li>
-                            <a :href="route('deliveries.index')"
-                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Deliveries
-                            </a>
-                        </li>
-                        <li>
-                            <a :href="route('transporters.index')"
-                               class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                                Transporters
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+              <li>
+                <div @click="operations = !operations"
+                  class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  <div>
+                    <i class="text-lg mdi mdi-dump-truck"></i>
+                    <span class="ml-3">Operations</span>
+                  </div>
+                  <div>
+                    <i class="text-lg mdi" :class="{ 'mdi-menu-down': !operations, 'mdi-menu-up': operations }"></i>
+                  </div>
+                </div>
+                <ul v-show="operations">
+                  <li>
+                    <a :href="route('deliveries.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Deliveries
+                    </a>
+                  </li>
+                  <li>
+                    <a :href="route('transporters.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Transporters
+                    </a>
+                  </li>
+                </ul>
+              </li>
 
-<!--               <li>-->
-<!--                   <div @click="operations = !operations"-->
-<!--                        class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">-->
-<!--                       <div>-->
-<!--                           <i class="text-lg mdi mdi-dump-truck"></i>-->
-<!--                           <span class="ml-3">Operations</span>-->
-<!--                       </div>-->
-<!--                       <div>-->
-<!--                           <i class="text-lg mdi" :class="{'mdi-menu-down':!operations, 'mdi-menu-up': operations}"></i>-->
-<!--                       </div>-->
-<!--                   </div>-->
-<!--                   <ul v-show="operations">-->
-<!--                       <li>-->
-<!--                           <a :href="route('deliveries.index',{filter:'processing'})"-->
-<!--                              class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">-->
-<!--                               Processing-->
-<!--                           </a>-->
-<!--                       </li>-->
+              <!--               <li>-->
+              <!--                   <div @click="operations = !operations"-->
+              <!--                        class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 ">-->
+              <!--                       <div>-->
+              <!--                           <i class="text-lg mdi mdi-dump-truck"></i>-->
+              <!--                           <span class="ml-3">Operations</span>-->
+              <!--                       </div>-->
+              <!--                       <div>-->
+              <!--                           <i class="text-lg mdi" :class="{'mdi-menu-down':!operations, 'mdi-menu-up': operations}"></i>-->
+              <!--                       </div>-->
+              <!--                   </div>-->
+              <!--                   <ul v-show="operations">-->
+              <!--                       <li>-->
+              <!--                           <a :href="route('deliveries.index',{filter:'processing'})"-->
+              <!--                              class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">-->
+              <!--                               Processing-->
+              <!--                           </a>-->
+              <!--                       </li>-->
 
-<!--                       <li>-->
-<!--                           <a :href="route('deliveries.index',{filter:'completed'})"-->
-<!--                              class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">-->
-<!--                               Completed-->
-<!--                           </a>-->
-<!--                       </li>-->
-
-
-<!--                   </ul>-->
-<!--               </li>-->
+              <!--                       <li>-->
+              <!--                           <a :href="route('deliveries.index',{filter:'completed'})"-->
+              <!--                              class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">-->
+              <!--                               Completed-->
+              <!--                           </a>-->
+              <!--                       </li>-->
 
 
+              <!--                   </ul>-->
+              <!--               </li>-->
 
-             <li v-if="checkRole($page.props.auth.data,'administrator') || checkRole($page.props.auth.data,'management')">
-               <a :href="route('users')"
+
+
+              <li
+                v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                <a :href="route('users')"
                   class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                 <i class="text-lg mdi mdi-account-supervisor-circle"></i>
-                 <span class="ml-3">Users</span>
-               </a>
-             </li>
-             <!-- <li>
+                  <i class="text-lg mdi mdi-account-supervisor-circle"></i>
+                  <span class="ml-3">Users</span>
+                </a>
+              </li>
+              <!-- <li>
                  <a :href="route('projects')" class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                      <i class="text-lg mdi mdi-home-group"></i>
                      <span class="ml-3">Projects</span>
@@ -288,16 +289,17 @@
                      <span class="ml-3">Vehicles</span>
                  </a>
              </li> -->
-              <li v-if="checkRole($page.props.auth.data,'accountant') || checkRole($page.props.auth.data,'administrator') || checkRole($page.props.auth.data,'management')">
+              <li
+                v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
                 <a :href="route('reports')"
-                   class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                  class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                   <i class="text-lg mdi mdi-chart-timeline"></i>
                   <span class="ml-3">Reports</span>
                 </a>
               </li>
               <li>
                 <a :href="route('profile.show')"
-                   class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                  class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                   <i class="text-lg mdi mdi-account"></i>
                   <span class="ml-3">Profile</span>
                 </a>
@@ -312,25 +314,51 @@
           <div class="flex justify-between h-16">
             <div class="flex">
               <div class="ml-3 flex items-center">
-                <button @click="open = ! open"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out">
+                <button @click="open = !open"
+                  class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out">
                   <span class="material-icons">short_text</span>
                 </button>
               </div>
               <!-- Logo -->
               <div class="flex-shrink-0 flex items-center">
                 <inertia-link :href="route('dashboard')">
-                  <jet-application-mark class="block h-9 w-auto"/>
+                  <jet-application-mark class="block h-9 w-auto" />
                 </inertia-link>
               </div>
             </div>
 
             <div class="flex items-center">
 
+                <!-- Settings Dropdown -->
+              <div class="mx-3" v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management')">
+                <jet-dropdown align="right" width="48">
+                  <template #trigger>
+                    <div class="">
+                      <span class="mdi mdi-cog text-xl text-gray-500 hover:text-black cursor-pointer"></span>
+                    </div>
+                  </template>
+
+                  <template #content>
+                   
+                    <div class="block px-4 py-2 text-xs text-gray-400">
+                      Settings
+                    </div>
+
+                    <jet-dropdown-link :href="route('settings.accounting-centre')">
+                      Accounting Centre
+                    </jet-dropdown-link>
+
+                    <div class="border-t border-gray-100"></div>
+
+                   
+                  </template>
+                </jet-dropdown>
+              </div>
+
               <inertia-link :href="route('notifications')">
                 <div class="ml-3 relative hover:cursor-pointer cursor">
                   <div v-show="$page.props.notificationsCount > 0" style="font-size:10px"
-                       class="absolute right-0 h-4 w-4 rounded-full text-white font-bold grid justify-items-center text-xs bg-red-500 flex items-center ">
+                    class="absolute right-0 h-4 w-4 rounded-full text-white font-bold grid justify-items-center text-xs bg-red-500 flex items-center ">
                     {{ $page.props.notificationsCount }}
                   </div>
                   <div class="h-9 w-9 rounded-full  grid justify-items-center flex items-center hover:cursor-pointer">
@@ -362,12 +390,14 @@
 
                     <!-- Authentication -->
                     <div @click="logout"
-                         class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out hover:cursor-pointer cursor">
+                      class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out hover:cursor-pointer cursor">
                       Logout
                     </div>
                   </template>
                 </jet-dropdown>
               </div>
+
+
             </div>
           </div>
         </div>
@@ -385,7 +415,7 @@
                 <ol class="inline-flex items-center">
                   <li class="inline-flex items-center">
                     <a :href="route('dashboard')"
-                       class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                      class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                       Home
                     </a>
                   </li>
@@ -412,7 +442,7 @@
       </portal-target>
     </div>
 
-    <toast/>
+    <toast />
 
   </div>
 </template>

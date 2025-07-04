@@ -37,6 +37,7 @@ export default {
             switch (this.request.type){
                 case 'PETTY_CASH':
                 case 'REQUISITION':
+                case 'OPERATIONS':
                     return this.request.total
                 case 'FUEL':
                     return this.request.fuelRequestedMoney

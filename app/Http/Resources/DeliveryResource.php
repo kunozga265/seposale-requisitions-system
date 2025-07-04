@@ -28,12 +28,14 @@ class DeliveryResource extends JsonResource
             "location" => $this->summary->sale->location,
             "expense" => new ExpenseResource($this->expense),
             "quantityDelivered" => floatval($this->quantity_delivered),
+            "quantityBalance" => floatval($this->summary->quantity - $this->quantity_delivered),
             "summary" => new SummaryResource($this->summary),
             "date" => intval($this->due_date),
             "due" => $this->status == 1 ? Carbon::createFromTimestamp($this->due_date)->diffForHumans() : null,
             "overdue" => $this->status == 1 ? $this->overdue() : false,
             "logs" => SystemLogResource::collection($this->logs),
             'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
+            "costBalance" => $this->availableCostBalance(),
         ];
     }
 }

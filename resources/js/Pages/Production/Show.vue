@@ -44,7 +44,7 @@
 
         <primary-button >Print</primary-button>
       </a>
-      <danger-button @click.native="deleteDialog = true">Delete</danger-button>
+      <danger-button v-if="production.data.active" @click.native="deleteDialog = true">Delete</danger-button>
     </template>
 
     <dialog-modal :show="deleteDialog" @close="deleteDialog = false">

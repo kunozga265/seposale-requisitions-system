@@ -34,6 +34,7 @@ class Batch extends Model
         "date",
         "price",
         "quantity",
+        "accounting_balance",
         "balance",
         "comments",
         "photo",

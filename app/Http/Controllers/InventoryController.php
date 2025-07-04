@@ -11,6 +11,8 @@ use App\Http\Resources\SiteSaleSummaryResource;
 use App\Models\Batch;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\Receipt;
+use App\Models\ReceiptSummary;
 use App\Models\Site;
 use App\Models\SystemLog;
 use Carbon\Carbon;
@@ -29,49 +31,76 @@ class InventoryController extends Controller
             //
             $inventory = $site->inventories()->where("id", $id)->first();
 
-
-
             if (is_object($inventory)) {
-                //get sales
-                $summaries = $inventory->summaries()->latest()->get();
+                $section  = strtolower($request->query("section"));
+
                 $sales = [];
-                foreach ($summaries as $summary) {
-                    $sales[] = [
-                        "id" => $summary->sale->id,
-                        "code" => (new AppController())->getZeroedNumber($summary->sale->code),
-                        "client" => $summary->sale->client,
-                        "date" => $summary->sale->date,
-                        "products" => [
-                            new SiteSaleSummaryResource($summary)
-                        ],
-                    ];
-                }
-
-                //get batches
-                $batches = $inventory->batches()->orderBy("date", "desc")->get();
-
-                //get items awaiting curation
+                $collections = [];
+                $batches = [];
+                $damages = [];
                 $awaiting_curation = [];
-                if ($inventory->producible == 1) {
-                    $now = Carbon::now();
-                    $awaiting_curation = $inventory->batches()
-                        ->where("ready_date", "!=", null)
-                        ->where("ready_date", ">=", $now->getTimestamp())
-                        ->orderBy("ready_date", "asc")
-                        ->get();
+                $filtered_receipts = [];
+
+                switch ($section) {
+                    case "sales":
+                        //get sales
+                        $summaries = $inventory->summaries()->latest()->get();
+                        foreach ($summaries as $receipt_summary) {
+                            $sales[] = [
+                                "id" => $receipt_summary->sale->id,
+                                "code" => (new AppController())->getZeroedNumber($receipt_summary->sale->code),
+                                "client" => $receipt_summary->sale->client,
+                                "date" => $receipt_summary->sale->date,
+                                "products" => [
+                                    new SiteSaleSummaryResource($receipt_summary)
+                                ],
+                            ];
+                        }
+                        break;
+                    case "collections":
+                        $collections = $inventory->collections;
+                        break;
+                    case "batches":
+                        //get batches
+                        $batches = $inventory->batches()->orderBy("date", "desc")->get();
+                        break;
+                    case "damages":
+                        //get damages
+                        $damages = $inventory->damages()->orderBy("date", "desc")->get();
+                        break;
+                    default:
+                        $section = "overview";
+                        $receipt_summaries = ReceiptSummary::where("site_sale_summary_id", "!=", null)->orderBy("created_at", "asc")->get();
+                        foreach ($receipt_summaries as $receipt_summary) {
+
+                            if ($receipt_summary->siteSaleSummary->inventory->id == $inventory->id) {
+                                $filtered_receipts[] = $receipt_summary;
+                            }
+                        }
+
+                        //get items awaiting curation
+                        if ($inventory->producible == 1) {
+                            $now = Carbon::now();
+                            $awaiting_curation = $inventory->batches()
+                                ->where("ready_date", "!=", null)
+                                ->where("ready_date", ">=", $now->getTimestamp())
+                                ->orderBy("ready_date", "asc")
+                                ->get();
+                        }
                 }
 
-                //get damages
-                $damages = $inventory->damages()->orderBy("date", "desc")->get();
-               
                 //get products
-                $products = Product::orderBy("name","asc")->get();
+                $products = Product::orderBy("name", "asc")->get();
+
+
 
                 return Inertia::render('Inventories/Show', [
                     "site" => $site,
+                    "section" => $section,
                     "inventory" => new InventoryResource($inventory),
                     "sales" => $sales,
-                    "collections" => CollectionResource::collection($inventory->collections),
+                    "filteredReceipts" => $filtered_receipts,
+                    "collections" => CollectionResource::collection($collections),
                     "batches" => BatchResource::collection($batches),
                     "awaitingCuration" => BatchResource::collection($awaiting_curation),
                     "damages" => DamageResource::collection($damages),
@@ -245,8 +274,10 @@ class InventoryController extends Controller
 
             Batch::create([
                 "date" => $request->date,
+                "ready_date" => $request->date,
                 "price" =>  $request->total / $request->quantity,
                 "quantity" => $request->quantity,
+                "accounting_balance" => $request->quantity,
                 "balance" =>  $batch_balance,
                 "photo" => $request->photo ?? null,
                 "comments" => $request->comments,
@@ -286,6 +317,4 @@ class InventoryController extends Controller
             return Redirect::back()->with('error', 'Resource not found');
         }
     }
-
-   
 }

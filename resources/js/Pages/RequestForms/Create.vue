@@ -58,7 +58,8 @@
 
                                     <div class="p-2 mb-2 md:col-span-2">
                                         <jet-label for="purpose" value="Purpose" />
-                                        <textarea id="purpose" v-model="form.purpose" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" ></textarea>
+                                        <textarea id="purpose" v-model="form.purpose"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
                                     </div>
 
                                 </div>
@@ -103,29 +104,42 @@
                                         </thead>
                                         <tbody>
                                             <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                                                v-for="(info, index) in form.information" :key="index">
+                                                v-for="(info, index) in form.items" :key="index">
                                                 <th scope="row" class="px-2">
                                                     <i @click="removeRecord(index)"
                                                         class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor"></i>
                                                 </th>
                                                 <td scope="row"
                                                     class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                    <jet-input type="text" class="block w-full" v-model="info.details" />
+                                                    <jet-input type="text" class="block w-full"
+                                                        v-model="info.details" />
                                                 </td>
                                                 <td v-if="form.type === 'MATERIALS'" class="py-2 pr-1">
                                                     <jet-input type="text" class="block w-full" v-model="info.units" />
                                                 </td>
                                                 <td class="py-2 pr-1">
-                                                    <jet-input type="text" class="block w-full" v-model="info.quantity" />
+                                                    <!-- <money
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                        v-bind="moneyMaskOptions" v-model="info.quantity" /> -->
+                                                    <jet-input type="number" class="block w-full" step="0.01"
+                                                        v-model="info.quantity" />
                                                 </td>
                                                 <td class="py-2 pr-1">
-                                                    <jet-input type="text" class="block w-full" v-model="info.unitCost" />
+                                                     <money
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                        v-bind="moneyMaskOptions" v-model="info.unitCost" />
+                                                    <!-- <jet-input type="text" class="block w-full"
+                                                        v-model="info.unitCost" /> -->
                                                 </td>
                                                 <td class="py-2 pr-1">
-                                                    <div
+                                                     <money
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                        v-bind="moneyMaskOptions" :value="(info.quantity * info.unitCost)" />
+                                                    <!-- <div
                                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                                                        {{ numberWithCommas((info.quantity * info.unitCost).toFixed(2)) }}
-                                                    </div>
+                                                        {{ numberWithCommas((info.quantity * info.unitCost).toFixed(2))
+                                                        }}
+                                                    </div> -->
                                                     <!--                                                <jet-input type="text" class="block w-full" v-model="info.totalCost" value="23" />-->
                                                 </td>
                                             </tr>
@@ -238,6 +252,7 @@ import JetLabel from '@/Jetstream/Label'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import SecondaryButton from '@/Jetstream/SecondaryButton'
 import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
+import { Money } from 'v-money'
 
 export default {
     props: ['projects', 'vehicles'],
@@ -252,11 +267,12 @@ export default {
         JetValidationErrors,
         SecondaryButton,
         pdf,
+        Money,
     },
     data() {
         return {
             form: this.$inertia.form({
-                type: '',
+                type: 'REQUISITION',
                 personCollectingAdvance: '',
                 assessedBy: '',
                 fuelRequestedLitres: '',
@@ -265,7 +281,7 @@ export default {
                 driverName: '',
                 lastRefillFuelReceived: '',
                 lastRefillMileageCovered: '',
-                information: [
+                items: [
                     {
                         "details": '',
                         "units": '',
@@ -295,6 +311,14 @@ export default {
             error: '',
             date: null,
             today: new Date().toISOString(),
+            moneyMaskOptions: {
+                decimal: '.',
+                thousands: ',',
+                prefix: 'MK ',
+                suffix: '',
+                precision: 2,
+                masked: false
+            },
         }
     },
     created() {
@@ -323,14 +347,14 @@ export default {
         totalCost() {
             let totalCost = 0
             let currentTotal = 0
-            for (let x in this.form.information) {
-                currentTotal = parseFloat(this.form.information[x].quantity * this.form.information[x].unitCost)
+            for (let x in this.form.items) {
+                currentTotal = parseFloat(this.form.items[x].quantity * this.form.items[x].unitCost)
                 totalCost += currentTotal
-                this.form.information[x].totalCost = parseFloat(currentTotal.toFixed(2))
+                this.form.items[x].totalCost = parseFloat(currentTotal.toFixed(2))
 
                 //convert to numbers
-                this.form.information[x].quantity = parseFloat(this.form.information[x].quantity)
-                this.form.information[x].unitCost = parseFloat(this.form.information[x].unitCost)
+                this.form.items[x].quantity = parseFloat(this.form.items[x].quantity)
+                this.form.items[x].unitCost = parseFloat(this.form.items[x].unitCost)
 
             }
             return parseFloat(totalCost.toFixed(2))
@@ -390,7 +414,8 @@ export default {
              this.numericInput = this.numericInput.replace(/[^0-9]/g, "");
          },*/
         addRecord() {
-            this.form.information.push({
+            this.form.items.push({
+                "id": 0,
                 "details": '',
                 "units": '',
                 "quantity": 0,
@@ -399,7 +424,7 @@ export default {
             })
         },
         removeRecord(index) {
-            this.form.information.splice(index, 1)
+            this.form.items.splice(index, 1)
         },
         fileUpload(file) {
             const reader = new FileReader();

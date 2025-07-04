@@ -39,20 +39,82 @@ class Inventory extends Model
         return $this->belongsTo(Site::class);
     }
 
-    public function stock(){
+    public function stock()
+    {
         $count = 0;
-        foreach ($this->batches as $batch) {
-            if($this->producible == 1){
+        $batches = $this->batches()->where("accounting_balance",">",0)->get();
+        foreach ($batches as $batch) {
+            if ($this->producible == 1) {
                 $now = Carbon::now();
-                if($batch->ready_date <= $now->getTimestamp()){
-                    $count+=$batch->balance;
+                if ($batch->ready_date <= $now->getTimestamp()) {
+                    $count += $batch->accounting_balance;
                 }
-            }else{
-                $count+=$batch->balance;
+            } else {
+                $count += $batch->accounting_balance;
             }
         }
         return $count;
     }
+
+    public function value()
+    {
+         $value = 0;
+        if($this->inventoryAccount != null){
+            $value = $this->inventoryAccount->balance;
+            error_log("Name: {$this->name}");
+            error_log("Value: {$value}");
+            foreach($this->inventoryAccount->inventories as $inventory){
+                  error_log("Inventory Loop: {$inventory->name}");
+                $batches = $inventory->batches()->where("accounting_balance",">",0)->get();
+                foreach($batches as $batch){
+                    error_log("Batch Loop: {$batch->date}");
+                    
+                    error_log($batch->price * $batch->accounting_balance);
+                    $value -= $batch->price * $batch->accounting_balance;
+                }
+            }
+        }
+        return $value;
+    }
+
+
+    public function cogsAccount()
+    {
+        return $this->belongsTo(AccountingAccount::class, 'cogs_account_id', 'id');
+    }
+
+    public function inventoryAccount()
+    {
+        return $this->belongsTo(AccountingAccount::class, 'inventory_account_id', 'id');
+    }
+
+    public function revenueAccount()
+    {
+        return $this->belongsTo(AccountingAccount::class, 'revenue_account_id', 'id');
+    }
+
+    public function checkAccounts()
+    {
+        if ($this->cogsAccount == null) {
+            return false;
+        } else if ($this->inventoryAccount == null) {
+            return false;
+        } else if ($this->revenueAccount == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function inventoryValue() {}
+
+    public function formattedUnits($quantity)
+    {
+        $plural = $quantity != 1 ? "s" : "";
+        $formatted = number_format($quantity, 2);
+        return "$formatted {$this->units}$plural";
+    }
+
 
     protected $fillable = [
         "name",
@@ -64,5 +126,8 @@ class Inventory extends Model
         "threshold",
         "producible",
         "product_id",
+        "cogs_account_id",
+        "inventory_account_id",
+        "revenue_account_id",
     ];
 }

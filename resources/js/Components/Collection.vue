@@ -52,8 +52,11 @@
                         <div class="text-mute text-sm">
                             Quantity
                         </div>
-                        <jet-input min="0" :max="quantityBalance" type="number" step="0.01" class="block w-full"
+                        <jet-input min="0" :max="product.inventoryStock" type="number" step="0.01" class="block w-full"
                             v-model="form.quantity" />
+                            <div class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': form.quantity > product.inventoryStock }">
+                            Up to: {{ numberWithCommas(product.inventoryStock.toFixed(2)) }}
+                        </div>
                     </div>
 
                     <div v-show="product.collectionStatus < 2 && !product.trashed" class="mb-4">
@@ -79,6 +82,7 @@
                             Upload Collection Receipt
                         </div>
                         <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                        accept="image/*"
                             class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
                         <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
                         </div>

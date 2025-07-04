@@ -11,6 +11,8 @@ use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteResource;
 use App\Http\Resources\SummaryResource;
 use App\Models\Account;
+use App\Models\AccountingAccount;
+use App\Models\AccountingRecord;
 use App\Models\Client;
 use App\Models\Collection;
 use App\Models\Delivery;
@@ -155,7 +157,7 @@ class AppController extends Controller
         $sales = Sale::where("status", "<", 2)->orderBy("date", "desc")->get();
 
         //accounts
-        $accounts = Account::all();
+        $accounts = AccountingAccount::where("special_type","WALLET")->orderBy("name", "asc")->get();
 
         //expenses
         $expenses = Expense::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date","asc")->get();
@@ -415,6 +417,10 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (Client::where('serial', $code)->exists());
+        }elseif ($type == "ACCOUNTING") {
+            do {
+                $code = $this->getNewCode();
+            } while (AccountingRecord::where('serial', $code)->exists());
         } else {
             return null;
         }

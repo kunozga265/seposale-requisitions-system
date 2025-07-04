@@ -21,7 +21,7 @@ class ReceiptSummary extends Model
 
     public function siteSaleSummary()
     {
-        return $this->belongsTo(SiteSaleSummary::class);
+        return $this->belongsTo(SiteSaleSummary::class)->withTrashed();
     }
 
     protected $fillable = [

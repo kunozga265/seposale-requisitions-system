@@ -6,6 +6,7 @@ use App\Http\Resources\ClientResource;
 use App\Http\Resources\InventoryResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\Account;
+use App\Models\AccountingAccount;
 use App\Models\Client;
 use App\Models\Inventory;
 use App\Models\InventorySummary;
@@ -32,7 +33,9 @@ class SiteSaleController extends Controller
             //find out if the request is valid
             $sale = SiteSale::withTrashed()->find($id);
             $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
-            $accounts = Account::all();
+            $accounts = AccountingAccount::where('special_type', 'WALLET')
+            ->orderBy('name', 'asc')
+            ->get();
 
             if (is_object($sale)) {
                 if ((new AppController())->isApi($request)) {
@@ -267,8 +270,6 @@ class SiteSaleController extends Controller
                 'payment_method_id' => 0,
                 'reference' => "",
             ]);
-
-
 
             $cost = 0;
             //update batches

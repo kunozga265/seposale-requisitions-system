@@ -121,41 +121,53 @@
 
             <template #content>
                 <jet-validation-errors class="mb-4" />
-                <div class="mb-4">
-                    <jet-label for="product" value="Select Product" />
-                    <select v-model="form.materialsId" id="product"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                        required>
-                        <option value="0">---</option>
-                        <option v-for="(material, index) in materials.data" :value="material.id" :key="index">
-                            {{ material.name }}
-                        </option>
-                    </select>
-                </div>
 
-                <div v-if="form.materialsId !== 0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
-                    <div class="mb-4">
+                    <div class="mb-4" :class="{ 'md:col-span-2': form.materialsId == 0 }">
+                        <jet-label for="product" value="Select Product" />
+                        <select v-model="form.materialsId" id="product"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required>
+                            <option value="0">---</option>
+                            <option v-for="(material, index) in materials.data" :value="material.id" :key="index">
+                                {{ material.name }}
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div class="mb-4" v-if="form.materialsId !== 0">
                         <jet-label for="date" value="Date" />
                         <vue-date-time-picker color="#1a56db" v-model="form.date" :max-date="maxDate" />
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-4" v-if="form.materialsId !== 0">
                         <jet-label for="quantity" value="Quantity" />
                         <jet-input type="number" step="0.01" class="block w-full" v-model="form.materialsQuantity"
                             required />
+                        <div class="text-gray-500 text-xs">
+                            <span>MK{{ numberWithCommas(unitCost.toFixed(2)) }} Per {{ selectedMaterial.units }}</span>
+                        </div>
+
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-4" v-if="form.materialsId !== 0">
                         <jet-label for="quantity" value="Total Cost" />
-                        <jet-input type="number" step="0.01" class="block w-full" v-model="form.total" required />
-                        <div class="text-gray-500 text-xs">Product + Transport Cost</div>
+                        <!-- <jet-input type="number" step="0.01" class="block w-full" v-model="form.total" required /> -->
+                        <money
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            v-bind="moneyMaskOptions" v-model="form.total" />
+                        <div class="text-gray-500 text-xs flex justify-between">
+                            <span>Upto MK{{ numberWithCommas(maxValue.toFixed(2)) }}</span>
+                            <span>Product + Transport Cost</span>
+                        </div>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-4 md:col-span-2" v-if="form.materialsId !== 0">
                         <jet-label for="comments" value="Comments" />
                         <textarea
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                             type="text" v-model="form.comments"></textarea>
                     </div>
-                    <div class="mb-4 md:col-span-2">
+                    <div class="mb-4 md:col-span-2" v-if="form.materialsId !== 0">
                         <div class="text-mute text-sm mb-1">
                             Upload Photo
                         </div>
@@ -164,6 +176,8 @@
                         <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
                         </div>
                     </div>
+
+
                 </div>
 
 
@@ -196,6 +210,12 @@
 
             <template #content>
                 <jet-validation-errors class="mb-4" />
+
+                <div v-show="!productionValidation" class="flex items-center w-full text-red md:col-span-2 mb-4">
+                    <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{
+                        productionErrorMessage }}</div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
                     <div class="mb-4">
@@ -221,16 +241,25 @@
                         </div>
                     </div>
 
-                    <div class="mb" v-for="(material, index) in form.materials" :key="index">
-                        <jet-label for="quantity" :value="material.name" />
-                        <jet-input type="number" step="0.01" class="block w-full" v-model="material.quantity" />
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <div class="mb" v-for="(material, index) in form.materials" :key="index">
+                            <jet-label for="quantity" :value="material.name" />
+                            <jet-input type="number" step="0.01" :max="material.max" class="block w-full"
+                                v-model="material.quantity" />
+                        </div>
                     </div>
 
                     <div class="my-2 md:col-span-2 text-gray-500 text-xs font-bold">Production Summary</div>
 
-                    <div class="mb" v-for="(inventory, index) in form.inventories" :key="index + '-inventory'">
-                        <jet-label for="quantity" :value="inventory.name" />
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-1">
+                    <div class=" md:col-span-2" v-for="(inventory, index) in form.inventories"
+                        :key="index + '-inventory'">
+                        <div class="flex items-center">
+
+                            <input type="checkbox" value="" v-model="inventory.check"
+                                class="mr-1 mb-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <jet-label for="quantity" :value="inventory.name" />
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 mb-2" v-show="inventory.check">
                             <div>
                                 <div class="text-xs text-gray-500">Produced</div>
                                 <jet-input type="number" step="0.01" class="block w-full"
@@ -240,7 +269,7 @@
                                 <div class="text-xs text-gray-500">Damages</div>
                                 <jet-input type="number" step="0.01" class="block w-full" v-model="inventory.damages" />
                             </div>
-                            <div class="md:col-span-2">
+                            <div class="">
                                 <div class="text-xs text-gray-500">Cure Date</div>
                                 <vue-date-time-picker color="#1a56db" v-model="inventory.date" />
                             </div>
@@ -251,11 +280,23 @@
                     <div class="my-2 md:col-span-2 text-gray-500 text-xs font-bold">Expenses</div>
                     <div class="mb-4">
                         <jet-label for="cementQuantity" value="Labour" />
-                        <jet-input type="number" step="0.01" class="block w-full" v-model="form.labour" required />
+                        <!-- <jet-input type="number" step="0.01" class="block w-full" v-model="form.labour" required /> -->
+                        <money
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            v-bind="moneyMaskOptions" v-model="form.labour" />
+                        <div class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': budget.balance < 0 }">
+                            Up to: MK{{ numberWithCommas(budget.balance.toFixed(2)) }}
+                        </div>
                     </div>
                     <div class="mb-4">
                         <jet-label for="cementQuantity" value="Food" />
-                        <jet-input type="number" step="0.01" class="block w-full" v-model="form.food" required />
+                        <!-- <jet-input type="number" step="0.01" class="block w-full" v-model="form.food" required /> -->
+                        <money
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            v-bind="moneyMaskOptions" v-model="form.food" />
+                        <div class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': budget.balance < 0 }">
+                            Up to: MK{{ numberWithCommas(budget.balance.toFixed(2)) }}
+                        </div>
                     </div>
 
                 </div>
@@ -269,7 +310,7 @@
                     Cancel
                 </secondary-button>
 
-                <primary-button :disabled="form.processing" class="ml-2" @click.native="generateProductionReport">
+                <primary-button v-show="productionValidation" :disabled="form.processing" class="ml-2" @click.native="generateProductionReport">
                     <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
                         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -419,8 +460,7 @@
                                             v-for="(production, index) in productions.data" :key="index"
                                             class="cursor-pointer  hover:bg-gray-100 transition ease-in-out duration-200">
                                             <td class="p-2 text-left">{{ getDate(production.date * 1000) }}</td>
-                                            <td
-                                                class="p-2 text-left">
+                                            <td class="p-2 text-left">
                                                 {{ production.code }}
                                             </td>
                                             <td v-for="(inventory, index) in inventories.data" class="p-2 text-left ">
@@ -458,10 +498,12 @@ import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 import JetLabel from "@/Jetstream/Label.vue";
+import { Money } from 'v-money'
 
 export default {
     props: [
         'site',
+        'siteAccounts',
         'materials',
         'materialsTypes',
         'productions',
@@ -475,7 +517,8 @@ export default {
         AppLayout,
         PrimaryButton,
         PieChart,
-        VueApexCharts
+        VueApexCharts,
+        Money
 
     },
     data() {
@@ -484,6 +527,7 @@ export default {
             addStockDialog: false,
             maxDate: new Date().toISOString().substr(0, 10),
             productionReportDialog: false,
+            productionErrorMessage: "",
             withSand: false,
             form: this.$inertia.form({
                 dates: null,
@@ -500,12 +544,11 @@ export default {
                 date: "",
                 photo: "",
 
-                reportDate: "",
+                reportDate: null,
                 materials: [],
                 inventories: [],
                 labour: 0,
                 food: 0,
-
 
                 code: "",
             }),
@@ -562,7 +605,16 @@ export default {
                             return val
                         }
                     }
-                }
+                },
+
+            },
+            moneyMaskOptions: {
+                decimal: '.',
+                thousands: ',',
+                prefix: 'MK ',
+                suffix: '',
+                precision: 2,
+                masked: false
             },
         }
     },
@@ -573,6 +625,8 @@ export default {
                     "id": this.materials.data[y].id,
                     "type": this.materials.data[y].type.slug,
                     "name": this.materials.data[y].name,
+                    "units": this.materials.data[y].units,
+                    "max": this.materials.data[y].quantity,
                     "quantity": 0,
                 })
             }
@@ -582,14 +636,53 @@ export default {
             this.form.inventories.push({
                 "id": this.inventories.data[y].id,
                 "name": this.inventories.data[y].name,
+                "units": this.inventories.data[y].units,
                 "quantity": 0,
                 "damages": 0,
                 "date": null,
+                "check": false,
             })
 
         }
     },
     computed: {
+        budget() {
+            const account = this.siteAccounts.find(({ special_type }) => special_type === "WALLET");
+            // const directCost = this.siteAccounts.find(({ special_type }) => special_type === "COGS-DIRECT-OSS");
+            var balance = 0
+            // var foodBalance = 0
+
+            if (account != null) {
+                if (account.balance != 0) {
+                    balance = account.balance - this.form.food - this.form.labour
+                }
+            }
+
+            return {
+                "account": account,
+                "balance": balance,
+            }
+        },
+
+        selectedMaterial() {
+            return this.materials.data.find(({ id }) => id === this.form.materialsId);
+        },
+        maxValue() {
+            var value = this.materials.data[0].inventoryValue
+
+            for (let x in this.materials.data) {
+                value -= this.materials.data[x].batchesValue
+            }
+
+            return value
+        },
+        unitCost() {
+            if (this.form.materialsQuantity == 0 && this.form.total == 0) {
+                return 0
+            } else {
+                return this.form.total / this.form.materialsQuantity
+            }
+        },
         filteredTypes() {
             let arr = [];
 
@@ -654,9 +747,78 @@ export default {
 
             return arr
         },
+        productionValidation() {
+            if (this.form.reportDate == null) {
+                this.productionErrorMessage = "Select date"
+                return false
+            }
+            if (this.cementQuantity == 0 || this.cementQuantity == null) {
+                this.productionErrorMessage = "Enter cement bags used"
+                return false
+            }
+
+            const riverSand = this.form.materials.find(({ type }) => type === "river-sand");
+            const quarryDust = this.form.materials.find(({ type }) => type === "quarry-dust");
+            const pebbleStone = this.form.materials.find(({ type }) => type === "pebble-stone");
+
+
+            if (pebbleStone.quantity == 0) {
+                this.productionErrorMessage = "Enter pebble stone used"
+                return false
+            }
+            if (this.withSand) {
+                if (riverSand.quantity == 0) {
+                    this.productionErrorMessage = "Enter river sand used"
+                    return false
+                }
+                if (quarryDust.quantity == 0) {
+                    this.productionErrorMessage = "Enter quarry dust used"
+                    return false
+                }
+
+            } else {
+                if (quarryDust.quantity == 0) {
+                    this.productionErrorMessage = "Enter quarry dust used"
+                    return false
+                }
+            }
+
+            let sum = 0;
+            for (let x in this.form.inventories) {
+                sum += this.form.inventories[x].quantity
+                if (this.form.inventories[x].quantity > 0 && this.form.inventories[x].date == null) {
+                    this.productionErrorMessage = "Select curing date for " + this.form.inventories[x].name
+                    return false
+                }
+            }
+
+            if (sum <= 0) {
+                this.productionErrorMessage = "Enter materials produced"
+                return false
+            }
+
+
+            if (this.form.labour <= 0) {
+                this.productionErrorMessage = "Enter labour cost"
+                return false
+            }
+            if (this.form.food <= 0) {
+                this.productionErrorMessage = "Enter food cost"
+                return false
+            }
+            if (this.budget.balance < 0) {
+                this.productionErrorMessage = "Labour and food cost should be within margins"
+                return false
+            }
+
+            this.productionErrorMessage = ""
+
+            return true
+        }
 
     },
     watch: {
+
         materialsType() {
             if (this.materialsType?.slug != "other") {
                 this.form.name = this.materialsType.name
@@ -753,6 +915,7 @@ export default {
                 "id": cementObject.id,
                 "type": cementObject.type.slug,
                 "name": cementObject.name,
+                "units": cementObject.units,
                 "quantity": this.cementQuantity,
             }]
             for (let x in this.form.materials) {
@@ -789,6 +952,7 @@ export default {
             this.form.materialsQuantity = 0
             this.form.comments = ""
             this.form.date = null
+            this.form.total = 0
             document.getElementById('photo').value = ""
         },
         photoUpload(file) {

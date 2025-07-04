@@ -76,53 +76,69 @@
 
                 <template #content>
                     <jet-validation-errors class="mb-4" />
-                    <div class="mb-4">
-                        <jet-label for="product" value="Select Product" />
-                        <select v-model="form.inventoryId" id="product"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            required>
-                            <option value="0">---</option>
-                            <option v-for="(inventory, index) in site.data.inventories" :value="inventory.id"
-                                :key="index">
-                                {{ inventory.name }}
-                            </option>
-                        </select>
+
+                    <div v-show="!addStockValidation" class="flex items-center w-full text-red md:col-span-2 mb-4">
+                        <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{
+                            addStockErrorMessage }}</div>
                     </div>
 
-                    <div v-if="form.inventoryId !== 0">
 
-                        <div class="mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+                        <div class="mb-4" :class="{ 'md:col-span-2': form.inventoryId == 0 }">
+                            <jet-label for="product" value="Select Product" />
+                            <select v-model="form.inventoryId" id="product"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                required>
+                                <option value="0">---</option>
+                                <option v-for="(inventory, index) in site.data.inventories" :value="inventory.id"
+                                    :key="index">
+                                    {{ inventory.name }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div v-if="form.inventoryId !== 0" class="mb-2">
                             <jet-label for="date" value="Date" />
                             <vue-date-time-picker color="#1a56db" v-model="form.date" :max-date="maxDate" />
                         </div>
-                        <div class="mb-4">
+                        <div v-if="form.inventoryId !== 0" class="mb-2">
                             <jet-label for="quantity" value="Quantity" />
                             <jet-input type="number" step="0.01" class="block w-full" v-model="form.quantity"
                                 required />
+                            <div class="text-gray-500 text-xs flex justify-between">
+                                <span>MK{{ numberWithCommas(unitCost.toFixed(1)) }} Per {{ inventory.units }}</span>
+
+                            </div>
                         </div>
-                        <div class="mb-4">
+                        <div v-if="form.inventoryId !== 0" class="mb-2">
                             <jet-label for="quantity" value="Total Cost" />
-                            <jet-input type="number" step="0.01" class="block w-full" v-model="form.total" required />
-                            <div class="text-gray-500 text-xs">Product + Transport Cost</div>
+                            <!-- <jet-input type="number" step="0.01" class="block w-full" v-model="form.total" required /> -->
+                            <money
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                v-bind="moneyMaskOptions" v-model="form.total" />
+                            <div class="text-gray-500 text-xs flex justify-between">
+                                <span>Upto MK{{ numberWithCommas(inventory.inventoryValue.toFixed(1)) }}</span>
+                                <span>Product + Transport Cost</span>
+                            </div>
                         </div>
-                        <div class="mb-4">
+                        <div v-if="form.inventoryId !== 0" class="mb-2 md:col-span-2">
                             <jet-label for="comments" value="Comments" />
                             <textarea
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                 type="text" v-model="form.comments"></textarea>
                         </div>
-                        <div class="mb-4 md:col-span-2">
+                        <div v-if="form.inventoryId !== 0" class="mb-2 md:col-span-2">
                             <div class="text-mute text-sm mb-1">
                                 Upload Photo
                             </div>
                             <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                                accept="image/png, image/gif, image/jpeg"
                                 class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
                             <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
                             </div>
                         </div>
                     </div>
-
-
                 </template>
 
                 <template #footer>
@@ -130,8 +146,8 @@
                         Cancel
                     </secondary-button>
 
-                    <primary-button :disabled="form.processing" v-if="form.inventoryId !== 0" class="ml-2"
-                        @click.native="addStock">
+                    <primary-button :disabled="form.processing" v-if="form.inventoryId !== 0 && addStockValidation"
+                        class="ml-2" @click.native="addStock">
                         <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
                             viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -233,12 +249,20 @@
                 <i v-show="section === 'overview'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
             </div>
 
+            <inertia-link 
+            :href="route('sites.collections',{code:site.data.code})"
+                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                >
+                <div>Collections</div>
+                
+            </inertia-link >
+<!-- 
             <div @click="section = 'collections'"
                 class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                 :class="{ 'info': section === 'collections' }">
                 <div>Collections</div>
                 <i v-show="section === 'collections'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
-            </div>
+            </div> -->
         </div>
 
         <div v-if="section === 'overview'" class="py-6">
@@ -267,7 +291,7 @@
                                                     <div class="ml-2">
                                                         <span
                                                             class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                                                numberWithCommas(inventory.availableStock)
+                                                                numberWithCommas(inventory.availableStock.toFixed(1))
                                                             }}</span>
                                                     </div>
                                                 </div>
@@ -275,7 +299,7 @@
                                                     <div class="name">Uncollected:</div>
                                                     <div class="mx-2"><span
                                                             class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                                                numberWithCommas(inventory.uncollectedStock)
+                                                                numberWithCommas(inventory.uncollectedStock.toFixed(1))
                                                             }}</span></div>
                                                 </div>
 
@@ -454,6 +478,7 @@
                                 <table class="overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                     <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                         <tr>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Collection Status
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Client</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
@@ -462,7 +487,7 @@
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Quantity</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Collected</th>
-                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Collection Status
+
                                             </th>
 
                                         </tr>
@@ -470,6 +495,12 @@
                                     <tbody>
                                         <tr class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
                                             v-for="(productCompound, index) in collections" :key="index">
+                                            <td class="">
+                                                <collection
+                                                    class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                                    :client="productCompound.sale.client" :product="productCompound"
+                                                    :is-solo="true" />
+                                            </td>
                                             <td class="py-2 pr-1">
                                                 {{ productCompound.sale.code }}
                                             </td>
@@ -498,12 +529,7 @@
                                             <td class="py-2 pr-1 text-right">
                                                 {{ numberWithCommas(productCompound.collected) }}
                                             </td>
-                                            <td class="">
-                                                <collection
-                                                    class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                                                    :client="productCompound.sale.client" :product="productCompound"
-                                                    :is-solo="true" />
-                                            </td>
+
 
                                         </tr>
                                     </tbody>
@@ -537,6 +563,8 @@ import DialogModal from "@/Jetstream/DialogModal.vue";
 import Collection from "@/Components/Collection.vue";
 import JetDropdownLink from "@/Jetstream/DropdownLink.vue";
 import JetDropdown from "@/Jetstream/Dropdown.vue";
+import { Money } from 'v-money'
+import { Inertia } from '@inertiajs/inertia';
 
 
 export default {
@@ -556,7 +584,8 @@ export default {
         AppLayout,
         PrimaryButton,
         DoughnutChart,
-        SaleStatus
+        SaleStatus,
+        Money
     },
     data() {
         return {
@@ -565,6 +594,7 @@ export default {
             addInventoryDialog: false,
             chartYear: 0,
             maxDate: new Date().toISOString().substr(0, 10),
+            addStockErrorMessage: "",
             form: this.$inertia.form({
                 dates: null,
                 code: "",
@@ -628,6 +658,14 @@ export default {
                 },
                 maintainAspectRatio: false
             },
+            moneyMaskOptions: {
+                decimal: '.',
+                thousands: ',',
+                prefix: 'MK ',
+                suffix: '',
+                precision: 2,
+                masked: false
+            },
         }
     },
     created() {
@@ -641,6 +679,16 @@ export default {
 
     },
     computed: {
+        inventory() {
+            return this.site.data.inventories.find(({ id }) => id === this.form.inventoryId);
+        },
+        unitCost() {
+            if (this.form.quantity == 0 && this.form.total == 0) {
+                return 0
+            } else {
+                return this.form.total / this.form.quantity
+            }
+        },
         dates() {
             return {
                 start: this.getTimestampFromDate(this.form.dates.start),
@@ -683,44 +731,40 @@ export default {
 
             return filtered
         },
-        // metrics() {
-        //     let id = 0
-        //     let recorded = 0
-        //     let total = 0
-        //     let balance = 0
-        //
-        //     for (let x in this.filteredSales) {
-        //         //Register sale if it records unique id
-        //         if (this.filteredSales[x].id != id) {
-        //             id = this.filteredSales[x].id
-        //             recorded++
-        //         }
-        //         //add to metrics if product was paid for, partially or fully
-        //         if (this.filteredSales[x].product.paymentStatus > 0) {
-        //             total += this.filteredSales[x].product.amount
-        //             balance += this.filteredSales[x].product.balance
-        //         }
-        //     }
-        //
-        //     return {
-        //         recorded: recorded,
-        //         total: total,
-        //         collected: total - balance,
-        //         balance: balance,
-        //     }
-        // },
-        // collectedSalesData: {
-        //   datasets: [{
-        //     data: [this.metrics.collected, this.metrics.balance],
-        //     backgroundColor: ['#22c55e', '#e3ebf6'],
-        //   }],
-        // },
-        // uncollectedSalesData: {
-        //   datasets: [{
-        //     data: [this.metrics.balance, this.metrics.collected],
-        //     backgroundColor: ['#ed0b4b', '#e3ebf6'],
-        //   }],
-        // },
+        addStockValidation() {
+            if (this.form.inventoryId == 0 || this.form.inventoryId == null) {
+                this.addStockErrorMessage = "Select inventory product"
+                return false
+            }
+            if (this.form.date == null) {
+                this.addStockErrorMessage = "Select date"
+                return false
+            }
+            if (!this.form.quantity || this.form.quantity <= 0) {
+                this.addStockErrorMessage = "Enter quantity"
+                return false
+            }
+            if (this.form.total <= 0) {
+                this.addStockErrorMessage = "Enter total cost"
+                return false
+            }
+            if (this.form.total > this.inventory.inventoryValue) {
+                this.addStockErrorMessage = "Total cost cannot be greater than amount released by the accounts"
+                return false
+            }
+            if (this.form.photo.length === 0 || this.form.photo == "") {
+                this.addStockErrorMessage = "Upload delivery note photo"
+                return false
+            }
+            if (this.form.photo.length > 0 && !this.form.photo.match(/\.(jpg|jpeg|png|gif)$/)) {
+                this.addStockErrorMessage = "Invalid photo format"
+                return false
+            }
+            this.addStockErrorMessage = ""
+
+            return true
+
+        },
     },
     watch: {
         chartYear() {

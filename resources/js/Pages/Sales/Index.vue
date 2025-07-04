@@ -305,8 +305,8 @@
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-right">Balance</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-right">Expenses</th>
-                                        <th scope="col" class="p-2 pb-0 heading-font text-right">Profit</th>
+                                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-right">Expenses</th> -->
+                                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-right">Profit</th> -->
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Delivery Status</th>
                                     </tr>
@@ -350,8 +350,8 @@
                                         </th>
                                         <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
                                         <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
-                                        <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
-                                        <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
+                                        <!-- <th scope="col" class="p-2 pb-4 heading-font text-right"></th> -->
+                                        <!-- <th scope="col" class="p-2 pb-4 heading-font text-right"></th> -->
                                         <th scope="col" class="p-2 pb-4 heading-font text-left"><select
                                             v-model="form.paymentStatus"
                                             id="payment-status"
@@ -395,7 +395,7 @@
                                                 numberWithCommas(sale.product.balance.toFixed(2))
                                             }}
                                         </td>
-                                        <td class="p-2 text-right">
+                                        <!-- <td class="p-2 text-right">
                                             <span v-if=" sale.product.delivery != null">
                                                 <span v-if=" sale.product.delivery.expense != null">
                                                 {{
@@ -415,7 +415,7 @@
                                                  }}</span>
                                                 <span v-else>-</span>
                                             </span>
-                                        </td>
+                                        </td> -->
                                         <td class="">
                                             <sale-status
                                                 class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"

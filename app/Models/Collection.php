@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Http\Controllers\AppController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Collection extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public function client()
     {
@@ -45,8 +46,13 @@ class Collection extends Model
         return (new AppController())->getZeroedNumber($this->code);
     }
 
+    public function records()
+    {
+        return $this->hasMany(AccountingRecord::class,);
+    }
 
-    protected $fillable= [
+
+    protected $fillable = [
         "code",
         "serial",
         "client_id",
@@ -58,6 +64,7 @@ class Collection extends Model
         "site_sale_summary_id",
         "site_id",
         "quantity",
+        "cost",
         "balance",
         "user_id",
         "date",

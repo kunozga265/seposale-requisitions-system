@@ -21,7 +21,25 @@ class Product extends Model
         return $this->hasMany(Inventory::class);
     }
 
+    public function cogsAccount()
+    {
+        return $this->belongsTo(AccountingAccount::class, 'cogs_account_id', 'id');
+    }
+
+    public function inventoryAccount()
+    {
+        return $this->belongsTo(AccountingAccount::class, 'inventory_account_id', 'id');
+    }
+
+    public function revenueAccount()
+    {
+        return $this->belongsTo(AccountingAccount::class, 'revenue_account_id', 'id');
+    }
+
     protected $fillable = [
         "name",
+        "cogs_account_id",
+        "inventory_account_id",
+        "revenue_account_id",
     ];
 }

@@ -181,15 +181,15 @@
         </tr>
         </thead>
         <tbody>
-        @foreach(json_decode($requestForm->information) as $info)
+        @foreach(json_decode($requestForm->items) as $info)
             <tr>
                 <td>{{$info->details}}</td>
                 @if($requestForm->type=="MATERIALS")
                     <td>{{$info->units ?? ""}}</td>
                 @endif
                 <td style="text-align: right">{{number_format($info->quantity,2)}}</td>
-                <td style="text-align: right">{{number_format($info->unitCost,2)}}</td>
-                <td style="text-align: right">{{number_format($info->totalCost,2)}}</td>
+                <td style="text-align: right">{{number_format($info->unit_cost,2)}}</td>
+                <td style="text-align: right">{{number_format($info->total_cost,2)}}</td>
             </tr>
         @endforeach
             <tr>

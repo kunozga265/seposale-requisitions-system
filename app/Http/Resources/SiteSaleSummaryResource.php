@@ -23,6 +23,7 @@ class SiteSaleSummaryResource extends JsonResource
         return [
             "id" => $this->id,
             "inventory" => $this->inventory,
+            "inventoryStock" => $this->inventory->stock(),
             'amount' => floatval($this->amount),
             'balance' => floatval($this->balance),
             'paymentStatus' => $this->getPaymentStatus(),

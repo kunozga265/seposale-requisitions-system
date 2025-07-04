@@ -8,6 +8,8 @@ use App\Http\Resources\RequestFormResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\VehicleResource;
 use App\Models\Account;
+use App\Models\AccountingAccount;
+use App\Models\AccountingRecord;
 use App\Models\Expense;
 use App\Models\ExpenseType;
 use App\Models\Payable;
@@ -15,6 +17,7 @@ use App\Models\Position;
 use App\Models\Project;
 use App\Models\Report;
 use App\Models\RequestForm;
+use App\Models\RequestFormItem;
 use App\Models\Sale;
 use App\Models\Summary;
 use App\Models\Transaction;
@@ -280,7 +283,7 @@ class RequestFormController extends Controller
 
             //Validate all the important attributes
             $request->validate([
-                'information' => ['required'],
+                'items' => ['required'],
                 'total' => ['required'],
             ]);
 
@@ -303,7 +306,7 @@ class RequestFormController extends Controller
                 'personCollectingAdvance' => $request->personCollectingAdvance,
                 'purpose' => $request->purpose,
                 //                'project_id'                    =>  $request->projectId,
-                'information' => json_encode($request->information),
+                // 'information' => json_encode($request->information),
                 'total' => $request->total,
 
                 //Requested by
@@ -325,133 +328,19 @@ class RequestFormController extends Controller
                 'editable' => true,
             ]);
 
-            //Run notifications
-            (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
-        } elseif ($request->type == "VEHICLE_MAINTENANCE") {
-
-            //Validate all the important attributes
-            $request->validate([
-                'information' => ['required'],
-                'total' => ['required'],
-                'vehicleId' => ['required'],
-            ]);
-
-            //get stages
-            if (is_object($user->position)) {
-                $stages = json_decode($user->position->approvalStages);
-            } else
-                return response()->json(['message' => "User position unknown"], 404);
-
-            $stagesCount = count($stages);
-            if ($stagesCount > 0) {
-                $stagesApprovalPosition = $stages[0]->position;
+            //create request form items
+            foreach ($request->items as $item) {
+                $requestForm->items()->create([
+                    'details' => $item['details'],
+                    'units' => $item['units'],
+                    'quantity' => $item['quantity'],
+                    'unit_cost' => $item['unitCost'],
+                    'total_cost' => $item['totalCost'],
+                    'balance' => $item['totalCost'],
+                    'status' => 0, //Pending,
+                    'request_id' => $requestForm->id
+                ]);
             }
-
-            //get vehicle details
-            $vehicle = Vehicle::find($request->vehicleId);
-
-            if (!is_object($vehicle))
-                return response()->json(['message' => "Vehicle unknown"], 404);
-
-
-            $requestForm = RequestForm::create([
-                'code' => (new AppController())->generateUniqueCode("REQUESTFORM"),
-                'code_alt' => $this->getCodeRequestFormNumber(),
-                //Requested information
-                'type' => $request->type,
-                'assessedBy' => $request->assessedBy,
-                'vehicle_id' => $request->vehicleId,
-                'information' => json_encode($request->information),
-                'total' => $request->total,
-
-                //Requested by
-                'user_id' => $user->id,
-                'dateRequested' => Carbon::now()->getTimestamp(),
-
-                //Stages
-                'stagesApprovalPosition' => $stagesApprovalPosition,
-                'stagesApprovalStatus' => $stagesCount == 0,
-                'currentStage' => $stagesCount == 0 ? null : 1,
-                'totalStages' => $stagesCount == 0 ? null : $stagesCount,
-                'stages' => json_encode($stages),
-                'quotes' => json_encode($request->quotes ?? []),
-                'remarks' => json_encode([]),
-                'receipts' => json_encode([]),
-
-                //Management Approval
-                'approvalStatus' => 0,
-                'editable' => true,
-            ]);
-
-            //Run notifications
-            (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
-        } elseif ($request->type == "FUEL") {
-
-            //Validate all the important attributes
-            $request->validate([
-                'vehicleId' => ['required'],
-                'driverName' => ['required'],
-                'fuelVehicleMileage' => ['required'],
-                'fuelRequestedLitres' => ['required'],
-                'fuelRequestedMoney' => ['required'],
-                'purpose' => ['required'],
-            ]);
-
-            //get stages
-            if (is_object($user->position)) {
-                $stages = json_decode($user->position->approvalStages);
-            } else
-                return response()->json(['message' => "User position unknown"], 404);
-
-            $stagesCount = count($stages);
-            if ($stagesCount > 0) {
-                $stagesApprovalPosition = $stages[0]->position;
-            }
-
-
-            //get vehicle details
-            $vehicle = Vehicle::find($request->vehicleId);
-
-            if (!is_object($vehicle))
-                return response()->json(['message' => "Vehicle unknown"], 404);
-
-
-            $requestForm = RequestForm::create([
-                'code' => (new AppController())->generateUniqueCode("REQUESTFORM"),
-                'code_alt' => $this->getCodeRequestFormNumber(),
-                //Requested information
-                'type' => $request->type,
-                'driverName' => $request->driverName,
-                'fuelRequestedLitres' => $request->fuelRequestedLitres,
-                'fuelRequestedMoney' => $request->fuelRequestedMoney,
-                'purpose' => $request->purpose,
-                'project_id' => $request->projectId,
-
-                //Vehicle Details
-                'vehicle_id' => $request->vehicleId,
-                'mileage' => $request->fuelVehicleMileage,
-                'lastRefillDate' => $request->lastRefillDate,
-                'lastRefillFuelReceived' => $request->lastRefillFuelReceived,
-                'lastRefillMileageCovered' => $request->lastRefillMileageCovered,
-
-                //Requested by
-                'user_id' => $user->id,
-                'dateRequested' => Carbon::now()->getTimestamp(),
-
-                //Stages
-                'stagesApprovalPosition' => $stagesApprovalPosition,
-                'stagesApprovalStatus' => $stagesCount == 0,
-                'currentStage' => $stagesCount == 0 ? null : 1,
-                'totalStages' => $stagesCount == 0 ? null : $stagesCount,
-                'stages' => json_encode($stages),
-                'quotes' => json_encode($request->quotes ?? []),
-                'remarks' => json_encode([]),
-                'receipts' => json_encode([]),
-
-                //Management Approval
-                'approvalStatus' => 0,
-                'editable' => true,
-            ]);
 
             //Run notifications
             (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
@@ -507,41 +396,42 @@ class RequestFormController extends Controller
                 $stagesApprovalPosition = $stages[0]->position;
             }
 
-            $information = [];
+            $items = [];
             $total = 0;
             if ($request->expenses["transportation"]["check"]) {
-                $information[] = [
-                    "details" => 'Transportation',
-                    "units" => 'Unit',
-                    "quantity" => 1,
-                    "unitCost" => $request->expenses["transportation"]["amount"],
+                
+                $items[] = [
+                    "details" => "Transportation for {$summary->description}",
+                    "units" => 'Delivery',
+                    "quantity" => $summary->quantity,
+                    "unitCost" => $request->expenses["transportation"]["amount"]/$summary->quantity,
                     "totalCost" => $request->expenses["transportation"]["amount"],
-                    "expenseTypeId" => env('OPERATIONS_EXPENSE_TYPE_ID'),
+                    "accountId" => $summary->product->inventory_account_id,
                     "transporterId" => $request->expenses["transportation"]["transporterId"],
                 ];
                 $total += $request->expenses["transportation"]["amount"];
             }
             if ($request->expenses["product"]["check"]) {
-                $information[] = [
-                    "details" => "Product Cost ({$summary->description})",
+                $items[] = [
+                    "details" => "Product Cost for {$summary->description}",
                     "units" => '',
-                    "quantity" => 1,
-                    "unitCost" => $request->expenses["product"]["amount"],
+                    "quantity" => $summary->quantity,
+                    "unitCost" => $request->expenses["product"]["amount"]/$summary->quantity,
                     "totalCost" => $request->expenses["product"]["amount"],
-                    "expenseTypeId" => env('OPERATIONS_EXPENSE_TYPE_ID'),
+                    "accountId" => $summary->product->inventory_account_id,
                     "supplierId" => $request->expenses["product"]["supplierId"],
                 ];
                 $total += $request->expenses["product"]["amount"];
             }
             if ($request->expenses["other"]["check"]) {
-                $information[] = [
+                $items[] = [
                     "details" => $request->expenses["other"]["description"],
                     "units" => '',
                     "quantity" => 1,
                     "unitCost" => $request->expenses["other"]["amount"],
                     "totalCost" => $request->expenses["other"]["amount"],
                     "comments" => $request->expenses["other"]["comments"],
-                    "expenseTypeId" => env('OPERATIONS_EXPENSE_TYPE_ID'),
+                    "accountId" => AccountingAccount::where("code", 6030)->first()->id, //Direct Expenses Account
 
                 ];
                 $total += $request->expenses["other"]["amount"];
@@ -551,11 +441,11 @@ class RequestFormController extends Controller
                 'code' => (new AppController())->generateUniqueCode("REQUESTFORM"),
                 'code_alt' => $this->getCodeRequestFormNumber(),
                 //Requested information
-                'type' => "REQUISITION",
+                'type' => "OPERATIONS",
                 'personCollectingAdvance' => $request->personCollectingAdvance,
                 'purpose' => "Costs under SALE ORDER: #LL{$summary->sale->formattedCode()}",
                 //                'project_id'                    =>  $request->projectId,
-                'information' => json_encode($information),
+                // 'information' => json_encode($information),
                 'total' => $total,
 
                 'delivery_id' => $summary->delivery->id,
@@ -578,6 +468,23 @@ class RequestFormController extends Controller
                 'approvalStatus' => 0,
                 'editable' => true,
             ]);
+
+            //create request form items
+            foreach ($items as $item) {
+                $requestForm->items()->create([
+                    'details' => $item['details'],
+                    'units' => $item['units'],
+                    'quantity' => $item['quantity'],
+                    'unit_cost' => $item['unitCost'],
+                    'total_cost' => $item['totalCost'],
+                    'balance' => $item['totalCost'],
+                    'accounting_account_id' => $item['accountId'],
+                    'transporter_id' => $item['transporterId'] ?? null,
+                    'supplier_id' => $item['supplierId'] ?? null,
+                    'status' => 0, //Pending,
+                    'request_id' => $requestForm->id
+                ]);
+            }
 
             //Run notifications
             (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
@@ -627,11 +534,11 @@ class RequestFormController extends Controller
             $stagesApprovalPosition = $stages[0]->position;
         }
 
-        $information = [];
+        $items = [];
         $total = 0;
         foreach ($request->payables as $payable) {
 
-            $information[] = [
+            $items[] = [
                 "details" => $payable["description"],
                 "units" => 'Unit',
                 "quantity" => 1,
@@ -650,8 +557,8 @@ class RequestFormController extends Controller
             'type' => "REQUISITION",
             'personCollectingAdvance' => $request->personCollectingAdvance,
             'purpose' => "Payables for {$request->payables[0]["description"]}",
-            'information' => json_encode($information),
-            'total' => $request->total,
+            // 'information' => json_encode($information),
+            // 'total' => $request->total,
 
             'delivery_id' => null,
 
@@ -991,7 +898,7 @@ class RequestFormController extends Controller
         //find out if the request is valid
         $requestForm = RequestForm::find($id);
         $expenseTypes = ExpenseType::orderBy("name", "asc")->get();
-        $accounts = Account::all();
+        $accounts = AccountingAccount::orderBy("name", "asc")->get();
 
         if (is_object($requestForm)) {
             if ((new AppController())->isApi($request)) {
@@ -1086,7 +993,7 @@ class RequestFormController extends Controller
 
                     //Validate all the important attributes
                     $request->validate([
-                        'information' => ['required'],
+                        'items' => ['required'],
                         'total' => ['required'],
                     ]);
 
@@ -1095,71 +1002,52 @@ class RequestFormController extends Controller
                         'personCollectingAdvance' => $request->personCollectingAdvance,
                         'purpose' => $request->purpose,
                         //                        'project_id'                    =>  $request->projectId,
-                        'information' => json_encode($request->information),
+                        // 'information' => json_encode($request->information),
                         'total' => $request->total,
                         'quotes' => json_encode($request->quotes ?? []),
                         'approvalStatus' => 0,
                         'editable' => $approvedByUsers->isEmpty(),
                     ]);
-                } elseif ($requestForm->type == "VEHICLE_MAINTENANCE") {
 
-                    //Validate all the important attributes
-                    $request->validate([
-                        'information' => ['required'],
-                        'total' => ['required'],
-                        'vehicleId' => ['required'],
-                    ]);
+                    //delete old items
+                    foreach ($requestForm->items as $item_original) {
+                        $check = false;
 
-                    //get vehicle details
-                    $vehicle = Vehicle::find($request->vehicleId);
+                        foreach ($request->items as $item) {
+                            //check if it already exists
+                            if ($item['id'] == $item_original->id) {
+                                $item_original->update([
+                                    'details' => $item['details'],
+                                    'units' => $item['units'],
+                                    'quantity' => $item['quantity'],
+                                    'unit_cost' => $item['unitCost'],
+                                    'total_cost' => $item['totalCost'],
+                                    'balance' => $item['totalCost'],
+                                ]);
+                                $check = true;
+                                break;
+                            }
+                        }
+                        if (!$check) {
+                            $item_original->delete();
+                        }
+                    }
 
-                    if (!is_object($vehicle))
-                        return response()->json(['message' => "Vehicle unknown"], 404);
-
-
-                    $requestForm->update([
-                        'assessedBy' => $request->assessedBy,
-                        'vehicle_id' => $request->vehicleId,
-                        'information' => json_encode($request->information),
-                        'total' => $request->total,
-                        'quotes' => json_encode($request->quotes ?? []),
-                        'approvalStatus' => 0,
-                        'editable' => $approvedByUsers->isEmpty(),
-                    ]);
-                } elseif ($requestForm->type == "FUEL") {
-
-                    //Validate all the important attributes
-                    $request->validate([
-                        'vehicleId' => ['required'],
-                        'driverName' => ['required'],
-                        'fuelVehicleMileage' => ['required'],
-                        'fuelRequestedLitres' => ['required'],
-                        'fuelRequestedMoney' => ['required'],
-                        'purpose' => ['required'],
-                    ]);
-
-                    //get vehicle details
-                    $vehicle = Vehicle::find($request->vehicleId);
-
-                    if (!is_object($vehicle))
-                        return response()->json(['message' => "Vehicle unknown"], 404);
-
-
-                    $requestForm->update([
-                        'driverName' => $request->driverName,
-                        'fuelRequestedLitres' => $request->fuelRequestedLitres,
-                        'fuelRequestedMoney' => $request->fuelRequestedMoney,
-                        'purpose' => $request->purpose,
-                        'project_id' => $request->projectId,
-                        'vehicle_id' => $request->vehicleId,
-                        'mileage' => $request->fuelVehicleMileage,
-                        'lastRefillDate' => $request->lastRefillDate,
-                        'lastRefillFuelReceived' => $request->lastRefillFuelReceived,
-                        'lastRefillMileageCovered' => $request->lastRefillMileageCovered,
-                        'quotes' => json_encode($request->quotes ?? []),
-                        'approvalStatus' => 0,
-                        'editable' => $approvedByUsers->isEmpty(),
-                    ]);
+                    foreach ($request->items as $item) {
+                        //check if it doesn't exist
+                        if ($item['id'] == 0) {
+                            $requestForm->items()->create([
+                                'details' => $item['details'],
+                                'units' => $item['units'],
+                                'quantity' => $item['quantity'],
+                                'unit_cost' => $item['unitCost'],
+                                'total_cost' => $item['totalCost'],
+                                'balance' => $item['totalCost'],
+                                'status' => 0, //Pending,
+                                'request_id' => $requestForm->id
+                            ]);
+                        }
+                    }
                 } else {
                     if ((new AppController())->isApi($request)) {
                         //API Response
@@ -1372,99 +1260,7 @@ class RequestFormController extends Controller
         $requestForm = RequestForm::find($id);
 
         if (is_object($requestForm)) {
-            //check if the request form can be initiated
-            if ($requestForm->approvalStatus == 1) {
-
-                if ($requestForm->dateInitiated == null) {
-
-                    $request->validate([
-                        'information' => 'required',
-                        'account_id' => 'required',
-                        'reference' => 'required',
-                        'from_to' => 'required',
-                    ]);
-
-                    //create expenses
-                    foreach ($request->information as $info) {
-                        $sale_id = null;
-                        if ($requestForm->delivery_id != null) {
-                            $sale_id = $requestForm->delivery->summary->sale->id;
-                        }
-
-                        if ($info["amount"] > 0) {
-                            $expense = Expense::create([
-                                "code" => (new ExpenseController())->getCodeNumber(),
-                                "description" => $info["details"],
-                                "total" => $info["amount"],
-                                "date" => $info["date"],
-                                "contents" => json_encode([
-                                    "comments" => $info["comments"]
-                                ]),
-                                "expense_type_id" => $info["expenseTypeId"],
-                                "request_id" => $requestForm->id,
-                                "transporter_id" => $info["transporterId"],
-                                "supplier_id" => $info["supplierId"],
-                                "delivery_id" => $requestForm->delivery_id,
-                                "sale_id" => $sale_id,
-                                "account_id" => $request->account_id,
-                                "reference" => $request->reference,
-                            ]);
-
-                            $balance = $expense->account->balance - $expense->total;
-                            $expense->account->update([
-                                "balance" => $balance
-                            ]);
-
-
-                            Transaction::create([
-                                "date" => $expense->date,
-                                "reference" => strtoupper($expense->reference),
-                                "description" => $expense->description,
-                                "from_to" => $request->from_to,
-                                "expense_id" => $expense->id,
-                                "receipt_id" => null,
-                                "account_id" => $expense->account->id,
-                                "total" => $expense->total,
-                                "balance" => $balance,
-                                "type" => "DEBIT",
-                            ]);
-                        }
-                    }
-
-                    $requestForm->update([
-                        //Should it be set manually?
-                        //'dateInitiated' => $request->timestamp
-
-                        'dateInitiated' => Carbon::now()->getTimestamp(),
-                        'approvalStatus' => 3
-                    ]);
-
-                    foreach ($requestForm->payables as $payable) {
-                        $payable->update([
-                            "paid" => true
-                        ]);
-                    }
-
-                    (new NotificationController())->notifyUser($requestForm, "INITIATED");
-                    (new NotificationController())->notifyFinance($requestForm, "WAITING_RECONCILE");
-
-                    if ((new AppController())->isApi($request)) {
-                        //API Response
-                        return response()->json(new RequestFormResource($requestForm));
-                    } else {
-                        //Web Response
-                        return Redirect::back()->with('success', 'Request initiated');
-                    }
-                } else {
-                    if ((new AppController())->isApi($request)) {
-                        //API Response
-                        return response()->json(['message' => "Request is already initiated "], 405);
-                    } else {
-                        //Web Response
-                        return Redirect::back()->with('error', 'Request is already initiated');
-                    }
-                }
-            } elseif ($requestForm->approvalStatus == 0) {
+            if ($requestForm->approvalStatus == 0) {
                 if ((new AppController())->isApi($request)) {
                     //API Response
                     return response()->json(['message' => "Request is still pending"], 405);
@@ -1472,15 +1268,149 @@ class RequestFormController extends Controller
                     //Web Response
                     return Redirect::back()->with('error', 'Request is still pending');
                 }
-            } else {
-                if ((new AppController())->isApi($request)) {
-                    //API Response
-                    return response()->json(['message' => "Request cannot be initiated"], 405);
-                } else {
-                    //Web Response
-                    return Redirect::back()->with('error', 'Request cannot be initiated');
+            }
+            //check if the request form can be initiated
+            // if ($requestForm->approvalStatus == 1) {
+
+            //     if ($requestForm->dateInitiated == null) {
+
+            $request->validate([
+                'items' => 'required',
+                'account_id' => 'required',
+                'reference' => 'required',
+                'recipient' => 'required',
+            ]);
+
+            $main_account = AccountingAccount::find($request->account_id);
+            $main_account_balance = $main_account->balance;
+
+            $filtered_transactions = [];
+
+            //create expenses
+            foreach ($request->items as $item) {
+                $sale_id = null;
+                if ($requestForm->delivery_id != null) {
+                    $sale_id = $requestForm->delivery->summary->sale->id;
+                }
+
+                if ($item["amount"] > 0) {
+                    $filtered_transactions[] = $item;
                 }
             }
+
+            $grouped = array_reduce($filtered_transactions, function ($carry, $item) {
+                $carry[$item['accountId']][] = $item;
+                return $carry;
+            }, []);
+
+            $index = 0;
+            foreach ($grouped as $items) {
+                $alternative_account = AccountingAccount::find($items[0]["accountId"]);
+                $alternative_account_balance = $alternative_account->balance;
+               
+
+                foreach ($items as $item) {
+                    $request_form_item = RequestFormItem::find($item["id"]);
+                    $request_form_item_balance = $request_form_item->balance - $item["amount"];
+                    $request_form_item->update([
+                        "balance" => $request_form_item_balance,
+                        "status" => $request_form_item_balance == 0 ? 2 : 1 // Mark as paid if balance is zero or less
+                    ]);
+
+
+                    $main_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($request->reference),
+                        "date" => $item["date"] + $index,
+                        "name" => $request->recipient,
+                        "description" => $item["details"],
+                        "amount" => $item["amount"],
+                        "opening_balance" => $main_account_balance,
+                        "closing_balance" => $main_account_balance - $item["amount"],
+                        "type" => "CREDIT", // decreasing the account balance
+                        "accounting_account_id" => $main_account->id,
+                        "request_form_item_id" => $request_form_item->id,
+                        "accounting_record_id" => null, // This will be updated later
+                    ]);
+                    $main_account_balance -= $item["amount"];
+
+                    $alternate_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($request->reference),
+                        "date" => $item["date"] + $index,
+                        "name" => $request->recipient,
+                        "description" => $item["details"],
+                        "amount" => $item["amount"],
+                        "opening_balance" => $alternative_account_balance,
+                        "closing_balance" => $alternative_account_balance + $item["amount"],
+                        "type" => "DEBIT",
+                        "accounting_account_id" => $alternative_account->id,
+                        "accounting_record_id" => $main_record->id,
+                        "request_form_item_id" => $request_form_item->id,
+                    ]);
+                    $alternative_account_balance += $item["amount"];
+
+                    $main_record->update([
+                        "accounting_record_id" => $alternate_record->id
+                    ]);
+
+                    $index++;
+                }
+
+                //Update the account balance
+                $alternative_account->update([
+                    "balance" => $alternative_account_balance
+                ]);
+            }
+
+            //Update the account balance
+            $main_account->update([
+                "balance" => $main_account_balance
+            ]);
+
+            $requestForm->update([
+                //Should it be set manually?
+                //'dateInitiated' => $request->timestamp
+
+                'dateInitiated' => Carbon::now()->getTimestamp(),
+                'approvalStatus' => 3
+            ]);
+
+            foreach ($requestForm->payables as $payable) {
+                $payable->update([
+                    "paid" => true
+                ]);
+            }
+
+            (new NotificationController())->notifyUser($requestForm, "INITIATED");
+            (new NotificationController())->notifyFinance($requestForm, "WAITING_RECONCILE");
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(new RequestFormResource($requestForm));
+            } else {
+                //Web Response
+                return Redirect::back()->with('success', 'Request initiated');
+            }
+            //     } else {
+            //         if ((new AppController())->isApi($request)) {
+            //             //API Response
+            //             return response()->json(['message' => "Request is already initiated "], 405);
+            //         } else {
+            //             //Web Response
+            //             return Redirect::back()->with('error', 'Request is already initiated');
+            //         }
+            //     }
+            // } else
+            // else {
+            //     if ((new AppController())->isApi($request)) {
+            //         //API Response
+            //         return response()->json(['message' => "Request cannot be initiated"], 405);
+            //     } else {
+            //         //Web Response
+            //         return Redirect::back()->with('error', 'Request cannot be initiated');
+            //     }
+            // }
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response

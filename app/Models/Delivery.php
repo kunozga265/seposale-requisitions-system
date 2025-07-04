@@ -52,6 +52,29 @@ class Delivery extends Model
         return (new AppController())->getZeroedNumber($this->code);
     }
 
+    public function costs(){
+        $total = 0;
+
+        foreach($this->requestForms as $requestForm){
+            foreach($requestForm->items as $item){
+                foreach($item->records()->where("type","DEBIT")->get() as $record){
+                    $total += $record->amount;
+                }
+            }
+        }
+
+        return $total;
+    }
+
+    public function availableCostBalance(){
+        $total = 0;
+        $notes = json_decode($this->notes, true) ?? [];
+        foreach($notes as $note){
+            $total += $note["cost"] ?? 0;
+        }
+        return $this->costs() - $total;
+    }
+
     protected $fillable = [
         "code",
         "serial",

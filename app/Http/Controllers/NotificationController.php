@@ -456,14 +456,14 @@ class NotificationController extends Controller
     public function requestFormNotifications($requestForm, $type)
     {
         //Check if the stages have been approved
-        if ($requestForm->stagesApprovalStatus) {
-            //Notify Management
-            $this->notifyManagement($requestForm, $type);
+        // if ($requestForm->stagesApprovalStatus) {
+        //     //Notify Management
+        //     $this->notifyManagement($requestForm, $type);
 
-        } else {
-            //Notify a user
-            $this->notifyUser($requestForm, $type);
-        }
+        // } else {
+        //     //Notify a user
+        //     $this->notifyUser($requestForm, $type);
+        // }
     }
 
     public function getRequestTitle($type, $code): string
@@ -560,7 +560,7 @@ class NotificationController extends Controller
      * @param bool $check
      * @return bool
      */
-    public function processWhatsappMessage(string $template, string $serial, string $notify = null): bool
+    public function processWhatsappMessage(string $template, string $serial, string $notify = "", $balance = 0): bool
     {
         $check = false;
 
@@ -904,7 +904,7 @@ class NotificationController extends Controller
                 break;
 
             case "collection":
-                $collection = Collection::where('serial', $serial)->first();
+                $collection = Collection::where('serial', $serial)->withTrashed()->first();
 
                 if($notify=="team"){
                     $phone_number = env('WHATSAPP_SALES_NUMBER');
@@ -979,6 +979,67 @@ class NotificationController extends Controller
                                     ]
                                 ]
                             ]
+                        ]
+                    ]
+                ];
+                $check = $this->pushWhatsappMessage($body);
+                if ($check) {
+                    $collection->update([
+                        "whatsapp" => true
+                    ]);
+                }
+                break;
+
+            case "collection_reversal":
+                $collection = Collection::where('serial', $serial)->withTrashed()->first();
+
+                if($notify=="team"){
+                    $phone_number = env('WHATSAPP_SALES_NUMBER');
+                }else{
+                    $phone_number = $collection->client->phone_number;
+                }
+
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "header",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Code
+                                        "text" => $collection->formattedCode()
+                                    ]
+                                ]
+                            ],
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Client Name
+                                        "text" => $collection->client->getName()
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Product Name
+                                        "text" => $collection->inventory->name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Quantity Remaining
+                                        "text" => $balance
+                                    ],
+                                ]
+                            ],
                         ]
                     ]
                 ];

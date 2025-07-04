@@ -176,50 +176,51 @@
 
       <template #content>
         <div class="mb-4">
-          <div class="heading-font text-">Fill in expense details;</div>
+          <div class="heading-font text-">Fill in transaction details;</div>
           <div v-show="!initiationValidation" class="flex items-center w-full text-red">
             <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{ error }}</div>
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-         
 
-        <div class="mb-2 md:col-span-2">
-          <jet-label for="paymentMethod" value="Select Account" />
-          <select v-model="accountIndex" id="paymentMethod"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-            required>
-            <option v-for="(account, index) in accounts" :value="index" :key="index">
-              {{ account.name }}
-            </option>
-          </select>
-          <div v-if="account != null" class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': !balanceValidate }">
-            Balance:
-            MK{{ numberWithCommas(account.balance) }}
+
+          <div class="mb-2 md:col-span-2">
+            <jet-label for="paymentMethod" value="Select Credit Account" />
+            <select v-model="accountIndex" id="paymentMethod"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+              required>
+              <option v-for="(account, index) in filteredAccounts.wallet" :value="index" :key="index">
+                {{ account.name }}
+              </option>
+            </select>
+            <div v-if="account != null" class="mt-1 text-xs text-gray-500"
+              :class="{ 'text-red-500': !balanceValidate }">
+              Balance:
+              MK{{ numberWithCommas(account.balance) }}
+            </div>
           </div>
+
+          <div class="mb-2">
+            <jet-label for="reference" value="Reference" />
+            <jet-input type="text" class="block w-full" v-model="form.reference" />
+          </div>
+          <div class="mb-4">
+            <jet-label for="person" value="Recipient" />
+            <jet-input id="person" type="text" class="block w-full" v-model="form.recipient" autocomplete="person" />
+          </div>
+
         </div>
 
-        <div class="mb-2">
-          <jet-label for="reference" value="Reference" />
-          <jet-input type="text" class="block w-full" v-model="form.reference" />
-        </div>
-        <div class="mb-4">
-          <jet-label for="person" value="To" />
-          <jet-input id="person" type="text" class="block w-full" v-model="form.fromTo" autocomplete="person" />
-        </div>
-
-      </div>
-
-        <div class="mb-4" v-for="(product, index) in form.information" :key="index">
+        <div class="mb-4" v-for="(product, index) in form.items" :key="index">
           <div class="flex justify-between">
             <jet-label for="amount" :value="product.details" />
             <div class="flex items-center mb-2">
-              <div @click="product.amount = product.totalCost"
+              <div @click="product.amount = product.balance"
                 class="cursor flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                :class="{ 'info': product.amount == product.totalCost }">
+                :class="{ 'info': product.amount == product.balance }">
                 <div>Full Amount</div>
-                <i v-show="product.amount == product.totalCost"
+                <i v-show="product.amount == product.balance"
                   class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
               </div>
             </div>
@@ -230,22 +231,23 @@
               <money
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 v-bind="moneyMaskOptions" v-model="product.amount" />
-                <div class="mt-1 text-xs text-gray-500">
-                MK{{ numberWithCommas(product.totalCost) }}
+              <div class="mt-1 text-xs text-gray-500">
+                MK{{ numberWithCommas(product.balance) }}
               </div>
 
             </div>
             <div>
               <select
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                v-model="product.expenseTypeId">
+                v-model="product.accountId">
                 <option value="0">
-                  Select Type
+                  Select Debit Account
                 </option>
-                <option :key="index" v-for="(expense, index) in expenseTypes" :value="expense.id">{{ expense.name }}
+                <option :key="index" v-for="(account, index) in filteredAccounts.other" :value="account.id">{{
+                  account.name }}
                 </option>
               </select>
-              
+
             </div>
 
             <vue-date-time-picker :key="index" color="#1a56db" v-model="product.date" :min-date="minDate"
@@ -282,28 +284,11 @@
 
         <div class="mb-4">
           Are you sure you want to reconcile this request?
-          <!--                     <span v-if="request.data.type ==='FUEL'">Please submit the following information and upload receipts;</span>-->
+
           <span>Please upload receipts;</span>
         </div>
         <jet-validation-errors class="mb-4" />
-        <!--                 <div v-if="request.data.type ==='FUEL'">
-                             <div class="mb-4">
-                                 <jet-label for="lastRefillDate" value="Last Refill Date" />
-                                 <vue-date-time-picker
-                                     color="#1a56db"
-                                     v-model="date"
-                                     :min-date="minDate"
-                                 />
-                             </div>
-                             <div class="mb-4">
-                                 <jet-label for="lastRefillFuelReceived" value="Last Refill Fuel Received" />
-                                 <jet-input id="lastRefillFuelReceived" type="text" class="mt-1 block w-full" v-model="form.lastRefillFuelReceived" autocomplete="geoserve-vehicle-lastRefillFuelReceived"/>
-                             </div>
-                             <div class="mb-4">
-                                 <jet-label for="lastRefillMileageCovered" value="Last Refill Mileage Covered" />
-                                 <jet-input id="lastRefillMileageCovered" type="text" class="mt-1 block w-full" v-model="form.lastRefillMileageCovered" autocomplete="geoserve-vehicle-lastRefillMileageCovered"/>
-                             </div>
-                         </div>-->
+
 
         <div class="mb-4">
           <jet-label for="receipt" value="Upload receipt" />
@@ -356,7 +341,7 @@
 
 
         <request-status class="mb-4" :request="request.data" />
-        <div class="grid grid-cols-1 md:grid-cols-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="page-section" :class="{ 'md:col-span-2': request.data.type !== 'FUEL' }">
             <div class="page-section-header">
               <div class="page-section-title">
@@ -374,179 +359,31 @@
                   <div class="text-gray-600 font-semibold">Person Collecting Advance</div>
                   <div>{{ request.data.personCollectingAdvance }}</div>
                 </div>
-                <!-- <div v-if="request.data.type!=='VEHICLE_MAINTENANCE'" class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Project Name</div>
-                    <div v-if="request.data.project" >{{request.data.project.name}}</div>
+                <div v-if="request.data.delivery != null">
+                  <inertia-link :href="route('sales.show', { id: request.data.delivery.summary.sale.id })">
+                    <div class="border-b px-4 py-3 flex justify-between text-sm">
+                      <div class="text-gray-600 font-semibold">Sale Code</div>
+                      <div>{{ request.data.delivery.summary.sale.code }}</div>
+                    </div>
+                  </inertia-link>
                 </div>
-                <div v-if="request.data.type!=='VEHICLE_MAINTENANCE'"  class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Project Client</div>
-                    <div v-if="request.data.project">{{request.data.project.client}}</div>
+                <div v-if="request.data.delivery != null">
+                  <inertia-link :href="route('deliveries.show', { id: request.data.delivery.id })">
+                    <div class="border-b px-4 py-3 flex justify-between text-sm">
+                      <div class="text-gray-600 font-semibold">Delivery Code</div>
+                      <div>{{ request.data.delivery.code }}</div>
+                    </div>
+                  </inertia-link>
                 </div>
-                <div v-if="request.data.type!=='VEHICLE_MAINTENANCE'"  class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Project Site</div>
-                    <div v-if="request.data.project">{{request.data.project.site}}</div>
-                </div>
-                <div v-if="request.data.type==='VEHICLE_MAINTENANCE'" class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Assessed By</div>
-                    <div>{{request.data.assessedBy}}</div>
-                </div>
-                <div v-if="request.data.type==='VEHICLE_MAINTENANCE' || request.data.type==='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Vehicle Registration Number</div>
-                    <div>{{request.data.vehicle.vehicleRegistrationNumber}}</div>
-                </div>
-                <div v-if="request.data.type==='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Mileage</div>
-                    <div>{{numberWithCommas(request.data.mileage)}}</div>
-                </div>
-                <div v-if="request.data.type==='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Driver Name</div>
-                    <div>{{request.data.driverName}}</div>
-                </div>
-                <div v-if="request.data.type==='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold"> Fuel Requested (In Litres)</div>
-                    <div>{{numberWithCommas(request.data.fuelRequestedLitres)}}</div>
-                </div>
-                <div v-if="request.data.type==='FUEL'" class="border-b px-4 py-3 flex justify-between text-sm">
-                    <div class="text-gray-600 font-semibold">Fuel Requested (Money Equivalent)</div>
-                    <div>{{numberWithCommas(request.data.fuelRequestedMoney)}}</div>
-                </div> -->
                 <div class="border-b px-4 py-3 text-sm">
                   <div class="text-gray-600 font-semibold">Purpose</div>
                   <div>{{ request.data.purpose }}</div>
                 </div>
-                <!--                                <table class="w-full md:table-fixed text-sm text-left">
-                                                    <tbody>
-                                                    <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Request Code
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.code}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type!=='FUEL'" class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Person Collecting Advance
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.personCollectingAdvance}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='CASH' || request.data.type==='MATERIALS'" class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Project Name
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.project.name}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='CASH' || request.data.type==='MATERIALS'" class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Project Client
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.project.client}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='CASH' || request.data.type==='MATERIALS'" class="dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Project Site
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.project.site}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='VEHICLE_MAINTENANCE'" class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Assessed By
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.assessedBy}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='VEHICLE_MAINTENANCE' || request.data.type==='FUEL'" class="dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Vehicle Registration Number
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.vehicle.vehicleRegistrationNumber}}
-                                                        </td>
-                                                    </tr>
 
-                                                    <tr v-if="request.data.type==='FUEL'" class="border-t border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Mileage
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{numberWithCommas(request.data.mileage)}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='FUEL'" class="border-t border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Driver Name
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.driverName}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='FUEL'" class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Fuel Requested (In Litres)
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{numberWithCommas(request.data.fuelRequestedLitres)}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='FUEL'" class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Fuel Requested (Money Equivalent)
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{numberWithCommas(request.data.fuelRequestedMoney)}}
-                                                        </td>
-                                                    </tr>
-                                                    <tr v-if="request.data.type==='FUEL'" class="dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                        <td class="py-2 pr-1 font-semibold text-gray-600 dark:text-white whitespace-nowrap heading-font">
-                                                            Purpose
-                                                        </td>
-                                                        <td class="py-2 pr-1">
-                                                            {{request.data.purpose}}
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>-->
               </div>
             </div>
           </div>
-          <div v-if="request.data.type === 'FUEL'" class="page-section">
-            <div class="page-section-header">
-              <div class="page-section-title">
-                Last Refill Details
-              </div>
-            </div>
-            <div class="page-section-content">
-              <div class="card p-0">
-                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                  <div class="text-gray-600 font-semibold">Date</div>
-                  <div v-if="request.data.lastRefillDate !== null && request.data.lastRefillDate !== 0">
-                    {{ getDate(request.data.lastRefillDate * 1000, true) }}
-                  </div>
-                </div>
-                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                  <div class="text-gray-600 font-semibold">Fuel Received</div>
-                  <div v-if="request.data.lastRefillFuelReceived">
-                    {{ numberWithCommas(request.data.lastRefillFuelReceived) }}
-                  </div>
-                </div>
-                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                  <div class="text-gray-600 font-semibold">Mileage Covered</div>
-                  <div v-if="request.data.lastRefillMileageCovered">
-                    {{ numberWithCommas(request.data.lastRefillMileageCovered) }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
           <div v-if="request.data.type !== 'FUEL'" class="page-section md:col-span-2">
             <div class="page-section-header">
               <div class="page-section-title">
@@ -566,21 +403,26 @@
                           class="heading-font hidden sm:table-cell">
                           Units
                         </th>
-                        <th scope="col" class="heading-font hidden sm:table-cell">
+                        <th scope="col" class="heading-font hidden sm:table-cell text-center">
                           Quantity
                         </th>
-                        <th scope="col" class="heading-font hidden sm:table-cell">
+                        <th scope="col" class="heading-font hidden sm:table-cell text-right">
                           Unit Cost
                         </th>
-                        <th scope="col" class="heading-font">
+                        <th scope="col" class="heading-font text-right">
                           Total Cost
                         </th>
+                        <th scope="col" class="heading-font text-right">
+                          Balance
+                        </th>
+
+
                       </tr>
                     </thead>
                     <tbody>
                       <tr
                         class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                        v-for="(info, index) in request.data.information" :key="index">
+                        v-for="(info, index) in request.data.items" :key="index">
                         <th scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                           {{ info.details }}
                           <div class="text-sm text-mute sm:hidden">
@@ -590,22 +432,29 @@
                         <td v-if="request.data.type === 'MATERIALS'" class="py-2 pr-1 hidden sm:table-cell">
                           {{ info.units }}
                         </td>
-                        <td class="py-2 pr-1 hidden sm:table-cell">
+                        <td class="py-2 pr-1 hidden sm:table-cell text-center">
                           {{ numberWithCommas(info.quantity) }}
                         </td>
-                        <td class="py-2 pr-1 hidden sm:table-cell">
+                        <td class="py-2 pr-1 hidden sm:table-cell text-right">
                           {{ numberWithCommas(info.unitCost) }}
                         </td>
-                        <td class="py-2 pr-1">
+                        <td class="py-2 pr-1 text-right">
                           {{ numberWithCommas(info.totalCost) }}
                         </td>
+                        <td class="py-2 pr-1 text-right">
+                          {{ numberWithCommas(info.balance) }}
+                        </td>
+
+
                       </tr>
                       <tr>
                         <td class="hidden sm:table-cell"></td>
                         <td class="hidden sm:table-cell" v-if="request.data.type === 'MATERIALS'"></td>
                         <td class="hidden sm:table-cell"></td>
-                        <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
-                        <td class="pt-4 pr-1 text-base font-bold">{{ numberWithCommas(request.data.total) }}</td>
+                        <!-- <td class="hidden sm:table-cell"></td> -->
+                        <th class="pt-4 pr-1 text-base heading-font font-bold text-right">Total</th>
+                        <td class="pt-4 pr-1 text-base font-bold text-right">{{ numberWithCommas(request.data.total) }}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
@@ -874,11 +723,11 @@ export default {
       denyDialog: false,
       form: this.$inertia.form({
         reference: '',
-        fromTo: "",
+        recipient: "",
         remarks: '',
         lastRefillFuelReceived: '',
         lastRefillMileageCovered: '',
-        information: []
+        items: []
       }),
       minDate: new Date(this.request.data.dateRequested * 1000).toISOString().substr(0, 10),
       maxDate: new Date().toISOString().substr(0, 10),
@@ -896,32 +745,50 @@ export default {
     }
   },
   created() {
-    for (let x in this.request.data.information) {
-      this.form.information.push({
-        details: this.request.data.information[x].details,
-        quantity: this.request.data.information[x].quantity,
-        totalCost: this.request.data.information[x].totalCost,
-        unitCost: this.request.data.information[x].unitCost,
-        amount: 0,
-        units: this.request.data.information[x].units,
-        expenseTypeId: this.request.data.information[x].expenseTypeId ?? 0,
-        transporterId: this.request.data.information[x].transporterId ?? 0,
-        supplierId: this.request.data.information[x].supplierId ?? 0,
-        comments: this.request.data.information[x].comments ?? "",
-        date: null
-      })
+    for (let x in this.request.data.items) {
+      if (this.request.data.items[x].balance > 0) {
+        this.form.items.push({
+          id: this.request.data.items[x].id,
+          details: this.request.data.items[x].details,
+          quantity: this.request.data.items[x].quantity,
+          totalCost: this.request.data.items[x].totalCost,
+          unitCost: this.request.data.items[x].unitCost,
+          balance: this.request.data.items[x].balance,
+          amount: 0,
+          units: this.request.data.items[x].units,
+          accountId: this.request.data.items[x].accountId ?? 0,
+          transporterId: this.request.data.items[x].transporterId ?? 0,
+          supplierId: this.request.data.items[x].supplierId ?? 0,
+          comments: this.request.data.items[x].comments ?? "",
+          date: null
+        })
+      }
     }
   },
   computed: {
     account() {
       if (parseInt(this.accountIndex) >= 0) {
-        return this.accounts[this.accountIndex]
+        return this.filteredAccounts.wallet[this.accountIndex]
       } else
         return null
     },
+    filteredAccounts() {
+      const wallet = this.accounts.filter(account => account.special_type === 'WALLET')
+      const other = this.accounts.filter(account => account.special_type !== 'WALLET')
+
+      return {
+        "wallet": wallet,
+        "other": this.accounts
+      }
+    },
+
     balanceValidate() {
       if (this.account != null) {
-        return this.account.balance >= this.request.data.total
+        let sum = 0;
+        for (let x in this.form.items) {
+          sum = sum + this.form.items[x].amount
+        }
+        return this.account.balance >= sum
       } else {
         return false
       }
@@ -975,7 +842,7 @@ export default {
     },
     initiationValidation() {
       if (this.account == null) {
-        this.error = "Select an account"
+        this.error = "Select an account to credit"
         return false
       } else if (!this.balanceValidate) {
         this.error = "Not enough funds in this account"
@@ -984,34 +851,46 @@ export default {
       else if (this.form.reference.length === 0 || this.form.reference === "") {
         this.error = "Enter a reference"
         return false
-      } else if (this.form.fromTo.length === 0 || this.form.fromTo === "") {
-        this.error = "Enter a payee"
+      } else if (this.form.recipient.length === 0 || this.form.recipient === "") {
+        this.error = "Enter a recipient"
         return false
       }
 
 
       let check = true
-      for (let x in this.form.information) {
-        if (this.form.information[x].expenseTypeId == 0 && this.form.information[x].amount > 0) {
-          this.error = "Select expense type for " + this.form.information[x].details
-          check = false
+      let sum = 0;
+      for (let x in this.form.items) {
+        if (this.form.items[x].amount > this.form.items[x].totalCost) {
+          this.error = "Amount for " + this.form.items[x].details + " cannot be greater than total amount "
+          return false
+        }
+        else if (this.form.items[x].accountId == 0 && this.form.items[x].amount > 0) {
+
+          this.error = "Select account to debit for " + this.form.items[x].details
+          return false
           break
-        } else if (this.form.information[x].date == null && this.form.information[x].amount > 0) {
-          this.error = "Enter date for " + this.form.information[x].details
-          check = false
+        } else if (this.form.items[x].date == null && this.form.items[x].amount > 0) {
+          this.error = "Enter date for " + this.form.items[x].details
+          return false
           break
         }
+        sum = sum + this.form.items[x].amount
       }
-      return check
+      if (sum == 0) {
+        this.error = "Enter at least one item to debit"
+        return false
+      }
+
+      return true
     }
   },
   methods: {
     formatInformation() {
-      let information = this.form.information
-      for (let x in information) {
-        information[x].date = this.getTimestampFromDate(information[x].date)
+      let items = this.form.items
+      for (let x in items) {
+        items[x].date = this.getTimestampFromDate(items[x].date)
       }
-      return information
+      return items
     },
     printRequest() {
       this.$inertia.get(this.route('request-forms.print', { 'id': this.request.data.id }))
@@ -1057,9 +936,9 @@ export default {
       this.form
         .transform(data => ({
           ...data,
-          "information": this.formatInformation(),
+          "items": this.formatInformation(),
           account_id: this.account == null ? null : this.account.id,
-          from_to: this.form.fromTo,
+
         }))
         .post(this.route('request-forms.initiate', { 'id': this.request.data.id }), {
           onSuccess: () => this.initiateDialog = false,

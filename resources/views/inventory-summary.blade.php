@@ -150,7 +150,7 @@
             <tr>
                 <td style="text-transform: none">Opening</td>
                 @foreach($inventories = json_decode($summary->opening_stock) as $inventory)
-                <td style="text-align: left">{{$inventory->availableStock}}</td>
+                <td style="text-align: left">{{$inventory->availableStock}} <span>({{ $inventory->availableStock + $inventory->uncollectedStock }})</span></td>
                 @endforeach
             </tr>
 
@@ -158,33 +158,35 @@
                 <tr>
                     <td style="text-transform: none">Closing</td>
                     @foreach($inventories = json_decode($summary->closing_stock) as $inventory)
-                        <td style="text-align: left">{{$inventory->availableStock}}</td>
+                        <td style="text-align: left">{{$inventory->availableStock}}  <span>({{ $inventory->availableStock + $inventory->uncollectedStock }})</span></td>
                     @endforeach
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td style="text-transform: none">Physical Count</td>
                     @foreach($inventories = json_decode($summary->closing_stock) as $inventory)
                         <td style="text-align: left">{{$inventory->availableStock + $inventory->uncollectedStock}}</td>
                     @endforeach
-                </tr>
+                </tr> -->
             @else
 
                 <tr>
                     <td style="text-transform: none">Closing</td>
                     @foreach($summary->site->inventories as $inventory)
-                        <td style="text-align: left">{{$inventory->available_stock}}</td>
+                        <td style="text-align: left">{{$inventory->available_stock}}  <span>({{ $inventory->availableStock + $inventory->uncollectedStock }})</span></td>
                     @endforeach
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td style="text-transform: none">Physical Count</td>
                     @foreach($summary->site->inventories as $inventory)
                         <td style="text-align: left">{{$inventory->available_stock + $inventory->uncollected_stock}}</td>
                     @endforeach
-                </tr>
+                </tr> -->
             @endif
 
         </tbody>
     </table>
+
+    @if($summary->sales->count() > 0)
     <div class="heading" >Sales</div>
     <table class="summary">
         <thead>
@@ -224,6 +226,7 @@
 
         </tbody>
     </table>
+    @endif
 
     @if($sum != 0)
     <div style="text-align: right; margin-top: 12px">
@@ -232,6 +235,7 @@
     </div>
     @endif
 
+    @if($summary->collections->count() > 0)
     <div class="heading" >Collections</div>
     <table class="summary">
         <thead>
@@ -256,6 +260,7 @@
 
         </tbody>
     </table>
+    @endif
 </div>
 
 </body>

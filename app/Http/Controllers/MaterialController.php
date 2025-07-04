@@ -66,9 +66,11 @@ class MaterialController extends Controller
 
             Batch::create([
                 "date" => $request->date,
+                "ready_date" => $request->date,
                 "price" =>  $request->total/$request->quantity,
                 "quantity" => $request->quantity,
                 "balance" =>  $request->quantity,
+                "accounting_balance" =>  $request->quantity,
                 "photo" => $request->photo ?? null,
                 "comments" => $request->comments,
                 "material_id" => $material->id,

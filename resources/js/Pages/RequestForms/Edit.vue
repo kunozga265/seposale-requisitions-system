@@ -60,51 +60,8 @@
                                     <div class="p-2 mb-2 md:col-span-2">
                                         <jet-label for="purpose" value="Purpose" />
                                         <textarea id="purpose" v-model="form.purpose"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                            ></textarea>
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
                                     </div>
-
-                                    <!-- <div v-if="form.type !== 'VEHICLE_MAINTENANCE'" class="p-2 mb-2"
-                                        :class="{ 'md:col-span-2': form.type === 'FUEL' }">
-                                        <jet-label for="project" value="Project Name" />
-                                        <select v-model="projectIndex" id="project"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                            required>
-                                            <option value="-1">None</option>
-                                            <option v-for="(project, index) in projects.data" :value="index" :key="index"
-                                                v-if="project.verified == 1 && project.status == 1">
-                                                {{ project.name }}
-                                            </option>
-                                        </select>
-                                    </div> -->
-                                    <!-- <div class="p-2 mb-2" v-if="project && form.type !== 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="projectClient" value="Project Client" />
-                                        <jet-input id="projectClient" type="text" class="block w-full" v-model="project.client" disabled/>
-                                    </div>
-                                    <div class="p-2 mb-2" v-if="project && form.type !== 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="projectSite" value="Project Site" />
-                                        <jet-input id="projectSite" type="text" class="block w-full" v-model="project.site" disabled/>
-                                    </div>
-
-                                    <div class="p-2 mb-2" v-if="form.type === 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="assessedBy" value="Assessed By" />
-                                        <jet-input id="assessedBy" type="text" class="block w-full" v-model="form.assessedBy"/>
-                                    </div>
-
-                                    <div class="p-2 mb-2" v-if="form.type === 'VEHICLE_MAINTENANCE'">
-                                        <jet-label for="vehicleMaintenanceVehicleId" value="Vehicle Registration" />
-                                        <select v-model="vehicleMaintenanceVehicleId" id="vehicleMaintenanceVehicleId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"  required>
-                                            <option value="-1">Select Vehicle Registration</option>
-                                            <option
-                                                v-for="(vehicle,index) in vehicles.data"
-                                                :value="vehicle.id"
-                                                :key="index"
-                                                v-if="vehicle.verified==1 && vehicle.status==1"
-                                            >
-                                                {{ vehicle.vehicleRegistrationNumber}}
-                                            </option>
-                                        </select>
-                                    </div> -->
 
                                 </div>
                             </div>
@@ -148,29 +105,39 @@
                                         </thead>
                                         <tbody>
                                             <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                                                v-for="(info, index) in form.information" :key="index">
+                                                v-for="(info, index) in form.items" :key="index">
                                                 <th scope="row" class="px-2">
                                                     <i @click="removeRecord(index)"
                                                         class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor"></i>
                                                 </th>
                                                 <td scope="row"
                                                     class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                    <jet-input type="text" class="block w-full" v-model="info.details" />
+                                                    <jet-input type="text" class="block w-full"
+                                                        v-model="info.details" />
                                                 </td>
                                                 <td v-if="form.type === 'MATERIALS'" class="py-2 pr-1">
                                                     <jet-input type="text" class="block w-full" v-model="info.units" />
                                                 </td>
                                                 <td class="py-2 pr-1">
-                                                    <jet-input type="text" class="block w-full" v-model="info.quantity" />
+                                                    <jet-input type="number" class="block w-full" step="0.01"
+                                                        v-model="info.quantity" />
                                                 </td>
                                                 <td class="py-2 pr-1">
-                                                    <jet-input type="text" class="block w-full" v-model="info.unitCost" />
+                                                      <money
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                        v-bind="moneyMaskOptions" v-model="info.unitCost" />
+                                                    <!-- <jet-input type="text" class="block w-full"
+                                                        v-model="info.unitCost" /> -->
                                                 </td>
                                                 <td class="py-2 pr-1">
-                                                    <div
+                                                      <money
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                        v-bind="moneyMaskOptions" :value="(info.quantity * info.unitCost)" />
+                                                    <!-- <div
                                                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                                                        {{ numberWithCommas((info.quantity * info.unitCost).toFixed(2)) }}
-                                                    </div>
+                                                        {{ numberWithCommas((info.quantity * info.unitCost).toFixed(2))
+                                                        }}
+                                                    </div> -->
                                                     <!--                                                <jet-input type="text" class="block w-full" v-model="info.totalCost" value="23" />-->
                                                 </td>
                                             </tr>
@@ -243,86 +210,6 @@
                         </div>
                     </div>
 
-                    <!-- <div v-if="form.type ==='FUEL'" class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Details
-                            </div>
-                        </div>
-                        <div class="page-section-content flex justify-center">
-
-                            <div class="card w-full sm:max-w-md md:max-w-3xl">
-                                <div class="grid grid-cols-1 md:grid-cols-2">
-
-                                    <div class="p-2 mb-2" :class="{ 'md:col-span-2': fuelVehicle==null}">
-                                        <jet-label for="fuelVehicleId" value="Vehicle Registration" />
-                                        <select v-model="fuelVehicleIndex" id="fuelVehicleId" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"  required>
-                                            <option value="-1">Select Vehicle Registration</option>
-                                            <option
-                                                v-for="(vehicle,index) in vehicles.data"
-                                                :value="index"
-                                                :key="index"
-                                                v-if="vehicle.verified==1 && vehicle.status==1"
-                                            >
-                                                {{ vehicle.vehicleRegistrationNumber}}
-                                            </option>
-                                        </select>
-                                    </div>
-
-                                    <div class="p-2 mb-2" v-if="fuelVehicle">
-                                        <jet-label for="fuelVehicleMileage" value="Mileage" />
-                                      <div class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                                            {{numberWithCommas(fuelVehicle.mileage)}}
-                                        </div>
-                                        <jet-input id="fuelVehicleMileage" type="text" class="block w-full" v-model="form.fuelVehicleMileage"/>
-                                    </div>
-
-                                    <div class="p-2 mb-2 md:col-span-2">
-                                        <jet-label for="driverName" value="Driver Name" />
-                                        <jet-input id="driverName" type="text" class="block w-full" v-model="form.driverName" required/>
-                                    </div>
-
-                                    <div class="p-2 mb-2">
-                                        <jet-label for="fuelRequestedLitres" value="Fuel Requested (In Litres)" />
-                                        <jet-input id="fuelRequestedLitres" type="text" class="block w-full" v-model="form.fuelRequestedLitres" required/>
-                                    </div>
-
-                                    <div class="p-2 mb-2">
-                                        <jet-label for="fuelRequestedMoney" value="Fuel Requested (Money Equivalent)"/>
-                                        <div class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                                            {{numberWithCommas(fuelRequestedMoney)}}
-                                        </div>
-                                        <span v-if="fuelVehicle" class="text-sm text-gray-600">@ K{{numberWithCommas(fuelVehicle.gas.perLitre)}}/Litre</span>
-                                    </div>
-
-                                    <div class="p-2 mb-2 md:col-span-2">
-                                        <jet-label for="purpose" value="Purpose" />
-                                        <textarea id="purpose" v-model="form.purpose" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required></textarea>
-                                    </div>
-
-                                    <div class="p-2 mb-2 md:col-span-2">
-                                        <jet-label for="lastRefillDate" value="Last Refill Date" />
-                                        <vue-date-time-picker
-                                            color="#1a56db"
-                                            v-model="date"
-                                            :maxDate="today"
-                                        />
-                                    </div>
-                                     <div class="p-2 mb-2">
-                                        <jet-label for="lastRefillFuelReceived" value="Last Refill Fuel Received" />
-                                        <jet-input id="lastRefillFuelReceived" type="text" class="mt-1 block w-full" v-model="form.lastRefillFuelReceived" autocomplete="geoserve-vehicle-lastRefillFuelReceived"/>
-                                    </div>
-                                     <div class="p-2 mb-2">
-                                        <jet-label for="lastRefillMileageCovered" value="Last Refill Mileage Covered" />
-                                        <jet-input id="lastRefillMileageCovered" type="text" class="mt-1 block w-full" v-model="form.lastRefillMileageCovered" autocomplete="geoserve-vehicle-lastRefillMileageCovered"/>
-                                    </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-                    </div> -->
-
                     <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
                         <div v-show="!validation" id="toast-danger"
                             class="flex items-center w-full max-w-xs p-4 mb-4 text-red-700 bg-red-100 rounded-lg shadow dark:text-red-400 dark:bg-red-800"
@@ -361,6 +248,7 @@ import JetLabel from '@/Jetstream/Label'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import SecondaryButton from '@/Jetstream/SecondaryButton'
 import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
+import { Money } from 'v-money'
 
 export default {
     props: ['projects', 'vehicles', 'request'],
@@ -375,6 +263,7 @@ export default {
         JetValidationErrors,
         SecondaryButton,
         pdf,
+        Money,
     },
     data() {
         return {
@@ -389,7 +278,7 @@ export default {
                 driverName: this.request.data.driverName,
                 lastRefillFuelReceived: this.request.data.lastRefillFuelReceived,
                 lastRefillMileageCovered: this.request.data.lastRefillMileageCovered,
-                information: this.request.data.information,
+                items: [],
             }),
             projectIndex: -1,
             types: [
@@ -408,28 +297,34 @@ export default {
             error: '',
             date: null,
             today: new Date().toISOString(),
+             moneyMaskOptions: {
+                decimal: '.',
+                thousands: ',',
+                prefix: 'MK ',
+                suffix: '',
+                precision: 2,
+                masked: false
+            },
         }
     },
     created() {
-        if (this.request.data.type !== "VEHICLE_MAINTENANCE" && this.request.data.project) {
-            this.projectIndex = (this.projects.data).map(function (e) {
-                return e.name;
-            }).indexOf(this.request.data.project.name)
-        }
-
-        if (this.request.data.type === "VEHICLE_MAINTENANCE") {
-            this.vehicleMaintenanceVehicleId = this.request.data.vehicle.id
-        }
-
-        if (this.request.data.type === "FUEL") {
-            this.fuelVehicleIndex = (this.vehicles.data).map(function (e) {
-                return e.id;
-            }).indexOf(this.request.data.vehicle.id)
-        }
 
         this.quotes = this.getQuotes(this.request.data.quotes)
 
-        this.date = this.request.data.lastRefillDate !== null && this.request.data.lastRefillDate !== 0 ? new Date(this.request.data.lastRefillDate * 1000).toISOString() : null
+        for (let x in this.request.data.items) {
+            this.form.items.push({
+                id: this.request.data.items[x].id,
+                details: this.request.data.items[x].details,
+                quantity: this.request.data.items[x].quantity,
+                totalCost: this.request.data.items[x].totalCost,
+                unitCost: this.request.data.items[x].unitCost,
+                units: this.request.data.items[x].units,
+                expenseTypeId: this.request.data.items[x].expenseTypeId ?? 0,
+                transporterId: this.request.data.items[x].transporterId ?? 0,
+                supplierId: this.request.data.items[x].supplierId ?? 0,
+                comments: this.request.data.items[x].comments ?? "",
+            })
+        }
     },
     computed: {
         project() {
@@ -453,14 +348,14 @@ export default {
         totalCost() {
             let totalCost = 0
             let currentTotal = 0
-            for (let x in this.form.information) {
-                currentTotal = parseFloat(this.form.information[x].quantity * this.form.information[x].unitCost)
+            for (let x in this.form.items) {
+                currentTotal = parseFloat(this.form.items[x].quantity * this.form.items[x].unitCost)
                 totalCost += currentTotal
-                this.form.information[x].totalCost = parseFloat(currentTotal.toFixed(2))
+                this.form.items[x].totalCost = parseFloat(currentTotal.toFixed(2))
 
                 //convert to numbers
-                this.form.information[x].quantity = parseFloat(this.form.information[x].quantity)
-                this.form.information[x].unitCost = parseFloat(this.form.information[x].unitCost)
+                this.form.items[x].quantity = parseFloat(this.form.items[x].quantity)
+                this.form.items[x].unitCost = parseFloat(this.form.items[x].unitCost)
             }
             return parseFloat(totalCost.toFixed(2))
         },
@@ -565,7 +460,8 @@ export default {
                 .post(this.route('request-forms.update', { id: this.request.data.id }))
         },
         addRecord() {
-            this.form.information.push({
+            this.form.items.push({
+                "id": 0,
                 "details": '',
                 "units": '',
                 "quantity": 0,
@@ -574,7 +470,7 @@ export default {
             })
         },
         removeRecord(index) {
-            this.form.information.splice(index, 1)
+            this.form.items.splice(index, 1)
         },
         fileUpload(file) {
             const reader = new FileReader();

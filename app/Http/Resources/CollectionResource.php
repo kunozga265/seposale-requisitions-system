@@ -18,6 +18,7 @@ class CollectionResource extends JsonResource
 
         return [
             "id" => intval($this->id),
+            'serial' => $this->serial,
             "code" => (new AppController())->getZeroedNumber($this->code),
             "client" => $this->client,
             "photo" => $this->photo,
@@ -31,7 +32,8 @@ class CollectionResource extends JsonResource
             "balance" => floatval($this->balance),
             "user" => $this->user,
             "date" => intval($this->date),
-            "message" => "Collected {$this->quantity} by ". isset($this->collected_by) ? $this->collected_by : " self",
+            "message" => "Collected {$this->quantity} by " . isset($this->collected_by) ? $this->collected_by : " self",
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false,
         ];
     }
 }

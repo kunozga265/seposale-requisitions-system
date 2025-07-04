@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CollectionResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SiteResource;
 use App\Http\Resources\SiteSaleSummaryResource;
@@ -43,4 +44,5 @@ class SiteController extends Controller
             }
         }
     }
+ 
 }

@@ -194,7 +194,7 @@
     </table>
 
 
-    @if(isset($receipt->information))
+    @if(isset($receipt->summaries))
 {{--        <table id="products">--}}
 {{--            --}}{{--        <tr>--}}
 {{--            --}}{{--            <th>Product</th>--}}
@@ -226,7 +226,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach(json_decode($receipt->information) as $info)
+            @foreach($receipt->summaries as $info)
                 <tr>
                     <td style="text-transform: none">{{$info->name}}</td>
                     <td style="text-align: center">

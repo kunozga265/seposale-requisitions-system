@@ -168,37 +168,47 @@
 
         <div class="mx-9 flex">
 
-            <div @click="section = 'overview'"
-                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                :class="{ 'info': section === 'overview' }">
-                <div>Overview</div>
-                <i v-show="section === 'overview'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
-            </div>
-            <div @click="section = 'sales'"
-                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                :class="{ 'info': section === 'sales' }">
-                <div>Sales</div>
-                <i v-show="section === 'sales'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
-            </div>
+            <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'overview' })">
+                <div 
+                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                    :class="{ 'info': section === 'overview' }">
+                    <div>Overview</div>
+                    <i v-show="section === 'overview'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                </div>
+            </a>
+            <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'sales' })">
+                <div 
+                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                    :class="{ 'info': section === 'sales' }">
+                    <div>Sales</div>
+                    <i v-show="section === 'sales'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                </div>
+            </a>
 
-            <div @click="section = 'collections'"
-                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                :class="{ 'info': section === 'collections' }">
-                <div>Collections</div>
-                <i v-show="section === 'collections'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
-            </div>
-            <div @click="section = 'batches'"
-                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                :class="{ 'info': section === 'batches' }">
-                <div>Batches</div>
-                <i v-show="section === 'batches'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
-            </div>
-            <div @click="section = 'damages'" v-if="inventory.data.producible"
-                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                :class="{ 'info': section === 'damages' }">
-                <div>Damages</div>
-                <i v-show="section === 'damages'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
-            </div>
+            <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'collections' })">
+                <div 
+                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                    :class="{ 'info': section === 'collections' }">
+                    <div>Collections</div>
+                    <i v-show="section === 'collections'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                </div>
+            </a>
+            <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'batches' })">
+                <div 
+                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                    :class="{ 'info': section === 'batches' }">
+                    <div>Batches</div>
+                    <i v-show="section === 'batches'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                </div>
+            </a>
+            <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'damages' })">
+                <div  v-if="inventory.data.producible"
+                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                    :class="{ 'info': section === 'damages' }">
+                    <div>Damages</div>
+                    <i v-show="section === 'damages'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                </div>
+            </a>
         </div>
 
         <div class="py-6">
@@ -223,8 +233,9 @@
 
                                         <td class="text-sm text-gray-400">{{ getDate(batch.readyDate * 1000) }}
                                         </td>
-                                        <td class="heading-font text-base text-right" style="font-weight: 600;">{{ batch.quantity
-                                            }}
+                                        <td class="heading-font text-base text-right" style="font-weight: 600;">{{
+                                            batch.quantity
+                                        }}
                                             {{ inventory.data.units }}{{ batch.quantity == 1 ? '' : 's' }}
                                         </td>
                                         <!-- </div> -->
@@ -470,8 +481,12 @@
                                     <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                         v-for="(item, index) in collections.data" :key="index">
                                         <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
-                                        <td @click="navigateToSale(item.siteSaleSummary.sale.id)" class="p-2 text-left">{{ item.siteSaleSummary.sale.code }}</td>
-                                        <td @click="navigateToClient(item.client.id)" class="p-2 text-left ">{{ item.client.name }}</td>
+                                        <td @click="navigateToSale(item.siteSaleSummary.sale.id)" class="p-2 text-left">
+                                            {{
+                                                item.siteSaleSummary.sale.code }}</td>
+                                        <td @click="navigateToClient(item.client.id)" class="p-2 text-left ">{{
+                                            item.client.name
+                                        }}</td>
                                         <!--                                        <td class="p-2 text-left ">{{-->
                                         <!--                                                item.collectedBy-->
                                         <!--                                            }}-->
@@ -496,7 +511,7 @@
 
 
 
-                <div class="page-section" v-if="section === 'batches'">
+                <div class="page-section" v-else-if="section === 'batches'">
                     <div class="page-section-header">
                         <div class="page-section-title">
                             Batches
@@ -560,7 +575,7 @@
                 </div>
 
 
-                <div class="page-section" v-if="section === 'damages' && inventory.data.producible">
+                <div class="page-section" v-else-if="section === 'damages' && inventory.data.producible">
                     <div class="page-section-header">
                         <div class="page-section-title">
                             Damages
@@ -631,7 +646,11 @@ import Collection from "@/Components/Collection.vue";
 
 
 export default {
-    props: ['site', 'inventory', 'sales', 'collections', 'batches', 'awaitingCuration', 'damages','products'],
+    props: ['site',
+        'inventory',
+        'section',
+        'filteredReceipts',
+        'sales', 'collections', 'batches', 'awaitingCuration', 'damages', 'products'],
     components: {
         Collection,
         AppLayout,
@@ -651,7 +670,6 @@ export default {
     },
     data() {
         return {
-            section: "overview",
             editInventoryDialog: false,
             form: this.$inertia.form({
                 dates: null,

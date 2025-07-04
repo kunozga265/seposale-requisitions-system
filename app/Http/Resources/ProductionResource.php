@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Http\Controllers\AppController;
+use App\Models\Production;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductionResource extends JsonResource
@@ -26,6 +27,7 @@ class ProductionResource extends JsonResource
             "usages" => UsageResource::collection($this->usages),
             "batches" => BatchResource::collection($this->batches),
             "damages" => DamageResource::collection($this->damages),
+            "active" => !Production::where("date", ">",$this->date)->exists()
         ];
     }
 }

@@ -32,8 +32,8 @@ class SiteResource extends JsonResource
             "summaries" => InventorySummaryResource::collection($this->summaries()->orderBy("date","desc")->get()),
 //            "collections" => CollectionResource::collection($this->collections()->orderBy("date","desc")->get()),
             "pendingCollections" => $this->pendingCollections(),
-            "receipts" => ReceiptResource::collection($filteredReceipts)
-
+            "receipts" => ReceiptResource::collection($filteredReceipts),
+            "accounts" => $this->accounts,
         ];
     }
 }

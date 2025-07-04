@@ -21,6 +21,8 @@ Vue.mixin({
                     return 'Petty Cash Request'
                 case 'REQUISITION':
                     return 'Requisition'
+                case 'OPERATIONS':
+                    return 'Operations Request'
                 default:
                     return  ''
             }

@@ -189,7 +189,7 @@
                     </div>
                     <div class="page-section-content">
                         <div class="card profile">
-                            <div class="p-8 md:p-10 grid grid-cols-1 sm:grid-cols-2">
+                            <div class="p-8 md:p-10 grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <div class="mb-4">
                                     <div class="text-sm text-gray-600">Position</div>
                                     <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
@@ -231,7 +231,7 @@
                             Overview
                         </div>
                     </div>
-                    <div class="page-section-content grid grid-cols-1 lg:grid-cols-2">
+                    <div class="page-section-content grid grid-cols-1 lg:grid-cols-2 gap-2">
                         <div class="card flex justify-center">
                             <div class="h-64 w-64 sm:h-80 sm:w-80 mx-auto relative">
                                 <div class="pie-chart absolute font-bold flex justify-center items-center">

@@ -40,6 +40,18 @@ class Site extends Model
         return $this->hasMany(Production::class);
     }
 
+    public function accounts(){
+        return $this->belongsToMany(AccountingAccount::class, "site_and_accounting_account", "site_id","accounting_account_id");
+    }
+
+    public function walletAccount(){
+        return $this->accounts()->where("special_type", "WALLET")->first();
+    }
+
+    public function directCostsAccount(){
+        return $this->accounts()->where("special_type", "COGS-DIRECT-OSS")->first();
+    }
+
     public function pendingCollections()
     {
         $summaries = SiteSaleSummary::latest()->get();
@@ -51,6 +63,7 @@ class Site extends Model
                 $filtered [] = [
                     "id" => $summary->id,
                     "inventory" => $summary->inventory,
+                    "inventoryStock" => $summary->inventory->stock(),
                     'amount' => floatval($summary->amount),
                     'balance' => floatval($summary->balance),
                     'paymentStatus' => $summary->getPaymentStatus(),

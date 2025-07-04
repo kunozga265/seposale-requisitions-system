@@ -7,6 +7,8 @@ use App\Http\Resources\MaterialResource;
 use App\Http\Resources\ProductionResource;
 use App\Http\Resources\SiteResource;
 use App\Http\Resources\StockResource;
+use App\Models\AccountingAccount;
+use App\Models\AccountingRecord;
 use App\Models\Batch;
 use App\Models\Damage;
 use App\Models\Inventory;
@@ -69,6 +71,7 @@ class ProductionController extends Controller
                 //Web Response
                 return Inertia::render('Production/Index', [
                     'site' => $site,
+                    'siteAccounts' => $site->accounts,
                     'materials' => MaterialResource::collection($site->materials),
                     'materialsTypes' => $materials_types,
                     'productions' => ProductionResource::collection($productions),
@@ -133,10 +136,9 @@ class ProductionController extends Controller
             $total_quantity = 0;
             foreach ($request->inventories as $inventoryObject) {
                 $total_quantity += $inventoryObject["quantity"];
+                $inventory = Inventory::find($inventoryObject["id"]);
 
                 if ($inventoryObject["damages"] > 0) {
-                    $inventory = Inventory::find($inventoryObject["id"]);
-
                     if ($inventory->stock() >= $inventoryObject["damages"]) {
                         continue;
                     } else {
@@ -145,6 +147,9 @@ class ProductionController extends Controller
                 }
 
                 if ($inventoryObject["quantity"] > 0) {
+                    if (!$inventory->checkAccounts()) {
+                        return Redirect::back()->with("error", "Please link associated accounts for {$inventory->name} in accounting centre");
+                    }
                 }
             }
 
@@ -154,7 +159,7 @@ class ProductionController extends Controller
             }
 
             // dd("". $total_quantity);
-
+            error_log('Some message here.');
 
 
             $closing_stock = [];
@@ -191,18 +196,90 @@ class ProductionController extends Controller
             //     $request->date, 
             //     $production);
 
+
+            // $cogs_account = $material->cogsAccount;
+            // $cogs_account_balance = $material->cogsAccount->balance;
+
+
+            $index = 0;
             $cost = 0;
+            $filteredMaterials = [];
             foreach ($request->materials as $materialObject) {
-                $cost += $this->recordUsage(
+                $usage_cost = $this->recordUsage(
                     $materialObject["id"],
                     $materialObject["quantity"],
                     $request->date,
                     $production
                 );
+
+                if ($usage_cost > 0) {
+
+                    $filteredMaterials[] = [
+                        "id" => $materialObject["id"],
+                        "description" => $materialObject["name"] . " - " . $materialObject["quantity"] . " " . $materialObject["units"] . "(s)",
+                        "cost" => $usage_cost,
+
+                    ];
+
+                    // $usage_cost = $usage_cost * $materialObject["quantity"];
+
+                    // $material = Material::find($materialObject["id"]);
+
+                    // //record cogs
+                    // $cogs_record = $cogs_account->records()->create([
+                    //     "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                    //     "reference" => strtoupper(""),
+                    //     "date" => Carbon::now()->getTimestamp() + $index,
+                    //     "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                    //     "description" => $material->name,
+                    //     "amount" => $usage_cost,
+                    //     "opening_balance" => $cogs_account_balance,
+                    //     "closing_balance" => $cogs_account_balance + $usage_cost,
+                    //     "type" => "DEBIT", // incrementing the account balance
+                    //     "accounting_account_id" => $cogs_account->id,
+
+                    // ]);
+                    // $cogs_account_balance += $usage_cost;
+
+
+                    // //update inventory account
+                    // $inventory_record = $inventory_account->records()->create([
+                    //     "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                    //     "reference" => strtoupper(""),
+                    //     "date" => Carbon::now()->getTimestamp() + $index,
+                    //     "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                    //     "description" => $material->name,
+                    //     "amount" => $usage_cost,
+                    //     "opening_balance" => $inventory_account_balance,
+                    //     "closing_balance" => $inventory_account_balance - $usage_cost,
+                    //     "type" => "CREDIT", // decrementing the account balance
+                    //     "accounting_account_id" => $inventory_account->id,
+                    //     "accounting_record_id" => $cogs_record->id,
+                    // ]);
+                    // $inventory_account_balance -= $usage_cost;
+
+                    // $cogs_record->update([
+                    //     "accounting_record_id" => $inventory_record->id,
+                    // ]);
+                }
+
+                $index++;
+                $cost += $usage_cost;
             }
 
+            // $cogs_account->update([
+            //     "balance" => $cogs_account_balance
+            // ]);
+
+            // $inventory_account->update([
+            //     "balance" => $inventory_account_balance
+            // ]);
+
+            //record labour and food costs
+            $this->recordExpenses($site, $production, $request->labour, $request->food);
+
             //average cost
-            $average_cost = ($cost + $request->labour + $request->food) / $total_quantity;
+            $average_cost = ($cost) / $total_quantity;
 
             foreach ($site->materials as $material) {
                 $closing_stock[] = [
@@ -218,11 +295,21 @@ class ProductionController extends Controller
                 "closing_stock" => json_encode($closing_stock),
             ]);
 
+
+            $material = Material::first();
+            $material_inventory_account = $material->inventoryAccount;
+            $material_inventory_account_balance = $material->inventoryAccount->balance;
+
             //Record materials produced
             foreach ($request->inventories as $inventoryObject) {
                 $inventory = Inventory::find($inventoryObject["id"]);
+                $inventory_account = $inventory->inventoryAccount;
+                if ($inventory_account != null) {
+                    $inventory_account_balance = $inventory->inventoryAccount->balance;
+                }
 
                 if ($inventoryObject["quantity"] > 0) {
+
 
                     $availableStock = $inventory->available_stock + $inventoryObject["quantity"];
 
@@ -235,6 +322,7 @@ class ProductionController extends Controller
                         "price" =>  $average_cost,
                         "quantity" => $inventoryObject["quantity"],
                         "balance" =>  $inventoryObject["quantity"],
+                        "accounting_balance" => $inventoryObject["quantity"],
                         "ready_date" =>  $inventoryObject["date"],
                         "photo" => null,
                         "comments" => "",
@@ -242,18 +330,107 @@ class ProductionController extends Controller
                         "production_id" => $production->id,
                         "user_id" => Auth::id(),
                     ]);
+
+                    //record accounts
+                    $amount = $average_cost * $inventoryObject["quantity"];
+                    $inventory_record = $inventory_account->records()->create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper(""),
+                        "date" => Carbon::now()->getTimestamp() + $index,
+                        "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                        "description" => "{$inventory->name} - " . $inventory->formattedUnits($inventoryObject["quantity"]),
+                        "amount" => $amount,
+                        "opening_balance" => $inventory_account_balance,
+                        "closing_balance" => $inventory_account_balance + $amount,
+                        "type" => "DEBIT", // incrementing the account balance
+                        "accounting_account_id" => $inventory_account->id,
+                        "production_id" => $production->id,
+
+                    ]);
+                    $inventory_account_balance += $amount;
+
+
+                    // //update materials accounts
+                    foreach ($filteredMaterials as $material_object) {
+                        $inventory_record = $material_inventory_account->records()->create([
+                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                            "reference" => strtoupper(""),
+                            "date" => Carbon::now()->getTimestamp() + $index,
+                            "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                            "description" => $material_object["description"],
+                            "amount" => $material_object["cost"],
+                            "opening_balance" => $material_inventory_account_balance,
+                            "closing_balance" => $material_inventory_account_balance - $material_object["cost"],
+                            "type" => "CREDIT", // decrementing the account balance
+                            "accounting_account_id" => $material_inventory_account->id,
+                            "accounting_record_id" => $inventory_record->id,
+                            "production_id" => $production->id,
+                        ]);
+                        $material_inventory_account_balance -= $material_object["cost"];
+                    }
+
+                    $inventory_record->update([
+                        // "accounting_record_id" => $inventory_record->id,
+                    ]);
+
+                    $material_inventory_account->update([
+                        "balance" => $material_inventory_account_balance
+                    ]);
                 }
+
+                $index++;
 
                 if ($inventoryObject["damages"] > 0) {
+                    $damages_cost = $this->recordDamages($inventory, $inventoryObject["damages"], $request->date, $production);
 
-                    $this->recordDamages($inventory, $inventoryObject["damages"], $request->date, $production);
+                    $operating_expenses_account = AccountingAccount::where("code", 6050)->first();
+                    $operating_expenses_record = $operating_expenses_account->records()->create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper(""),
+                        "date" => Carbon::now()->getTimestamp() + $index,
+                        "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                        "description" => "{$inventory->name} Damages - " . $inventory->formattedUnits($inventoryObject["damages"]),
+                        "amount" => $damages_cost,
+                        "opening_balance" => $operating_expenses_account->balance,
+                        "closing_balance" => $operating_expenses_account->balance + $damages_cost,
+                        "type" => "DEBIT", // incrementing the account balance
+                        "accounting_account_id" => $inventory_account->id,
+                        "production_id" => $production->id,
+                    ]);
+                    $operating_expenses_account->update([
+                        "balance" => $operating_expenses_account->balance + $damages_cost
+                    ]);
+
+                    //decrease inventory
+                    $inventory_record = $inventory_account->records()->create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper(""),
+                        "date" => Carbon::now()->getTimestamp() + $index,
+                        "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                        "description" => "{$inventory->name} Damages - " . $inventory->formattedUnits($inventoryObject["damages"]),
+                        "amount" => $damages_cost,
+                        "opening_balance" => $inventory_account_balance,
+                        "closing_balance" => $inventory_account_balance - $damages_cost,
+                        "type" => "CREDIT", // incrementing the account balance
+                        "accounting_account_id" => $inventory_account->id,
+                        "accounting_record_id" => $operating_expenses_record->id,
+                        "production_id" => $production->id,
+
+                    ]);
+                    $inventory_account_balance -= $damages_cost;
+
+                    $operating_expenses_record->update([
+                        "accounting_record_id" => $inventory_record->id,
+                    ]);
                 }
+
+                if ($inventory_account != null) {
+                    $inventory_account->update([
+                        "balance" => $inventory_account_balance
+                    ]);
+                }
+                $index++;
             }
-
-
-
-
-
 
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -300,6 +477,7 @@ class ProductionController extends Controller
                     //update the balance
                     $batch->update([
                         "balance" => $balance,
+                        "accounting_balance" => $balance,
                     ]);
                     //update the balance
                     $q = $material->quantity - $count;
@@ -328,7 +506,8 @@ class ProductionController extends Controller
 
             // dump("{$material->name} Cost: ". ($cost / $total));
 
-            return $cost / $total;
+            // return $cost / $total;
+            return $cost;
         } else {
             return 0;
         }
@@ -336,9 +515,10 @@ class ProductionController extends Controller
 
     private function recordDamages($inventory, $quantity, $date, $production)
     {
+        $cost = 0;
         if ($quantity > 0) {
             do {
-                $batch = $inventory->batches()->where("balance", ">", 0)->orderBy("date", "asc")->first();
+                $batch = $inventory->batches()->where("accounting_balance", ">", 0)->orderBy("date", "asc")->first();
                 $count = 0;
                 if (is_object($batch)) {
                     //check if batch quantity is greater
@@ -364,6 +544,7 @@ class ProductionController extends Controller
                         'available_stock' => $q
                     ]);
 
+                    $damages_cost = $batch->price * $count;
                     //create a record of the transaction
                     Damage::create([
                         "date" => $date,
@@ -371,28 +552,130 @@ class ProductionController extends Controller
                         "inventory_id" => $inventory->id,
                         "quantity" => $count,
                         "production_id" => $production->id,
-                        "cost" => $batch->price * $count,
+                        "cost" => $damages_cost,
                     ]);
                 } else {
                     return Redirect::back()->with("error", "{$inventory->name} is out of stock");
                 }
-
+                $cost += $damages_cost;
                 $quantity -= $count;
             } while ($quantity > 0);
-
-            return 1;
-        } else {
-            return 0;
         }
+        return $cost;
     }
 
+    private function recordExpenses(Site $site, Production $production, $labour, $food)
+    {
+        $direct_costs_account_balance = $site->directCostsAccount()->balance;
+        $wallet_account_balance = $site->walletAccount()->balance;
+        $index = 0;
+
+        //record labour costs
+        if ($labour > 0) {
+            //record direct costs
+            $direct_costs_record = $site->directCostsAccount()->records()->create([
+                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                "reference" => strtoupper(""),
+                "date" => Carbon::now()->getTimestamp() + $index,
+                "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                "description" => "Labour cost",
+                "amount" => $labour,
+                "opening_balance" => $direct_costs_account_balance,
+                "closing_balance" => $direct_costs_account_balance + $labour,
+                "type" => "DEBIT", // incrementing the account balance
+                "accounting_account_id" => $site->directCostsAccount()->id,
+                "production_id" => $production->id,
+
+            ]);
+            $direct_costs_account_balance += $labour;
+
+
+            //update wallet account
+            $wallet_record = $site->walletAccount()->records()->create([
+                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                "reference" => strtoupper(""),
+                "date" => Carbon::now()->getTimestamp() + $index,
+                "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                "description" => "Labour Cost",
+                "amount" => $labour,
+                "opening_balance" => $wallet_account_balance,
+                "closing_balance" => $wallet_account_balance - $labour,
+                "type" => "CREDIT", // decrementing the account balance
+                "accounting_account_id" => $site->walletAccount()->id,
+                "accounting_record_id" => $direct_costs_record->id,
+                "production_id" => $production->id,
+            ]);
+            $wallet_account_balance -= $labour;
+
+            $direct_costs_record->update([
+                "accounting_record_id" => $wallet_record->id,
+            ]);
+        }
+
+        $index++;
+
+        //record food costs
+        if ($food > 0) {
+            //record direct costs
+            $direct_costs_record = $site->directCostsAccount()->records()->create([
+                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                "reference" => strtoupper(""),
+                "date" => Carbon::now()->getTimestamp() + $index,
+                "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                "description" => "Food cost",
+                "amount" => $food,
+                "opening_balance" => $direct_costs_account_balance,
+                "closing_balance" => $direct_costs_account_balance + $food,
+                "type" => "DEBIT", // incrementing the account balance
+                "accounting_account_id" => $site->directCostsAccount()->id,
+                "production_id" => $production->id,
+
+            ]);
+            $direct_costs_account_balance += $food;
+
+
+            //update wallet account
+            $wallet_record = $site->walletAccount()->records()->create([
+                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                "reference" => strtoupper(""),
+                "date" => Carbon::now()->getTimestamp() + $index,
+                "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                "description" => "Food Cost",
+                "amount" => $food,
+                "opening_balance" => $wallet_account_balance,
+                "closing_balance" => $wallet_account_balance - $food,
+                "type" => "CREDIT", // decrementing the account balance
+                "accounting_account_id" => $site->walletAccount()->id,
+                "accounting_record_id" => $direct_costs_record->id,
+                "production_id" => $production->id,
+            ]);
+            $wallet_account_balance -= $food;
+
+            $direct_costs_record->update([
+                "accounting_record_id" => $wallet_record->id,
+            ]);
+        }
+
+        $site->walletAccount()->update([
+            "balance" => $wallet_account_balance
+        ]);
+        $site->directCostsAccount()->update([
+            "balance" => $direct_costs_account_balance
+        ]);
+    }
     public function destroy(Request $request, $code)
     {
         $production = Production::where("code", $code)->first();
 
         if (is_object($production)) {
-            //delete new batches
             //check if any sale where made with this batch
+            foreach ($production->batches as $batch) {
+                if ($batch->siteSales->count() > 0) {
+                    return Redirect::back()->with("error", "Error when deleting production report for {$batch->inventory->name}. Sales have already linked to products produced from this report. Make all necessary corrections on the next report.");
+                }
+            }
+
+            //delete new batches
             foreach ($production->batches as $batch) {
                 if ($batch->siteSales->count() > 0) {
                     $quantity = 0;
@@ -479,6 +762,9 @@ class ProductionController extends Controller
                 $damage->delete();
             }
 
+            //reverse transactions
+           (new AccountingRecordController())->reverseTransactions($production->records, $production->id);
+
             //delete production
             $production->delete();
 
@@ -496,7 +782,7 @@ class ProductionController extends Controller
 
     private function getCodeNumber()
     {
-        $last = Production::orderBy("code", "desc")->first();
+        $last = Production::orderBy("code", "desc")->withTrashed()->first();
         if (is_object($last)) {
             return $last->code + 1;
         } else {
@@ -538,7 +824,6 @@ class ProductionController extends Controller
             ]);
 
             return $pdf->download("$filename.pdf");
-            
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response

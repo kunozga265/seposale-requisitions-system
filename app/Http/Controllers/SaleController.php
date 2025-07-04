@@ -8,6 +8,7 @@ use App\Http\Resources\QuotationResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\UserResource;
 use App\Models\Account;
+use App\Models\AccountingAccount;
 use App\Models\Client;
 use App\Models\Delivery;
 use App\Models\Inventory;
@@ -474,7 +475,10 @@ class SaleController extends Controller
         //find out if the request is valid
         $sale = sale::withTrashed()->find($id);
         $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
-        $accounts = Account::all();
+        // $accounts = Account::all();
+        $accounts = AccountingAccount::where('special_type', 'WALLET')
+            ->orderBy('name', 'asc')
+            ->get();
         $users = User::orderBy("firstName")->get();
 
         if (is_object($sale)) {

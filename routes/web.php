@@ -433,11 +433,6 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\SiteController@overview",
             'roles' =>['employee','management']
         ])->name('sites.overview');
-//
-//        Route::get('/{code}/collections', [
-//            "uses"  => "App\Http\Controllers\SiteController@collections",
-//            'roles' =>['employee','management']
-//        ])->name('sites.collections');
 
         Route::get('/{code}/sales/create', [
             "uses"  => "App\Http\Controllers\SiteSaleController@create",
@@ -525,14 +520,36 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
     Route::group(['prefix'=>'collections'],function() {
 
+
+       Route::get('/{code}', [
+           "uses"  => "App\Http\Controllers\CollectionController@index",
+           'roles' =>['employee','management']
+       ])->name('sites.collections');
+
+       Route::get('/{code}/show/{collection_code}', [
+           "uses"  => "App\Http\Controllers\CollectionController@show",
+           'roles' =>['employee','management']
+       ])->name('sites.collections.show');
+
+       Route::post('/{code}/delete/{collection_code}', [
+           "uses"  => "App\Http\Controllers\CollectionController@destroy",
+           'roles' =>['employee','management']
+       ])->name('sites.collections.delete');
+
         Route::post('store/{id}', [
             "uses" => "App\Http\Controllers\CollectionController@store",
             'roles' => ['employee', 'management']
         ])->name('collections.store');
-        Route::post('trash/{id}', [
-            "uses" => "App\Http\Controllers\CollectionController@trash",
+
+        Route::post('cancel/{id}', [
+            "uses" => "App\Http\Controllers\CollectionController@cancel",
             'roles' => ['employee', 'management']
         ])->name('collections.cancel');
+
+        Route::post('trash/{code}', [
+            "uses" => "App\Http\Controllers\CollectionController@trash",
+            'roles' => ['employee', 'management']
+        ])->name('collections.trash');
     });
 
     Route::group(['prefix'=>'inventories'],function() {
@@ -709,7 +726,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
     Route::group(['prefix'=>'accounts'],function() {
 
         Route::get('/', [
-            "uses"  => "App\Http\Controllers\AccountController@index",
+            "uses"  => "App\Http\Controllers\AccountingController@index",
             'roles' =>['accountant','management']
         ])->name('accounts.index');
 
@@ -728,8 +745,8 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['accountant','management']
         ])->name('accounts.transfer');
 
-        Route::get('/view/{id}', [
-            "uses" => "App\Http\Controllers\AccountController@show",
+        Route::get('/view/{code}', [
+            "uses" => "App\Http\Controllers\AccountingController@show",
             'roles' => ['accountant', 'management']
         ])->name('accounts.show');
 
@@ -872,6 +889,40 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' => ['employee','management']
         ])->name('transporters.update');
 
+    });
+
+    Route::group(['prefix'=>'settings'],function() {
+
+        Route::get('/accounting-centre', [
+            "uses"  => "App\Http\Controllers\SettingsController@accountingCentre",
+            'roles' =>['accountant','management']
+        ])->name('settings.accounting-centre');
+       
+        Route::get('/accounting-centre/balance-sheet', [
+            "uses"  => "App\Http\Controllers\SettingsController@balanceSheet",
+            'roles' =>['accountant','management']
+        ])->name('settings.balance-sheet');
+
+        Route::get('/accounting-centre/income-statement', [
+            "uses"  => "App\Http\Controllers\SettingsController@incomeStatement",
+            'roles' =>['accountant','management']
+        ])->name('settings.income-statement');
+
+        Route::get('/accounting-centre/sites/{code}', [
+            "uses"  => "App\Http\Controllers\SettingsController@site",
+            'roles' =>['accountant','management']
+        ])->name('settings.site');
+
+        Route::post('/accounting-centre/sites/{code}', [
+            "uses"  => "App\Http\Controllers\SettingsController@siteAttachAccount",
+            'roles' =>['accountant','management']
+        ])->name('settings.site.attach-account');
+
+        Route::post('/accounting-centre/inventories/{id}', [
+            "uses"  => "App\Http\Controllers\SettingsController@inventoryAttachAccount",
+            'roles' =>['accountant','management']
+        ])->name('settings.inventory.attach-account');
+       
     });
 
 

@@ -4,17 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Production extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function site(){
+    public function site()
+    {
         return $this->belongsTo(Site::class);
     }
 
@@ -32,6 +34,12 @@ class Production extends Model
     {
         return $this->hasMany(Damage::class);
     }
+
+    public function records()
+    {
+        return $this->hasMany(AccountingRecord::class,);
+    }
+
 
     protected $fillable = [
         "code",

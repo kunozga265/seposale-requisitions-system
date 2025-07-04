@@ -23,7 +23,7 @@ class RequestFormResource extends JsonResource
         $canEdit=$this->editable && $this->user->id == $user->id && $this->delivery == null;
         $canDelete=$this->editable && $this->user->id == $user->id && ($this->approvedBy->isEmpty()) && $this->deniedBy == null;
         $canDiscard=$this->editable && $this->user->id == $user->id && (!($this->approvedBy->isEmpty()) || $this->deniedBy != null);
-        $canInitiate=$this->approvalStatus==1 && $user->hasRole('accountant');
+        $canInitiate=($this->approvalStatus==1 || $this->approvalStatus==3) && $user->hasRole('accountant');
         $canReconcile=$this->approvalStatus==3 && $user->hasRole('accountant');
 
         //next to approve
@@ -33,8 +33,8 @@ class RequestFormResource extends JsonResource
             $nextApprove=$user->hasRole('management');
 
 
-//        $canApproveOrDeny=$this->user->id != $user->id && $this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
-        $canApproveOrDeny=$this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
+       $canApproveOrDeny=$this->user->id != $user->id && $this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
+        // $canApproveOrDeny=$this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
 
 
         return [
@@ -44,7 +44,7 @@ class RequestFormResource extends JsonResource
             'personCollectingAdvance'             =>  $this->personCollectingAdvance,
             'purpose'                             =>  $this->purpose,
             'project'                             =>  new ProjectResource($this->project),
-            'information'                         =>  json_decode($this->information),
+            // 'information'                         =>  json_decode($this->information),
             'total'                               =>  $this->total,
             'requestedBy'                         =>  new UserResource($this->user),
             'dateRequested'                       =>  $this->dateRequested,
@@ -71,6 +71,8 @@ class RequestFormResource extends JsonResource
             'canApproveOrDeny'                    =>  $canApproveOrDeny,
             'canInitiate'                         =>  $canInitiate,
             'canReconcile'                        =>  $canReconcile,
+            'items'                               =>  RequestFormItemResource::collection($this->whenLoaded('items', $this->items)),
+            'delivery'                          =>  new DeliveryResource($this->whenLoaded('delivery', $this->delivery)),
         ];
     }
 

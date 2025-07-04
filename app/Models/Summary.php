@@ -24,16 +24,16 @@ class Summary extends Model
 
     public function fullName()
     {
-        if($this->variant != null){
-            return $this->product->name. " - ". $this->variant->description;
-        }else{
+        if ($this->variant != null) {
+            return $this->product->name . " - " . $this->variant->description;
+        } else {
             return $this->product->name;
         }
     }
 
     public function variant()
     {
-        return $this->belongsTo(ProductVariant::class,"product_variant_id","id");
+        return $this->belongsTo(ProductVariant::class, "product_variant_id", "id");
     }
 
     public function sale()
@@ -46,9 +46,20 @@ class Summary extends Model
         return $this->hasOne(Delivery::class);
     }
 
+    public function deliveryExists()
+    {
+        if ($this->delivery == null) {
+            return false;
+        } else if ($this->delivery->quantity_delivered == 0) {
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public function siteSaleSummary()
     {
-        return $this->hasOne(SiteSaleSummary::class, "id","site_sale_summary_id");
+        return $this->hasOne(SiteSaleSummary::class, "id", "site_sale_summary_id");
     }
 
     public function getPaymentStatus()
@@ -65,9 +76,44 @@ class Summary extends Model
         return 3;
     }
 
+    public function getCollectionStatus()
+    {
+        if($this->siteSaleSummary == null){
+            return 0;
+        }else{
+            return $this->siteSaleSummary->getCollectionStatus();
+        }
+    }
 
 
-    protected $fillable=[
+    public function cost()
+    {
+        return $this->amount / $this->quantity;
+    }
+
+    public function formattedUnits($quantity)
+    {
+        $plural = $quantity != 1 ? "s" : "";
+        $formatted = number_format($quantity, 2);
+        return "$formatted {$this->units}$plural";
+    }
+
+
+    public function paidBalance()
+    {
+        $total = 0;
+        $notes = [];
+        if($this->delivery != null){
+            $notes = json_decode($this->delivery->notes, true) ?? [];
+        }
+        foreach ($notes as $note) {
+            $total += $note["total"] ?? 0;
+        }
+        return $this->amount - $this->balance - $total;
+    }
+
+
+    protected $fillable = [
         "product_id",
         "product_variant_id",
         "sale_id",
