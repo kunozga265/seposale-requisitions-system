@@ -7,6 +7,7 @@ use App\Http\Resources\CollectionResource;
 use App\Http\Resources\DamageResource;
 use App\Http\Resources\InventoryResource;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\ReceiptSummaryResource;
 use App\Http\Resources\SiteSaleSummaryResource;
 use App\Models\Batch;
 use App\Models\Inventory;
@@ -36,9 +37,10 @@ class InventoryController extends Controller
 
                 $sales = [];
                 $collections = [];
+                $pending_collections = [];
                 $batches = [];
                 $damages = [];
-                $awaiting_curation = [];
+                $pending_batches = [];
                 $filtered_receipts = [];
 
                 switch ($section) {
@@ -78,15 +80,14 @@ class InventoryController extends Controller
                             }
                         }
 
-                        //get items awaiting curation
-                        if ($inventory->producible == 1) {
-                            $now = Carbon::now();
-                            $awaiting_curation = $inventory->batches()
-                                ->where("ready_date", "!=", null)
-                                ->where("ready_date", ">=", $now->getTimestamp())
-                                ->orderBy("ready_date", "asc")
-                                ->get();
-                        }
+                        $now = Carbon::now();
+                        $pending_batches = $inventory->batches()
+                            ->where("ready_date", "!=", null)
+                            ->where("ready_date", ">=", $now->getTimestamp())
+                            ->orderBy("ready_date", "asc")
+                            ->get();
+
+                            $pending_collections = $inventory->pendingCollections();
                 }
 
                 //get products
@@ -99,12 +100,13 @@ class InventoryController extends Controller
                     "section" => $section,
                     "inventory" => new InventoryResource($inventory),
                     "sales" => $sales,
-                    "filteredReceipts" => $filtered_receipts,
+                    "receipts" => ReceiptSummaryResource::collection($filtered_receipts),
                     "collections" => CollectionResource::collection($collections),
                     "batches" => BatchResource::collection($batches),
-                    "awaitingCuration" => BatchResource::collection($awaiting_curation),
+                    "pendingBatches" => BatchResource::collection($pending_batches),
                     "damages" => DamageResource::collection($damages),
                     "products" => ProductResource::collection($products),
+                    "pendingCollections" => $pending_collections,
                 ]);
             } else {
                 if ((new AppController())->isApi($request)) {

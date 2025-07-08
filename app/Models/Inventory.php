@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\AppController;
+use App\Http\Controllers\SiteSaleSummaryController;
 use App\Http\Resources\CollectionResource;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,6 +39,48 @@ class Inventory extends Model
     public function site()
     {
         return $this->belongsTo(Site::class);
+    }
+
+     public function pendingCollections()
+    {
+
+
+        $filtered = [];
+        foreach ($this->summaries as $summary){
+            if($summary->getCollectionStatus() < 2){
+                $filtered [] = [
+                    "id" => $summary->id,
+                    "inventory" => $summary->inventory,
+                    "inventoryStock" => $summary->inventory->stock(),
+                    'amount' => floatval($summary->amount),
+                    'balance' => floatval($summary->balance),
+                    'paymentStatus' => $summary->getPaymentStatus(),
+                    'collected' => floatval($summary->collected),
+                    'collectionStatus' => $summary->getCollectionStatus(),
+                    'quantity' => floatval($summary->quantity),
+                    "collections" =>(new SiteSaleSummaryController())->getCollections($summary->collections),
+                    "site" => $summary->site,
+                    "trashed" => $summary->deleted_at != null,
+                    "sale" => [
+                        "id" => $summary->sale->id,
+                        "date" => $summary->sale->date,
+                        "code" => (new AppController())->getZeroedNumber($summary->sale->code),
+                        'client' => $summary->sale->client,
+                    ],
+                ];
+            }
+        }
+
+          usort($filtered, function ($a, $b) {
+                if ($a['sale']['date'] < $b['sale']['date']) {
+                    return -1;
+                } elseif ($a['sale']['date'] > $b['sale']['date']) {
+                    return 1;
+                }
+                return 0;
+            });
+
+        return $filtered;
     }
 
     public function stock()

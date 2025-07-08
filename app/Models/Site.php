@@ -13,42 +13,46 @@ class Site extends Model
 
     public function inventories()
     {
-     return $this->hasMany(Inventory::class);
+        return $this->hasMany(Inventory::class);
     }
 
     public function summaries()
     {
-     return $this->hasMany(InventorySummary::class);
+        return $this->hasMany(InventorySummary::class);
     }
 
     public function sales()
     {
-     return $this->hasMany(SiteSale::class);
+        return $this->hasMany(SiteSale::class);
     }
 
     public function collections()
     {
-     return $this->hasMany(Collection::class);
+        return $this->hasMany(Collection::class);
     }
 
     public function materials()
     {
-     return $this->hasMany(Material::class);
+        return $this->hasMany(Material::class);
     }
 
-    public function productions(){
+    public function productions()
+    {
         return $this->hasMany(Production::class);
     }
 
-    public function accounts(){
-        return $this->belongsToMany(AccountingAccount::class, "site_and_accounting_account", "site_id","accounting_account_id");
+    public function accounts()
+    {
+        return $this->belongsToMany(AccountingAccount::class, "site_and_accounting_account", "site_id", "accounting_account_id");
     }
 
-    public function walletAccount(){
+    public function walletAccount()
+    {
         return $this->accounts()->where("special_type", "WALLET")->first();
     }
 
-    public function directCostsAccount(){
+    public function directCostsAccount()
+    {
         return $this->accounts()->where("special_type", "COGS-DIRECT-OSS")->first();
     }
 
@@ -58,9 +62,9 @@ class Site extends Model
 
         $filtered = [];
 
-        foreach ($summaries as $summary){
-            if($summary->getCollectionStatus() < 2 && $summary->sale->site->id == $this->id){
-                $filtered [] = [
+        foreach ($summaries as $summary) {
+            if ($summary->getCollectionStatus() < 2 && $summary->sale->site->id == $this->id) {
+                $filtered[] = [
                     "id" => $summary->id,
                     "inventory" => $summary->inventory,
                     "inventoryStock" => $summary->inventory->stock(),
@@ -70,7 +74,7 @@ class Site extends Model
                     'collected' => floatval($summary->collected),
                     'collectionStatus' => $summary->getCollectionStatus(),
                     'quantity' => floatval($summary->quantity),
-                    "collections" =>(new SiteSaleSummaryController())->getCollections($summary->collections),
+                    "collections" => (new SiteSaleSummaryController())->getCollections($summary->collections),
                     "site" => $summary->site,
                     "trashed" => $summary->deleted_at != null,
                     "sale" => [

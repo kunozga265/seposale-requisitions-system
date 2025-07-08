@@ -291,7 +291,7 @@
                                                     <div class="ml-2">
                                                         <span
                                                             class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                                                numberWithCommas(inventory.availableStock.toFixed(1))
+                                                                numberWithCommas((inventory.stock - inventory.uncollectedStock).toFixed(1))
                                                             }}</span>
                                                     </div>
                                                 </div>

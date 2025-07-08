@@ -15,14 +15,15 @@ class ReceiptSummaryResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
+            "id" => intval($this->id),
             "name" => $this->name,
-            "balance" => $this->balance,
-            "amount" => $this->amount,
-            "cost" => $this->cost ?? null,
+            "date" => intval($this->receipt->date),
+            "balance" => floatval($this->balance),
+            "amount" => floatval($this->amount),
+            "cost" => floatval($this->cost) ?? null,
             "units" => $this->units ?? null,
             "summary" => $this->summary,
-            "site_sale_summary" => $this->siteSaleSummary,
+            "siteSaleSummary" => $this->siteSaleSummary,
         ];
     }
 }

@@ -16,6 +16,11 @@ class SiteSaleSummary extends Model
         return $this->belongsTo(Inventory::class);
     }
 
+    public function description()
+    {
+        return $this->inventory->name;
+    }
+
     public function site()
     {
         return $this->belongsTo(Site::class);
@@ -39,6 +44,11 @@ class SiteSaleSummary extends Model
     public function delivery()
     {
         return $this->hasOne(Delivery::class);
+    }
+
+       public function summary()
+    {
+        return $this->hasOne(Summary::class,  "site_sale_summary_id","id");
     }
 
     public function deliveryExists()

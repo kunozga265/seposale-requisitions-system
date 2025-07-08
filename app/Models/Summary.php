@@ -12,6 +12,11 @@ class Summary extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public function description()
+    {
+        return $this->description;
+    }
+
     public function product()
     {
         return $this->belongsTo(Product::class);

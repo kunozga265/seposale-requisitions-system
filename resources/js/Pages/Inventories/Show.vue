@@ -47,9 +47,15 @@
             <!--                            <primary-button>Print</primary-button>-->
             <!--                        </a>-->
 
-            <primary-button @click.native="editInventoryDialog = true">
+            <inertia-link v-if="inventory.data.producible" :href="route('production.index', { code: site.code })">
+                <primary-button>
+                    Production
+                </primary-button>
+            </inertia-link>
+
+            <secondary-button @click.native="editInventoryDialog = true">
                 Edit
-            </primary-button>
+            </secondary-button>
 
         </template>
 
@@ -169,40 +175,37 @@
         <div class="mx-9 flex">
 
             <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'overview' })">
-                <div 
-                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                     :class="{ 'info': section === 'overview' }">
                     <div>Overview</div>
                     <i v-show="section === 'overview'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
                 </div>
             </a>
             <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'sales' })">
-                <div 
-                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                     :class="{ 'info': section === 'sales' }">
                     <div>Sales</div>
                     <i v-show="section === 'sales'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
                 </div>
             </a>
 
-            <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'collections' })">
-                <div 
-                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+            <a
+                :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'collections' })">
+                <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                     :class="{ 'info': section === 'collections' }">
                     <div>Collections</div>
                     <i v-show="section === 'collections'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
                 </div>
             </a>
             <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'batches' })">
-                <div 
-                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                     :class="{ 'info': section === 'batches' }">
                     <div>Batches</div>
                     <i v-show="section === 'batches'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
                 </div>
             </a>
             <a :href="route('sites.inventories.show', { code: site.code, id: inventory.data.id, section: 'damages' })">
-                <div  v-if="inventory.data.producible"
+                <div v-if="inventory.data.producible"
                     class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                     :class="{ 'info': section === 'damages' }">
                     <div>Damages</div>
@@ -223,25 +226,197 @@
                     </div>
                     <div class="page-section-content ">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <div v-if="inventory.data.producible" class="card no-shadow">
-                                <div class="heading-font mb-2">Curing Schedule</div>
-                                <table>
-                                    <tr v-for="(batch, index) in awaitingCuration.data">
+                        <div class="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-4 gap-4">
+                            <div class="card mb-0 no-shadow">
+                                <!-- <div class="heading-font mb-2">Stock levels</div> -->
+                                <div class=" text-gray-500 text-xs font-bold">Current Inventory</div>
+                                <div class="flex items-end">
+                                    <div class="text-2xl font-bold heading-font ">
+                                        {{ numberWithCommas((inventory.data.stock).toFixed(1)) }}
+                                    </div>
+                                    <div class="ml-1 mb-1 text-sm text-mute">
+                                        // {{ inventory.data.units }}{{ inventory.data.stock != 1 ? "s" : "" }}
+                                    </div>
+                                </div>
 
-                                        <!-- <div class="grid grid-cols-2"> -->
-
-                                        <td class="text-sm text-gray-400">{{ getDate(batch.readyDate * 1000) }}
-                                        </td>
-                                        <td class="heading-font text-base text-right" style="font-weight: 600;">{{
-                                            batch.quantity
-                                        }}
-                                            {{ inventory.data.units }}{{ batch.quantity == 1 ? '' : 's' }}
-                                        </td>
-                                        <!-- </div> -->
-                                    </tr>
-                                </table>
+                                <!-- <div class="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                                    <div class="success-card text-xs">
+                                        {{ numberWithCommas((inventory.data.stock -
+                                            inventory.data.uncollectedStock).toFixed(1))
+                                        }} Available
+                                    </div>
+                                    <div class="warning-card text-xs">
+                                        {{ numberWithCommas(inventory.data.uncollectedStock.toFixed(1)) }} Uncollected
+                                    </div>
+                                </div> -->
                             </div>
+                               <div class="card mb-0 no-shadow">
+                                <!-- <div class="heading-font mb-2">Stock levels</div> -->
+                                <div class=" text-gray-500 text-xs font-bold">Uncollected + Undelivered</div>
+                                <div class="flex items-end">
+                                    <div class="text-2xl font-bold heading-font">
+                                        {{ numberWithCommas(( inventory.data.uncollectedStock).toFixed(1)) }}
+                                    </div>
+                                    <div class="ml-1 mb-1 text-sm text-mute">
+                                        // {{ inventory.data.units }}{{ inventory.data.stock != 1 ? "s" : "" }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-0 no-shadow">
+                                <div  class="w-full">
+                                    <div class=" text-gray-500 text-xs font-bold">Pending Goods</div>
+                                    <div class="flex items-end">
+                                        <div class="text-2xl font-bold heading-font">
+                                            {{ numberWithCommas(pendingBatchesTotal.toFixed(1)) }}
+                                        </div>
+                                        <div class="ml-1 mb-1 text-sm text-mute">
+                                            // {{ inventory.data.units }}{{ pendingBatchesTotal != 1 ? "s" : "" }}
+                                        </div>
+                                    </div>
+                                    <!-- <table class="w-full">
+                                        <tr class="" v-for="(batch, index) in pendingBatches.data">
+
+                                      
+                                            <td class="heading-font text-xs " style="font-weight: 600;">
+                                                {{
+                                                    batch.quantity
+                                                }}
+                                                {{ inventory.data.units }}{{ batch.quantity == 1 ? '' : 's' }}
+                                            </td>
+                                            <td class="text-xs text-right">{{ getDate(batch.readyDate * 1000) }}
+                                            </td>
+
+                                      
+                                        </tr>
+                                    </table> -->
+                                </div>
+                            </div>
+                                      
+                               <div class="card mb-0 no-shadow">
+                                <!-- <div class="heading-font mb-2">Stock levels</div> -->
+                                <div class=" text-gray-500 text-xs font-bold">Surplus/Deficit</div>
+                                <div class="flex items-end">
+                                    <div class="text-2xl font-bold heading-font" :class="{'text-red':surplusOrdeficit<0, 'text-green':surplusOrdeficit>0}">
+                                        <span class="font-bold" :class="{'text-red':surplusOrdeficit<0, 'text-green':surplusOrdeficit>0}">
+                                            {{ surplusOrdeficit > 0 ? '+' : '-' }}
+                                        </span>
+                                        {{ numberWithCommas(Math.abs(surplusOrdeficit).toFixed(1)) }}
+                                    </div>
+                                    <div class="ml-1 mb-1 text-sm text-mute">
+                                        // {{ inventory.data.units }}{{ inventory.data.stock != 1 ? "s" : "" }}
+                                    </div>
+                                </div>
+                            </div>
+                         
+                            <div class="card mb-0 md:col-span-2  xl:col-span-4">
+                                <div class="flex justify-between mb-4">
+                                    <div class="heading-font mb-4">Sales</div>
+                                    <div>
+                                        <vue-date-time-picker v-model="form.dates" range />
+                                    </div>
+                                </div>
+                                <div class="text-xs mb-1 text-gray-500">Total Sales</div>
+                                <div class="heading-font font-bold text-xl mb-4">
+                                    MK{{ numberWithCommas(receiptsTotal.toFixed(2)) }}
+                                </div>
+
+                                <div>
+                                    <div id="chart">
+                                        <apexchart type="area" :options="chartOptionsApex" height="180"
+                                            :series="receiptsData">
+                                        </apexchart>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="card mb-0  lg:col-span-2">
+                                    <div class="flex justify-between mb-4">
+                                        <div class="heading-font mb-4">Pending Collections</div>
+                                         <div
+                                          
+                                            class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
+                                            <div>{{pendingCollections.length }} Collection{{
+                                                    pendingCollections.length != 1 ? "s" : ''
+                                                }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div 
+                                         v-for="(productCompound,index) in pendingCollections" :key="index"
+                                         class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 bg-gray-100 rounded-full flex justify-center items-center">
+                                                <div class="text-xs text-gray-500">{{ index + 1 }}</div>
+                                            </div>
+                                            <div class="ml-3 text-sm ">
+                                                <div class="text-sm">{{ productCompound.sale.client.name }}</div>
+                                                <div class="text-xs text-gray-500" v-if="true">
+                                                    <i class="mdi mdi mdi-calendar text-xs text-gray-500"></i>
+                                                    {{ getDate(productCompound.sale.date*1000) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <collection
+                                                class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                                :client="productCompound.sale.client" :product="productCompound"
+                                                :is-solo="true"/>
+
+                                        </div>
+                                        <!--                                        <div class="heading-font text-xs text-gray-500">-->
+                                        <!--                                            {{ numberWithCommas(productCompound.quantity - productCompound.collected) }}-->
+                                        <!--                                            {{ productCompound.inventory.units }}{{ (productCompound.quantity - productCompound.collected) !== 1 ? "s" : "" }}-->
+                                        <!--                                        </div>-->
+                                    </div>
+                                </div>
+
+                             <div class="card mb-0  lg:col-span-2">
+                                    <div class="flex justify-between mb-4">
+                                        <div class="heading-font mb-4">Pending Goods</div>
+                                         <div
+                                          
+                                            class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
+                                            <div>{{pendingBatches.data.length }} Batch{{
+                                                    pendingBatches.data.length != 1 ? "es" : ''
+                                                }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div 
+                                         v-for="(batch,index) in pendingBatches.data" :key="index"
+                                         class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
+                                        <div class="flex items-center">
+                                            <div
+                                                class="h-8 w-8 bg-gray-100 rounded-full flex justify-center items-center">
+                                                <div class="text-xs text-gray-500">{{ index + 1 }}</div>
+                                            </div>
+                                            <div class="ml-3 text-sm ">
+                                                <div class="text-sm">
+  {{ batch.quantity }}
+                                            {{ inventory.data.units }}{{ batch.quantity == 1 ? '' : 's' }}
+                                                </div>
+                                                <div class="text-xs text-gray-500" v-if="true">
+                                                    <!-- <i class="mdi mdi mdi-calendar text-xs text-gray-500"></i> -->
+                                                    <!-- {{ getDate(productCompound.sale.date*1000) }} -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                         <div class="heading-font text-xs text-gray-500">
+                                            {{ getDate(batch.readyDate * 1000) }}
+                                          
+                                        </div>
+                                        <!--                                        <div class="heading-font text-xs text-gray-500">-->
+                                        <!--                                            {{ numberWithCommas(productCompound.quantity - productCompound.collected) }}-->
+                                        <!--                                            {{ productCompound.inventory.units }}{{ (productCompound.quantity - productCompound.collected) !== 1 ? "s" : "" }}-->
+                                        <!--                                        </div>-->
+                                    </div>
+                                </div>
+
+                          
+
                         </div>
 
                     </div>
@@ -643,14 +818,16 @@ import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
 import { Money } from 'v-money'
 import Collection from "@/Components/Collection.vue";
+import VueApexCharts from "vue-apexcharts";
 
 
 export default {
     props: ['site',
         'inventory',
         'section',
-        'filteredReceipts',
-        'sales', 'collections', 'batches', 'awaitingCuration', 'damages', 'products'],
+        'receipts',
+        'pendingCollections',
+        'sales', 'collections', 'batches', 'pendingBatches', 'damages', 'products'],
     components: {
         Collection,
         AppLayout,
@@ -666,7 +843,8 @@ export default {
         JetValidationErrors,
         JetLabel,
         JetInput,
-        Money
+        Money,
+        "apexchart": VueApexCharts,
     },
     data() {
         return {
@@ -691,6 +869,60 @@ export default {
                 productId: this.inventory.data.product.id,
                 batches: []
             }),
+            chartOptionsApex: {
+                chart: {
+                    type: 'area',
+                    stacked: false,
+                    // height: 350,
+                    zoom: {
+                        type: 'x',
+                        enabled: true,
+                        autoScaleYaxis: true
+                    },
+                    toolbar: {
+                        autoSelected: 'zoom'
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                markers: {
+                    size: 0,
+                },
+
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        inverseColors: false,
+                        opacityFrom: 0.5,
+                        opacityTo: 0,
+                        stops: [0, 90, 100]
+                    },
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            // return (val / 1000000).toFixed(0);
+                            return val;
+                        },
+                    },
+
+                },
+                xaxis: {
+                    type: 'datetime',
+                },
+                tooltip: {
+                    shared: false,
+                    y: {
+                        formatter: function (val) {
+                            // console.log(val)
+                            // return (val / 1000000).toFixed(0)
+                            return val
+                        }
+                    }
+                }
+            },
         }
     },
     created() {
@@ -737,6 +969,60 @@ export default {
 
 
             return filtered
+        },
+        filteredReceipts() {
+
+            let filtered = this.receipts.data;
+
+            /* Filter Sales By Date */
+            if (this.form.dates != null) {
+                if (this.form.dates.start != null) {
+                    filtered = (filtered).filter((sale) => {
+                        return sale.date >= this.getTimestampFromDate(this.form.dates.start)
+                    })
+                }
+                if (this.form.dates.end != null) {
+                    filtered = (filtered).filter((sale) => {
+                        return sale.date <= this.getTimestampFromDate(this.form.dates.end)
+                    })
+                }
+            }
+
+            return filtered
+        },
+        receiptsData() {
+            let receipts = [{
+                name: 'Sales',
+                data: []
+            }];
+
+            for (let x in this.filteredReceipts) {
+                receipts[0].data.push({
+                    x: this.filteredReceipts[x].date * 1000,
+                    y: this.filteredReceipts[x].amount
+                })
+            }
+
+            return receipts
+        },
+        receiptsTotal() {
+            let sum = 0
+            for (let x in this.filteredReceipts) {
+                sum += this.filteredReceipts[x].amount
+            }
+            return sum
+        },
+
+        pendingBatchesTotal() {
+            let sum = 0;
+            for (let x in this.pendingBatches.data) {
+                sum += this.pendingBatches.data[x].quantity
+            }
+            return sum
+        },
+
+        surplusOrdeficit(){
+            return this.inventory.data.stock + this.pendingBatchesTotal - this.inventory.data.uncollectedStock
         },
 
         metrics() {
@@ -792,6 +1078,7 @@ export default {
         navigateToClient(id) {
             this.$inertia.get(this.route('clients.show', { 'id': id }))
         },
+     
     }
 }
 </script>

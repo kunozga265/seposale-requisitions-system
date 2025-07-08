@@ -122,8 +122,8 @@ class ReceiptController extends Controller
                     'code' => $this->getCodeReceiptNumber(),
                     'serial' => (new AppController())->generateUniqueCode("RECEIPT"),
                     'client_id' => $sale->client->id,
-                    "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
-                    "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
+                    // "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
+                    // "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
                     'account_id' => $request->account_id,
                     'payment_method_id' => $request->payment_method_id,
                     'amount' => $total,
@@ -147,16 +147,14 @@ class ReceiptController extends Controller
                     $amount = $item["amount"];
                     $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
                     $partial_payment = abs($summary->paidBalance());
-                  
+
                     //  $remainder = $amount - $partial_payment;
                     //  dump($partial_payment);
                     //  dd($remainder);
 
                     if (isset($summary->balance)) {
                         $balance = $summary->balance - $amount;
-                        $summary->update([
-                            "balance" => $balance
-                        ]);
+
 
                         //create receipt transaction
                         $receiptSummary = ReceiptSummary::create([
@@ -167,20 +165,69 @@ class ReceiptController extends Controller
                             "receipt_id" => $receipt->id,
                         ]);
 
+                        $sale->update([
+                            "balance" => $new_balance,
+                            "editable" => false,
+                            "status" => $new_balance == 0 ? 2 : 1
+                        ]);
+
+
+                        $summary->update([
+                            "balance" => $balance
+                        ]);
+
                         switch ($request->type) {
                             case "ORDINARY":
-                                $receiptSummary->update([
-                                    "name" => $summary->description,
-                                    "summary_id" => $summary->id,
+                                $summary_id = $summary->id;
+                                $sale_id = $summary->sale->id;
+
+                                $site_sale_id = $summary->siteSaleSummary?->sale->id;
+                                $site_sale_summary_id = $summary->siteSaleSummary?->id;
+
+                                $summary->siteSaleSummary?->update([
+                                    "balance" => $balance
                                 ]);
+
+                                $summary->siteSaleSummary?->sale->update([
+                                    "balance" => $new_balance,
+                                    "editable" => false,
+                                    "status" => $new_balance == 0 ? 2 : 1
+                                ]);
+
 
                                 break;
                             default:
-                                $receiptSummary->update([
-                                    "name" => $summary->inventory->name,
-                                    "site_sale_summary_id" => $summary->id,
+                                $summary_id = $summary->summary?->id;
+                                $sale_id = $summary->summary?->sale->id;
+
+                                $site_sale_id = $summary->sale->id;
+                                $site_sale_summary_id = $summary->id;
+
+                                $summary->summary?->update([
+                                    "balance" => $balance
+                                ]);
+
+                                $summary->summary?->sale->update([
+                                    "balance" => $new_balance,
+                                    "editable" => false,
+                                    "status" => $new_balance == 0 ? 2 : 1
                                 ]);
                         }
+
+
+
+                        $receipt->update([
+                            "sale_id" =>  $sale_id,
+                            "site_sale_id" =>  $site_sale_id,
+                        ]);
+
+                        $receiptSummary->update([
+                            "name" => $summary->description(),
+                            "summary_id" => $summary_id,
+                            "site_sale_summary_id" => $site_sale_summary_id,
+                        ]);
+
+
 
                         //check if there is a delivery on delivery or collection end proportionate the amount that neeeds to go to receivables
                         if ($summary->deliveryExists() || $summary->getCollectionStatus() > 0) {
@@ -359,7 +406,6 @@ class ReceiptController extends Controller
                                     }
                                 }
                             }
-                       
                         } else {
                             //there is no delivery or collection, credit unearned revenue
                             $wallet_record = AccountingRecord::create([
@@ -435,11 +481,7 @@ class ReceiptController extends Controller
                     "balance" => $receivables_balance
                 ]);
 
-                $sale->update([
-                    "balance" => $new_balance,
-                    "editable" => false,
-                    "status" => $new_balance == 0 ? 2 : 1
-                ]);
+                //
 
 
                 // Transaction::create([

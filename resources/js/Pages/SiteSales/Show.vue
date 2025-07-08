@@ -286,7 +286,7 @@
                             class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                             :client="sale.data.client" :product="productCompound" :is-solo="true"/>
                       </td>
-                      <th scope="row"
+                      <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
                           :class="{'strike-through':productCompound.trashed}"
                           class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                         {{ productCompound.inventory.name }}
@@ -759,7 +759,10 @@ export default {
 
     balanceValidate(product) {
       return product.balance >= product.amount
-    }
+    },
+          navigateToInventory(id) {
+            this.$inertia.get(this.route('sites.inventories.show', { 'code': this.site.code, 'id': id }))
+        },
   }
 }
 </script>
