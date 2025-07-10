@@ -19,6 +19,7 @@ class AccountingAccountResource extends JsonResource
             "name" => $this->name,
             "code" => $this->code,
             "type" => $this->type,
+            "special_type" => $this->special_type,
             "balance" => $this->balance,
             "records" => AccountingRecordResource::collection($this->whenLoaded('records',$this->records()->orderBy('date', 'desc')->get())),
             "group" => new AccountsGroupLiteResource($this->whenLoaded('accountsGroup',$this->accountsGroup)),

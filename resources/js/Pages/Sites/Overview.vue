@@ -31,27 +31,32 @@
 
         <template #actions>
             <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
-                <inertia-link :href="route('production.index', { code: site.data.code })">
+                <inertia-link :href="route('sites.sales.create', { code: site.data.code })">
                     <primary-button>
-                        Production
+                        Record Sale
                     </primary-button>
+                </inertia-link>
+                <inertia-link :href="route('production.index', { code: site.data.code })">
+                    <secondary-button>
+                        Production
+                    </secondary-button>
                 </inertia-link>
 
                 <jet-dropdown align="right" width="48">
                     <template #trigger>
                         <secondary-button>
-                            Actions
+                            + Add
                         </secondary-button>
                     </template>
 
                     <template #content>
 
-                        <jet-dropdown-link :href="route('sites.sales.create', { code: site.data.code })"
+                        <!-- <jet-dropdown-link :href="route('sites.sales.create', { code: site.data.code })"
                             class="text-left">
 
                             RECORD SALE
-                        </jet-dropdown-link>
-                        <div class="border-t border-gray-100"></div>
+                        </jet-dropdown-link> -->
+                        <!-- <div class="border-t border-gray-100"></div> -->
 
                         <jet-dropdown-link @click.native="addStockDialog = true" as="button" class="text-left">
                             Add Stock

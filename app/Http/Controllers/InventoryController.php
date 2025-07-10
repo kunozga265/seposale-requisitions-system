@@ -87,7 +87,7 @@ class InventoryController extends Controller
                             ->orderBy("ready_date", "asc")
                             ->get();
 
-                            $pending_collections = $inventory->pendingCollections();
+                            $pending_collections = $inventory->pending()["collections"];
                 }
 
                 //get products
@@ -107,6 +107,7 @@ class InventoryController extends Controller
                     "damages" => DamageResource::collection($damages),
                     "products" => ProductResource::collection($products),
                     "pendingCollections" => $pending_collections,
+                    "pendingPayments" => $inventory->pending()["payments"],
                 ]);
             } else {
                 if ((new AppController())->isApi($request)) {

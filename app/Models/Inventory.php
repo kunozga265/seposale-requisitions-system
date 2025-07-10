@@ -41,14 +41,13 @@ class Inventory extends Model
         return $this->belongsTo(Site::class);
     }
 
-     public function pendingCollections()
+     public function pending()
     {
-
-
-        $filtered = [];
+        $payments = 0;
+        $collections = [];
         foreach ($this->summaries as $summary){
             if($summary->getCollectionStatus() < 2){
-                $filtered [] = [
+                $collections [] = [
                     "id" => $summary->id,
                     "inventory" => $summary->inventory,
                     "inventoryStock" => $summary->inventory->stock(),
@@ -69,9 +68,13 @@ class Inventory extends Model
                     ],
                 ];
             }
+
+            if($summary->getPaymentStatus() < 2 && $summary->getCollectionStatus() > 0){
+                $payments += $summary->balance;
+            }
         }
 
-          usort($filtered, function ($a, $b) {
+          usort($collections, function ($a, $b) {
                 if ($a['sale']['date'] < $b['sale']['date']) {
                     return -1;
                 } elseif ($a['sale']['date'] > $b['sale']['date']) {
@@ -80,8 +83,12 @@ class Inventory extends Model
                 return 0;
             });
 
-        return $filtered;
+        return collect((object)[
+            "collections" => $collections,
+            "payments" => $payments,
+        ]);
     }
+
 
     public function stock()
     {
@@ -105,15 +112,9 @@ class Inventory extends Model
          $value = 0;
         if($this->inventoryAccount != null){
             $value = $this->inventoryAccount->balance;
-            error_log("Name: {$this->name}");
-            error_log("Value: {$value}");
             foreach($this->inventoryAccount->inventories as $inventory){
-                  error_log("Inventory Loop: {$inventory->name}");
                 $batches = $inventory->batches()->where("accounting_balance",">",0)->get();
                 foreach($batches as $batch){
-                    error_log("Batch Loop: {$batch->date}");
-                    
-                    error_log($batch->price * $batch->accounting_balance);
                     $value -= $batch->price * $batch->accounting_balance;
                 }
             }

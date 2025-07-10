@@ -14,6 +14,18 @@ class AccountingRecordResource extends JsonResource
      */
     public function toArray($request)
     {
+
+        $alternateRecord = null;
+        if($this->alternateRecord != null){
+           $alternateRecord =[
+             "id" => $this->alternateRecord->id,
+             "serial" => $this->alternateRecord->serial,
+              "openingBalance" => floatval($this->alternateRecord->opening_balance),
+            "closingBalance" => floatval($this->alternateRecord->closing_balance),
+             "account" => $this->alternateRecord->accountingAccount,
+           ];
+        }
+
         return [
             "id" => $this->id,
             "serial" => $this->serial,
@@ -24,8 +36,16 @@ class AccountingRecordResource extends JsonResource
             "amount" => floatval($this->amount),
             "openingBalance" => floatval($this->opening_balance),
             "closingBalance" => floatval($this->closing_balance),
+            "alternateRecord" => $alternateRecord,
             "type" => strtoupper($this->type), // 'debit' or 'credit'
-            "accountingAccount" => new AccountingAccountResource($this->whenLoaded('accountingAccount', $this->accountingAccount)),
+            "account" => $this->accountingAccount,
+            "receiptCode" => $this->receipt?->code,
+            "productionCode" => $this->production?->code,
+            "requisitionCode" => $this->requestFormItem?->requestForm->code_alt,
+            "collectionCode" => $this->collection?->code,
+            "saleCode" => $this->summary?->sale->code,
+            "siteSaleCode" => $this->siteSaleSummary?->sale->code,
+            // "accountingAccount" => new AccountingAccountResource($this->whenLoaded('accountingAccount', $this->accountingAccount)),
             "receipt" => new ReceiptResource($this->whenLoaded('receipt',$this->receipt), ),
         ];
     }

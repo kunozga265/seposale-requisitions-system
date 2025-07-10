@@ -142,7 +142,7 @@ class CollectionController extends Controller
             ]);
 
             //Update stock levels - Subtract from uncollected
-            $uncollected_stock =  $collection->inventory->uncollected_stock - $collection->quantity;
+            $uncollected_stock =  $collection->inventory->uncollected_stock - $request->quantity;
             $collection->inventory->update([
                 "uncollected_stock" =>   $uncollected_stock
             ]);
@@ -158,7 +158,7 @@ class CollectionController extends Controller
             $quantity = $request->quantity;
             $total_cogs = 0;
             do {
-                $batch = Batch::where("accounting_balance", ">", 0)
+                $batch = $summary->inventory->batches()->where("accounting_balance", ">", 0)
                     ->where("ready_date", "<=", $now)
                     ->orderBy("date", "asc")
                     ->first();
@@ -169,7 +169,11 @@ class CollectionController extends Controller
                     $count = $batch->accounting_balance;
                 }
 
+                
                 $cost = $count * $batch->price;
+                error_log("Batch Id: {$batch->id}");
+                error_log("Batch Price: {$batch->price}");
+                error_log("COGS: {$cost}");
 
                 //record cogs
                 $cogs_record = $summary->inventory->cogsAccount->records()->create([
@@ -289,8 +293,9 @@ class CollectionController extends Controller
                 ]);
             } else {
                 $partial_payment = $summary->paidBalance();
-                $sale_balance = $amount - $partial_payment;
+                $sale_balance = $amount;
                 if ($partial_payment > 0) {
+                    $sale_balance = $amount - $partial_payment;
                     //there's some amount partially paid
                     $unearned_revenue_record = AccountingRecord::create([
                         "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),

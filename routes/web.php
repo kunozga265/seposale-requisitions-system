@@ -740,15 +740,30 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['accountant','management']
         ])->name('accounts.store');
 
-        Route::post('/transfer/{id}', [
-            "uses"  => "App\Http\Controllers\AccountController@transfer",
+        Route::post('/transfer', [
+            "uses"  => "App\Http\Controllers\AccountingController@transfer",
             'roles' =>['accountant','management']
         ])->name('accounts.transfer');
+
+        Route::post('/add-transaction', [
+            "uses"  => "App\Http\Controllers\AccountingController@addTransaction",
+            'roles' =>['accountant','management']
+        ])->name('accounts.add-transaction');
 
         Route::get('/view/{code}', [
             "uses" => "App\Http\Controllers\AccountingController@show",
             'roles' => ['accountant', 'management']
         ])->name('accounts.show');
+
+        Route::get('/transaction/{serial}', [
+            "uses" => "App\Http\Controllers\AccountingController@showRecord",
+            'roles' => ['accountant', 'management']
+        ])->name('accounts.transaction');
+
+        Route::post('/transaction/{serial}/edit', [
+            "uses" => "App\Http\Controllers\AccountingRecordController@update",
+            'roles' => ['accountant', 'management']
+        ])->name('accounts.transaction.edit');
 
         Route::get('/edit/{id}', [
             "uses"  => "App\Http\Controllers\AccountController@edit",
@@ -803,7 +818,12 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses" => "App\Http\Controllers\ReportController@index",
             'roles' => ['accountant','administrator', 'management']
 //            'roles' => ['accountant', 'management', 'administrator']
-        ])->name('reports');
+        ])->name('reports.requisitions');
+
+        Route::get('/statements', [
+            "uses" => "App\Http\Controllers\AccountingController@statements",
+            'roles' => ['accountant','administrator', 'management']
+        ])->name('reports.statements');
 
         Route::get('/generate', [
             "uses" => "App\Http\Controllers\ReportController@generate",

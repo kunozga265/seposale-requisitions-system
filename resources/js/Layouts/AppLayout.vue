@@ -43,7 +43,8 @@
                 </a>
               </li>
 
-              <li v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management')">
+              <li
+                v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management')">
                 <div @click="accounts = !accounts"
                   class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
@@ -289,13 +290,42 @@
                      <span class="ml-3">Vehicles</span>
                  </a>
              </li> -->
-              <li
+              <!-- <li
                 v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
                 <a :href="route('reports')"
                   class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                   <i class="text-lg mdi mdi-chart-timeline"></i>
                   <span class="ml-3">Reports</span>
                 </a>
+              </li> -->
+
+              <li v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                <div @click="reports = !reports"
+                  class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  <div>
+                    <i class="text-lg mdi mdi-chart-timeline"></i>
+                    <span class="ml-3">Reports</span>
+                  </div>
+                  <div>
+                    <i class="text-lg mdi" :class="{ 'mdi-menu-down': !reports, 'mdi-menu-up': reports }"></i>
+                  </div>
+                </div>
+                <ul v-show="reports">
+                  <li>
+                    <a :href="route('reports.requisitions')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Requisitions
+                    </a>
+                  </li>
+                  <li>
+                    <a :href="route('reports.statements')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Financial Statements
+                    </a>
+                  </li>
+                
+                
+                </ul>
               </li>
               <li>
                 <a :href="route('profile.show')"
@@ -329,8 +359,9 @@
 
             <div class="flex items-center">
 
-                <!-- Settings Dropdown -->
-              <div class="mx-3" v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management')">
+              <!-- Settings Dropdown -->
+              <div class="mx-3"
+                v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management')">
                 <jet-dropdown align="right" width="48">
                   <template #trigger>
                     <div class="">
@@ -339,7 +370,7 @@
                   </template>
 
                   <template #content>
-                   
+
                     <div class="block px-4 py-2 text-xs text-gray-400">
                       Settings
                     </div>
@@ -350,7 +381,7 @@
 
                     <div class="border-t border-gray-100"></div>
 
-                   
+
                   </template>
                 </jet-dropdown>
               </div>
@@ -476,6 +507,7 @@ export default {
       sales: false,
       sites: false,
       operations: false,
+      reports: false,
     }
   },
 

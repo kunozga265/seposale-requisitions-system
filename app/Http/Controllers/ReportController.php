@@ -23,7 +23,7 @@ class ReportController extends Controller
         $projects = Project::orderBy('name', 'asc')->where('verified', 1)->get();
         $vehicles = Vehicle::orderBy('vehicleRegistrationNumber', 'asc')->where('verified', 1)->get();
         $users=User::orderBy('firstName','asc')->get();
-        return Inertia::render('Reports',[
+        return Inertia::render('Reports/Requisitions',[
             'users'         =>  UserResource::collection($users),
             'projects'=> ProjectResource::collection($projects),
             'vehicles'=> VehicleResource::collection($vehicles),

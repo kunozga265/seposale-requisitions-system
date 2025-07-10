@@ -14,6 +14,9 @@ class ReceiptSummaryResource extends JsonResource
      */
     public function toArray($request)
     {
+        if($this->receipt == null){
+            dd($this->receipt_id);
+        }
         return [
             "id" => intval($this->id),
             "name" => $this->name,

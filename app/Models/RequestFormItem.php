@@ -17,6 +17,10 @@ class RequestFormItem extends Model
        return $this->hasMany(AccountingRecord::class);
     }
 
+    public function requestForm(){
+       return $this->belongsTo(RequestForm::class,"request_id");
+    }
+
     protected $fillable = [
         "details",
         "units",
