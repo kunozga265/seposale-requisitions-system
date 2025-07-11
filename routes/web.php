@@ -821,9 +821,14 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
         ])->name('reports.requisitions');
 
         Route::get('/statements', [
-            "uses" => "App\Http\Controllers\AccountingController@statements",
+            "uses" => "App\Http\Controllers\StatementController@index",
             'roles' => ['accountant','administrator', 'management']
         ])->name('reports.statements');
+
+        Route::get('/statements/{serial}', [
+            "uses" => "App\Http\Controllers\StatementController@show",
+            'roles' => ['accountant','administrator', 'management']
+        ])->name('reports.statements.show');
 
         Route::get('/generate', [
             "uses" => "App\Http\Controllers\ReportController@generate",

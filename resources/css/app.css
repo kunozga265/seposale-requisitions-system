@@ -374,7 +374,7 @@ header h2{
 .approved i, .success i{
     color:#22c55e
 }
-.denied, .error{
+.denied, .error, .error-card{
     color: #dc2626;
     border-radius: 4px;
     padding: 8px;

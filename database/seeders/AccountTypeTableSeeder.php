@@ -59,6 +59,5 @@ class AccountTypeTableSeeder extends Seeder
             'slug' => 'other-expenses',
             'statement' => 'income-statement',
         ]);
-      
     }
 }

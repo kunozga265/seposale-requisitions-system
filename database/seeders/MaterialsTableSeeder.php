@@ -20,7 +20,7 @@ class MaterialsTableSeeder extends Seeder
         foreach ($materials as $material) {
             $material->update([
                 'inventory_account_id' => AccountingAccount::where('code', 1110)->first()->id,
-                'cogs_account_id' => AccountingAccount::where('code', 5190)->first()->id,
+                // 'cogs_account_id' => AccountingAccount::where('code', 5190)->first()->id,
             ]);
         }
     }

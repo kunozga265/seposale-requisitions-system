@@ -28,6 +28,7 @@ use App\Models\Role;
 use App\Models\Sale;
 use App\Models\Site;
 use App\Models\SiteSale;
+use App\Models\Statement;
 use App\Models\Summary;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -421,6 +422,10 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (AccountingRecord::where('serial', $code)->exists());
+        }elseif ($type == "STATEMENT") {
+            do {
+                $code = $this->getNewCode();
+            } while (Statement::where('serial', $code)->exists());
         } else {
             return null;
         }

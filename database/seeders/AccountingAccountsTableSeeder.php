@@ -566,13 +566,13 @@ class AccountingAccountsTableSeeder extends Seeder
             'special_type' => 'COGS-DIRECT-OSS',
             'accounts_group_id' => 9, // Assuming 9 is the ID for Cost of Goods Sold (COGS)
         ]);
-        AccountingAccount::create([
-           'name' => 'Njewa Cost of Goods Sold - Raw Materials',
-            'code' => 5190,
-            'type' => "DEBIT",
-            'special_type' => 'COGS-OSS',
-            'accounts_group_id' => 9, // Assuming 9 is the ID for Cost of Goods Sold (COGS)
-        ]);
+        // AccountingAccount::create([
+        //    'name' => 'Njewa Cost of Goods Sold - Raw Materials',
+        //     'code' => 5190,
+        //     'type' => "DEBIT",
+        //     'special_type' => 'COGS-OSS',
+        //     'accounts_group_id' => 9, // Assuming 9 is the ID for Cost of Goods Sold (COGS)
+        // ]);
 
         // Create Selling and Marketing Expenses accounts
         AccountingAccount::create([

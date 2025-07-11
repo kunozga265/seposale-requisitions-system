@@ -138,14 +138,5 @@ class AccountingController extends Controller
         }
     }
 
-    public function statements()
-    {
-        $accountingAccounts = AccountingAccount::orderBy('code', 'asc')
-            ->get();
-        // Return the accounting dashboard view
-        return Inertia::render('Reports/Statements', [
-            'accounts' => AccountingAccountResource::collection($accountingAccounts),
-
-        ]);
-    }
+   
 }

@@ -50,7 +50,6 @@ class DatabaseSeeder extends Seeder
         $this->call(InventoryAccountsTableSeeder::class);
         $this->call(MaterialsTableSeeder::class);
 
-        
 
 
     }
