@@ -820,21 +820,33 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 //            'roles' => ['accountant', 'management', 'administrator']
         ])->name('reports.requisitions');
 
-        Route::get('/statements', [
-            "uses" => "App\Http\Controllers\StatementController@index",
-            'roles' => ['accountant','administrator', 'management']
-        ])->name('reports.statements');
-
-        Route::get('/statements/{serial}', [
-            "uses" => "App\Http\Controllers\StatementController@show",
-            'roles' => ['accountant','administrator', 'management']
-        ])->name('reports.statements.show');
-
         Route::get('/generate', [
             "uses" => "App\Http\Controllers\ReportController@generate",
             'roles' => ['accountant','administrator', 'management']
 //            'roles' => ['accountant', 'management', 'administrator']
         ])->name('reports.generate');
+
+    });
+
+    Route::group(['prefix'=>'statements'],function() {
+
+     
+
+        Route::get('/', [
+            "uses" => "App\Http\Controllers\StatementController@index",
+            'roles' => ['accountant','administrator', 'management']
+        ])->name('statements.index');
+
+        Route::get('/{serial}', [
+            "uses" => "App\Http\Controllers\StatementController@show",
+            'roles' => ['accountant','administrator', 'management']
+        ])->name('statements.show');
+
+        Route::get('/{serial}/account/{code}', [
+            "uses" => "App\Http\Controllers\StatementController@account",
+            'roles' => ['accountant','administrator', 'management']
+        ])->name('statements.account');
+
 
     });
 

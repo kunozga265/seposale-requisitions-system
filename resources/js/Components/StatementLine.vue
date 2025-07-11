@@ -10,7 +10,8 @@
     <div class="page-section-content">
       <div class="card">
         <table class="w-full">
-          <tr v-for="(account, index) in accountGroup.accounts" class="" v-if="account.total >= 0">
+          <tr @click="navigate(account)" v-for="(account, index) in accountGroup.accounts" 
+          class="cursor-pointer hover:text-blue-500" v-if="account.total >= 0">
 
             <td class="ml-6 text-sm">
               {{ account.data.name }}
@@ -46,6 +47,7 @@
 export default {
   name: "StatementLine",
   props: ['accountGroup'],
+  emits:["navigate"],
   components: {
 
   },
@@ -61,8 +63,10 @@ export default {
   },
 
   methods: {
-    
-
+    navigate(account){
+      this.$emit('navigate',account)
+    }
+   
   }
 }
 </script>
