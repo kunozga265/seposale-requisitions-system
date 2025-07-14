@@ -32,6 +32,8 @@ class StatementController extends Controller
             ->where("active", true)
             ->first();
 
+     
+
         if (!is_object($statement)) {
             $year = Carbon::now()->year . "/" . Carbon::now()->addYear()->year;
             $last = Statement::where("type", $type)
@@ -94,7 +96,7 @@ class StatementController extends Controller
         $records = $account->records()
             ->where("date", ">=", $statement->start_date)
             ->where("date", "<=", $end_date)
-            ->orderBy("date","desc")
+            ->orderBy("date", "desc")
             ->get();
 
         // Return the accounting account details view
