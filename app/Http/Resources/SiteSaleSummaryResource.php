@@ -43,6 +43,7 @@ class SiteSaleSummaryResource extends JsonResource
                 "status" => intval($this->delivery->status),
             ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
+            'profit' => $this->profit(),
         ];
     }
 }

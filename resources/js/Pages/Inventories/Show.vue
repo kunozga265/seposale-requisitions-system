@@ -47,6 +47,12 @@
             <!--                            <primary-button>Print</primary-button>-->
             <!--                        </a>-->
 
+               <inertia-link :href="route('sites.sales.create', { code: site.code })">
+                    <primary-button>
+                        Record Sale
+                    </primary-button>
+                </inertia-link>
+                
             <inertia-link v-if="inventory.data.producible" :href="route('production.index', { code: site.code })">
                 <primary-button>
                     Production

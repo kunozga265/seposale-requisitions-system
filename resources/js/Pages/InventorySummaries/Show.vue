@@ -32,6 +32,8 @@
 
         <template #actions>
 
+            
+
             <inertia-link :href="route('sites.sales.create', { code: site.code })">
                 <primary-button>
                     Record Sale

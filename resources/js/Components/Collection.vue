@@ -43,7 +43,7 @@
                         <div>
                             <span class="total">{{
                                 numberWithCommas(product.collected)
-                                }}/{{ numberWithCommas(product.quantity) }}</span>
+                            }}/{{ numberWithCommas(product.quantity) }}</span>
 
                         </div>
                     </div>
@@ -54,8 +54,9 @@
                         </div>
                         <jet-input min="0" :max="product.inventoryStock" type="number" step="0.01" class="block w-full"
                             v-model="form.quantity" />
-                            <div class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': form.quantity > product.inventoryStock }">
-                            Up to: {{ numberWithCommas(product.inventoryStock.toFixed(2)) }}
+                        <div class="mt-1 text-xs text-gray-500"
+                            :class="{ 'text-red-500': form.quantity > product.inventoryStock }">
+                            Up to: {{ numberWithCommas(maxQuantity.toFixed(2)) }}
                         </div>
                     </div>
 
@@ -81,8 +82,7 @@
                         <div class="text-mute text-sm mb-1">
                             Upload Collection Receipt
                         </div>
-                        <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
-                        accept="image/*"
+                        <input type="file" id="photo" @input="photoUpload($event.target.files[0])" accept="image/*"
                             class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
                         <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
                         </div>
@@ -96,11 +96,11 @@
                             ({{ product.collections.length }})
                         </div>
                         <div v-show="showLogs" class=" transition-all ease-in">
-                            <div class="ml-5 mb-1 flex text-xs text-mute"
+                            <div class="ml-5 mb-1 flex text-xs text-mute cursor-pointer hover:text-blue-500" @click="navigateToCollection(collection.code)"
                                 v-for="(collection, index) in product.collections" :key="index">
                                 <div style="width:120px" class="text-gray-500">{{
                                     getDate(collection.date * 1000)
-                                    }}:
+                                }}:
                                 </div>
                                 <div class="">{{ collection.message }}</div>
                                 <div class="ml-4" v-if="collection.photo != null">
@@ -211,7 +211,7 @@ export default {
     name: "Collection",
     components: { DangerButton, PrimaryButton, DialogModal, JetInput, SecondaryButton },
     props: ['product', "client", "isSolo", "disabled"],
-    emits: ['clickEvent'],
+    emits: ['navigate'],
     data() {
         return {
             deleteDialog: false,
@@ -232,6 +232,14 @@ export default {
             return this.product.quantity - this.product.collected
 
         },
+        maxQuantity(){
+
+            if(this.product.inventoryStock > this.quantityBalance){
+                return this.quantityBalance
+            }else{
+                this.product.inventoryStock
+            }
+        }
     },
     methods: {
         openDialog() {
@@ -364,6 +372,9 @@ export default {
 
             this.deleteDialog = false
         },
+        navigateToCollection(code) {
+            this.$emit('navigate', code)
+        }
     }
 }
 </script>

@@ -33,6 +33,7 @@ class SiteSaleResource extends JsonResource
             'products' => SiteSaleSummaryResource::collection($this->products()->withTrashed()->get()),
             'receipts' => ReceiptResource::collection($this->receipts),
             'generatedBy' => new UserResource($this->user),
+            'profit' => $this->profit(),
         ];
     }
 }

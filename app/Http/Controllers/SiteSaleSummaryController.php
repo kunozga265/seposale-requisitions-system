@@ -14,6 +14,7 @@ class SiteSaleSummaryController extends Controller
             $phone_number = $collection->collected_by_phone_number != null ? "({$collection->collected_by_phone_number})" : "";
             $array[] = [
                 "date" => intval($collection->date),
+                "code" => $collection->code,
                 "message" => "{$collection->quantity} collected by $by $phone_number",
             ];
         }

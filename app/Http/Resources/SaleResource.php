@@ -42,6 +42,7 @@ class SaleResource extends JsonResource
             'generatedBy' => new UserResource($this->user),
             'delivery' => new DeliveryResource($this->delivery),
             'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
+            'profit' => $this->profit(),
 
         ];
     }

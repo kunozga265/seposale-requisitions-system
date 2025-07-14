@@ -7,34 +7,31 @@
     <template #breadcrumbs>
       <li aria-current="page">
         <div class="flex items-center">
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-               xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"></path>
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
           </svg>
-          <a :href="route('sites.overview',{code:site.code})"
-             class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+          <a :href="route('sites.overview', { code: site.code })"
+            class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
             Njewa
           </a>
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-               xmlns="http://www.w3.org/2000/svg">
+          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"></path>
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
           </svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Sales
-                    </span>
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-               xmlns="http://www.w3.org/2000/svg">
+            Sales
+          </span>
+          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"></path>
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
           </svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {{ sale.data.code }}
-                    </span>
+            {{ sale.data.code }}
+          </span>
         </div>
       </li>
     </template>
@@ -45,19 +42,24 @@
       <!--        <primary-button>Print Invoice</primary-button>-->
       <!--      </a>-->
       <!--      </span>-->
+             <inertia-link :href="route('sites.sales.create', { code: site.code })">
+                    <primary-button>
+                        Record Sale
+                    </primary-button>
+                </inertia-link>
 
-      <a :href="route('sales.print',{'id':sale.data.id})" target="_blank">
+      <a :href="route('sales.print', { 'id': sale.data.id })" target="_blank">
         <primary-button>Print</primary-button>
       </a>
-      <a v-if="sale.data.editable" :href="route('sales.edit',{'id':sale.data.id})">
+      <a v-if="sale.data.editable" :href="route('sales.edit', { 'id': sale.data.id })">
         <primary-button>Edit</primary-button>
       </a>
-      <danger-button v-if="sale.data.status == 1" @click.native="closeDialog=true">Close</danger-button>
-      <danger-button v-if="sale.data.editable" @click.native="deleteDialog=true">Delete</danger-button>
+      <danger-button v-if="sale.data.status == 1" @click.native="closeDialog = true">Close</danger-button>
+      <danger-button v-if="sale.data.editable" @click.native="deleteDialog = true">Delete</danger-button>
 
     </template>
 
-    <dialog-modal :show="deleteDialog" @close="deleteDialog=false">
+    <dialog-modal :show="deleteDialog" @close="deleteDialog = false">
       <template #title>
         Delete Sale
       </template>
@@ -68,26 +70,26 @@
       </template>
 
       <template #footer>
-        <secondary-button @click.native="deleteDialog=false">
+        <secondary-button @click.native="deleteDialog = false">
           Cancel
         </secondary-button>
 
         <danger-button class="ml-2" @click.native="deleteSale">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
           Proceed
         </danger-button>
       </template>
     </dialog-modal>
 
-    <dialog-modal :show="closeDialog" @close="closeDialog=false">
+    <dialog-modal :show="closeDialog" @close="closeDialog = false">
       <template #title>
         Close Sale
       </template>
@@ -98,19 +100,19 @@
       </template>
 
       <template #footer>
-        <secondary-button @click.native="closeDialog=false">
+        <secondary-button @click.native="closeDialog = false">
           Cancel
         </secondary-button>
 
         <danger-button class="ml-2" @click.native="closeSale">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-               viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
-                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="#E5E7EB"/>
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
             <path
-                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentColor"/>
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
           </svg>
           Proceed
         </danger-button>
@@ -121,7 +123,7 @@
       <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
 
-        <sale-status class="mb-4" :status="sale.data.status"/>
+        <sale-status class="mb-4" :status="sale.data.status" />
 
         <div class="">
           <div class="page-section">
@@ -149,12 +151,19 @@
 
                 <div v-if="sale.data.paymentMethod != null" class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Payment Method</div>
-                  <div>{{ sale.data.paymentMethod.name}}</div>
+                  <div>{{ sale.data.paymentMethod.name }}</div>
                 </div>
 
                 <div v-if="sale.data.reference != null" class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Reference</div>
-                  <div>{{sale.data.reference}}</div>
+                  <div>{{ sale.data.reference }}</div>
+                </div>
+
+                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Profit</div>
+                  <div :class="{ 'text-red-500': sale.data.profit < 0, 'text-green-500': sale.data.profit > 0, }">
+                    MK{{ sale.data.profit }}
+                  </div>
                 </div>
 
                 <!--                <div class="border-b px-4 py-3 flex justify-between text-sm">-->
@@ -173,58 +182,54 @@
             </div>
             <div class="page-section-content">
 
-              <inertia-link :href="route('clients.show',{id:sale.data.client.id})">
+              <inertia-link :href="route('clients.show', { id: sale.data.client.id })">
                 <div class="card profile">
                   <div class="p-8 md:p-10 grid grid-cols-1 sm:grid-cols-2">
                     <div class="mb-4">
                       <div class="text-sm text-gray-600">Name</div>
-                      <span
-                          class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.name }}
-                                        </span>
+                      <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                        {{ sale.data.client.name }}
+                      </span>
                     </div>
                     <div v-show="sale.data.client.phone_number != null" class="mb-4">
                       <div class="text-sm text-gray-600 flex items-center">Phone Number
                         <svg class="ml-1" height="24px" width="20px" version="1.1" id="Layer_1"
-                             xmlns="http://www.w3.org/2000/svg"
-                             xmlns:xlink="http://www.w3.org/1999/xlink"
-                             viewBox="0 0 512 512" xml:space="preserve">
-<path style="fill:#fbfbfb;" d="M0,512l35.31-128C12.359,344.276,0,300.138,0,254.234C0,114.759,114.759,0,255.117,0
-	S512,114.759,512,254.234S395.476,512,255.117,512c-44.138,0-86.51-14.124-124.469-35.31L0,512z"/>
+                          xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                          viewBox="0 0 512 512" xml:space="preserve">
+                          <path style="fill:#fbfbfb;" d="M0,512l35.31-128C12.359,344.276,0,300.138,0,254.234C0,114.759,114.759,0,255.117,0
+	S512,114.759,512,254.234S395.476,512,255.117,512c-44.138,0-86.51-14.124-124.469-35.31L0,512z" />
                           <path style="fill:#55c76a;" d="M137.71,430.786l7.945,4.414c32.662,20.303,70.621,32.662,110.345,32.662
 	c115.641,0,211.862-96.221,211.862-213.628S371.641,44.138,255.117,44.138S44.138,137.71,44.138,254.234
-	c0,40.607,11.476,80.331,32.662,113.876l5.297,7.945l-20.303,74.152L137.71,430.786z"/>
+	c0,40.607,11.476,80.331,32.662,113.876l5.297,7.945l-20.303,74.152L137.71,430.786z" />
                           <path style="fill:#FEFEFE;" d="M187.145,135.945l-16.772-0.883c-5.297,0-10.593,1.766-14.124,5.297
 	c-7.945,7.062-21.186,20.303-24.717,37.959c-6.179,26.483,3.531,58.262,26.483,90.041s67.09,82.979,144.772,105.048
 	c24.717,7.062,44.138,2.648,60.028-7.062c12.359-7.945,20.303-20.303,22.952-33.545l2.648-12.359
 	c0.883-3.531-0.883-7.945-4.414-9.71l-55.614-25.6c-3.531-1.766-7.945-0.883-10.593,2.648l-22.069,28.248
 	c-1.766,1.766-4.414,2.648-7.062,1.766c-15.007-5.297-65.324-26.483-92.69-79.448c-0.883-2.648-0.883-5.297,0.883-7.062
-	l21.186-23.834c1.766-2.648,2.648-6.179,1.766-8.828l-25.6-57.379C193.324,138.593,190.676,135.945,187.145,135.945"/></svg></div>
-                      <span
-                          class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.phone_number }}
-                                        </span>
+	l21.186-23.834c1.766-2.648,2.648-6.179,1.766-8.828l-25.6-57.379C193.324,138.593,190.676,135.945,187.145,135.945" />
+                        </svg>
+                      </div>
+                      <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                        {{ sale.data.client.phone_number }}
+                      </span>
                     </div>
                     <div v-show="sale.data.client.phone_number_other != null" class="mb-4">
                       <div class="text-sm text-gray-600">Phone Number (Secondary)</div>
-                      <span
-                          class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.phone_number_other }}
-                                        </span>
+                      <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                        {{ sale.data.client.phone_number_other }}
+                      </span>
                     </div>
                     <div v-show="sale.data.client.email != null" class="mb-4">
                       <div class="text-sm text-gray-600">Email</div>
-                      <span
-                          class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                         {{ sale.data.client.email }}
-                                        </span>
+                      <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                        {{ sale.data.client.email }}
+                      </span>
                     </div>
                     <div v-show="sale.data.client.address != null" class="mb-4">
                       <div class="text-sm text-gray-600">Address</div>
-                      <span
-                          class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
-                                        {{ sale.data.client.address }}
-                                        </span>
+                      <span class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                        {{ sale.data.client.address }}
+                      </span>
                     </div>
                   </div>
 
@@ -244,87 +249,86 @@
                 <div class="p-2 relative overflow-x-auto">
                   <table class="overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                    <tr>
-                      <th scope="col" class="heading-font">
-                        Payment Status
-                      </th>
-                      <th scope="col" class="heading-font">
-                        Collection Status
-                      </th>
-                      <th scope="col" class="heading-font">
-                        Details
-                      </th>
-                      <th scope="col" class="heading-font">
-                        Units
-                      </th>
-                      <th scope="col" class="heading-font text-right">
-                        Quantity
-                      </th>
-                      <th scope="col" class="heading-font text-right">
-                        Unit Cost
-                      </th>
-                      <th scope="col" class="heading-font text-right">
-                        Total Cost
-                      </th>
-                      <th scope="col" class="heading-font text-right">
-                        Balance
-                      </th>
+                      <tr>
+                        <th scope="col" class="heading-font">
+                          Payment Status
+                        </th>
+                        <th scope="col" class="heading-font">
+                          Collection Status
+                        </th>
+                        <th scope="col" class="heading-font">
+                          Details
+                        </th>
+                        <th scope="col" class="heading-font">
+                          Units
+                        </th>
+                        <th scope="col" class="heading-font text-right">
+                          Quantity
+                        </th>
+                        <th scope="col" class="heading-font text-right">
+                          Unit Cost
+                        </th>
+                        <th scope="col" class="heading-font text-right">
+                          Total Cost
+                        </th>
+                        <th scope="col" class="heading-font text-right">
+                          Balance
+                        </th>
 
-                    </tr>
+                      </tr>
                     </thead>
                     <tbody>
-                    <tr
+                      <tr
                         class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                        v-for="(productCompound,index) in sale.data.products"
-                        :key="index"
-                    >
-                      <td>
-                        <sale-status :status="productCompound.paymentStatus" :is-solo="true"/>
-                      </td>
-                      <td class="">
-                        <collection
+                        v-for="(productCompound, index) in sale.data.products" :key="index">
+                        <td>
+                          <sale-status :status="productCompound.paymentStatus" :is-solo="true" />
+                        </td>
+                        <td class="">
+                          <collection
                             class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                            :client="sale.data.client" :product="productCompound" :is-solo="true"/>
-                      </td>
-                      <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
-                          :class="{'strike-through':productCompound.trashed}"
+                            :client="sale.data.client" :product="productCompound" :is-solo="true"
+                            @navigate="navigateToCollection"  />
+                        </td>
+                        <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
+                          :class="{ 'strike-through': productCompound.trashed }"
                           class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                        {{ productCompound.inventory.name }}
-                      </th>
-                      <td class="py-2 pr-1">
-                        {{ productCompound.inventory.units }}
-                      </td>
-                      <td class="py-2 pr-1 text-right">
-                        {{ numberWithCommas(productCompound.quantity) }}
-                      </td>
-                      <td class="py-2 pr-1 text-right">
-                        {{
-                          numberWithCommas(productCompound.amount / productCompound.quantity)
-                        }}
-                      </td>
-                      <td class="py-2 pr-1 text-right">
-                        {{ numberWithCommas(productCompound.amount) }}
-                      </td>
-                      <td class="py-2 pr-1 text-right">
-                        {{
-                          productCompound.balance != null ? numberWithCommas(productCompound.balance) : "-"
-                        }}
-                      </td>
+                          {{ productCompound.inventory.name }}
+                        </th>
+                        <td class="py-2 pr-1">
+                          {{ productCompound.inventory.units }}
+                        </td>
+                        <td class="py-2 pr-1 text-right">
+                          {{ numberWithCommas(productCompound.quantity) }}
+                        </td>
+                        <td class="py-2 pr-1 text-right">
+                          {{
+                            numberWithCommas(productCompound.amount / productCompound.quantity)
+                          }}
+                        </td>
+                        <td class="py-2 pr-1 text-right">
+                          {{ numberWithCommas(productCompound.amount) }}
+                        </td>
+                        <td class="py-2 pr-1 text-right">
+                          {{
+                            productCompound.balance != null ? numberWithCommas(productCompound.balance) : "-"
+                          }}
+                        </td>
 
 
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <th class="pt-4 pr-1 text-base heading-font font-bold text-right">Total</th>
-                      <td class="pt-4 pr-1 text-base font-bold text-right">
-                        {{ numberWithCommas(sale.data.total) }}
-                      </td>
-                    </tr>
+                      </tr>
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <th class="pt-4 pr-1 text-base heading-font font-bold text-right">Total</th>
+                        <td class="pt-4 pr-1 text-base font-bold text-right">
+                          {{ numberWithCommas(sale.data.total) }}
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -340,16 +344,15 @@
             <div class="page-section-content">
 
               <div class="grid grid-cols-1 md:grid-cols-2">
-                <inertia-link :href="route('receipts.show', {id:receipt.id})"
-                              v-for="(receipt, index) in sale.data.receipts" :key="index">
+                <inertia-link :href="route('receipts.show', { id: receipt.id })"
+                  v-for="(receipt, index) in sale.data.receipts" :key="index">
                   <div class="app-card">
                     <div class="header justify-between items-center border-b">
                       <div>
                         <div>
-                          <span
-                              class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                              getDate(receipt.date * 1000)
-                            }}</span>
+                          <span class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
+                            getDate(receipt.date * 1000)
+                          }}</span>
                         </div>
                         <div class="type">#{{ receipt.code }}</div>
 
@@ -376,88 +379,78 @@
 
 
               <primary-button
-                  v-if="checkRole($page.props.auth.data,'accountant') || checkRole($page.props.auth.data,'management')"
-                  @click.native="newReceiptDialog = true" class="ml-3">New Receipt
+                v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management')"
+                @click.native="newReceiptDialog = true" class="ml-3">New Receipt
               </primary-button>
 
-              <dialog-modal :show="newReceiptDialog" @close="newReceiptDialog=false">
+              <dialog-modal :show="newReceiptDialog" @close="newReceiptDialog = false">
                 <template #title>
                   New Receipt
                 </template>
 
                 <template #content>
-                  <jet-validation-errors class="mb-4"/>
+                  <jet-validation-errors class="mb-4" />
 
                   <div class="mb-4">
                     <!--                                    <jet-label for="lastRefillDate" value="Backdate" />-->
                     <div class="flex items-center mb-2">
-                      <input checked id="backdate" type="checkbox" value=""
-                             v-model="backdateCheck"
-                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                      <input checked id="backdate" type="checkbox" value="" v-model="backdateCheck"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                       <label for="backdate"
-                             class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
+                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
                     </div>
-                    <vue-date-time-picker
-                        v-if="backdateCheck"
-                        color="#1a56db"
-                        v-model="date"
-                        :max-date="maxDate"
-
-                    />
+                    <vue-date-time-picker v-if="backdateCheck" color="#1a56db" v-model="date" :max-date="maxDate" />
                   </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
-                        <div class="mb-4">
-                            <jet-label for="paymentMethod" value="Select Account"/>
-                            <select v-model="accountIndex" id="paymentMethod"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                    required>
-                                <option v-for="(account, index) in accounts" :value="index"
-                                        :key="index">
-                                    {{ account.name }}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="mb-4">
-                            <jet-label for="paymentMethod" value="Select Payment Method"/>
-                            <select v-model="paymentMethodIndex" id="paymentMethod"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                    required>
-                                <option v-for="(paymentMethod, index) in paymentMethods" :value="index"
-                                        :key="index">
-                                    {{ paymentMethod.name }}
-                                </option>
-                            </select>
-                        </div>
+                    <div class="mb-4">
+                      <jet-label for="paymentMethod" value="Select Account" />
+                      <select v-model="accountIndex" id="paymentMethod"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                        required>
+                        <option v-for="(account, index) in accounts" :value="index" :key="index">
+                          {{ account.name }}
+                        </option>
+                      </select>
                     </div>
+
+                    <div class="mb-4">
+                      <jet-label for="paymentMethod" value="Select Payment Method" />
+                      <select v-model="paymentMethodIndex" id="paymentMethod"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                        required>
+                        <option v-for="(paymentMethod, index) in paymentMethods" :value="index" :key="index">
+                          {{ paymentMethod.name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                   <div class="mb-4">
-                    <jet-label for="reference" value="Reference"/>
-                    <jet-input type="text" class="block w-full" v-model="form.reference"/>
+                    <jet-label for="reference" value="Reference" />
+                    <jet-input type="text" class="block w-full" v-model="form.reference" />
                   </div>
                   <div class="mb-4">
                     <div class="heading-font text-">Payment Summary;</div>
                   </div>
 
-                  <div class="mb-4" v-for="(product,index) in form.information" :key="index">
+                  <div class="mb-4" v-for="(product, index) in form.information" :key="index">
                     <div class="flex justify-between">
-                      <jet-label for="amount" :value="product.name"/>
+                      <jet-label for="amount" :value="product.name" />
                       <div class="flex items-center mb-2">
                         <div @click="product.amount = product.balance"
-                             class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                             :class="{'info':product.amount == product.balance}">
+                          class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                          :class="{ 'info': product.amount == product.balance }">
                           <div>Full Payment</div>
                           <i v-show="product.amount == product.balance"
-                             class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                            class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
                         </div>
                       </div>
                     </div>
                     <money
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                        v-bind="moneyMaskOptions" v-model="product.amount"/>
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                      v-bind="moneyMaskOptions" v-model="product.amount" />
                     <!--                    <jet-input type="text" class="block w-full" v-model="form.amount"/>-->
-                    <div class="mt-1 text-xs text-gray-500"
-                         :class="{'text-red-500':!balanceValidate(product)}">Balance:
+                    <div class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': !balanceValidate(product) }">Balance:
                       MK{{ numberWithCommas(product.balance) }}
                     </div>
                   </div>
@@ -470,8 +463,7 @@
                       <div class="heading-font text-xs">Total Amount</div>
                     </div>
                     <div class="mb-4">
-                      <div class="heading-font text-lg"
-                           :class="{'text-red-500':!amountValidation}">MK
+                      <div class="heading-font text-lg" :class="{ 'text-red-500': !amountValidation }">MK
                         {{ numberWithCommas(receiptBalance.toFixed(2)) }}
                       </div>
                       <div class="heading-font text-xs">Balance</div>
@@ -482,20 +474,19 @@
                 </template>
 
                 <template #footer>
-                  <secondary-button @click.native="newReceiptDialog=false">
+                  <secondary-button @click.native="newReceiptDialog = false">
                     Cancel
                   </secondary-button>
 
                   <primary-button class="ml-2" @click.native="storeReceipt">
-                    <svg v-show="form.processing" role="status"
-                         class="inline w-4 h-4 mr-3 text-white animate-spin"
-                         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
+                      viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
-                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                          fill="#E5E7EB"/>
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="#E5E7EB" />
                       <path
-                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                          fill="currentColor"/>
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentColor" />
                     </svg>
                     Proceed
                   </primary-button>
@@ -507,8 +498,7 @@
           <div class="page-section">
             <div class="page-section-content">
               <div class="card p-0">
-                <div
-                    class="p-3 text-white text-sm font-semibold bg-system heading-font uppercase rounded-t-lg">
+                <div class="p-3 text-white text-sm font-semibold bg-system heading-font uppercase rounded-t-lg">
                   Generated By
                 </div>
                 <div class="border-b px-3 py-2 flex justify-between text-sm">
@@ -549,7 +539,7 @@ import SaleStatus from "@/Components/SaleStatus.vue";
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
-import {Money} from 'v-money'
+import { Money } from 'v-money'
 import Collection from "@/Components/Collection.vue";
 
 
@@ -584,7 +574,7 @@ export default {
       deleteDialog: false,
       closeDialog: false,
       paymentMethodIndex: -1,
-        accountIndex: -1,
+      accountIndex: -1,
       backdateCheck: false,
 
       fullPaymentCheck: false,
@@ -644,12 +634,12 @@ export default {
       } else
         return null
     },
-      account() {
-          if (parseInt(this.accountIndex) >= 0) {
-              return this.accounts[this.accountIndex]
-          } else
-              return null
-      },
+    account() {
+      if (parseInt(this.accountIndex) >= 0) {
+        return this.accounts[this.accountIndex]
+      } else
+        return null
+    },
     receiptAmount() {
       let sum = 0;
       for (let x in this.form.information) {
@@ -687,46 +677,46 @@ export default {
   },
   methods: {
     generateInvoice() {
-      this.$inertia.post(this.route('invoices.generate', {'id': this.sale.data.id}))
+      this.$inertia.post(this.route('invoices.generate', { 'id': this.sale.data.id }))
     },
     printInvoice() {
-      this.$inertia.get(this.route('invoices.print', {'id': this.sale.data.id}))
+      this.$inertia.get(this.route('invoices.print', { 'id': this.sale.data.id }))
     },
     storeReceipt() {
       this.form
-          .transform(data => ({
-            ...data,
-            payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
-              account_id: this.account == null ? null : this.account.id,
-            date: this.getTimestampFromDate(this.date),
-            type: "SITE",
-          }))
-          .post(this.route('receipts.store', {'id': this.sale.data.id}), {
-            preserveScroll: true,
-            onSuccess: () => this.newReceiptDialog = false,
-          })
+        .transform(data => ({
+          ...data,
+          payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
+          account_id: this.account == null ? null : this.account.id,
+          date: this.getTimestampFromDate(this.date),
+          type: "SITE",
+        }))
+        .post(this.route('receipts.store', { 'id': this.sale.data.id }), {
+          preserveScroll: true,
+          onSuccess: () => this.newReceiptDialog = false,
+        })
     },
     updateDelivery() {
       this.form
-          .transform(data => ({
-            ...data,
-            delivery_date: this.getTimestampFromDate(this.deliveryDate),
-            user_id: this.userId,
-          }))
-          .post(this.route('deliveries.update', {'id': this.selectedProduct.id}), {
-            // preserveScroll: true,
-            onSuccess: () => {
-              this.updateDeliveryDialog = false
-              this.selectedProduct = null
-            },
-          })
+        .transform(data => ({
+          ...data,
+          delivery_date: this.getTimestampFromDate(this.deliveryDate),
+          user_id: this.userId,
+        }))
+        .post(this.route('deliveries.update', { 'id': this.selectedProduct.id }), {
+          // preserveScroll: true,
+          onSuccess: () => {
+            this.updateDeliveryDialog = false
+            this.selectedProduct = null
+          },
+        })
     },
     deleteSale() {
       this.form
-          .post(this.route('sites.sales.delete', {'id': this.sale.data.id}), {
-            preserveScroll: true,
-            onSuccess: () => this.deleteDialog = false,
-          })
+        .post(this.route('sites.sales.delete', { 'id': this.sale.data.id }), {
+          preserveScroll: true,
+          onSuccess: () => this.deleteDialog = false,
+        })
     },
     closeSale() {
       // this.form
@@ -747,7 +737,7 @@ export default {
           this.selectedProduct = productCompound
           this.updateDeliveryDialog = true
         } else {
-          this.$inertia.get(this.route('deliveries.index', {'id': this.sale.data.id}))
+          this.$inertia.get(this.route('deliveries.index', { 'id': this.sale.data.id }))
         }
       }
     },
@@ -760,9 +750,12 @@ export default {
     balanceValidate(product) {
       return product.balance >= product.amount
     },
-          navigateToInventory(id) {
-            this.$inertia.get(this.route('sites.inventories.show', { 'code': this.site.code, 'id': id }))
-        },
+    navigateToInventory(id) {
+      this.$inertia.get(this.route('sites.inventories.show', { 'code': this.site.code, 'id': id }))
+    },
+     navigateToCollection(code) {
+      this.$inertia.get(this.route('sites.collections.show', { 'code': this.site.code, 'collection_code': code }))
+    },
   }
 }
 </script>

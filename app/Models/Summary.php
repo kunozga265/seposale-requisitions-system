@@ -117,6 +117,17 @@ class Summary extends Model
         return $this->amount - $this->balance - $total;
     }
 
+    public function profit(){
+
+         if($this->siteSaleSummary == null){
+             $paid = $this->amount-$this->balance;
+             $profit = $paid - $this->delivery?->costs();   
+             return $profit;         
+        }else{
+            return $this->siteSaleSummary->profit();
+        }
+    }
+
 
     protected $fillable = [
         "product_id",

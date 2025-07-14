@@ -54,6 +54,14 @@ class Sale extends Model
         return (new AppController())->getZeroedNumber($this->code_alt);
     }
 
+    public function profit(){
+        $sum = 0;
+        foreach($this->products as $summary){
+            $sum += $summary->profit();
+        }
+        return $sum;
+    }
+
     protected $fillable = [
         "code",
         "serial",

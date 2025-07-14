@@ -46,9 +46,9 @@ class SiteSaleSummary extends Model
         return $this->hasOne(Delivery::class);
     }
 
-       public function summary()
+    public function summary()
     {
-        return $this->hasOne(Summary::class,  "site_sale_summary_id","id");
+        return $this->hasOne(Summary::class,  "site_sale_summary_id", "id");
     }
 
     public function deliveryExists()
@@ -125,6 +125,25 @@ class SiteSaleSummary extends Model
         // dump("Total ".$total);
 
         return $this->amount - $this->balance - $total;
+    }
+
+    public function profit()
+    {
+        $paid = $this->amount - $this->balance;
+
+        //has delivery
+        if ($this->delivery != null) {
+            $profit = $paid - $this->delivery->costs();
+        }
+        //has collection
+        else {
+            $sum = 0;
+            foreach ($this->collections as $collection) {
+                $sum += $collection->cost;
+            }
+            $profit = $paid - $sum;
+        }
+        return $profit;
     }
 
     protected $fillable = [

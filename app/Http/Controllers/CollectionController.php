@@ -220,7 +220,7 @@ class CollectionController extends Controller
                 ]);
 
                 $quantity -= $count;
-                $total_cogs = $cost;
+                $total_cogs += $cost;
                 $index++;
             } while ($quantity > 0);
 

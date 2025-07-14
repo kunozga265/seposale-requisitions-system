@@ -32,6 +32,7 @@ class CollectionResource extends JsonResource
             "balance" => floatval($this->balance),
             "user" => $this->user,
             "date" => intval($this->date),
+            "cost" => floatval($this->cost),
             "message" => "Collected {$this->quantity} by " . isset($this->collected_by) ? $this->collected_by : " self",
             'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false,
         ];

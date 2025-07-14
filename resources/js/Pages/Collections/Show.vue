@@ -145,6 +145,11 @@
                   <div>{{ collection.data.balance }}</div>
                 </div>
 
+                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Cost</div>
+                  <div>{{ collection.data.cost }}</div>
+                </div>
+
 
 
 

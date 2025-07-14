@@ -57,6 +57,15 @@ class SiteSale extends Model
         return $this->belongsToMany(Batch::class,'site_sales_batches','site_sale_id','batch_id');
     }
 
+
+    public function profit(){
+        $sum = 0;
+        foreach($this->products as $summary){
+            $sum += $summary->profit();
+        }
+        return $sum;
+    }
+    
     protected $fillable = [
         "code",
         "serial",

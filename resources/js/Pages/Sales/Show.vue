@@ -161,13 +161,13 @@
                                     <div class="text-gray-600 font-semibold">Balance</div>
                                     <div>MK{{ numberWithCommas(sale.data.balance) }}</div>
                                 </div>
-                                <!--                <div v-if="sale.data.expense != null" class="border-b px-4 py-3 flex justify-between text-sm">-->
-                                <!--                  <div class="text-gray-600 font-semibold">Profit</div>-->
-                                <!--                  <div-->
-                                <!--                      :class="{'text-red-500':profit(sale.data.expense.total)<0, 'text-green-500':profit(sale.data.expense.total)>0, }">-->
-                                <!--                    MK{{ profit(sale.data.expense.total) }}-->
-                                <!--                  </div>-->
-                                <!--                </div>-->
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Profit</div>
+                                    <div
+                                        :class="{ 'text-red-500': sale.data.profit < 0, 'text-green-500': sale.data.profit > 0, }">
+                                        MK{{ sale.data.profit }}
+                                    </div>
+                                </div>
 
                                 <!--                <div class="border-b px-4 py-3 flex justify-between text-sm">-->
                                 <!--                  <div class="text-gray-600 font-semibold">Site Location</div>-->
@@ -457,6 +457,9 @@
                                                 <th scope="col" class="heading-font text-right">
                                                     Balance
                                                 </th>
+                                                <th scope="col" class="heading-font text-right">
+                                                    Profit
+                                                </th>
                                                 <th scope="col" class="heading-font px-2">
                                                     Delivery Status
                                                 </th>
@@ -498,6 +501,12 @@
                                                             numberWithCommas(productCompound.balance)
                                                             : "-"
                                                     }}
+                                                </td>
+                                                <td class="py-2 pr-1 text-right">
+                                                    <span
+                                                        :class="{ 'text-red-500': productCompound.profit < 0, 'text-green-500': productCompound.profit > 0, }">
+                                                        {{ productCompound.profit }}
+                                                    </span>
                                                 </td>
                                                 <td class="px-2">
                                                     <delivery-status v-if="productCompound.delivery != null"
