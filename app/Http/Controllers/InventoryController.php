@@ -47,14 +47,14 @@ class InventoryController extends Controller
                     case "sales":
                         //get sales
                         $summaries = $inventory->summaries()->latest()->get();
-                        foreach ($summaries as $receipt_summary) {
+                        foreach ($summaries as $summary) {
                             $sales[] = [
-                                "id" => $receipt_summary->sale->id,
-                                "code" => (new AppController())->getZeroedNumber($receipt_summary->sale->code),
-                                "client" => $receipt_summary->sale->client,
-                                "date" => $receipt_summary->sale->date,
+                                "id" => $summary->sale->id,
+                                "code" => (new AppController())->getZeroedNumber($summary->sale->code),
+                                "client" => $summary->sale->client,
+                                "date" => $summary->sale->date,
                                 "products" => [
-                                    new SiteSaleSummaryResource($receipt_summary)
+                                    new SiteSaleSummaryResource($summary)
                                 ],
                             ];
                         }
@@ -73,10 +73,10 @@ class InventoryController extends Controller
                     default:
                         $section = "overview";
                         $receipt_summaries = ReceiptSummary::where("site_sale_summary_id", "!=", null)->orderBy("created_at", "asc")->get();
-                        foreach ($receipt_summaries as $receipt_summary) {
+                        foreach ($receipt_summaries as $summary) {
 
-                            if ($receipt_summary->siteSaleSummary->inventory->id == $inventory->id) {
-                                $filtered_receipts[] = $receipt_summary;
+                            if ($summary->siteSaleSummary->inventory->id == $inventory->id) {
+                                $filtered_receipts[] = $summary;
                             }
                         }
 
@@ -216,7 +216,7 @@ class InventoryController extends Controller
                 "cost" => $request->cost,
                 "threshold" => $request->threshold,
                 "producible" => $request->producible,
-                'available_stock' => $available_stock,
+                // 'available_stock' => $available_stock,
                 'uncollected_stock' => $request->uncollected_stock,
                 'product_id' => $request->product_id,
             ]);

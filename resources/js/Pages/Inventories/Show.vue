@@ -47,12 +47,12 @@
             <!--                            <primary-button>Print</primary-button>-->
             <!--                        </a>-->
 
-               <inertia-link :href="route('sites.sales.create', { code: site.code })">
-                    <primary-button>
-                        Record Sale
-                    </primary-button>
-                </inertia-link>
-                
+            <inertia-link :href="route('sites.sales.create', { code: site.code })">
+                <primary-button>
+                    Record Sale
+                </primary-button>
+            </inertia-link>
+
             <inertia-link v-if="inventory.data.producible" :href="route('production.index', { code: site.code })">
                 <primary-button>
                     Production
@@ -134,7 +134,7 @@
                                 <div class="mr-4">
                                     <jet-label class="mb-0" for="batch-item" :value="getDate(batch.date * 1000)" />
                                     <div class="text-xs text-gray-500">MK{{ numberWithCommas(batch.price.toFixed(2))
-                                        }}/{{
+                                    }}/{{
                                             batch.inventory.units }}
                                     </div>
                                 </div>
@@ -329,7 +329,10 @@
 
                                         <div class="text-xs mb-1 text-gray-500">Total Sales</div>
                                         <div class="heading-font font-bold text-xl mb-4">
-                                            MK{{ numberWithCommas(receiptsTotal.toFixed(2)) }}
+                                            MK{{ numberWithCommas(receiptsMetrics.total.toFixed(2)) }}
+                                            (
+                                            <Profit class="heading-font font-bold" :value="receiptsMetrics.profit" />)
+
                                         </div>
                                     </div>
                                     <div class="md:text-right" v-show="pendingPayments > 0">
@@ -357,15 +360,15 @@
                                         class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
                                         <div>{{ pendingCollections.length }} Collection{{
                                             pendingCollections.length != 1 ? "s" : ''
-                                            }}
+                                        }}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div v-for="(productCompound, index) in pendingCollections" :key="index"
-                                
                                     class="record p-2 mb-1 rounded flex justify-between items-center ">
-                                    <div @click="navigateToSale(productCompound.sale.id)"  class="flex items-center cursor-pointer">
+                                    <div @click="navigateToSale(productCompound.sale.id)"
+                                        class="flex items-center cursor-pointer">
                                         <div class="h-8 w-8 bg-gray-100 rounded-full flex justify-center items-center">
                                             <div class="text-xs text-gray-500">{{ index + 1 }}</div>
                                         </div>
@@ -398,7 +401,7 @@
                                         class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
                                         <div>{{ pendingBatches.data.length }} Batch{{
                                             pendingBatches.data.length != 1 ? "es" : ''
-                                            }}
+                                        }}
                                         </div>
                                     </div>
                                 </div>
@@ -466,58 +469,38 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="card">
+                                <div class="flex justify-start items-center">
+                                    <div class="">
+                                        <div class="heading-font" style="font-weight: 600;">Profit</div>
+                                        <Profit class="text-sm" :value="metrics.profit" />
 
-                            <!--                                <div class="card">-->
-                            <!--                                    <div class="flex justify-between items-center">-->
+                                    </div>
+                                </div>
+                            </div>
 
-                            <!--                                        <div class="mr-4">-->
-                            <!--                                            <div class="heading-font" style="font-weight: 600;">Collected</div>-->
-                            <!--                                            <div class="text-sm">MK {{ numberWithCommas(metrics.collected.toFixed(2)) }}-->
-                            <!--                                            </div>-->
-                            <!--                                        </div>-->
-                            <!--                                        <div class="h-5 w-5 relative">-->
-                            <!--                                            <div style="font-size:12px;"-->
-                            <!--                                                 class="absolute h-full w-full font-bold flex justify-center items-center">-->
-                            <!--                                                {{ Math.floor((metrics.collected / metrics.total) * 100) }}%-->
-                            <!--                                            </div>-->
-                            <!--                                            &lt;!&ndash;                    <DoughnutChart&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        :chart-options="chartOptions"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        :chart-data="collectedSalesData"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        chart-id="awaitingReconciliation"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        dataset-id-key="awaitingReconciliation"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                    />&ndash;&gt;-->
-                            <!--                                        </div>-->
-                            <!--                                    </div>-->
 
-                            <!--                                </div>-->
-                            <!--                                <div class="card">-->
-                            <!--                                    <div class="flex justify-between items-center">-->
-                            <!--                                        <div class="mr-4">-->
-                            <!--                                            <div class="heading-font" style="font-weight: 600;">-->
-                            <!--                                                Balance-->
-                            <!--                                            </div>-->
-                            <!--                                            <div class="text-sm">MK {{ numberWithCommas(metrics.balance.toFixed(2)) }}-->
-                            <!--                                            </div>-->
-                            <!--                                        </div>-->
-                            <!--                                        <div class="h-5 w-5 relative">-->
-                            <!--                                            <div style="font-size:12px;"-->
-                            <!--                                                 class="absolute h-full w-full font-bold flex justify-center items-center text-red-500">-->
-                            <!--                                                {{ Math.floor((metrics.balance / metrics.total) * 100) }}%-->
-                            <!--                                            </div>-->
-                            <!--                                            &lt;!&ndash;                    <DoughnutChart&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        :chart-options="chartOptions"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        :chart-data="uncollectedSalesData"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        chart-id="awaitingReconciliation"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                        dataset-id-key="awaitingReconciliation"&ndash;&gt;-->
-                            <!--                                            &lt;!&ndash;                    />&ndash;&gt;-->
-                            <!--                                        </div>-->
-                            <!--                                    </div>-->
-                            <!--                                </div>-->
 
                         </div>
 
+                        <div class="mb-4 sm:flex sm:justify-end">
+                            <div>
+                                <vue-date-time-picker key="2" v-model="form.dates" range />
+                            </div>
+                        </div>
                         <div class="card default-table w-full">
-                            <!--                            {{ invoices.data }}-->
+
+                            <div>
+
+                                <button v-show="search.length > 0" @click="search = ''"
+                                    class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                                <jet-input id="search" type="text" class="block w-full" placeholder="Search"
+                                    v-model="search" autocomplete="seposale-filter-search" />
+
+
+                            </div>
                             <div class="overflow-x-auto p-2 mb-2 relative ">
                                 <table class=" w-full default-table  text-left text-gray-500 dark:text-gray-400">
                                     <thead
@@ -530,70 +513,14 @@
                                             <!--                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>-->
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Balance</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Profit</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Pending Payments
+                                            </th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Quantity</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-right">Collected</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Collection Status
                                             </th>
-                                        </tr>
-                                        <tr>
-                                            <!--                                            <th scope="col" class="p-2 pb-4 heading-font text-left">-->
-                                            <!--                                                <vue-date-time-picker-->
-                                            <!--                                                    v-model="form.dates"-->
-                                            <!--                                                    range-->
-                                            <!--                                                />-->
-                                            <!--                                            </th>-->
-                                            <th scope="col" class="p-2 pb-4 heading-font text-left relative">
-                                                <button v-show="form.code.length > 0" @click="form.code = ''"
-                                                    class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
-                                                    <i class="mdi mdi-close"></i>
-                                                </button>
-                                                <jet-input id="code" type="text" class="block w-full"
-                                                    placeholder="Search" v-model="form.code"
-                                                    autocomplete="seposale-filter-code" />
-
-                                            </th>
-                                            <th scope="col" class="p-2 pb-4 heading-font text-left relative">
-                                                <button v-show="form.client.length > 0" @click="form.client = ''"
-                                                    class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
-                                                    <i class="mdi mdi-close"></i>
-                                                </button>
-                                                <jet-input id="client" type="text" class="block w-full"
-                                                    placeholder="Search" v-model="form.client"
-                                                    autocomplete="seposale-filter-client" />
-                                            </th>
-                                            <!--                                            <th scope="col" class="p-2 pb-4 heading-font text-left relative">-->
-                                            <!--                                                <button v-show="form.product.length > 0" @click="form.product = ''"-->
-                                            <!--                                                        class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">-->
-                                            <!--                                                    <i class="mdi mdi-close"></i>-->
-                                            <!--                                                </button>-->
-                                            <!--                                                <jet-input id="product" type="text" class="block w-full"-->
-                                            <!--                                                           placeholder="Search"-->
-                                            <!--                                                           v-model="form.product"-->
-                                            <!--                                                           autocomplete="seposale-filter-product"/>-->
-                                            <!--                                            </th>-->
-                                            <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
-                                            <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
-                                            <!--                                            <th scope="col" class="p-2 pb-4 heading-font text-left"><select-->
-                                            <!--                                                v-model="form.paymentStatus"-->
-                                            <!--                                                id="payment-status"-->
-                                            <!--                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"-->
-                                            <!--                                                required>-->
-                                            <!--                                                <option v-for="(status, index) in paymentStatuses" :value="status.value"-->
-                                            <!--                                                        :key="index">-->
-                                            <!--                                                    {{ status.name }}-->
-                                            <!--                                                </option>-->
-                                            <!--                                            </select></th>-->
-                                            <!--                                            <th scope="col" class="p-2 pb-4 heading-font text-left"><select-->
-                                            <!--                                                v-model="form.deliveryStatus"-->
-                                            <!--                                                id="delivery-status"-->
-                                            <!--                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"-->
-                                            <!--                                                required>-->
-                                            <!--                                                <option v-for="(status, index) in deliveryStatuses" :value="status.value"-->
-                                            <!--                                                        :key="index">-->
-                                            <!--                                                    {{ status.name }}-->
-                                            <!--                                                </option>-->
-                                            <!--                                            </select></th>-->
                                         </tr>
 
                                     </thead>
@@ -610,11 +537,17 @@
                                             <!--                                            <td class="p-2 text-left ">{{ sale.product.inventory.name }}</td>-->
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.amount.toFixed(2))
-                                            }}
+                                                }}
                                             </td>
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.balance.toFixed(2))
-                                            }}
+                                                }}
+                                            </td>
+                                            <td class="p-2 text-right">
+                                                <Profit :value="sale.product.profit" />
+                                            </td>
+                                            <td class="p-2 text-right">
+                                                <Profit :value="sale.product.pendingPayments" />
                                             </td>
                                             <td class="">
                                                 <sale-status
@@ -624,11 +557,11 @@
                                             </td>
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.quantity.toFixed(2))
-                                            }}
+                                                }}
                                             </td>
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.collected.toFixed(2))
-                                            }}
+                                                }}
                                             </td>
 
                                             <td class="">
@@ -672,18 +605,18 @@
                                 <tbody class="pt-8">
                                     <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                         v-for="(item, index) in collections.data" :key="index">
-                                       
+
                                         <td class="p-2 text-left">{{ getDate(item.date * 1000) }}</td>
-                                         <td @click="navigateToCollection(item.code)"
+                                        <td @click="navigateToCollection(item.code)"
                                             class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                             {{
-                                            item.code }}</td>
+                                                item.code }}</td>
                                         <td @click="navigateToSale(item.siteSaleSummary.sale.id)" class="p-2 text-left">
                                             {{
                                                 item.siteSaleSummary.sale.code }}</td>
                                         <td @click="navigateToClient(item.client.id)" class="p-2 text-left ">{{
                                             item.client.name
-                                        }}</td>
+                                            }}</td>
                                         <!--                                        <td class="p-2 text-left ">{{-->
                                         <!--                                                item.collectedBy-->
                                         <!--                                            }}-->
@@ -757,11 +690,11 @@
                                         </td>
                                         <td class="p-2 text-left ">{{
                                             item.comments
-                                        }}
+                                            }}
                                         </td>
                                         <td class="p-2 text-left ">{{
                                             item.user.fullName
-                                        }}
+                                            }}
                                         </td>
                                     </tr>
 
@@ -843,6 +776,7 @@ import Collection from "@/Components/Collection.vue";
 import VueApexCharts from "vue-apexcharts";
 
 
+
 export default {
     props: ['site',
         'inventory',
@@ -871,9 +805,14 @@ export default {
     },
     data() {
         return {
+            search: "",
             editInventoryDialog: false,
+            _dates: null,
             form: this.$inertia.form({
-                dates: null,
+                dates: {
+                    start: null,
+                    end: null,
+                },
                 code: "",
                 client: "",
                 product: "",
@@ -949,11 +888,17 @@ export default {
         }
     },
     created() {
-
         for (let x in this.batches.data) {
             if (this.batches.data[x].balance > 0)
                 this.form.batches.push(this.batches.data[x])
         }
+    },
+    mounted() {
+        const start = new Date();
+        start.setDate(1);
+        start.setHours(0, 0, 0, 0);
+        this.form.dates.start = start.toISOString()
+
     },
     computed: {
         filteredSales() {
@@ -970,25 +915,25 @@ export default {
             }
 
             /* Filter Sales By Code*/
-            if (this.form.code.length !== 0) {
+            if (this.search.length !== 0) {
                 filtered = (filtered).filter((sale) => {
-                    return sale.code.toLowerCase().includes(this.form.code.toLowerCase())
+                    return sale.code.toLowerCase().includes(this.search.toLowerCase()) || sale.client.name.toLowerCase().includes(this.search.toLowerCase())
                 })
             }
 
-            /* Filter Sales By Client*/
-            if (this.form.client.length !== 0) {
-                filtered = (filtered).filter((sale) => {
-                    return sale.client.name.toLowerCase().includes(this.form.client.toLowerCase())
-                })
+            /* Filter Sales By Date */
+            if (this.form.dates != null) {
+                if (this.form.dates.start != null) {
+                    filtered = (filtered).filter((sale) => {
+                        return sale.date >= this.getTimestampFromDate(this.form.dates.start)
+                    })
+                }
+                if (this.form.dates.end != null) {
+                    filtered = (filtered).filter((sale) => {
+                        return sale.date <= this.getTimestampFromDate(this.form.dates.end)
+                    })
+                }
             }
-
-            // /* Filter Sales By Product Name */
-            // if (this.form.product.length !== 0) {
-            //     filtered = (filtered).filter((sale) => {
-            //         return sale.product.data.inventory.name.toLowerCase().includes(this.form.product.toLowerCase())
-            //     })
-            // }
 
 
             return filtered
@@ -1028,13 +973,24 @@ export default {
 
             return receipts
         },
-        receiptsTotal() {
-            let sum = 0
+        receiptsMetrics() {
+            let total = 0
+            let profit = 0
+            let profitSummaries = []
             for (let x in this.filteredReceipts) {
-                sum += this.filteredReceipts[x].amount
+                total += this.filteredReceipts[x].amount
+
+                if (!profitSummaries.includes(this.filteredReceipts[x].siteSaleSummary.id)) {
+                    profit += this.filteredReceipts[x].siteSaleSummaryProfit
+                    profitSummaries.push(this.filteredReceipts[x].siteSaleSummary.id)
+                }
             }
-            return sum
+            return {
+                total: total,
+                profit: profit,
+            }
         },
+
 
         pendingBatchesTotal() {
             let sum = 0;
@@ -1053,6 +1009,8 @@ export default {
             let recorded = 0
             let total = 0
             let balance = 0
+            let profit = 0
+
 
             for (let x in this.filteredSales) {
                 //Register sale if it records unique id
@@ -1061,6 +1019,8 @@ export default {
                     recorded++
                 }
                 total += this.filteredSales[x].product.amount
+                profit += this.filteredSales[x].product.profit
+
 
                 // //add to metrics if product was paid for, partially or fully
                 // if (this.filteredSales[x].product.paymentStatus > 0) {
@@ -1074,6 +1034,7 @@ export default {
                 total: total,
                 collected: total - balance,
                 balance: balance,
+                profit: profit,
             }
         },
     },

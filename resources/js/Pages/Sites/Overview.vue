@@ -254,14 +254,12 @@
                 <i v-show="section === 'overview'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
             </div>
 
-            <inertia-link 
-            :href="route('sites.collections',{code:site.data.code})"
-                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                >
+            <inertia-link :href="route('sites.collections', { code: site.data.code })"
+                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
                 <div>Collections</div>
-                
-            </inertia-link >
-<!-- 
+
+            </inertia-link>
+            <!-- 
             <div @click="section = 'collections'"
                 class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
                 :class="{ 'info': section === 'collections' }">
@@ -272,6 +270,50 @@
 
         <div v-if="section === 'overview'" class="py-6">
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+
+                <div class="page-section">
+                    <div class="page-section-header">
+                        <div class="page-section-title">
+                            Overview
+                        </div>
+                    </div>
+                    <div class="page-section-content ">
+                        <div class="card mb-0 md:col-span-2  xl:col-span-4">
+                            <div class="flex justify-between mb-4">
+                                <div class="heading-font mb-4">Sales</div>
+                                <div>
+                                    <vue-date-time-picker v-model="form.dates" range />
+                                </div>
+                            </div>
+                            <div class="md:flex md:justify-between">
+
+                                <div>
+
+                                    <div class="text-xs mb-1 text-gray-500">Total Sales</div>
+                                    <div class="heading-font font-bold text-xl mb-4">
+                                        MK{{ numberWithCommas(metrics.total.toFixed(2)) }}
+                                        (
+                                        <Profit class="heading-font font-bold" :value="metrics.profit" />)
+
+                                    </div>
+                                </div>
+                                <div class="md:text-right" v-show="metrics.pendingPayments > 0">
+                                    <div class="text-xs mb-1 text-gray-500">Pending Payments</div>
+                                    <div class="heading-font font-bold text-xl text-red mb-4">
+                                        MK{{ numberWithCommas(metrics.pendingPayments.toFixed(2)) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div id="chart">
+                                    <apexchart type="area" :options="chartOptionsApex" height="180" :series="salesData">
+                                    </apexchart>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="page-section">
                     <div class="page-section-header">
@@ -296,7 +338,8 @@
                                                     <div class="ml-2">
                                                         <span
                                                             class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
-                                                                numberWithCommas((inventory.stock - inventory.uncollectedStock).toFixed(1))
+                                                                numberWithCommas((inventory.stock -
+                                                                    inventory.uncollectedStock).toFixed(1))
                                                             }}</span>
                                                     </div>
                                                 </div>
@@ -409,8 +452,24 @@
                                 </div>
                         -->
 
+                        <div class="mb-4 sm:flex sm:justify-end">
+                            <div>
+                                <vue-date-time-picker key="2" v-model="form.dates" range />
+                            </div>
+                        </div>
                         <div class="card default-table w-full">
-                            <!--                            {{ invoices.data }}-->
+
+                            <div>
+
+                                <button v-show="search.length > 0" @click="search = ''"
+                                    class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
+                                    <i class="mdi mdi-close"></i>
+                                </button>
+                                <jet-input id="search" type="text" class="block w-full" placeholder="Search"
+                                    v-model="search" autocomplete="seposale-filter-search" />
+
+
+                            </div>
                             <div class="p-2 mb-2 relative ">
                                 <table class="w-full  text-left text-gray-500 dark:text-gray-400">
                                     <thead
@@ -418,31 +477,16 @@
                                         <tr>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
                                             <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
-                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Sales</th>
-                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Collections</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Collections</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Sales</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Profit</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Pending Payments</th>
                                             <!--                                        <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>-->
                                             <!--                                        <th scope="col" class="p-2 pb-0 heading-font text-right">Balance</th>-->
                                             <!--                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>-->
                                             <!--                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Delivery Status</th>-->
                                         </tr>
-                                        <tr>
-                                            <th scope="col" class="p-2 pb-4 heading-font text-left">
-                                                <vue-date-time-picker v-model="form.dates" range />
-                                            </th>
-                                            <th scope="col" class="p-2 pb-4 heading-font text-left relative">
-                                                <button v-show="form.code.length > 0" @click="form.code = ''"
-                                                    class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
-                                                    <i class="mdi mdi-close"></i>
-                                                </button>
-                                                <jet-input id="code" type="text" class="block w-full"
-                                                    placeholder="Search" v-model="form.code"
-                                                    autocomplete="seposale-filter-code" />
 
-                                            </th>
-                                            <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
-                                            <th scope="col" class="p-2 pb-4 heading-font text-right"></th>
-
-                                        </tr>
 
                                     </thead>
                                     <tbody class="pt-8">
@@ -453,8 +497,20 @@
                                             <td class="p-2 text-left">{{ getDate(summary.date * 1000) }}</td>
                                             <td class="p-2 text-left">{{ summary.code }}
                                             </td>
-                                            <td class="p-2 text-left ">{{ numberWithCommas(summary.sales) }}</td>
-                                            <td class="p-2 text-left ">{{ numberWithCommas(summary.collections) }}</td>
+                                             <td class="p-2 text-right ">{{
+                                                numberWithCommas(summary.collections.toFixed(2)) }}
+                                            </td>
+                                            <td class="p-2 text-right ">{{ numberWithCommas(summary.sales.toFixed(2)) }}
+                                            </td>
+                                            <td class="py-2 pr-1 text-right">
+                                                <profit :value="summary.profit" />
+                                            </td>
+
+                                           
+
+                                            <td class="p-2 text-right ">
+                                                 <profit :value="summary.pendingPayments" />
+                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -566,10 +622,12 @@ import InventoryStatus from "@/Components/InventoryStatus.vue";
 import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 import Collection from "@/Components/Collection.vue";
+import Profit from "@/Components/Profit.vue";
 import JetDropdownLink from "@/Jetstream/DropdownLink.vue";
 import JetDropdown from "@/Jetstream/Dropdown.vue";
 import { Money } from 'v-money'
 import { Inertia } from '@inertiajs/inertia';
+import VueApexCharts from "vue-apexcharts";
 
 
 export default {
@@ -590,10 +648,13 @@ export default {
         PrimaryButton,
         DoughnutChart,
         SaleStatus,
-        Money
+        Money,
+        Profit,
+        "apexchart": VueApexCharts,
     },
     data() {
         return {
+            search: "",
             section: "overview",
             addStockDialog: false,
             addInventoryDialog: false,
@@ -601,7 +662,10 @@ export default {
             maxDate: new Date().toISOString().substr(0, 10),
             addStockErrorMessage: "",
             form: this.$inertia.form({
-                dates: null,
+                dates: {
+                    start:null,
+                    end:null,
+                },
                 code: "",
                 client: "",
                 product: "",
@@ -622,46 +686,59 @@ export default {
                 productId: 0,
 
             }),
-            chartOptions: {
-                plugins: {
-                    tooltip: {
-                        enabled: false
+            chartOptionsApex: {
+                chart: {
+                    type: 'area',
+                    stacked: false,
+                    // height: 350,
+                    zoom: {
+                        type: 'x',
+                        enabled: true,
+                        autoScaleYaxis: true
                     },
-                    legend: {
-                        display: false
+                    toolbar: {
+                        autoSelected: 'zoom'
                     }
-                }, cutout: 20
-            },
-            yearlySalesData: {
-                datasets: [{
-                    data: [],
-                    backgroundColor: ['#1a56db', '#ed0b4b', '#b1bbc9', '#e3ebf6'],
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                markers: {
+                    size: 0,
+                },
 
-                }],
-                labels: []
-            },
-            yearlySalesOptions: {
-                plugins: {
-                    tooltip: {
-                        enabled: true
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        inverseColors: false,
+                        opacityFrom: 0.5,
+                        opacityTo: 0,
+                        stops: [0, 90, 100]
                     },
-                    legend: {
-                        display: false,
+                },
+                yaxis: {
+                    labels: {
+                        formatter: function (val) {
+                            // return (val / 1000000).toFixed(0);
+                            return val;
+                        },
+                    },
+
+                },
+                xaxis: {
+                    type: 'datetime',
+                },
+                tooltip: {
+                    shared: false,
+                    y: {
+                        formatter: function (val) {
+                            // console.log(val)
+                            // return (val / 1000000).toFixed(0)
+                            return val
+                        }
                     }
-                },
-                scales: {
-                    xAxes: {
-                        grid: {
-                            display: false
-                        }
-                    },
-                    yAxes: {
-                        grid: {
-                            display: false
-                        }
-                    },
-                },
-                maintainAspectRatio: false
+                }
             },
             moneyMaskOptions: {
                 decimal: '.',
@@ -673,7 +750,7 @@ export default {
             },
         }
     },
-    created() {
+    mounted() {
         //Yearly Sales Chart
         // for (let x in this.chartData) {
         // for (let y in this.chartData[0].data) {
@@ -681,6 +758,11 @@ export default {
         //     this.yearlySalesData.labels.push(this.chartData[0].data[y].month)
         //     // }
         // }
+
+        const start = new Date();
+        start.setDate(1);
+        start.setHours(0, 0, 0, 0);
+        this.form.dates.start = start.toISOString()
 
     },
     computed: {
@@ -709,14 +791,16 @@ export default {
                     code: this.site.data.summaries[x].code,
                     date: this.site.data.summaries[x].date,
                     sales: this.site.data.summaries[x].totalSales,
+                    profit: this.site.data.summaries[x].profit,
+                    pendingPayments: this.site.data.summaries[x].pendingPayments,
                     collections: this.site.data.summaries[x].collections,
                 })
             }
 
             /* Filter Sales By Code*/
-            if (this.form.code.length !== 0) {
+            if (this.search.length !== 0) {
                 filtered = (filtered).filter((sale) => {
-                    return sale.code.toLowerCase().includes(this.form.code.toLowerCase())
+                    return sale.code.toLowerCase().includes(this.search.toLowerCase())
                 })
             }
 
@@ -735,6 +819,37 @@ export default {
             }
 
             return filtered
+        },
+        salesData() {
+            let receipts = [{
+                name: 'Sales',
+                data: []
+            }];
+
+            for (let x in this.filteredRecords) {
+                receipts[0].data.push({
+                    x: this.filteredRecords[x].date * 1000,
+                    y: this.filteredRecords[x].sales
+                })
+            }
+
+            return receipts
+        },
+        metrics() {
+            let total = 0
+            let profit = 0
+            let pendingPayments = 0
+
+            for (let x in this.filteredRecords) {
+                total += this.filteredRecords[x].sales
+                profit += this.filteredRecords[x].profit
+                pendingPayments += this.filteredRecords[x].pendingPayments
+            }
+            return {
+                total: total,
+                profit: profit,
+                pendingPayments: pendingPayments,
+            }
         },
         addStockValidation() {
             if (this.form.inventoryId == 0 || this.form.inventoryId == null) {

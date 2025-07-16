@@ -383,7 +383,7 @@
                     </select>
                 </div>
 
-                <div v-if="productIndex !== -1">
+                <div v-if="productIndex !== -1" class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div class="mb-4">
                         <jet-label for="units" value="Units" />
                         <jet-input type="text" class="block w-full" v-model="addRecordUnits" />
@@ -405,6 +405,104 @@
                         </div>
                     </div>
                 </div>
+
+                <div v-if="productIndex !== -1" class="mb-4">
+                    <!-- <div class="flex items-center mb-4">
+                        <input checked id="backdate" type="checkbox" v-model="outsource"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="backdate"
+                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Outsource
+                            Products?</label>
+                    </div> -->
+
+                    <div class="flex items-center mb-2">
+                        <input id="default-radio-1" type="radio" value="outsource" v-model="outsource"
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="default-radio-1"
+                            class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">Outsource
+                        </label>
+
+                        <input checked id="default-radio-2" type="radio" value="oss" v-model="outsource"
+                            class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="default-radio-2"
+                            class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">One Stop Shop</label>
+                    </div>
+
+                    <div v-if="outsource == 'outsource'">
+                        <div class="mb-4">
+                            <label class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300">Delivery
+                                Date</label>
+                            <vue-date-time-picker color="#1a56db" v-model="deliveryDate" :min-date="minDate" />
+                        </div>
+                    </div>
+
+                    <div v-else-if="product != null">
+                        <div class="mb-2">
+                            Select item under respective <span class="font-bold">One Stop Shop</span>
+                        </div>
+
+                        <table class="w-full mb-4">
+                            <th class="text-left"></th>
+                            <th class="text-left">Product</th>
+                            <th class="text-left">Quantity Available</th>
+                            <th class="text-left">Site Name</th>
+                            <tbody>
+                                <tr @click="inventoryId = inventory.id"
+                                    class="border-t-1 cursor-pointer hover:bg-gray-50"
+                                    v-for="(inventory, index) in product.inventories" :key="index">
+                                    <td class="text-left">
+
+                                        <!-- <i v-show="form.inventoryId == inventory.id"
+                                                        class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></i> -->
+                                        <!-- <span v-show="form.inventoryId == inventory.id"    class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">Check!</span> -->
+                                        <input id="default-radio-1" :checked="form.inventoryId == inventory.id"
+                                            type="checkbox" disabled value="deliver"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    </td>
+
+                                    <td class="text-left">
+                                        {{ inventory.name }}
+                                    </td>
+                                    <td class="text-left">
+                                        {{ inventory.readyStock }}
+                                    </td>
+                                    <td class="text-left">
+                                        {{ inventory.site.name }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="mb-2 md:col-span-2 text-gray-500 text-xs font-bold">Delivery Method?
+                        </div>
+
+                        <div class="flex items-center mb-2">
+                            <input id="default-radio-1" type="radio" value="delivery" v-model="deliveryMethod"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-1"
+                                class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">To
+                                Deliver</label>
+
+                            <input checked id="default-radio-2" type="radio" value="collection" v-model="deliveryMethod"
+                                class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-2"
+                                class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">Self
+                                Collection</label>
+                        </div>
+                        <div v-show="deliveryMethod == 'delivery'" class="mb-4">
+                            <label class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300">Delivery
+                                Date</label>
+                            <vue-date-time-picker color="#1a56db" v-model="deliveryDate" :min-date="minDate" />
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+
+
+
 
 
 
@@ -457,12 +555,19 @@ export default {
             addRecordQuantity: 0,
             addRecordUnitCost: 0,
 
+            outsource: "oss",
+            deliveryDate: null,
+            inventoryId: null,
+            deliveryMethod: null,
+
+
             productIndex: -1,
             clientIndex: -1,
 
             backdateCheck: false,
             date: null,
             maxDate: new Date().toISOString().substr(0, 10),
+            minDate: null,
             form: this.$inertia.form({
 
                 name: '',
@@ -514,6 +619,7 @@ export default {
                         "unit": this.products.data[x].variants[y].unit,
                         "cost": this.products.data[x].variants[y].cost,
                         "quantity": this.products.data[x].variants[y].quantity,
+                        "inventories": this.products.data[x].inventories,
                     })
                 }
             }
@@ -545,6 +651,24 @@ export default {
 
             return files
         },
+        addProductValidation() {
+
+            if (this.productIndex == 0) {
+                this.productError = "Select product"
+                return false
+            } else if (this.outsource == 'outsource' && this.deliveryDate == null) {
+                this.productError = "Enter delivery date"
+                return false
+            } else if (this.outsource == 'oss' && this.inventoryId == null || this.inventoryId == 0) {
+                this.productError = "Select product under one stop shop"
+                return false
+            } else if (this.outsource == 'oss' && this.deliveryMethod == null) {
+                this.productError = "Select delivery method"
+                return false
+            } else {
+                return true
+            }
+        },
         validation() {
 
             if (this.checkClient === "new") {
@@ -566,14 +690,16 @@ export default {
                 }
             }
 
+            //products and services
             if (isNaN(this.totalCost)) {
                 this.error = "Enter valid product and services details"
                 return false
             } else if (this.totalCost <= 0) {
                 this.error = "Enter products and services"
                 return false
-            } else
-                return true
+            }
+
+            return true
 
         },
         saleDate() {
@@ -637,11 +763,21 @@ export default {
                     "quantity": this.addRecordQuantity,
                     "unitCost": this.addRecordUnitCost,
                     "totalCost": this.addRecordTotal,
+                    "meta": {
+                        "outsource": this.outsource,
+                        "deliveryDate": this.deliveryDate,
+                        "inventoryId": this.inventoryId,
+                        "deliveryMethod": this.deliveryMethod,
+                    },
                 })
             }
 
             this.productIndex = -1
             this.addRecordDialog = false
+            this.outsource = "oss"
+            this.deliveryDate = null
+            this.inventoryId = 0
+            this.deliveryMethod = null
 
         },
         cancelAddRecord() {

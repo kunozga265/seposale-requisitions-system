@@ -24,7 +24,9 @@ class InventorySummaryResource extends JsonResource
             "closingStock" => json_decode($this->closing_stock),
             "comments" => json_decode($this->comments),
             "user" => new UserResource($this->user),
-            "totalSales" => $this->totalSales(),
+            "totalSales" => $this->metrics()["total"],
+            "profit" => $this->metrics()["profit"],
+            "pendingPayments" => $this->metrics()["pending_payments"],
             "collections" => $this->collections->count(),
             "active" => !InventorySummary::where("created_at", ">",$this->created_at)->exists()
         ];

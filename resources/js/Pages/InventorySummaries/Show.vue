@@ -32,7 +32,7 @@
 
         <template #actions>
 
-            
+
 
             <inertia-link :href="route('sites.sales.create', { code: site.code })">
                 <primary-button>
@@ -79,16 +79,18 @@
                                         <tbody class="pt-8">
 
                                             <tr class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                            @click="navigateToInventory(item.id)"
                                                 v-for="(item, index) in summary.data.openingStock" :key="index">
                                                 <td class="p-2 text-left">{{ item.name }}</td>
                                                 <td class="p-2 text-left ">{{ numberWithCommas(item.availableStock) }}
                                                 </td>
                                                 <td class="p-2 text-left ">{{
                                                     numberWithCommas(item.uncollectedStock)
-                                                }}
+                                                    }}
                                                 </td>
                                                 <td class="p-2 text-left ">
-                                                    {{ numberWithCommas(item.availableStock + item.uncollectedStock) }}
+                                                    {{ numberWithCommas(parseFloat(item.availableStock) +
+                                                        parseFloat(item.uncollectedStock)) }}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -119,6 +121,7 @@
                                         <tbody class="pt-8">
 
                                             <tr v-if="summary.data.closingStock.length > 0"
+                                                @click="navigateToInventory(item.id)"
                                                 class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                                 v-for="(item, index) in summary.data.closingStock" :key="index">
                                                 <td class="p-2 text-left">{{ item.name }}</td>
@@ -126,13 +129,15 @@
                                                 </td>
                                                 <td class="p-2 text-left ">{{
                                                     numberWithCommas(item.uncollectedStock)
-                                                }}
+                                                    }}
                                                 </td>
                                                 <td class="p-2 text-left ">
-                                                    {{ numberWithCommas(item.availableStock + item.uncollectedStock) }}
+                                                    {{ numberWithCommas(parseFloat(item.availableStock) +
+                                                        parseFloat(item.uncollectedStock)) }}
                                                 </td>
                                             </tr>
                                             <tr v-if="summary.data.closingStock.length === 0"
+                                            @click="navigateToInventory(item.id)"
                                                 class="cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                                 v-for="(item, index) in inventories.data" :key="index">
                                                 <td class="p-2 text-left">{{ item.name }}</td>
@@ -140,7 +145,7 @@
                                                 </td>
                                                 <td class="p-2 text-left ">{{
                                                     numberWithCommas(item.uncollectedStock)
-                                                }}
+                                                    }}
                                                 </td>
                                                 <td class="p-2 text-left ">
                                                     {{ numberWithCommas(item.availableStock + item.uncollectedStock) }}
@@ -179,12 +184,12 @@
                                             <td @click="navigateToCollection(item.code)"
                                                 class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                                 {{
-                                                item.code }}</td>
+                                                    item.code }}</td>
                                             <td @click="navigateToSale(item.siteSaleSummary.sale.id)"
                                                 class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                                 {{
                                                     item.siteSaleSummary.sale.code }}</td>
-                                            <td @click="navigateToClient(item.client.id)" class="p-2 text-left ">{{
+                                            <td @click="navigateToClient(item.client.id)" class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">{{
                                                 item.client.name }}</td>
 
                                             <td @click="navigateToInventory(item.inventory.id)"
@@ -235,6 +240,24 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="card">
+                                    <div class="flex justify-start items-center">
+                                        <div class="">
+                                            <div class="heading-font" style="font-weight: 600;">Profit</div>
+                                            <Profit class="text-sm" :value="metrics.profit" />
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="flex justify-start items-center">
+                                        <div class="">
+                                            <div class="heading-font" style="font-weight: 600;">Pending Payments</div>
+                                            <Profit class="text-sm" :value="metrics.pendingPayments" />
+
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
 
@@ -264,6 +287,8 @@
                                                 <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-right">Balance</th>
+                                                <th scope="col" class="p-2 pb-0 heading-font text-right">Profit</th>
+                                                <th scope="col" class="p-2 pb-0 heading-font text-right">Pending Payments</th>
 
                                                 <th scope="col" class="p-2 pb-0 heading-font text-right">Quantity</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-right">Collected</th>
@@ -330,20 +355,26 @@
                                                 <td class="p-2 text-left ">{{ sale.product.inventory.name }}</td>
                                                 <td class="p-2 text-right">{{
                                                     numberWithCommas(sale.product.amount.toFixed(2))
-                                                }}
+                                                    }}
                                                 </td>
                                                 <td class="p-2 text-right">{{
                                                     numberWithCommas(sale.product.balance.toFixed(2))
-                                                }}
+                                                    }}
+                                                </td>
+                                                <td class="p-2 text-right">
+                                                    <profit :value="sale.product.profit" />
+                                                </td>
+                                                <td class="p-2 text-right">
+                                                    <profit :value="sale.product.pendingPayments" />
                                                 </td>
 
                                                 <td class="p-2 text-right">{{
                                                     numberWithCommas(sale.product.quantity.toFixed(2))
-                                                }}
+                                                    }}
                                                 </td>
                                                 <td class="p-2 text-right">{{
                                                     numberWithCommas(sale.product.collected.toFixed(2))
-                                                }}
+                                                    }}
                                                 </td>
 
 
@@ -383,13 +414,16 @@ import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
 import { Money } from 'v-money'
 import Collection from "@/Components/Collection.vue";
+// import Profit from "@/Components/Profit.vue";
 import DeliveryStatus from "@/Components/DeliveryStatus.vue";
+import Profit from '../../Components/Profit.vue';
 
 
 export default {
     props: ['site', 'summary', 'inventories', 'sales', 'collections'],
     components: {
         Collection,
+        // Profit,
         AppLayout,
         DoughnutChart,
         PieChart,
@@ -457,6 +491,8 @@ export default {
             let recorded = 0
             let total = 0
             let balance = 0
+            let profit = 0
+            let pendingPayments = 0
 
             for (let x in this.filteredSales) {
                 //Register sale if it records unique id
@@ -465,6 +501,8 @@ export default {
                     recorded++
                 }
                 total += this.filteredSales[x].product.amount
+                profit += this.filteredSales[x].product.profit
+                pendingPayments += this.filteredSales[x].product.pendingPayments
 
                 // //add to metrics if product was paid for, partially or fully
                 // if (this.filteredSales[x].product.paymentStatus > 0) {
@@ -478,6 +516,8 @@ export default {
                 total: total,
                 collected: total - balance,
                 balance: balance,
+                profit: profit,
+                pendingPayments: pendingPayments,
             }
         },
     },

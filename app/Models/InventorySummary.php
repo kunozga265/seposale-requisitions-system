@@ -34,13 +34,21 @@ class InventorySummary extends Model
         return $this->belongsTo(PaymentMethod::class);
     }
 
-    public function totalSales()
+    public function metrics()
     {
         $sum = 0;
+        $profit = 0;
+        $pending_payments = 0;
         foreach ($this->sales as $sale) {
             $sum += $sale->total;
+            $profit += $sale->profit();
+            $pending_payments += $sale->pendingPayments();
         }
-        return $sum;
+        return [
+            "total" => $sum,
+            "profit" => $profit,
+            "pending_payments" => $pending_payments,
+        ];
     }
 
     protected $fillable = [

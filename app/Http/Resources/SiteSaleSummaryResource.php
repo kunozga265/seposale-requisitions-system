@@ -44,6 +44,7 @@ class SiteSaleSummaryResource extends JsonResource
             ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
             'profit' => $this->profit(),
+            'pendingPayments' => $this->paidBalance() < 0 ? abs($this->paidBalance()) : 0,
         ];
     }
 }

@@ -42,11 +42,11 @@
       <!--        <primary-button>Print Invoice</primary-button>-->
       <!--      </a>-->
       <!--      </span>-->
-             <inertia-link :href="route('sites.sales.create', { code: site.code })">
-                    <primary-button>
-                        Record Sale
-                    </primary-button>
-                </inertia-link>
+      <inertia-link :href="route('sites.sales.create', { code: site.code })">
+        <primary-button>
+          Record Sale
+        </primary-button>
+      </inertia-link>
 
       <a :href="route('sales.print', { 'id': sale.data.id })" target="_blank">
         <primary-button>Print</primary-button>
@@ -161,8 +161,12 @@
 
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Profit</div>
-                  <div :class="{ 'text-red-500': sale.data.profit < 0, 'text-green-500': sale.data.profit > 0, }">
-                    MK{{ sale.data.profit }}
+                   <Profit :value="sale.data.profit"/> 
+                </div>
+                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Pending Payments (Receivables)</div>
+                  <div>
+                    <Profit :value="sale.data.pendingPayments"/> 
                   </div>
                 </div>
 
@@ -170,6 +174,7 @@
                 <!--                  <div class="text-gray-600 font-semibold">Site Location</div>-->
                 <!--                  <div>{{ sale.data.location }}</div>-->
                 <!--                </div>-->
+
               </div>
             </div>
           </div>
@@ -247,7 +252,7 @@
             <div class="page-section-content">
               <div class="card">
                 <div class="p-2 relative overflow-x-auto">
-                  <table class="overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                  <table class="default-table overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
                         <th scope="col" class="heading-font">
@@ -274,6 +279,12 @@
                         <th scope="col" class="heading-font text-right">
                           Balance
                         </th>
+                        <th scope="col" class="heading-font text-right">
+                          Profit
+                        </th>
+                        <th scope="col" class="heading-font text-right">
+                          Pending
+                        </th>
 
                       </tr>
                     </thead>
@@ -288,7 +299,7 @@
                           <collection
                             class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                             :client="sale.data.client" :product="productCompound" :is-solo="true"
-                            @navigate="navigateToCollection"  />
+                            @navigate="navigateToCollection" />
                         </td>
                         <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
                           :class="{ 'strike-through': productCompound.trashed }"
@@ -314,10 +325,17 @@
                             productCompound.balance != null ? numberWithCommas(productCompound.balance) : "-"
                           }}
                         </td>
+                        <td class="py-2 pr-1 text-right">
+                           <profit :value="productCompound.profit" />
+                        </td>
+                        <td class="py-2 pr-1 text-right">
+                           <profit :value="productCompound.pendingPayments" />
+                        </td>
 
 
                       </tr>
                       <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -450,7 +468,8 @@
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                       v-bind="moneyMaskOptions" v-model="product.amount" />
                     <!--                    <jet-input type="text" class="block w-full" v-model="form.amount"/>-->
-                    <div class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': !balanceValidate(product) }">Balance:
+                    <div class="mt-1 text-xs text-gray-500" :class="{ 'text-red-500': !balanceValidate(product) }">
+                      Balance:
                       MK{{ numberWithCommas(product.balance) }}
                     </div>
                   </div>
@@ -628,6 +647,10 @@ export default {
       } else
         return null
     },
+    pendingPayments() {
+     
+        return this.sale.data.pendingPayments * -1
+    },
     paymentMethod() {
       if (parseInt(this.paymentMethodIndex) > 0) {
         return this.paymentMethods[this.paymentMethodIndex]
@@ -753,7 +776,7 @@ export default {
     navigateToInventory(id) {
       this.$inertia.get(this.route('sites.inventories.show', { 'code': this.site.code, 'id': id }))
     },
-     navigateToCollection(code) {
+    navigateToCollection(code) {
       this.$inertia.get(this.route('sites.collections.show', { 'code': this.site.code, 'collection_code': code }))
     },
   }

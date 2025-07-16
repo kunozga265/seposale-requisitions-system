@@ -34,6 +34,7 @@ class SiteSaleResource extends JsonResource
             'receipts' => ReceiptResource::collection($this->receipts),
             'generatedBy' => new UserResource($this->user),
             'profit' => $this->profit(),
+            'pendingPayments' => $this->pendingPayments(),
         ];
     }
 }

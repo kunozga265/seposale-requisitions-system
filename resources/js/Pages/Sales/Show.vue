@@ -165,7 +165,7 @@
                                     <div class="text-gray-600 font-semibold">Profit</div>
                                     <div
                                         :class="{ 'text-red-500': sale.data.profit < 0, 'text-green-500': sale.data.profit > 0, }">
-                                        MK{{ sale.data.profit }}
+                                        MK{{ numberWithCommas(sale.data.profit.toFixed(2)) }}
                                     </div>
                                 </div>
 
@@ -505,7 +505,7 @@
                                                 <td class="py-2 pr-1 text-right">
                                                     <span
                                                         :class="{ 'text-red-500': productCompound.profit < 0, 'text-green-500': productCompound.profit > 0, }">
-                                                        {{ productCompound.profit }}
+                                                        {{ numberWithCommas(productCompound.profit.toFixed(2)) }}
                                                     </span>
                                                 </td>
                                                 <td class="px-2">

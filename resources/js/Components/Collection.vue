@@ -237,7 +237,7 @@ export default {
             if(this.product.inventoryStock > this.quantityBalance){
                 return this.quantityBalance
             }else{
-                this.product.inventoryStock
+                return this.product.inventoryStock
             }
         }
     },

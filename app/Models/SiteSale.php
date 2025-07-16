@@ -52,20 +52,32 @@ class SiteSale extends Model
         return $this->belongsTo(PaymentMethod::class);
     }
 
-     public function batches()
+    public function batches()
     {
-        return $this->belongsToMany(Batch::class,'site_sales_batches','site_sale_id','batch_id');
+        return $this->belongsToMany(Batch::class, 'site_sales_batches', 'site_sale_id', 'batch_id');
     }
 
 
-    public function profit(){
+    public function profit()
+    {
         $sum = 0;
-        foreach($this->products as $summary){
+        foreach ($this->products as $summary) {
             $sum += $summary->profit();
         }
         return $sum;
     }
-    
+
+    public function pendingPayments()
+    {
+        $sum = 0;
+        foreach ($this->products as $summary) {
+            if ($summary->paidBalance() < 0) {
+                $sum += abs($summary->paidBalance());
+            }
+        }
+        return $sum;
+    }
+
     protected $fillable = [
         "code",
         "serial",

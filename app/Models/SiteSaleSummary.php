@@ -133,7 +133,7 @@ class SiteSaleSummary extends Model
 
         //has delivery
         if ($this->delivery != null) {
-            $profit = $paid - $this->delivery->costs();
+            $profit = $paid * ($this->delivery->quantity_delivered / $this->quantity) - $this->delivery->costs();
         }
         //has collection
         else {
@@ -141,7 +141,7 @@ class SiteSaleSummary extends Model
             foreach ($this->collections as $collection) {
                 $sum += $collection->cost;
             }
-            $profit = $paid - $sum;
+            $profit = $paid * ($this->collected / $this->quantity) - $sum;
         }
         return $profit;
     }

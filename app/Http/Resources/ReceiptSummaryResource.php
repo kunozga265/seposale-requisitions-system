@@ -26,7 +26,9 @@ class ReceiptSummaryResource extends JsonResource
             "cost" => floatval($this->cost) ?? null,
             "units" => $this->units ?? null,
             "summary" => $this->summary,
+            "summaryProfit" => $this->summary?->profit() ?? 0,
             "siteSaleSummary" => $this->siteSaleSummary,
+            "siteSaleSummaryProfit" => $this->siteSaleSummary?->profit() ?? 0,
         ];
     }
 }
