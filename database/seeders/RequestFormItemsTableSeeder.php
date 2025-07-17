@@ -24,7 +24,7 @@ class RequestFormItemsTableSeeder extends Seeder
             }
             foreach ($items as $item) {
                 RequestFormItem::create([
-                    "details" => $item['details'],
+                    "details" => $item['details'] ?? "N/A",
                     "units" => $item['units'],
                     "quantity" => $item['quantity'],
                     "unit_cost" => $item['unitCost'],
