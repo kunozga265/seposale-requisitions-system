@@ -30,65 +30,65 @@
 
     <div class="py-6">
       <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+
+
+         <div class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Account Details
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+
+                            <div class="card p-0">
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Account Name</div>
+                                    <div>{{ account.data.name }}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Code</div>
+                                    <div>{{ account.data.code }}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Group</div>
+                                    <div>{{ account.data.group.type.name }}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold ">Type</div>
+                                    <div>{{ account.data.type }}</div>
+                                </div>
+                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                    <div class="text-gray-600 font-semibold">Balance</div>
+                                    <div>MK{{ numberWithCommas(account.data.balance.toFixed(2)) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
         <form @submit.prevent="submit">
           <div class="page-section">
-            <div class="page-section-header">
-              <div class="page-section-title">
-                Details
-              </div>
-            </div>
+
             <div class="page-section-content flex justify-center">
 
               <div class="card w-full sm:max-w-md md:max-w-3xl">
 
                 <jet-validation-errors class="mb-4" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-
-
-                  <div class="mb-2 ">
-                    <jet-label for="name" value="Account Name" />
-                    <jet-input id="name" type="text" class="block w-full" v-model="form.name"
-                      autocomplete="seposale-customer-name" />
-                  </div>
-
-                  <div class="mb-2">
-                    <jet-label for="number" value="Account Number" />
-                    <jet-input id="number" type="text" class="block w-full" v-model="form.number"
-                      autocomplete="seposale-customer-number" />
-                  </div>
-
-
-                  <div class=" mb-2">
-                    <jet-label for="branch" value="Branch" />
-                    <jet-input id="branch" type="text" class="block w-full" v-model="form.branch"
-                      autocomplete="seposale-customer-branch" />
-                  </div>
-
-                  <div class="mb-2">
-                    <jet-label for="type" value="Type" />
-                    <jet-input id="type" type="text" class="block w-full" v-model="form.type"
-                      autocomplete="seposale-customer-type" placeholder="e.g. Savings" />
-                  </div>
-
-                  <div class="mb-2">
-                    <jet-label for="balance" value="Account Balance" />
+                 <div class="mb-4">
+                    <jet-label for="balance" value="New Balance" />
                     <money
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                      v-bind="moneyMaskOptions" v-model="form.balance" />
-                  </div>
-
-                  <div class="mb-4">
-                    <div class="text-mute text-sm mb-1">
-                      Upload Photo
-                    </div>
-                    <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
-                      class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
-                    <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
-                    </div>
+                      v-bind="moneyMaskOptions" v-model="balance" />
                   </div>
 
 
+                <div class="text-center" v-show="amount != 0">
+                  <div ><Profit class="heading-font font-bold text-2xl" :value="amount"/></div>
+                  <div class="text-base font-bold" :class="{'text-green-500 font-bold': account.data.type == type, 'text-red-500 font-bold': account.data.type != type}">
+                    {{ type }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -147,13 +147,8 @@ export default {
     },
     data() {
         return {
+          balance: this.account.data.balance,
             form: this.$inertia.form({
-                name: this.account.data.name,
-                number: this.account.data.number,
-                photo: null,
-                branch: this.account.data.branch,
-                type: this.account.data.type,
-                balance: this.account.data.balance,
             }),
             error: '',
             moneyMaskOptions: {
@@ -171,20 +166,21 @@ export default {
 
     },
     computed: {
+      amount(){
+        return  this.balance - this.account.data.balance
+      },
+      type(){
+        if(this.account.data.type === "DEBIT"){
+          return this.amount < 0 ? "CREDIT" : "DEBIT"
+        }else{
+          return this.amount < 0 ? "DEBIT" : "CREDIT"
+        }
+      },
         validation() {
-            if (this.form.name.length === 0) {
-                this.error = "Enter account name"
+            if (this.amount === 0) {
+                this.error = "Enter new balance"
                 return false
-            } else if (this.form.number.length === 0) {
-                this.error = "Enter account number"
-                return false
-            } if (this.form.name.type === 0) {
-                this.error = "Enter branch name"
-                return false
-            } else if (this.form.balance < 0) {
-                this.error = "Enter account balance"
-                return false
-            } else
+            }  else
                 return true
 
         },
@@ -197,9 +193,11 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
+                    amount:this.amount,
+                    type:this.type,
                  
                 }))
-                .post(this.route('accounts.update',{id:this.account.data.id}))
+                .post(this.route('accounts.update-balance',{code:this.account.data.code}))
         },
         photoUpload(file) {
             const reader = new FileReader();

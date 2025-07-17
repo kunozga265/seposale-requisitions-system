@@ -31,6 +31,7 @@ class AccountingRecordResource extends JsonResource
             "serial" => $this->serial,
             "reference" => $this->reference,    
             "date" => intval($this->date),
+            "createdDate" => intval($this->created_at->getTimestamp()),
             "name" => $this->name,
             "description" => $this->description,
             "amount" => floatval($this->amount),

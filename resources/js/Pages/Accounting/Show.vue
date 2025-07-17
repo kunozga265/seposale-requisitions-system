@@ -34,9 +34,9 @@
 
             <!-- <primary-button @click.native="addTransationDialog = true">Add Transaction</primary-button>
             <primary-button @click.native="transferDialog = true">Transfer</primary-button> -->
-            <!-- <a :href="route('accounts.edit', { 'id': account.data.id })">
-                <secondary-button>Edit</secondary-button>
-            </a> -->
+            <a :href="route('accounts.edit', { 'code': account.data.code })">
+                <secondary-button>Edit Balance</secondary-button>
+            </a>
         </template>
 
 
@@ -265,6 +265,7 @@
                                             class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 
                                             <tr>
+                                                <th scope="col" class="p-2 pb-0 heading-font text-left">Recorded at</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-left">Reference</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-left">Name</th>
@@ -278,6 +279,9 @@
                                         <tbody class="pt-8">
                                             <tr @click="navigateToTransaction(record.serial)" :id="record.serial"  v-for="(record, index) in filteredRecords.data" :key="index"
                                                 class="border-b cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
+                                                <td class="p-2 text-left ">
+                                                    {{ getDate(record.createdDate * 1000) }}
+                                                </td>
                                                 <td class="p-2 text-left ">
                                                     {{ getDate(record.date * 1000) }}
                                                 </td>

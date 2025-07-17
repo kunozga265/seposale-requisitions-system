@@ -4489,14 +4489,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   }, "Money", v_money__WEBPACK_IMPORTED_MODULE_6__.Money),
   data: function data() {
     return {
-      form: this.$inertia.form({
-        name: this.account.data.name,
-        number: this.account.data.number,
-        photo: null,
-        branch: this.account.data.branch,
-        type: this.account.data.type,
-        balance: this.account.data.balance
-      }),
+      balance: this.account.data.balance,
+      form: this.$inertia.form({}),
       error: '',
       moneyMaskOptions: {
         decimal: '.',
@@ -4510,19 +4504,19 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   },
   created: function created() {},
   computed: {
-    validation: function validation() {
-      if (this.form.name.length === 0) {
-        this.error = "Enter account name";
-        return false;
-      } else if (this.form.number.length === 0) {
-        this.error = "Enter account number";
-        return false;
+    amount: function amount() {
+      return this.balance - this.account.data.balance;
+    },
+    type: function type() {
+      if (this.account.data.type === "DEBIT") {
+        return this.amount < 0 ? "CREDIT" : "DEBIT";
+      } else {
+        return this.amount < 0 ? "DEBIT" : "CREDIT";
       }
-      if (this.form.name.type === 0) {
-        this.error = "Enter branch name";
-        return false;
-      } else if (this.form.balance < 0) {
-        this.error = "Enter account balance";
+    },
+    validation: function validation() {
+      if (this.amount === 0) {
+        this.error = "Enter new balance";
         return false;
       } else return true;
     }
@@ -4530,23 +4524,27 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
   watch: {},
   methods: {
     submit: function submit() {
+      var _this = this;
       this.form.transform(function (data) {
-        return _objectSpread({}, data);
-      }).post(this.route('accounts.update', {
-        id: this.account.data.id
+        return _objectSpread(_objectSpread({}, data), {}, {
+          amount: _this.amount,
+          type: _this.type
+        });
+      }).post(this.route('accounts.update-balance', {
+        code: this.account.data.code
       }));
     },
     photoUpload: function photoUpload(file) {
-      var _this = this;
+      var _this2 = this;
       var reader = new FileReader();
       if (file) {
         reader.readAsDataURL(file);
         reader.onload = function (e) {
-          axios.post(_this.$page.props.publicPath + "api/1.0.0/upload", {
+          axios.post(_this2.$page.props.publicPath + "api/1.0.0/upload", {
             type: "OTHER",
             file: e.target.result
           }).then(function (res) {
-            _this.form.photo = res.data.file;
+            _this2.form.photo = res.data.file;
           })["catch"](function (res) {
             // this.form.errors.push(res.data.message)
           });
@@ -4628,6 +4626,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       transactionType: "DEFAULT",
       error: "",
       search: "",
+      maxDate: new Date().toISOString(),
+      date: null,
+      backdateCheck: false,
       form: this.$inertia.form({
         amount: 0,
         debitAccountId: 0,
@@ -4761,6 +4762,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       var _this4 = this;
       this.form.transform(function (data) {
         return _objectSpread(_objectSpread({}, data), {}, {
+          date: _this4.getNullableDate(),
           debit_account_id: _this4.form.debitAccountId,
           debit_account_reference: _this4.form.debitAccountReference,
           credit_account_id: _this4.form.creditAccountId,
@@ -4782,6 +4784,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     selectClient: function selectClient(id) {
       this.listOfAccounts.push(id);
       console.log(id);
+    },
+    getNullableDate: function getNullableDate() {
+      return this.date ? new Date(this.date).getTime() / 1000 : null;
     }
   }
 });
@@ -16753,6 +16758,23 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         }
       });
     },
+    navigateToClient: function navigateToClient(id) {
+      this.$inertia.get(this.route('clients.show', {
+        'id': id
+      }));
+    },
+    navigateToSale: function navigateToSale(id) {
+      this.$inertia.get(this.route('sites.sales.show', {
+        'code': this.site.data.code,
+        'id': id
+      }));
+    },
+    navigateToInventory: function navigateToInventory(id) {
+      this.$inertia.get(this.route('sites.inventories.show', {
+        'code': this.site.data.code,
+        'id': id
+      }));
+    },
     navigateToSite: function navigateToSite(id) {
       this.$inertia.get(this.route('sites.show', {
         'id': id
@@ -23425,7 +23447,37 @@ var render = function render() {
     staticClass: "py-6"
   }, [_c("div", {
     staticClass: "max-w-7xl mx-auto px-2 sm:px-6 lg:px-8"
-  }, [_c("form", {
+  }, [_c("div", {
+    staticClass: "page-section"
+  }, [_c("div", {
+    staticClass: "page-section-header"
+  }, [_c("div", {
+    staticClass: "page-section-title"
+  }, [_vm._v("\n                              Account Details\n                          ")])]), _vm._v(" "), _c("div", {
+    staticClass: "page-section-content"
+  }, [_c("div", {
+    staticClass: "card p-0"
+  }, [_c("div", {
+    staticClass: "border-b px-4 py-3 flex justify-between text-sm"
+  }, [_c("div", {
+    staticClass: "text-gray-600 font-semibold"
+  }, [_vm._v("Account Name")]), _vm._v(" "), _c("div", [_vm._v(_vm._s(_vm.account.data.name))])]), _vm._v(" "), _c("div", {
+    staticClass: "border-b px-4 py-3 flex justify-between text-sm"
+  }, [_c("div", {
+    staticClass: "text-gray-600 font-semibold"
+  }, [_vm._v("Code")]), _vm._v(" "), _c("div", [_vm._v(_vm._s(_vm.account.data.code))])]), _vm._v(" "), _c("div", {
+    staticClass: "border-b px-4 py-3 flex justify-between text-sm"
+  }, [_c("div", {
+    staticClass: "text-gray-600 font-semibold"
+  }, [_vm._v("Group")]), _vm._v(" "), _c("div", [_vm._v(_vm._s(_vm.account.data.group.type.name))])]), _vm._v(" "), _c("div", {
+    staticClass: "border-b px-4 py-3 flex justify-between text-sm"
+  }, [_c("div", {
+    staticClass: "text-gray-600 font-semibold"
+  }, [_vm._v("Type")]), _vm._v(" "), _c("div", [_vm._v(_vm._s(_vm.account.data.type))])]), _vm._v(" "), _c("div", {
+    staticClass: "border-b px-4 py-3 flex justify-between text-sm"
+  }, [_c("div", {
+    staticClass: "text-gray-600 font-semibold"
+  }, [_vm._v("Balance")]), _vm._v(" "), _c("div", [_vm._v("MK" + _vm._s(_vm.numberWithCommas(_vm.account.data.balance.toFixed(2))))])])])])]), _vm._v(" "), _c("form", {
     on: {
       submit: function submit($event) {
         $event.preventDefault();
@@ -23435,136 +23487,47 @@ var render = function render() {
   }, [_c("div", {
     staticClass: "page-section"
   }, [_c("div", {
-    staticClass: "page-section-header"
-  }, [_c("div", {
-    staticClass: "page-section-title"
-  }, [_vm._v("\n              Details\n            ")])]), _vm._v(" "), _c("div", {
     staticClass: "page-section-content flex justify-center"
   }, [_c("div", {
     staticClass: "card w-full sm:max-w-md md:max-w-3xl"
   }, [_c("jet-validation-errors", {
     staticClass: "mb-4"
   }), _vm._v(" "), _c("div", {
-    staticClass: "grid grid-cols-1 md:grid-cols-2 gap-2"
-  }, [_c("div", {
-    staticClass: "mb-2"
-  }, [_c("jet-label", {
-    attrs: {
-      "for": "name",
-      value: "Account Name"
-    }
-  }), _vm._v(" "), _c("jet-input", {
-    staticClass: "block w-full",
-    attrs: {
-      id: "name",
-      type: "text",
-      autocomplete: "seposale-customer-name"
-    },
-    model: {
-      value: _vm.form.name,
-      callback: function callback($$v) {
-        _vm.$set(_vm.form, "name", $$v);
-      },
-      expression: "form.name"
-    }
-  })], 1), _vm._v(" "), _c("div", {
-    staticClass: "mb-2"
-  }, [_c("jet-label", {
-    attrs: {
-      "for": "number",
-      value: "Account Number"
-    }
-  }), _vm._v(" "), _c("jet-input", {
-    staticClass: "block w-full",
-    attrs: {
-      id: "number",
-      type: "text",
-      autocomplete: "seposale-customer-number"
-    },
-    model: {
-      value: _vm.form.number,
-      callback: function callback($$v) {
-        _vm.$set(_vm.form, "number", $$v);
-      },
-      expression: "form.number"
-    }
-  })], 1), _vm._v(" "), _c("div", {
-    staticClass: "mb-2"
-  }, [_c("jet-label", {
-    attrs: {
-      "for": "branch",
-      value: "Branch"
-    }
-  }), _vm._v(" "), _c("jet-input", {
-    staticClass: "block w-full",
-    attrs: {
-      id: "branch",
-      type: "text",
-      autocomplete: "seposale-customer-branch"
-    },
-    model: {
-      value: _vm.form.branch,
-      callback: function callback($$v) {
-        _vm.$set(_vm.form, "branch", $$v);
-      },
-      expression: "form.branch"
-    }
-  })], 1), _vm._v(" "), _c("div", {
-    staticClass: "mb-2"
-  }, [_c("jet-label", {
-    attrs: {
-      "for": "type",
-      value: "Type"
-    }
-  }), _vm._v(" "), _c("jet-input", {
-    staticClass: "block w-full",
-    attrs: {
-      id: "type",
-      type: "text",
-      autocomplete: "seposale-customer-type",
-      placeholder: "e.g. Savings"
-    },
-    model: {
-      value: _vm.form.type,
-      callback: function callback($$v) {
-        _vm.$set(_vm.form, "type", $$v);
-      },
-      expression: "form.type"
-    }
-  })], 1), _vm._v(" "), _c("div", {
-    staticClass: "mb-2"
+    staticClass: "mb-4"
   }, [_c("jet-label", {
     attrs: {
       "for": "balance",
-      value: "Account Balance"
+      value: "New Balance"
     }
   }), _vm._v(" "), _c("money", _vm._b({
     staticClass: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white",
     model: {
-      value: _vm.form.balance,
+      value: _vm.balance,
       callback: function callback($$v) {
-        _vm.$set(_vm.form, "balance", $$v);
+        _vm.balance = $$v;
       },
-      expression: "form.balance"
+      expression: "balance"
     }
   }, "money", _vm.moneyMaskOptions, false))], 1), _vm._v(" "), _c("div", {
-    staticClass: "mb-4"
-  }, [_c("div", {
-    staticClass: "text-mute text-sm mb-1"
-  }, [_vm._v("\n                    Upload Photo\n                  ")]), _vm._v(" "), _c("input", {
-    staticClass: "w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm",
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.amount != 0,
+      expression: "amount != 0"
+    }],
+    staticClass: "text-center"
+  }, [_c("div", [_c("Profit", {
+    staticClass: "heading-font font-bold text-2xl",
     attrs: {
-      type: "file",
-      id: "photo"
-    },
-    on: {
-      input: function input($event) {
-        return _vm.photoUpload($event.target.files[0]);
-      }
+      value: _vm.amount
     }
-  }), _vm._v(" "), _vm.form.errors.photo ? _c("div", {
-    staticClass: "text-red-500 text-xs"
-  }, [_vm._v("Required\n                  ")]) : _vm._e()])])], 1)])]), _vm._v(" "), _c("div", {
+  })], 1), _vm._v(" "), _c("div", {
+    staticClass: "text-base font-bold",
+    "class": {
+      "text-green-500 font-bold": _vm.account.data.type == _vm.type,
+      "text-red-500 font-bold": _vm.account.data.type != _vm.type
+    }
+  }, [_vm._v("\n                  " + _vm._s(_vm.type) + "\n                ")])])], 1)])]), _vm._v(" "), _c("div", {
     staticClass: "fixed right-6 bottom-6 md:right-10 md:bottom-10"
   }, [_c("div", {
     directives: [{
@@ -23790,6 +23753,62 @@ var render = function render() {
         }), _vm._v(" " + _vm._s(_vm.error) + "\n          ")])]) : _vm._e(), _vm._v(" "), _c("jet-validation-errors", {
           staticClass: "mb-4"
         })], 1), _vm._v(" "), _c("div", {
+          staticClass: "mb-4"
+        }, [_c("div", {
+          staticClass: "flex items-center mb-2"
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.backdateCheck,
+            expression: "backdateCheck"
+          }],
+          staticClass: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600",
+          attrs: {
+            checked: "",
+            id: "backdate",
+            type: "checkbox",
+            value: ""
+          },
+          domProps: {
+            checked: Array.isArray(_vm.backdateCheck) ? _vm._i(_vm.backdateCheck, "") > -1 : _vm.backdateCheck
+          },
+          on: {
+            change: function change($event) {
+              var $$a = _vm.backdateCheck,
+                $$el = $event.target,
+                $$c = $$el.checked ? true : false;
+              if (Array.isArray($$a)) {
+                var $$v = "",
+                  $$i = _vm._i($$a, $$v);
+                if ($$el.checked) {
+                  $$i < 0 && (_vm.backdateCheck = $$a.concat([$$v]));
+                } else {
+                  $$i > -1 && (_vm.backdateCheck = $$a.slice(0, $$i).concat($$a.slice($$i + 1)));
+                }
+              } else {
+                _vm.backdateCheck = $$c;
+              }
+            }
+          }
+        }), _vm._v(" "), _c("label", {
+          staticClass: "ml-1 text-sm font-medium text-gray-900 dark:text-gray-300",
+          attrs: {
+            "for": "backdate"
+          }
+        }, [_vm._v("Backdate")])]), _vm._v(" "), _vm.backdateCheck ? _c("vue-date-time-picker", {
+          attrs: {
+            color: "#1a56db",
+            "max-date": _vm.maxDate
+          },
+          model: {
+            value: _vm.date,
+            callback: function callback($$v) {
+              _vm.date = $$v;
+            },
+            expression: "date"
+          }
+        }) : _vm._e()], 1), _vm._v(" "), _c("div", {
           staticClass: "grid grid-cols-1 md:grid-cols-2 gap-2"
         }, [_c("div", {
           staticClass: "mb-2"
@@ -24554,7 +24573,13 @@ var render = function render() {
     }, {
       key: "actions",
       fn: function fn() {
-        return undefined;
+        return [_c("a", {
+          attrs: {
+            href: _vm.route("accounts.edit", {
+              code: _vm.account.data.code
+            })
+          }
+        }, [_c("secondary-button", [_vm._v("Edit Balance")])], 1)];
       },
       proxy: true
     }])
@@ -24628,6 +24653,11 @@ var render = function render() {
     attrs: {
       scope: "col"
     }
+  }, [_vm._v("Recorded at")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-left",
+    attrs: {
+      scope: "col"
+    }
   }, [_vm._v("Date")]), _vm._v(" "), _c("th", {
     staticClass: "p-2 pb-0 heading-font text-left",
     attrs: {
@@ -24673,6 +24703,8 @@ var render = function render() {
         }
       }
     }, [_c("td", {
+      staticClass: "p-2 text-left"
+    }, [_vm._v("\n                                                " + _vm._s(_vm.getDate(record.createdDate * 1000)) + "\n                                            ")]), _vm._v(" "), _c("td", {
       staticClass: "p-2 text-left"
     }, [_vm._v("\n                                                " + _vm._s(_vm.getDate(record.date * 1000)) + "\n                                            ")]), _vm._v(" "), _c("td", {
       staticClass: "p-2 text-left"
@@ -33417,6 +33449,9 @@ var render = function render() {
         client: productCompound.sale.client,
         product: productCompound,
         "is-solo": true
+      },
+      on: {
+        navigate: _vm.navigateToCollection
       }
     })], 1)]);
   })], 2), _vm._v(" "), _vm.pendingBatches.data.length > 0 ? _c("div", {
@@ -58240,6 +58275,126 @@ var render = function render() {
     staticClass: "page-section-header"
   }, [_c("div", {
     staticClass: "page-section-title"
+  }, [_vm._v("\n                        Pending Collections\n                    ")])]), _vm._v(" "), _c("div", {
+    staticClass: "page-section-content"
+  }, [_c("div", {
+    staticClass: "card default-table"
+  }, [_c("div", {
+    staticClass: "p-2 relative overflow-x-auto"
+  }, [_c("table", {
+    staticClass: "overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400"
+  }, [_c("thead", {
+    staticClass: "text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+  }, [_c("tr", [_c("th", {
+    staticClass: "p-2 pb-0 heading-font text-left",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Collection Status\n                                        ")]), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-left",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Code")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-left",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Client")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-left",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Product")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-right",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Amount")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-right",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Balance")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-left",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Payment Status")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-right",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Quantity")]), _vm._v(" "), _c("th", {
+    staticClass: "p-2 pb-0 heading-font text-right",
+    attrs: {
+      scope: "col"
+    }
+  }, [_vm._v("Collected")])])]), _vm._v(" "), _c("tbody", _vm._l(_vm.collections, function (productCompound, index) {
+    return _c("tr", {
+      key: index,
+      staticClass: "border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+    }, [_c("td", {}, [_c("collection", {
+      staticClass: "p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200",
+      attrs: {
+        client: productCompound.sale.client,
+        product: productCompound,
+        "is-solo": true
+      }
+    })], 1), _vm._v(" "), _c("td", {
+      staticClass: "py-2 pr-1 cursor-pointer hover:bg-gray-50",
+      on: {
+        click: function click($event) {
+          return _vm.navigateToSale(productCompound.sale.id);
+        }
+      }
+    }, [_vm._v("\n                                            " + _vm._s(productCompound.sale.code) + "\n                                        ")]), _vm._v(" "), _c("td", {
+      staticClass: "py-2 pr-1 cursor-pointer hover:bg-gray-50",
+      on: {
+        click: function click($event) {
+          return _vm.navigateToClient(productCompound.sale.client.id);
+        }
+      }
+    }, [_vm._v("\n                                            " + _vm._s(productCompound.sale.client.name) + "\n                                        ")]), _vm._v(" "), _c("th", {
+      staticClass: "py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap cursor-pointer hover:bg-gray-50",
+      "class": {
+        "strike-through": productCompound.trashed
+      },
+      attrs: {
+        scope: "row"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.navigateToInventory(productCompound.inventory.id);
+        }
+      }
+    }, [_vm._v("\n                                            " + _vm._s(productCompound.inventory.name) + "\n                                        ")]), _vm._v(" "), _c("td", {
+      staticClass: "py-2 pr-1 text-right"
+    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.amount)) + "\n                                        ")]), _vm._v(" "), _c("td", {
+      staticClass: "py-2 pr-1 text-right"
+    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.balance)) + "\n                                        ")]), _vm._v(" "), _c("td", {
+      staticClass: "cursor-pointer hover:bg-gray-50",
+      on: {
+        click: function click($event) {
+          return _vm.navigateToSale(productCompound.sale.id);
+        }
+      }
+    }, [_c("sale-status", {
+      attrs: {
+        status: productCompound.paymentStatus,
+        "is-solo": true
+      }
+    })], 1), _vm._v(" "), _c("td", {
+      staticClass: "py-2 pr-1 text-right"
+    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.quantity)) + "\n                                        ")]), _vm._v(" "), _c("td", {
+      staticClass: "py-2 pr-1 text-right"
+    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.collected)) + "\n                                        ")])]);
+  }), 0)])])])])]), _vm._v(" "), _c("div", {
+    staticClass: "page-section"
+  }, [_c("div", {
+    staticClass: "page-section-header"
+  }, [_c("div", {
+    staticClass: "page-section-title"
   }, [_vm._v("\n                        Summary\n                    ")])]), _vm._v(" "), _c("div", {
     staticClass: "page-section-content"
   }, [_c("div", {
@@ -58324,7 +58479,7 @@ var render = function render() {
     attrs: {
       scope: "col"
     }
-  }, [_vm._v("Pending Payments")])])]), _vm._v(" "), _c("tbody", {
+  }, [_vm._v("Pending Payments\n                                        ")])])]), _vm._v(" "), _c("tbody", {
     staticClass: "pt-8"
   }, _vm._l(_vm.filteredRecords, function (summary, index) {
     return _c("tr", {
@@ -58356,108 +58511,6 @@ var render = function render() {
         value: summary.pendingPayments
       }
     })], 1)]);
-  }), 0)])])])])])])]) : _vm.section === "collections" ? _c("div", {
-    staticClass: "py-6"
-  }, [_c("div", {
-    staticClass: "max-w-7xl mx-auto px-2 sm:px-6 lg:px-8"
-  }, [_c("div", {
-    staticClass: "page-section"
-  }, [_c("div", {
-    staticClass: "page-section-header"
-  }, [_c("div", {
-    staticClass: "page-section-title"
-  }, [_vm._v("\n                        Collections\n                    ")])]), _vm._v(" "), _c("div", {
-    staticClass: "page-section-content"
-  }, [_c("div", {
-    staticClass: "card default-table"
-  }, [_c("div", {
-    staticClass: "p-2 relative overflow-x-auto"
-  }, [_c("table", {
-    staticClass: "overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400"
-  }, [_c("thead", {
-    staticClass: "text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-  }, [_c("tr", [_c("th", {
-    staticClass: "p-2 pb-0 heading-font text-left",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Collection Status\n                                        ")]), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-left",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Code")]), _vm._v(" "), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-left",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Client")]), _vm._v(" "), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-left",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Product")]), _vm._v(" "), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-right",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Amount")]), _vm._v(" "), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-right",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Balance")]), _vm._v(" "), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-left",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Payment Status")]), _vm._v(" "), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-right",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Quantity")]), _vm._v(" "), _c("th", {
-    staticClass: "p-2 pb-0 heading-font text-right",
-    attrs: {
-      scope: "col"
-    }
-  }, [_vm._v("Collected")])])]), _vm._v(" "), _c("tbody", _vm._l(_vm.collections, function (productCompound, index) {
-    return _c("tr", {
-      key: index,
-      staticClass: "cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-    }, [_c("td", {}, [_c("collection", {
-      staticClass: "p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200",
-      attrs: {
-        client: productCompound.sale.client,
-        product: productCompound,
-        "is-solo": true
-      }
-    })], 1), _vm._v(" "), _c("td", {
-      staticClass: "py-2 pr-1"
-    }, [_vm._v("\n                                            " + _vm._s(productCompound.sale.code) + "\n                                        ")]), _vm._v(" "), _c("td", {
-      staticClass: "py-2 pr-1"
-    }, [_vm._v("\n                                            " + _vm._s(productCompound.sale.client.name) + "\n                                        ")]), _vm._v(" "), _c("th", {
-      staticClass: "py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap",
-      "class": {
-        "strike-through": productCompound.trashed
-      },
-      attrs: {
-        scope: "row"
-      }
-    }, [_vm._v("\n                                            " + _vm._s(productCompound.inventory.name) + "\n                                        ")]), _vm._v(" "), _c("td", {
-      staticClass: "py-2 pr-1 text-right"
-    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.amount)) + "\n                                        ")]), _vm._v(" "), _c("td", {
-      staticClass: "py-2 pr-1 text-right"
-    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.balance)) + "\n                                        ")]), _vm._v(" "), _c("td", [_c("sale-status", {
-      attrs: {
-        status: productCompound.paymentStatus,
-        "is-solo": true
-      }
-    })], 1), _vm._v(" "), _c("td", {
-      staticClass: "py-2 pr-1 text-right"
-    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.quantity)) + "\n                                        ")]), _vm._v(" "), _c("td", {
-      staticClass: "py-2 pr-1 text-right"
-    }, [_vm._v("\n                                            " + _vm._s(_vm.numberWithCommas(productCompound.collected)) + "\n                                        ")])]);
   }), 0)])])])])])])]) : _vm._e()]);
 };
 var staticRenderFns = [];

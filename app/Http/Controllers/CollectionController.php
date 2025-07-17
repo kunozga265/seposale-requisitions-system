@@ -93,6 +93,18 @@ class CollectionController extends Controller
 
         $summary = SiteSaleSummary::find($id);
 
+        // $amount = ($request->quantity / $summary->quantity) * $summary->amount; // calculate the amount to be moved
+        // $paid_balance = $summary->paidBalance();
+        // $remainder = $summary->paidBalance() - $amount;
+        //  $sale_balance = $amount;
+        //         if ($paid_balance > 0) {
+        //             $sale_balance = $amount - $paid_balance;}
+
+        // dump("amount: $amount");
+        // dump("remainder: $remainder");
+        // dump("sale_balance: $sale_balance");
+        // dd("paid_balance: $paid_balance");
+
         //get user
         $user = (new AppController())->getAuthUser($request);
 
@@ -117,6 +129,8 @@ class CollectionController extends Controller
                 $collected_quantity += $request->quantity;
             }
 
+            $paid_balance = $summary->paidBalance();
+
             $inventorySummary = (new InventorySummaryController())->getSummary($summary->sale->site->id);
 
             $collection = Collection::create([
@@ -137,117 +151,17 @@ class CollectionController extends Controller
                 "date"  => Carbon::now()->getTimestamp(),
             ]);
 
-            $summary->update([
-                "collected" => $collected_quantity,
-            ]);
-
-            //Update stock levels - Subtract from uncollected
-            $uncollected_stock =  $collection->inventory->uncollected_stock - $request->quantity;
-            $collection->inventory->update([
-                "uncollected_stock" =>   $uncollected_stock
-            ]);
-
-            //calculate cost
-            $now = Carbon::now()->getTimestamp();
-
-            $cogs_balance = $summary->inventory->cogsAccount->balance;
-            $inventory_balance = $summary->inventory->inventoryAccount->balance;
-
-            $index = 0;
-            $count = 0;
-            $quantity = $request->quantity;
-            $total_cogs = 0;
-            do {
-                $batch = $summary->inventory->batches()->where("accounting_balance", ">", 0)
-                    ->where("ready_date", "<=", $now)
-                    ->orderBy("date", "asc")
-                    ->first();
-
-                if ($batch->accounting_balance >= $quantity) {
-                    $count = $quantity;
-                } else {
-                    $count = $batch->accounting_balance;
-                }
-
-                
-                $cost = $count * $batch->price;
-                error_log("Batch Id: {$batch->id}");
-                error_log("Batch Price: {$batch->price}");
-                error_log("COGS: {$cost}");
-
-                //record cogs
-                $cogs_record = $summary->inventory->cogsAccount->records()->create([
-                    "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                    "reference" => strtoupper(""),
-                    "date" => Carbon::now()->getTimestamp() + $index,
-                    "name" => $summary->sale->client->name,
-                    "description" => "{$summary->inventory->name} - " . $summary->inventory->formattedUnits($count),
-                    "amount" => $cost,
-                    "opening_balance" => $cogs_balance,
-                    "closing_balance" => $cogs_balance + $cost,
-                    "type" => "DEBIT", // incrementing the account balance
-                    "accounting_account_id" => $summary->inventory->cogsAccount->id,
-                    "summary_id" => $summary->id,
-                    "collection_id" => $collection->id,
-                ]);
-                $cogs_balance += $cost;
-
-
-                //update inventory account
-                $inventory_record = $summary->inventory->inventoryAccount->records()->create([
-                    "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                    "reference" => strtoupper(""),
-                    "date" => Carbon::now()->getTimestamp() + $index,
-                    "name" => $summary->sale->client->name,
-                    "description" => "{$summary->inventory->name} - " . $summary->inventory->formattedUnits($count),
-                    "amount" => $cost,
-                    "opening_balance" => $inventory_balance,
-                    "closing_balance" => $inventory_balance - $cost,
-                    "type" => "CREDIT", // decrementing the account balance
-                    "accounting_account_id" => $summary->inventory->inventoryAccount->id,
-                    "accounting_record_id" => $cogs_record->id,
-                    "summary_id" => $summary->id,
-                    "collection_id" => $collection->id,
-                ]);
-                $inventory_balance -= $cost;
-
-                $cogs_record->update([
-                    "accounting_record_id" => $inventory_record->id,
-                ]);
-
-                $batch->update([
-                    "accounting_balance" => $batch->accounting_balance - $count
-                ]);
-
-                $quantity -= $count;
-                $total_cogs += $cost;
-                $index++;
-            } while ($quantity > 0);
-
-            $summary->inventory->cogsAccount->update([
-                "balance" => $cogs_balance
-            ]);
-
-            $summary->inventory->inventoryAccount->update([
-                "balance" => $inventory_balance
-            ]);
-
-            //update cost
-            $collection->update([
-                "cost" => $total_cogs,
-            ]);
-
+            //revenue calculations
             $revenue_account = $summary->inventory->revenueAccount; // revenue account
             $revenue_account_balance =  $revenue_account->balance;
             $unearned_revenue = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
             $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
 
 
-
             //update accounts
             //equivalent amount
             $amount = ($request->quantity / $summary->quantity) * $summary->amount; // calculate the amount to be moved
-            $remainder = $summary->paidBalance() - $amount;
+            $remainder = $paid_balance - $amount;
 
             if ($remainder >= 0) {
                 //Paid enough to cover the amount delivered
@@ -292,8 +206,11 @@ class CollectionController extends Controller
                     "accounting_record_id" => $revenue_account_record->id,
                 ]);
             } else {
-                $partial_payment = $summary->paidBalance();
+                $partial_payment = $paid_balance;
                 $sale_balance = $amount;
+
+                error_log("amount: $amount");
+                error_log("remainder: $remainder");
                 if ($partial_payment > 0) {
                     $sale_balance = $amount - $partial_payment;
                     //there's some amount partially paid
@@ -382,11 +299,113 @@ class CollectionController extends Controller
                         "accounting_record_id" => $revenue_account_record->id,
                     ]);
                 }
+
+                error_log("remainder: $sale_balance");
             }
 
             $revenue_account->update([
                 "balance" => $revenue_account_balance
             ]);
+
+            $summary->update([
+                "collected" => $collected_quantity,
+            ]);
+
+            //Update stock levels - Subtract from uncollected
+            $uncollected_stock =  $collection->inventory->uncollected_stock - $request->quantity;
+            $collection->inventory->update([
+                "uncollected_stock" =>   $uncollected_stock
+            ]);
+
+            //calculate cost
+            $now = Carbon::now()->getTimestamp();
+
+            $cogs_balance = $summary->inventory->cogsAccount->balance;
+            $inventory_balance = $summary->inventory->inventoryAccount->balance;
+
+            $index = 0;
+            $count = 0;
+            $quantity = $request->quantity;
+            $total_cogs = 0;
+            do {
+                $batch = $summary->inventory->batches()->where("accounting_balance", ">", 0)
+                    ->where("ready_date", "<=", $now)
+                    ->orderBy("date", "asc")
+                    ->first();
+
+                if ($batch->accounting_balance >= $quantity) {
+                    $count = $quantity;
+                } else {
+                    $count = $batch->accounting_balance;
+                }
+
+
+                $cost = $count * $batch->price;
+
+
+                //record cogs
+                $cogs_record = $summary->inventory->cogsAccount->records()->create([
+                    "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                    "reference" => strtoupper(""),
+                    "date" => Carbon::now()->getTimestamp() + $index,
+                    "name" => $summary->sale->client->name,
+                    "description" => "{$summary->inventory->name} - " . $summary->inventory->formattedUnits($count),
+                    "amount" => $cost,
+                    "opening_balance" => $cogs_balance,
+                    "closing_balance" => $cogs_balance + $cost,
+                    "type" => "DEBIT", // incrementing the account balance
+                    "accounting_account_id" => $summary->inventory->cogsAccount->id,
+                    "summary_id" => $summary->id,
+                    "collection_id" => $collection->id,
+                ]);
+                $cogs_balance += $cost;
+
+
+                //update inventory account
+                $inventory_record = $summary->inventory->inventoryAccount->records()->create([
+                    "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                    "reference" => strtoupper(""),
+                    "date" => Carbon::now()->getTimestamp() + $index,
+                    "name" => $summary->sale->client->name,
+                    "description" => "{$summary->inventory->name} - " . $summary->inventory->formattedUnits($count),
+                    "amount" => $cost,
+                    "opening_balance" => $inventory_balance,
+                    "closing_balance" => $inventory_balance - $cost,
+                    "type" => "CREDIT", // decrementing the account balance
+                    "accounting_account_id" => $summary->inventory->inventoryAccount->id,
+                    "accounting_record_id" => $cogs_record->id,
+                    "summary_id" => $summary->id,
+                    "collection_id" => $collection->id,
+                ]);
+                $inventory_balance -= $cost;
+
+                $cogs_record->update([
+                    "accounting_record_id" => $inventory_record->id,
+                ]);
+
+                $batch->update([
+                    "accounting_balance" => $batch->accounting_balance - $count
+                ]);
+
+                $quantity -= $count;
+                $total_cogs += $cost;
+                $index++;
+            } while ($quantity > 0);
+
+            $summary->inventory->cogsAccount->update([
+                "balance" => $cogs_balance
+            ]);
+
+            $summary->inventory->inventoryAccount->update([
+                "balance" => $inventory_balance
+            ]);
+
+            //update cost
+            $collection->update([
+                "cost" => $total_cogs,
+            ]);
+
+
 
 
 
@@ -468,8 +487,8 @@ class CollectionController extends Controller
                 $balance =  $collection->siteSaleSummary->quantity - $collected;
                 (new NotificationController())->processWhatsappMessage("collection_reversal", $collection->serial, balance: $balance);
 
-                  $sale_id = $collection->siteSaleSummary->sale->id;
-                  $site_code = $collection->site->code;
+                $sale_id = $collection->siteSaleSummary->sale->id;
+                $site_code = $collection->site->code;
                 $collection->delete();
 
                 //Logging
@@ -479,7 +498,7 @@ class CollectionController extends Controller
                     "site_sale_id" => $sale_id,
                 ]);
 
-                return Redirect::route('sites.collections',["code"=>$site_code])->with('success', 'Delivery deleted successfully');
+                return Redirect::route('sites.collections', ["code" => $site_code])->with('success', 'Delivery deleted successfully');
             }
         } else {
             if ((new AppController())->isApi($request)) {

@@ -135,6 +135,16 @@
 
         </div>
 
+        <div class="mb-4">
+          <!--                                    <jet-label for="lastRefillDate" value="Backdate" />-->
+          <div class="flex items-center mb-2">
+            <input checked id="backdate" type="checkbox" value="" v-model="backdateCheck"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label for="backdate" class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
+          </div>
+          <vue-date-time-picker v-if="backdateCheck" color="#1a56db" v-model="date" :max-date="maxDate" />
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
           <div class="mb-2">
             <jet-label for="paymentMethod" value="Select Credit Account" />
@@ -367,6 +377,9 @@ export default {
       transactionType: "DEFAULT",
       error: "",
       search: "",
+      maxDate: new Date().toISOString(),
+       date: null,
+           backdateCheck: false,
       form: this.$inertia.form({
         amount: 0,
         debitAccountId: 0,
@@ -488,12 +501,12 @@ export default {
           this.form.description = "Bank Charges"
         }
       } else if (this.transactionType == "TRANSFER") {
-        if (this.form.description.length == 0 ||  this.form.description == "Bank Charges") {
+        if (this.form.description.length == 0 || this.form.description == "Bank Charges") {
           this.form.description = "Funds Transfer"
         }
-      }else{
-         if (this.form.description == "Funds Transfer" ||  this.form.description == "Bank Charges") {
-           this.form.description = ""
+      } else {
+        if (this.form.description == "Funds Transfer" || this.form.description == "Bank Charges") {
+          this.form.description = ""
         }
       }
     }
@@ -503,6 +516,7 @@ export default {
       this.form
         .transform(data => ({
           ...data,
+          date: this.getNullableDate(),
           debit_account_id: this.form.debitAccountId,
           debit_account_reference: this.form.debitAccountReference,
           credit_account_id: this.form.creditAccountId,
@@ -522,6 +536,9 @@ export default {
     selectClient(id) {
       (this.listOfAccounts).push(id)
       console.log(id)
+    },
+    getNullableDate(){
+            return this.date ? (new Date(this.date).getTime()) / 1000 : null
     }
   }
 }

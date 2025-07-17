@@ -500,12 +500,6 @@
                     </div>
 
                 </div>
-
-
-
-
-
-
             </template>
 
             <template #footer>

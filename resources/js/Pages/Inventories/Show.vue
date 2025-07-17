@@ -384,7 +384,8 @@
                                         <collection
                                             class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                             :client="productCompound.sale.client" :product="productCompound"
-                                            :is-solo="true" />
+                                            :is-solo="true"
+                                            @navigate="navigateToCollection" />
 
                                     </div>
                                     <!--                                        <div class="heading-font text-xs text-gray-500">-->

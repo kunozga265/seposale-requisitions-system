@@ -25,7 +25,7 @@ class AccountingController extends Controller
 
         ]);
     }
-    
+
 
     public function show($code)
     {
@@ -79,7 +79,7 @@ class AccountingController extends Controller
             $debit_record = AccountingRecord::create([
                 "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                 "reference" => strtoupper($request->transfer_debit_account_reference),
-                "date" => Carbon::now()->getTimestamp(),
+                'date' => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
                 "name" => $credit_account->name,
                 "description" => $request->description,
                 "amount" => $amount,
@@ -94,7 +94,7 @@ class AccountingController extends Controller
             $credit_record = AccountingRecord::create([
                 "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                 "reference" => strtoupper($request->transfer_credit_account_reference),
-                "date" => Carbon::now()->getTimestamp(),
+                'date' => isset($request->date) ? $request->date : Carbon::now()->getTimestamp(),
                 "name" => $debit_account->name,
                 "description" => $request->description,
                 "amount" => $amount,
@@ -125,8 +125,8 @@ class AccountingController extends Controller
                 "message" => "Transferred {$amount} from {$credit_account->name} to {$debit_account->name}",
             ]);
 
-          //Web Response
-                return Redirect::back()->with("success", "Successfully transferred the funds");
+            //Web Response
+            return Redirect::back()->with("success", "Successfully transferred the funds");
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -138,5 +138,68 @@ class AccountingController extends Controller
         }
     }
 
-   
+
+    public function edit(Request $request, $code)
+    {
+        // Find the accounting account by code
+        $account = AccountingAccount::where('code', $code)->firstOrFail();
+
+        // If the account is not found, return a 404 response
+        if (!$account) {
+            abort(404, 'Accounting account not found');
+        }
+
+        // Return the accounting account details view
+        return Inertia::render('Accounting/Edit', [
+            'account' => new AccountingAccountResource($account),
+        ]);
+    }
+
+    public function updateBalance(Request $request, $code)
+    {
+
+        // Find the accounting account by code
+        $account = AccountingAccount::where('code', $code)->firstOrFail();
+
+        // If the account is not found, return a 404 response
+        if (!$account) {
+            abort(404, 'Accounting account not found');
+        }
+
+        //Validate all the important attributes
+        $request->validate([
+            'amount' => ['required'],
+            'type' => ['required'],
+        ]);
+
+        $new_account_balance = $account->balance;
+        $amount = abs($request->amount);
+        $type = $request->type;
+
+        //check account type
+        if ($account->type == $type) {
+            $new_account_balance += $amount;
+        } else {
+            $new_account_balance -= $amount;
+        }
+
+        $record = $account->records()->create([
+            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+            "reference" => strtoupper(""),
+            'date' => Carbon::now()->getTimestamp(),
+            "name" => "!!Account Update!!",
+            "description" => "!!$type TRANSACTION!!",
+            "amount" => $amount,
+            "opening_balance" => $account->balance,
+            "closing_balance" => $new_account_balance,
+            "type" => $type,
+            "accounting_account_id" => $account->id,
+        ]);
+
+        $account->update([
+            "balance" => $new_account_balance
+        ]);
+
+        return Redirect::route("accounts.show",["code"=>$account->code])->with("success","Successfully updated account balance");
+    }
 }

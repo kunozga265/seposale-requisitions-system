@@ -765,15 +765,15 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' => ['accountant', 'management']
         ])->name('accounts.transaction.edit');
 
-        Route::get('/edit/{id}', [
-            "uses"  => "App\Http\Controllers\AccountController@edit",
+        Route::get('/edit/{code}', [
+            "uses"  => "App\Http\Controllers\AccountingController@edit",
             'roles' =>['accountant','management']
         ])->name('accounts.edit');
 
-        Route::post('/edit/{id}', [
-            "uses"  => "App\Http\Controllers\AccountController@update",
+        Route::post('/update/{code}', [
+            "uses"  => "App\Http\Controllers\AccountingController@updateBalance",
             'roles' =>['accountant','management']
-        ])->name('accounts.update');
+        ])->name('accounts.update-balance');
 
     });
 
