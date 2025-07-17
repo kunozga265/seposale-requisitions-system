@@ -15,14 +15,14 @@ class BatchResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
-            "date" => $this->date,
-            "price" => $this->price,
-            "quantity" => $this->quantity,
-            "balance" => $this->balance,
+            "id" => intval($this->id),
+            "date" => intval($this->date),
+            "price" => floatval($this->price),
+            "quantity" => floatval($this->quantity),
+            "balance" => floatval($this->balance),
             "comments" => $this->comments,
             "photo" => $this->photo,
-            "readyDate" => $this->ready_date,
+            "readyDate" => intval($this->ready_date),
             "inventory" => $this->inventory,
             "user" => new UserResource($this->user),
         ];
