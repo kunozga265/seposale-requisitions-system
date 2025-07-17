@@ -33,7 +33,7 @@ class InventoryResource extends JsonResource
             "product" => $this->product,
             "site" => $this->site,
             // "inventoryAccount" => $this->inventoryAccount
-            "inventoryValue" => $this->value(),
+            "inventoryValue" => floatval($this->value()),
             "cogsAccount" => $this->cogsAccount,
             "inventoryAccount" => $this->inventoryAccount,
             "revenueAccount" => $this->revenueAccount

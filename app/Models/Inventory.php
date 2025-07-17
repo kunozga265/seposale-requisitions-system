@@ -109,7 +109,7 @@ class Inventory extends Model
 
     public function value()
     {
-         $value = 0;
+        $value = 0;
         if($this->inventoryAccount != null){
             $value = $this->inventoryAccount->balance;
             foreach($this->inventoryAccount->inventories as $inventory){
