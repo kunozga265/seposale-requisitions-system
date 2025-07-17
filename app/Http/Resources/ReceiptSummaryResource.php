@@ -14,13 +14,13 @@ class ReceiptSummaryResource extends JsonResource
      */
     public function toArray($request)
     {
-        if($this->receipt == null){
-            dd($this->receipt_id);
-        }
+        // if($this->receipt == null){
+        //     dd($this->receipt_id);
+        // }
         return [
             "id" => intval($this->id),
             "name" => $this->name,
-            "date" => intval($this->receipt->date),
+            "date" => intval($this->receipt?->date),
             "balance" => floatval($this->balance),
             "amount" => floatval($this->amount),
             "cost" => floatval($this->cost) ?? null,
