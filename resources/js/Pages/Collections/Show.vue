@@ -44,6 +44,7 @@
         <secondary-button v-if="collection.data.photo != null"
           @click.native="attachmentDialog = true">Attachement</secondary-button>
         <danger-button @click.native="deleteDialog = true">Delete</danger-button>
+        <primary-button @click.native="updateAccounts">UpdateAccounts</primary-button>
       </div>
     </template>
 
@@ -219,6 +220,13 @@ export default {
     deleteCollection() {
       this.form
         .post(this.route('collections.trash', { 'code': this.site.code, 'code': this.collection.data.code }), {
+          preserveScroll: true,
+          onSuccess: () => this.deleteDialog = false,
+        })
+    },
+    updateAccounts() {
+      this.form
+        .post(this.route('collections.store-accounts', { id:this.collection.data.id }), {
           preserveScroll: true,
           onSuccess: () => this.deleteDialog = false,
         })

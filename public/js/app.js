@@ -6752,6 +6752,17 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           return _this.deleteDialog = false;
         }
       });
+    },
+    updateAccounts: function updateAccounts() {
+      var _this2 = this;
+      this.form.post(this.route('collections.store-accounts', {
+        id: this.collection.data.id
+      }), {
+        preserveScroll: true,
+        onSuccess: function onSuccess() {
+          return _this2.deleteDialog = false;
+        }
+      });
     }
   }
 });
@@ -28959,7 +28970,13 @@ var render = function render() {
               _vm.deleteDialog = true;
             }
           }
-        }, [_vm._v("Delete")])], 1)];
+        }, [_vm._v("Delete")]), _vm._v(" "), _c("primary-button", {
+          nativeOn: {
+            click: function click($event) {
+              return _vm.updateAccounts.apply(null, arguments);
+            }
+          }
+        }, [_vm._v("UpdateAccounts")])], 1)];
       },
       proxy: true
     }])

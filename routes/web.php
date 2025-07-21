@@ -541,6 +541,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' => ['employee', 'management']
         ])->name('collections.store');
 
+        Route::post('store-accounts/{id}', [
+            "uses" => "App\Http\Controllers\CollectionController@store",
+            'roles' => ['employee', 'management']
+        ])->name('collections.store.accounts');
+
         Route::post('cancel/{id}', [
             "uses" => "App\Http\Controllers\CollectionController@cancel",
             'roles' => ['employee', 'management']
