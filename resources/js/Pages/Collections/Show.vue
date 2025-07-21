@@ -226,7 +226,7 @@ export default {
     },
     updateAccounts() {
       this.form
-        .post(this.route('collections.store-accounts', { id:this.collection.data.id }), {
+        .post(this.route('collections.store.accounts', { id:this.collection.data.id }), {
           preserveScroll: true,
           onSuccess: () => this.deleteDialog = false,
         })

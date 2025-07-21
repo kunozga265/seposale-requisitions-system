@@ -625,13 +625,14 @@ class CollectionController extends Controller
 
                 if ($partial_payment > 0) {
                     $sale_balance = $amount - $partial_payment;
+                    $partial_addon = $sale_balance > 0 ? "Partial" : ""; 
                     //there's some amount partially paid
                     $unearned_revenue_record = AccountingRecord::create([
                         "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                         "reference" => strtoupper(""),
                         "date" => Carbon::now()->getTimestamp(),
                         "name" => $collection->siteSaleSummary->sale->client->name,
-                        "description" => $collection->siteSaleSummary->inventory->name . " - Partial Payment ({$collection->siteSaleSummary->formattedUnits($partial_payment / ($collection->siteSaleSummary->cost()))})",
+                        "description" => $collection->siteSaleSummary->inventory->name . " - $partial_addon Payment ({$collection->siteSaleSummary->formattedUnits($partial_payment / ($collection->siteSaleSummary->cost()))})",
                         "amount" => $partial_payment,
                         "opening_balance" => $unearned_revenue->balance,
                         "closing_balance" => $unearned_revenue->balance - $partial_payment,
@@ -650,7 +651,7 @@ class CollectionController extends Controller
                         "reference" => strtoupper(""),
                         "date" => Carbon::now()->getTimestamp(),
                         "name" => $collection->siteSaleSummary->sale->client->name,
-                        "description" => $collection->siteSaleSummary->inventory->name . " - Partial Payment ({$collection->siteSaleSummary->formattedUnits($partial_payment / ($collection->siteSaleSummary->cost()))})",
+                        "description" => $collection->siteSaleSummary->inventory->name . " - $partial_addon Payment ({$collection->siteSaleSummary->formattedUnits($partial_payment / ($collection->siteSaleSummary->cost()))})",
                         "amount" => $partial_payment,
                         "opening_balance" => $revenue_account->balance,
                         "closing_balance" => $revenue_account->balance + $partial_payment,
@@ -669,13 +670,14 @@ class CollectionController extends Controller
                 }
 
                 if ($sale_balance > 0) {
+                    $partial_addon = $partial_payment > 0 ? "Partial" : ""; 
                     //record receivables
                     $receivables_record = AccountingRecord::create([
                         "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                         "reference" => strtoupper(""),
                         "date" => Carbon::now()->getTimestamp(),
                         "name" => $collection->siteSaleSummary->sale->client->name,
-                        "description" => $collection->siteSaleSummary->inventory->name . " - Partial Payment ({$collection->siteSaleSummary->formattedUnits($sale_balance / ($collection->siteSaleSummary->cost()))})",
+                        "description" => $collection->siteSaleSummary->inventory->name . " - $partial_addon Payment ({$collection->siteSaleSummary->formattedUnits($sale_balance / ($collection->siteSaleSummary->cost()))})",
                         "amount" => $sale_balance,
                         "opening_balance" => $receivables_account->balance,
                         "closing_balance" => $receivables_account->balance + $sale_balance,
@@ -694,7 +696,7 @@ class CollectionController extends Controller
                         "reference" => strtoupper(""),
                         "date" => Carbon::now()->getTimestamp(),
                         "name" => $collection->siteSaleSummary->sale->client->name,
-                        "description" => $collection->siteSaleSummary->inventory->name . " - Partial Payment ({$collection->siteSaleSummary->formattedUnits($sale_balance / ($collection->siteSaleSummary->cost()))})",
+                        "description" => $collection->siteSaleSummary->inventory->name . " - $partial_addon Payment ({$collection->siteSaleSummary->formattedUnits($sale_balance / ($collection->siteSaleSummary->cost()))})",
                         "amount" => $sale_balance,
                         "opening_balance" => $revenue_account->balance,
                         "closing_balance" => $revenue_account->balance + $sale_balance,
@@ -806,14 +808,6 @@ class CollectionController extends Controller
             $collection->update([
                 "cost" => $total_cogs,
             ]);
-
-
-            $collection->siteSaleSummary->sale->update([
-                "editable" => false
-            ]);
-
-            //send whatsapp notification
-            (new NotificationController())->processWhatsappMessage("collection", $collection->serial, notify: $request->notify);
 
 
             if ((new AppController())->isApi($request))

@@ -542,7 +542,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
         ])->name('collections.store');
 
         Route::post('store-accounts/{id}', [
-            "uses" => "App\Http\Controllers\CollectionController@store",
+            "uses" => "App\Http\Controllers\CollectionController@storeAccounts",
             'roles' => ['employee', 'management']
         ])->name('collections.store.accounts');
 
@@ -734,6 +734,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\AccountingController@index",
             'roles' =>['accountant','management']
         ])->name('accounts.index');
+
+        Route::get('/journal', [
+            "uses"  => "App\Http\Controllers\AccountingController@journal",
+            'roles' =>['accountant','management']
+        ])->name('accounts.journal');
 
         Route::get('/create', [
             "uses"  => "App\Http\Controllers\AccountController@create",

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\AccountingAccountResource;
+use App\Http\Resources\AccountingRecordCollection;
 use App\Http\Resources\AccountingRecordResource;
 use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
@@ -22,6 +23,15 @@ class AccountingController extends Controller
         // Return the accounting dashboard view
         return Inertia::render('Accounting/Index', [
             'accounts' => AccountingAccountResource::collection($accountingAccounts),
+
+        ]);
+    }
+    public function journal()
+    {
+        $records = AccountingRecord::latest()->paginate(100);
+        // Return the accounting dashboard view
+        return Inertia::render('Accounting/Journal', [
+            'records' => new AccountingRecordCollection($records),
 
         ]);
     }
@@ -200,6 +210,6 @@ class AccountingController extends Controller
             "balance" => $new_account_balance
         ]);
 
-        return Redirect::route("accounts.show",["code"=>$account->code])->with("success","Successfully updated account balance");
+        return Redirect::route("accounts.show", ["code" => $account->code])->with("success", "Successfully updated account balance");
     }
 }

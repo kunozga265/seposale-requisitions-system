@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Http\Controllers\AccountingAccountController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\PayableController;
 use App\Models\AccountingAccount;
@@ -42,13 +43,27 @@ class DatabaseSeeder extends Seeder
         //  $this->call(MaterialsTypeSeederTable::class);
         //  $this->call(ReceiptSummariesSeeder::class);
 
-        $this->call(AccountTypeTableSeeder::class);
-        $this->call(AccountsGroupTableSeeder::class);
-        $this->call(AccountingAccountsTableSeeder::class);
-        $this->call(RequestFormItemsTableSeeder::class);
-        $this->call(ProductAccountsTableSeeder::class);
-        $this->call(InventoryAccountsTableSeeder::class);
-        $this->call(MaterialsTableSeeder::class);
+        // $this->call(AccountTypeTableSeeder::class);
+        // $this->call(AccountsGroupTableSeeder::class);
+        // $this->call(AccountingAccountsTableSeeder::class);
+        // $this->call(RequestFormItemsTableSeeder::class);
+        // $this->call(ProductAccountsTableSeeder::class);
+        // $this->call(InventoryAccountsTableSeeder::class);
+        // $this->call(MaterialsTableSeeder::class);
+
+         $receipts = \App\Models\Receipt::where("date",">",1748728800)->get();
+         $nb = (new AccountingAccountController())->getAccount(1020);
+         $std = (new AccountingAccountController())->getAccount(1021);
+         $njewa = (new AccountingAccountController())->getAccount(1022);
+         $airwing = (new AccountingAccountController())->getAccount(1023);
+
+        //  foreach($receipts as $receipt){
+        //     switch($receipt->account_id){
+        //         case 1:
+        //             $nb->rec
+        //             break;
+        //     }
+        //  }
 
 
 

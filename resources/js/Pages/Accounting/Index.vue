@@ -20,11 +20,17 @@
     <template #actions>
       <primary-button @click.native="addTransationDialog = true">Add Transaction</primary-button>
       <!-- <primary-button @click.native="addTransationDialog = true">Transfer</primary-button> -->
+        <inertia-link :href="route('accounts.journal')">
+        <secondary-button>
+          Journal
+        </secondary-button>
+      </inertia-link>
       <inertia-link :href="route('settings.accounting-centre')">
         <secondary-button>
           Manage Accounts
         </secondary-button>
       </inertia-link>
+    
     </template>
     <!-- 
     <dialog-modal :show="addTransationDialog" @close="addTransationDialog = false">
