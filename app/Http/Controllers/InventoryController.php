@@ -60,7 +60,7 @@ class InventoryController extends Controller
                         }
                         break;
                     case "collections":
-                        $collections = $inventory->collections;
+                        $collections = $inventory->collections()->latest()->get();
                         break;
                     case "batches":
                         //get batches
