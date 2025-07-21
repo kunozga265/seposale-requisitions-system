@@ -19122,7 +19122,7 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", {
+  return this.product.collectionStatus != null ? _c("div", {
     staticClass: "flex justify-start items-center",
     "class": _vm.getStatusClass(),
     on: {
@@ -19460,7 +19460,7 @@ var render = function render() {
               })]), _vm._v("\n                            Proceed\n                        ")])];
             },
             proxy: true
-          }])
+          }], null, false, 1573218068)
         })], 1)];
       },
       proxy: true
@@ -19512,8 +19512,8 @@ var render = function render() {
         })]), _vm._v("\n                Submit\n            ")])];
       },
       proxy: true
-    }])
-  })], 1);
+    }], null, false, 1354163302)
+  })], 1) : _vm._e();
 };
 var staticRenderFns = [];
 render._withStripped = true;

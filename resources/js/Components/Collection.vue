@@ -1,5 +1,5 @@
 <template>
-    <div @click="openDialog" class="flex justify-start items-center" :class="getStatusClass()">
+    <div @click="openDialog" v-if="this.product.collectionStatus != null" class="flex justify-start items-center" :class="getStatusClass()">
         <div>
             <i class="mdi" :class="getStatusIcon()"></i>
         </div>
