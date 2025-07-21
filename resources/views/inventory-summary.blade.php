@@ -172,7 +172,7 @@
                 <tr>
                     <td style="text-transform: none">Closing</td>
                     @foreach($summary->site->inventories as $inventory)
-                        <td style="text-align: left">{{$inventory->available_stock}}  <span>({{ $inventory->availableStock + $inventory->uncollectedStock }})</span></td>
+                        <td style="text-align: left">{{$inventory->available_stock}}  <span>({{ $inventory->available_stock + $inventory->uncollected_stock }})</span></td>
                     @endforeach
                 </tr>
                 <!-- <tr>
