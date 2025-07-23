@@ -34,7 +34,7 @@ class MaterialController extends Controller
 
         if ((new AppController())->isApi($request)) {
             //API Response
-//                return response()->json(new SiteResource($site));
+            //                return response()->json(new SiteResource($site));
         } else {
 
             //Web Response
@@ -45,18 +45,22 @@ class MaterialController extends Controller
     public function update(Request $request)
     {
 
-         //Validate all the important attributes
+        //Validate all the important attributes
         $request->validate([
-            'total' => ['required',"numeric","gt:0"],
-            'quantity' => ['required',"numeric","gt:0"],
+            'total' => ['required', "numeric", "gt:0"],
+            'quantity' => ['required', "numeric", "gt:0"],
             'date' => ['required'],
             'material_id' => ['required'],
-           
+
         ]);
 
-        $material=Material::find($request->material_id);
 
-        if(is_object($material)){
+        $material = Material::find($request->material_id);
+        if ($material->inventoryAccount->balance < $request->total) {
+            return Redirect::back()->with("error", "{$material->name} cost is greater than inventory balance!");
+        }
+
+        if (is_object($material)) {
 
             $quantity = $material->quantity + $request->quantity;
 
@@ -67,7 +71,7 @@ class MaterialController extends Controller
             Batch::create([
                 "date" => $request->date,
                 "ready_date" => $request->date,
-                "price" =>  $request->total/$request->quantity,
+                "price" =>  $request->total / $request->quantity,
                 "quantity" => $request->quantity,
                 "balance" =>  $request->quantity,
                 "accounting_balance" =>  $request->quantity,
@@ -92,11 +96,11 @@ class MaterialController extends Controller
             ]);
 
             //Run notifications
-//        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+            //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
 
 
-//        $report = (new ReportController())->getCurrentReport();
-//        $report->requestForms()->attach($requestForm);
+            //        $report = (new ReportController())->getCurrentReport();
+            //        $report->requestForms()->attach($requestForm);
 
             if ((new AppController())->isApi($request))
                 //API Response
@@ -105,8 +109,8 @@ class MaterialController extends Controller
                 //Web Response
                 return Redirect::back()->with('success', "{$material->name}: Stock updated!");
             }
-        }else {
-            return Redirect::back()->with('error','Resource not found');
+        } else {
+            return Redirect::back()->with('error', 'Resource not found');
         }
     }
 }
