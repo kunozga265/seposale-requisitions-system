@@ -7,6 +7,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\PayableController;
 use App\Models\AccountingAccount;
 use App\Models\Expense;
+use App\Models\MaterialsType;
 use App\Models\Payable;
 use Illuminate\Database\Seeder;
 
@@ -51,21 +52,9 @@ class DatabaseSeeder extends Seeder
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
 
-        // $receipts = \App\Models\Receipt::where("date", ">", 1748728800)->get();
-        // $nb = (new AccountingAccountController())->getAccount(1020);
-        // $nb_balance = $nb->balance;
-        // $std = (new AccountingAccountController())->getAccount(1021);
-        // $std_balance = $std->balance;
-        // $njewa = (new AccountingAccountController())->getAccount(1022);
-        // $njewa_balance = $njewa->balance;
-        // $airwing = (new AccountingAccountController())->getAccount(1023);
-        // $airwing_balance = $airwing->balance;
-
-        // foreach ($receipts as $receipt) {
-        //     if ($receipt->record == null) {
-
-        //                  x
-        //     }
-        // }
+        MaterialsType::create([ 
+            "name"=> "Diesel",
+            "slug"=> "diesel",
+        ]);
     }
 }

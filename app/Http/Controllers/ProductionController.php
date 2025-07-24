@@ -317,13 +317,15 @@ class ProductionController extends Controller
                         'available_stock' => $availableStock
                     ]);
 
+                    $date = Carbon::createFromTimestamp($request->date);
+
                     Batch::create([
-                        "date" => $request->date,
+                        "date" => $date->getTimestamp(),
                         "price" =>  $average_cost,
                         "quantity" => $inventoryObject["quantity"],
                         "balance" =>  $inventoryObject["quantity"],
                         "accounting_balance" => $inventoryObject["quantity"],
-                        "ready_date" =>  $inventoryObject["date"],
+                        "ready_date" =>  $date->addDays(8)->getTimestamp(),
                         "photo" => null,
                         "comments" => "",
                         "inventory_id" => $inventory->id,

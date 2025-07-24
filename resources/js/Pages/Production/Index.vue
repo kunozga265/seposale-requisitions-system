@@ -31,15 +31,33 @@
         </template>
 
         <template #actions>
-            <primary-button @click.native="openProductionReportDialog">Production Report</primary-button>
-            <!--            <inertia-link :href="route('expenses.create')">-->
-            <primary-button @click.native="addStockDialog = true">
-                Add Stock
-            </primary-button>
-            <!--            </inertia-link>-->
-            <secondary-button @click.native="addItemDialog = true">
-                Add Item
-            </secondary-button>
+            <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
+                <primary-button @click.native="openProductionReportDialog">Generate Report</primary-button>
+                <!--            <inertia-link :href="route('expenses.create')">-->
+
+                <jet-dropdown align="right" width="48">
+                    <template #trigger>
+                        <secondary-button>
+                            + Add
+                        </secondary-button>
+                    </template>
+
+                    <template #content>
+                        <jet-dropdown-link @click.native="addStockDialog = true" as="button" class="text-left">
+                            Add Stock
+                        </jet-dropdown-link>
+                        <div class="border-t border-gray-100"></div>
+
+                        <jet-dropdown-link @click.native="addItemDialog = true" as="button" class="text-left">
+                            Add Product
+                        </jet-dropdown-link>
+                        <div class="border-t border-gray-100"></div>
+
+
+
+                    </template>
+                </jet-dropdown>
+            </div>
 
         </template>
 
@@ -259,7 +277,7 @@
                                 class="mr-1 mb-2 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                             <jet-label for="quantity" :value="inventory.name" />
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 mb-2" v-show="inventory.check">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-1 mb-2" v-show="inventory.check">
                             <div>
                                 <div class="text-xs text-gray-500">Produced</div>
                                 <jet-input type="number" step="0.01" class="block w-full"
@@ -269,10 +287,10 @@
                                 <div class="text-xs text-gray-500">Damages</div>
                                 <jet-input type="number" step="0.01" class="block w-full" v-model="inventory.damages" />
                             </div>
-                            <div class="">
+                            <!-- <div class="">
                                 <div class="text-xs text-gray-500">Cure Date</div>
                                 <vue-date-time-picker color="#1a56db" v-model="inventory.date" />
-                            </div>
+                            </div> -->
 
                         </div>
                     </div>
@@ -310,7 +328,8 @@
                     Cancel
                 </secondary-button>
 
-                <primary-button v-show="productionValidation" :disabled="form.processing" class="ml-2" @click.native="generateProductionReport">
+                <primary-button v-show="productionValidation" :disabled="form.processing" class="ml-2"
+                    @click.native="generateProductionReport">
                     <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
                         viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -499,6 +518,8 @@ import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 import JetLabel from "@/Jetstream/Label.vue";
 import { Money } from 'v-money'
+import JetDropdownLink from "@/Jetstream/DropdownLink.vue";
+import JetDropdown from "@/Jetstream/Dropdown.vue";
 
 export default {
     props: [
@@ -518,6 +539,8 @@ export default {
         PrimaryButton,
         PieChart,
         VueApexCharts,
+        JetDropdown,
+        JetDropdownLink,
         Money
 
     },
@@ -760,12 +783,14 @@ export default {
             const riverSand = this.form.materials.find(({ type }) => type === "river-sand");
             const quarryDust = this.form.materials.find(({ type }) => type === "quarry-dust");
             const pebbleStone = this.form.materials.find(({ type }) => type === "pebble-stone");
+            const deisel = this.form.materials.find(({ type }) => type === "diesel");
 
 
             if (pebbleStone.quantity == 0) {
                 this.productionErrorMessage = "Enter pebble stone used"
                 return false
             }
+
             if (this.withSand) {
                 if (riverSand.quantity == 0) {
                     this.productionErrorMessage = "Enter river sand used"
@@ -782,14 +807,18 @@ export default {
                     return false
                 }
             }
+            if (deisel.quantity == 0) {
+                this.productionErrorMessage = "Enter diesel used"
+                return false
+            }
 
             let sum = 0;
             for (let x in this.form.inventories) {
                 sum += this.form.inventories[x].quantity
-                if (this.form.inventories[x].quantity > 0 && this.form.inventories[x].date == null) {
-                    this.productionErrorMessage = "Select curing date for " + this.form.inventories[x].name
-                    return false
-                }
+                // if (this.form.inventories[x].quantity > 0 && this.form.inventories[x].date == null) {
+                //     this.productionErrorMessage = "Select curing date for " + this.form.inventories[x].name
+                //     return false
+                // }
             }
 
             if (sum <= 0) {
