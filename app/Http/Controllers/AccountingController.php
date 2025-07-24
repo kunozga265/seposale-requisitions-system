@@ -28,7 +28,7 @@ class AccountingController extends Controller
     }
     public function journal()
     {
-        $records = AccountingRecord::latest()->paginate(100);
+        $records = AccountingRecord::latest()->orderBy("date","desc")->paginate(100);
         // Return the accounting dashboard view
         return Inertia::render('Accounting/Journal', [
             'records' => new AccountingRecordCollection($records),
