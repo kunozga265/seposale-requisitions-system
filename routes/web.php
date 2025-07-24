@@ -386,6 +386,10 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\SaleController@store",
             'roles' =>['employee','management']
         ])->name('sales.store');
+        Route::post('/store/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@updateAccounts",
+            'roles' =>['employee','management']
+        ])->name('sales.store.accounts');
 
         Route::post('/store/make-site-sale', [
             "uses"  => "App\Http\Controllers\SaleController@makeSiteSale",

@@ -127,7 +127,7 @@ class Statement extends Model
             $isProfit = $profits > 0;
             $now = Carbon::now()->getTimestamp();
             if ($timestamp != 0) {
-                $date = date("Y-M-d", $timestamp) . " to " . date("Y-M-D", $now);
+                $date = date("Y-M-d", $timestamp) . " to " . date("Y-M-d", $now);
             } else {
                 $date = date("Y-M-d", $now);
             }

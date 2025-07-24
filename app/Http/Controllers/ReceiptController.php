@@ -255,6 +255,7 @@ class ReceiptController extends Controller
                                         "type" => "DEBIT", // incrementing the account balance
                                         "accounting_account_id" => $wallet_account->id,
                                         "receipt_id" => $receipt->id,
+                                        "receipt_summary_id" => $receiptSummary->id,
                                     ]);
                                     $wallet_account_balance += $amount;
 
@@ -272,6 +273,7 @@ class ReceiptController extends Controller
                                         "accounting_account_id" => $receivables_account->id,
                                         "accounting_record_id" => $wallet_record->id,
                                         "receipt_id" => $receipt->id,
+                                        "receipt_summary_id" => $receiptSummary->id,
                                     ]);
                                     $receivables_balance -= $amount;
 
@@ -313,6 +315,7 @@ class ReceiptController extends Controller
                                             "type" => "DEBIT", // incrementing the account balance
                                             "accounting_account_id" => $wallet_account->id,
                                             "receipt_id" => $receipt->id,
+                                            "receipt_summary_id" => $receiptSummary->id,
                                         ]);
                                         $wallet_account_balance += $partial_payment;
 
@@ -330,6 +333,7 @@ class ReceiptController extends Controller
                                             "accounting_account_id" => $receivables_account->id,
                                             "accounting_record_id" => $wallet_record->id,
                                             "receipt_id" => $receipt->id,
+                                            "receipt_summary_id" => $receiptSummary->id,
                                         ]);
                                         $receivables_balance -= $partial_payment;
 
@@ -372,6 +376,7 @@ class ReceiptController extends Controller
                                             "type" => "DEBIT", // incrementing the account balance
                                             "accounting_account_id" => $wallet_account->id,
                                             "receipt_id" => $receipt->id,
+                                            "receipt_summary_id" => $receiptSummary->id,
                                         ]);
                                         $wallet_account_balance += $remainder;
 
@@ -388,6 +393,7 @@ class ReceiptController extends Controller
                                             "accounting_account_id" => $unearned_revenue_account->id,
                                             "accounting_record_id" => $wallet_record->id,
                                             "receipt_id" => $receipt->id,
+                                            "receipt_summary_id" => $receiptSummary->id,
                                         ]);
                                         $unearned_revenue_balance += $remainder;
 
@@ -427,6 +433,7 @@ class ReceiptController extends Controller
                                     "type" => "DEBIT", // incrementing the account balance
                                     "accounting_account_id" => $wallet_account->id,
                                     "receipt_id" => $receipt->id,
+                                    "receipt_summary_id" => $receiptSummary->id,
                                 ]);
                                 $wallet_account_balance += $amount;
 
@@ -443,6 +450,7 @@ class ReceiptController extends Controller
                                     "accounting_account_id" => $unearned_revenue_account->id,
                                     "accounting_record_id" => $wallet_record->id,
                                     "receipt_id" => $receipt->id,
+                                    "receipt_summary_id" => $receiptSummary->id,
                                 ]);
                                 $unearned_revenue_balance += $amount;
 
@@ -482,6 +490,7 @@ class ReceiptController extends Controller
                                 "type" => "DEBIT", // incrementing the account balance
                                 "accounting_account_id" => $wallet_account->id,
                                 "receipt_id" => $receipt->id,
+                                "receipt_summary_id" => $receiptSummary->id,
                             ]);
                             $wallet_account_balance += $amount;
 
@@ -498,6 +507,7 @@ class ReceiptController extends Controller
                                 "accounting_account_id" => $unearned_revenue_account->id,
                                 "accounting_record_id" => $wallet_record->id,
                                 "receipt_id" => $receipt->id,
+                                "receipt_summary_id" => $receiptSummary->id,
                             ]);
                             $unearned_revenue_balance += $amount;
 

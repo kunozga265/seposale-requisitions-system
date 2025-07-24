@@ -51,21 +51,21 @@ class DatabaseSeeder extends Seeder
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
 
-         $receipts = \App\Models\Receipt::where("date",">",1748728800)->get();
-         $nb = (new AccountingAccountController())->getAccount(1020);
-         $std = (new AccountingAccountController())->getAccount(1021);
-         $njewa = (new AccountingAccountController())->getAccount(1022);
-         $airwing = (new AccountingAccountController())->getAccount(1023);
+        // $receipts = \App\Models\Receipt::where("date", ">", 1748728800)->get();
+        // $nb = (new AccountingAccountController())->getAccount(1020);
+        // $nb_balance = $nb->balance;
+        // $std = (new AccountingAccountController())->getAccount(1021);
+        // $std_balance = $std->balance;
+        // $njewa = (new AccountingAccountController())->getAccount(1022);
+        // $njewa_balance = $njewa->balance;
+        // $airwing = (new AccountingAccountController())->getAccount(1023);
+        // $airwing_balance = $airwing->balance;
 
-        //  foreach($receipts as $receipt){
-        //     switch($receipt->account_id){
-        //         case 1:
-        //             $nb->rec
-        //             break;
+        // foreach ($receipts as $receipt) {
+        //     if ($receipt->record == null) {
+
+        //                  x
         //     }
-        //  }
-
-
-
+        // }
     }
 }

@@ -47,6 +47,11 @@ class Receipt extends Model
         return $this->hasOne(Transaction::class);
     }
 
+    public function record()
+    {
+        return $this->hasOne(AccountingRecord::class);
+    }
+
 
 
     public function listOfProducts()

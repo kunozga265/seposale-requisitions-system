@@ -23,6 +23,10 @@ class AccountingRecord extends Model
     {
         return $this->belongsTo(Receipt::class, 'receipt_id');
     }
+    public function receiptSummary()
+    {
+        return $this->belongsTo(ReceiptSummary::class, 'receipt_summary_id');
+    }
 
     public function requestFormItem()
     {
@@ -64,6 +68,7 @@ class AccountingRecord extends Model
         'summary_id',
         'site_sale_summary_id',
         "receipt_id",
+        "receipt_summary_id",
         "production_id",
         "collection_id",
     ];

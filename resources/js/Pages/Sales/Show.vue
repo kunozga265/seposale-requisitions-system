@@ -47,6 +47,8 @@
                 </a>
                 <danger-button v-if="sale.data.status == 1" @click.native="closeDialog = true">Close</danger-button>
                 <danger-button v-if="sale.data.editable" @click.native="deleteDialog = true">Delete</danger-button>
+                <primary-button v-if="checkRole($page.props.auth.data, 'management')"
+                    @click.native="updateAccounts">UpdateAccounts</primary-button>
             </div>
 
         </template>
@@ -1052,7 +1054,15 @@ export default {
 
         balanceValidate(product) {
             return product.balance >= product.amount
-        }
+        },
+
+        updateAccounts() {
+            this.form
+                .post(this.route('sales.store.accounts', { id: this.sale.data.id }), {
+                    preserveScroll: true,
+                    onSuccess: () => this.deleteDialog = false,
+                })
+        },
     }
 }
 </script>

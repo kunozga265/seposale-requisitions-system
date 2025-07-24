@@ -14787,6 +14787,17 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     },
     balanceValidate: function balanceValidate(product) {
       return product.balance >= product.amount;
+    },
+    updateAccounts: function updateAccounts() {
+      var _this6 = this;
+      this.form.post(this.route('sales.store.accounts', {
+        id: this.sale.data.id
+      }), {
+        preserveScroll: true,
+        onSuccess: function onSuccess() {
+          return _this6.deleteDialog = false;
+        }
+      });
     }
   }
 });
@@ -29324,13 +29335,13 @@ var render = function render() {
               _vm.deleteDialog = true;
             }
           }
-        }, [_vm._v("Delete")]), _vm._v(" "), _c("primary-button", {
+        }, [_vm._v("Delete")]), _vm._v(" "), _vm.checkRole(_vm.$page.props.auth.data, "management") ? _c("primary-button", {
           nativeOn: {
             click: function click($event) {
               return _vm.updateAccounts.apply(null, arguments);
             }
           }
-        }, [_vm._v("UpdateAccounts")])], 1)];
+        }, [_vm._v("UpdateAccounts")]) : _vm._e()], 1)];
       },
       proxy: true
     }])
@@ -50817,7 +50828,13 @@ var render = function render() {
               _vm.deleteDialog = true;
             }
           }
-        }, [_vm._v("Delete")]) : _vm._e()], 1)];
+        }, [_vm._v("Delete")]) : _vm._e(), _vm._v(" "), _vm.checkRole(_vm.$page.props.auth.data, "management") ? _c("primary-button", {
+          nativeOn: {
+            click: function click($event) {
+              return _vm.updateAccounts.apply(null, arguments);
+            }
+          }
+        }, [_vm._v("UpdateAccounts")]) : _vm._e()], 1)];
       },
       proxy: true
     }])

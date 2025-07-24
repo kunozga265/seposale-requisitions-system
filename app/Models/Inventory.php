@@ -41,13 +41,13 @@ class Inventory extends Model
         return $this->belongsTo(Site::class);
     }
 
-     public function pending()
+    public function pending()
     {
         $payments = 0;
         $collections = [];
-        foreach ($this->summaries as $summary){
-            if($summary->getCollectionStatus() < 2){
-                $collections [] = [
+        foreach ($this->summaries as $summary) {
+            if ($summary->getCollectionStatus() < 2) {
+                $collections[] = [
                     "id" => $summary->id,
                     "inventory" => $summary->inventory,
                     "inventoryStock" => $summary->inventory->stock(),
@@ -57,7 +57,7 @@ class Inventory extends Model
                     'collected' => floatval($summary->collected),
                     'collectionStatus' => $summary->getCollectionStatus(),
                     'quantity' => floatval($summary->quantity),
-                    "collections" =>(new SiteSaleSummaryController())->getCollections($summary->collections),
+                    "collections" => (new SiteSaleSummaryController())->getCollections($summary->collections),
                     "site" => $summary->site,
                     "trashed" => $summary->deleted_at != null,
                     "sale" => [
@@ -69,19 +69,19 @@ class Inventory extends Model
                 ];
             }
 
-            if($summary->getPaymentStatus() < 2 && $summary->getCollectionStatus() > 0){
+            if ($summary->getPaymentStatus() < 2 && $summary->getCollectionStatus() > 0) {
                 $payments += $summary->balance;
             }
         }
 
-          usort($collections, function ($a, $b) {
-                if ($a['sale']['date'] < $b['sale']['date']) {
-                    return -1;
-                } elseif ($a['sale']['date'] > $b['sale']['date']) {
-                    return 1;
-                }
-                return 0;
-            });
+        usort($collections, function ($a, $b) {
+            if ($a['sale']['date'] < $b['sale']['date']) {
+                return -1;
+            } elseif ($a['sale']['date'] > $b['sale']['date']) {
+                return 1;
+            }
+            return 0;
+        });
 
         return collect((object)[
             "collections" => $collections,
@@ -93,7 +93,7 @@ class Inventory extends Model
     public function stock()
     {
         $count = 0;
-        $batches = $this->batches()->where("accounting_balance",">",0)->get();
+        $batches = $this->batches()->where("accounting_balance", ">", 0)->get();
         foreach ($batches as $batch) {
             if ($this->producible == 1) {
                 $now = Carbon::now();
@@ -110,15 +110,24 @@ class Inventory extends Model
     public function value()
     {
         $value = 0;
-        if($this->inventoryAccount != null){
+        // dump($this->name);
+        // dump($this->inventoryAccount->balance);
+        if ($this->inventoryAccount != null) {
             $value = $this->inventoryAccount->balance;
-            foreach($this->inventoryAccount->inventories as $inventory){
-                $batches = $inventory->batches()->where("accounting_balance",">",0)->get();
-                foreach($batches as $batch){
+            foreach ($this->inventoryAccount->inventories as $inventory) {
+                $batches = $inventory->batches()->where("accounting_balance", ">", 0)->get();
+                foreach ($batches as $batch) {
+                    if ($batch->accounting_balance > 0) {
+                        // dump($batch->price * $batch->accounting_balance);
+                        // dump("{$batch->id}: Price:{$batch->price} Qty:{$batch->quantity}");
+                    }
                     $value -= $batch->price * $batch->accounting_balance;
                 }
             }
         }
+
+
+
         return $value;
     }
 

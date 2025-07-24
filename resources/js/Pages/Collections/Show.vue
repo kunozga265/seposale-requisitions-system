@@ -44,7 +44,7 @@
         <secondary-button v-if="collection.data.photo != null"
           @click.native="attachmentDialog = true">Attachement</secondary-button>
         <danger-button @click.native="deleteDialog = true">Delete</danger-button>
-        <primary-button @click.native="updateAccounts">UpdateAccounts</primary-button>
+        <primary-button v-if="checkRole($page.props.auth.data, 'management')" @click.native="updateAccounts">UpdateAccounts</primary-button>
       </div>
     </template>
 

@@ -24,6 +24,11 @@ class ReceiptSummary extends Model
         return $this->belongsTo(SiteSaleSummary::class)->withTrashed();
     }
 
+     public function record()
+    {
+        return $this->hasOne(AccountingRecord::class);
+    }
+
     protected $fillable = [
         "name",
         "balance",
