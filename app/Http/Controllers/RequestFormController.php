@@ -331,14 +331,16 @@ class RequestFormController extends Controller
 
             //create request form items
             foreach ($request->items as $item) {
-                if(isset($item['inventoryId'])){
-                    if($item['inventoryId'] == "0" || $item['inventoryId'] == 0){
+                $account_id = null;
+                if (isset($item['inventoryId']) && $item['inventoryId'] != null) {
+                    if ($item['inventoryId'] == "0" || $item['inventoryId'] == 0) {
                         $details = "Transportation";
-                    }else{
-                        $details = Inventory::find($item['inventoryId'])->name;
+                    } else {
+                        $inventory = Inventory::find($item['inventoryId']);
+                        $details = $inventory->name;
+                        $account_id = $inventory->inventoryAccount->id;
                     }
-
-                }else{
+                } else {
                     $details = $item['details'];
                 }
 
@@ -351,7 +353,8 @@ class RequestFormController extends Controller
                     'total_cost' => $item['totalCost'],
                     'balance' => $item['totalCost'],
                     'status' => 0, //Pending,
-                    'request_id' => $requestForm->id
+                    'request_id' => $requestForm->id,
+                    'accounting_account_id' => $account_id,
                 ]);
             }
 
@@ -412,12 +415,12 @@ class RequestFormController extends Controller
             $items = [];
             $total = 0;
             if ($request->expenses["transportation"]["check"]) {
-                
+
                 $items[] = [
                     "details" => "Transportation for {$summary->description}",
                     "units" => 'Delivery',
                     "quantity" => $summary->quantity,
-                    "unitCost" => $request->expenses["transportation"]["amount"]/$summary->quantity,
+                    "unitCost" => $request->expenses["transportation"]["amount"] / $summary->quantity,
                     "totalCost" => $request->expenses["transportation"]["amount"],
                     "accountId" => $summary->product->inventory_account_id,
                     "transporterId" => $request->expenses["transportation"]["transporterId"],
@@ -429,7 +432,7 @@ class RequestFormController extends Controller
                     "details" => "Product Cost for {$summary->description}",
                     "units" => '',
                     "quantity" => $summary->quantity,
-                    "unitCost" => $request->expenses["product"]["amount"]/$summary->quantity,
+                    "unitCost" => $request->expenses["product"]["amount"] / $summary->quantity,
                     "totalCost" => $request->expenses["product"]["amount"],
                     "accountId" => $summary->product->inventory_account_id,
                     "supplierId" => $request->expenses["product"]["supplierId"],
@@ -1320,7 +1323,7 @@ class RequestFormController extends Controller
             foreach ($grouped as $items) {
                 $alternative_account = AccountingAccount::find($items[0]["accountId"]);
                 $alternative_account_balance = $alternative_account->balance;
-               
+
 
                 foreach ($items as $item) {
                     $request_form_item = RequestFormItem::find($item["id"]);

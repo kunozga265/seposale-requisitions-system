@@ -27,6 +27,7 @@ class RequestFormItemResource extends JsonResource
             "accountId"         => $this->accounting_account_id,
             "transporterId"     => $this->transporter_id,
             "supplierId"        => $this->supplier_id,
+            "inventoryCode"         => $this->inventory?->inventoryAccount->code,
             "comments"          => $this->comments,
             "account"           => new AccountingAccountResource($this->account),
         ];

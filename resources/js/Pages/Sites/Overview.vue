@@ -838,6 +838,7 @@ export default {
                 personCollectingAdvance: '',
                 items: [
                     {
+                        "inventoryId": null,
                         "details": '',
                         "units": '',
                         "quantity": 0,
@@ -1178,7 +1179,7 @@ export default {
         },
         addRecord() {
             this.form.items.push({
-                "inventoryId": "",
+                "inventoryId": null,
                 "details": '',
                 "units": '',
                 "quantity": 0,

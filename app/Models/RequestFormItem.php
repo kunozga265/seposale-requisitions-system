@@ -20,6 +20,9 @@ class RequestFormItem extends Model
     public function requestForm(){
        return $this->belongsTo(RequestForm::class,"request_id");
     }
+    public function inventory(){
+       return $this->belongsTo(Inventory::class,"inventory_id");
+    }
 
     protected $fillable = [
         "details",

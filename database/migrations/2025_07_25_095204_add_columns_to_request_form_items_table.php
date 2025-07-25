@@ -16,12 +16,12 @@ class AddColumnsToRequestFormItemsTable extends Migration
         Schema::table('request_form_items', function (Blueprint $table) {
             $table->foreignId('inventory_id')
                 ->nullable()
-                ->constrained('inventories')
+             
                 ->onDelete('set null')
                 ->after('supplier_id'); 
             $table->foreignId('material_id')
                 ->nullable()
-                ->constrained('materials')
+               
                 ->onDelete('set null')
                 ->after('inventory_id'); 
         });
