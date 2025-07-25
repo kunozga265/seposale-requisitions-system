@@ -548,16 +548,22 @@ class ProductionController extends Controller
 
                     $damages_cost = $batch->price * $count;
                     //create a record of the transaction
-                    Damage::create([
-                        "date" => $date,
-                        "batch_id" => $batch->id,
-                        "inventory_id" => $inventory->id,
-                        "quantity" => $count,
-                        "production_id" => $production->id,
-                        "cost" => $damages_cost,
-                    ]);
+                    if ($damages_cost > 0 && $count > 0) {
+                        Damage::create([
+                            "date" => $date,
+                            "batch_id" => $batch->id,
+                            "inventory_id" => $inventory->id,
+                            "quantity" => $count,
+                            "production_id" => $production->id,
+                            "cost" => $damages_cost,
+                        ]);
+                    }else{
+                        // return Redirect::back()->with("error", "{$inventory->name} is out of stock. Some damages not recorded. Record manually.");
+                        break;
+                    }
                 } else {
-                    return Redirect::back()->with("error", "{$inventory->name} is out of stock");
+                    // return Redirect::back()->with("error", "{$inventory->name} is out of stock");
+                    break;
                 }
                 $cost += $damages_cost;
                 $quantity -= $count;
@@ -765,7 +771,7 @@ class ProductionController extends Controller
             }
 
             //reverse transactions
-           (new AccountingRecordController())->reverseTransactions($production->records, $production->id);
+            (new AccountingRecordController())->reverseTransactions($production->records, $production->id);
 
             //delete production
             $production->delete();
