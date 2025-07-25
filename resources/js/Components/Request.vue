@@ -37,6 +37,7 @@ export default {
             switch (this.request.type){
                 case 'PETTY_CASH':
                 case 'REQUISITION':
+                case 'INVENTORY':
                 case 'OPERATIONS':
                     return this.request.total
                 case 'FUEL':
@@ -53,10 +54,12 @@ export default {
                 case 'REQUISITION':
                 case 'PETTY_CASH':
                     return 'mdi-cash'
+                case 'INVENTORY':
+                    return 'mdi-hammer'
                 case 'MATERIALS':
                     return 'mdi-hammer'
-                case 'VEHICLE_MAINTENANCE':
-                    return 'mdi-car-hatchback'
+                case 'OPERATIONS':
+                    return 'mdi-dump-truck'
                 case 'FUEL':
                     return 'mdi-gas-station'
                 default:

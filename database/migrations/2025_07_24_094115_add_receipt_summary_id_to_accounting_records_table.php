@@ -14,7 +14,7 @@ class AddReceiptSummaryIdToAccountingRecordsTable extends Migration
     public function up()
     {
         Schema::table('accounting_records', function (Blueprint $table) {
-               $table->foreignId('receipt_summary_id')
+            $table->foreignId('receipt_summary_id')
                 ->nullable()
                 ->constrained('receipt_summaries')
                 ->onDelete('set null')
@@ -30,7 +30,7 @@ class AddReceiptSummaryIdToAccountingRecordsTable extends Migration
     public function down()
     {
         Schema::table('accounting_records', function (Blueprint $table) {
-               $table->dropForeign(['receipt_summary_id']);
+            $table->dropForeign(['receipt_summary_id']);
             $table->dropColumn('receipt_summary_id');
         });
     }

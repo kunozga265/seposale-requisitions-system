@@ -1,9 +1,9 @@
 <template>
     <div @click="$emit('clickEvent')" class="flex justify-start items-center cursor-pointer" :class="getDeliveryStatusClass()">
-        <div>
+        <div v-show="hideIcon == null">
             <i class="mdi text-xl" :class="getDeliveryStatusIcon()"></i>
         </div>
-        <div class="ml-3 text-sm letter-spacing-normal" style="letter-spacing: normal">
+        <div :class="{'ml-3':hideIcon == null}" class="text-sm letter-spacing-normal" style="letter-spacing: normal">
             {{ getDeliveryStatusMessage(this.productCompound.delivery.status) }} {{ due != null ? ", due " + due : "" }}
         </div>
     </div>
@@ -15,7 +15,7 @@
 
 export default {
     name: "DeliveryStatus",
-    props: ['productCompound', "due", "overdue", "isSolo"],
+    props: ['productCompound', "due", "overdue", "isSolo", "hideIcon"],
     emits: ['clickEvent'],
     methods: {
         getDeliveryStatusClass() {

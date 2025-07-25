@@ -33,6 +33,8 @@ class RequestFormItem extends Model
         "accounting_account_id",
         "transporter_id",
         "supplier_id",
+        "inventory_id",
+        "material_id",
         "comments",
     ];
 }

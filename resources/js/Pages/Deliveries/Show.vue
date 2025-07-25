@@ -32,7 +32,7 @@
 
         <template #actions>
             <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
-                <whatsapp v-show="delivery.data.status === 4" template="delivery" :serial="delivery.data.serial"
+                <whatsapp v-show="delivery.data.status === 4 || delivery.data.status === 2" template="delivery" :serial="delivery.data.serial"
                     :sent="delivery.data.whatsapp" />
 
                 <!--                <a :href="route('deliveries.print',{'id':delivery.data.id})" target="_blank">-->

@@ -286,8 +286,8 @@
             </div>
             <div v-else>
               <div class="card">
-                <div class="p-2 mb-2 relative ">
-                  <div class="p-2 pb-4 heading-font text-left relative">
+                <div class="p-2 mb-2 relative">
+                  <div class="p-2 pb-4 heading-font text-left w-full ">
                     <button v-show="search.length > 0" @click="search = ''"
                       class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
                       <i class="mdi mdi-close"></i>
@@ -296,7 +296,9 @@
                       autocomplete="seposale-filter-code" />
 
                   </div>
-                  <table class="w-full  text-left text-gray-500 dark:text-gray-400">
+                    
+                  <div class="overflow-x-auto">
+                  <table class="overflow-auto w-full default-table text-left text-gray-500 dark:text-gray-400">
                     <thead class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 
                       <tr>
@@ -329,6 +331,7 @@
                       </tr>
                     </tbody>
                   </table>
+                  </div>
                 </div>
 
               </div>

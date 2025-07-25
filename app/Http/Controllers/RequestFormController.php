@@ -12,6 +12,7 @@ use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
 use App\Models\Expense;
 use App\Models\ExpenseType;
+use App\Models\Inventory;
 use App\Models\Payable;
 use App\Models\Position;
 use App\Models\Project;
@@ -279,7 +280,7 @@ class RequestFormController extends Controller
         $stagesApprovalPosition = null;
 
         // Check the type of request
-        if ($request->type == "PETTY_CASH" || $request->type == "REQUISITION") {
+        if ($request->type == "PETTY_CASH" || $request->type == "REQUISITION"  || $request->type == "INVENTORY") {
 
             //Validate all the important attributes
             $request->validate([
@@ -330,8 +331,20 @@ class RequestFormController extends Controller
 
             //create request form items
             foreach ($request->items as $item) {
+                if(isset($item['inventoryId'])){
+                    if($item['inventoryId'] == "0" || $item['inventoryId'] == 0){
+                        $details = "Transportation";
+                    }else{
+                        $details = Inventory::find($item['inventoryId'])->name;
+                    }
+
+                }else{
+                    $details = $item['details'];
+                }
+
                 $requestForm->items()->create([
-                    'details' => $item['details'],
+                    'inventory_id' => isset($item['inventoryId']) ? $item['inventoryId'] : null,
+                    'details' => $details,
                     'units' => $item['units'],
                     'quantity' => $item['quantity'],
                     'unit_cost' => $item['unitCost'],

@@ -45,7 +45,7 @@
                 <jet-dropdown align="right" width="48">
                     <template #trigger>
                         <secondary-button>
-                            + Add
+                            Actions
                         </secondary-button>
                     </template>
 
@@ -65,6 +65,11 @@
 
                         <jet-dropdown-link @click.native="addInventoryDialog = true" as="button" class="text-left">
                             Add Inventory
+                        </jet-dropdown-link>
+                        <div class="border-t border-gray-100"></div>
+
+                        <jet-dropdown-link @click.native="makeRequestDialog = true" as="button" class="text-left">
+                            Make Request
                         </jet-dropdown-link>
                         <div class="border-t border-gray-100"></div>
 
@@ -243,6 +248,146 @@
                     </primary-button>
                 </template>
             </dialog-modal>
+
+            <dialog-modal :show="makeRequestDialog" @close="makeRequestDialog = false">
+                <template #title>
+                    Make Request
+                </template>
+
+                <template #content>
+                    <div class="mb-4">
+                        <div>
+                            Please fill in the following details to complete the requisition.
+                        </div>
+                        <div v-show="!requestValidation" class="flex items-center w-full text-red">
+                            <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{
+                                requestErrorMessage }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <jet-label for="personCollectingAdvance" value="Person Collecting" />
+                        <jet-input id="personCollectingAdvance" type="text" class="block w-full"
+                            v-model="form.personCollectingAdvance" autocomplete="geoserve-person-collecting-advance" />
+                    </div>
+
+                    <div class="p-2 mb-2 ">
+                        <div class="relative overflow-x-auto">
+                            <table class="w-full default-table text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead
+                                    class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="heading-font">
+
+                                        </th>
+                                        <th scope="col" class="heading-font">
+                                            Product
+                                        </th>
+                                        <th scope="col" class="heading-font">
+                                            Quantity
+                                        </th>
+                                        <th scope="col" class="heading-font">
+                                            Unit Cost
+                                        </th>
+                                        <th scope="col" class="heading-font">
+                                            Total Cost
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                        v-for="(info, index) in form.items" :key="index">
+                                        <th scope="row" class="px-2">
+                                            <i @click="removeRecord(index)"
+                                                class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor"></i>
+                                        </th>
+                                        <td scope="row"
+                                            class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+
+                                            <select v-model="info.inventoryId" id="product"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                required>
+                                                <option v-for="(inventory, index) in site.data.inventories"
+                                                    :value="inventory.id" :key="index">
+                                                    {{ inventory.name }}
+                                                </option>
+                                                <option value="0">Transportation</option>
+                                            </select>
+
+                                        </td>
+                                        <td v-if="form.type === 'MATERIALS'" class="py-2 pr-1">
+                                            <jet-input type="text" class="block w-full" v-model="info.units" />
+                                        </td>
+                                        <td class="py-2 pr-1">
+                                            <!-- <money
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                        v-bind="moneyMaskOptions" v-model="info.quantity" /> -->
+                                            <jet-input type="number" class="block w-full" step="0.01"
+                                                v-model="info.quantity" />
+                                        </td>
+                                        <td class="py-2 pr-1">
+                                            <money
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                v-bind="moneyMaskOptions" v-model="info.unitCost" />
+                                            <!-- <jet-input type="text" class="block w-full"
+                                                        v-model="info.unitCost" /> -->
+                                        </td>
+                                        <td class="py-2 pr-1">
+                                            <money
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                v-bind="moneyMaskOptions" :value="(info.quantity * info.unitCost)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div @click="addRecord" class="mt-2 ml-2 flex justify-start items-center cursor">
+                            <div>
+                                <i class="mdi mdi-plus-circle text-blue-600"></i>
+                            </div>
+                            <div class="ml-2 text-blue-600 text-sm">
+                                Add Record
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <div v-if="isNaN(totalCost)" class="text-red-600 uppercase font-semibold heading-font">
+                                Enter valid total cost
+                            </div>
+                            <div v-else class="flex justify-center items-center ">
+                                <div class="currency ">MK</div>
+                                <div class="total">{{ numberWithCommas(totalCost) }}</div>
+                            </div>
+                            <div class="text-gray-600 text-xs">Total Cost</div>
+                        </div>
+                        <!-- <div class="mt-4 text-gray-600 text-sm">
+                                        I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment.
+                                    </div> -->
+                    </div>
+
+
+
+
+                </template>
+
+                <template #footer>
+                    <secondary-button @click.native="makeRequestDialog = false">
+                        close
+                    </secondary-button>
+                    <primary-button v-show="requestValidation" @click.native="makeRequest">
+                        <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
+                            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                fill="#E5E7EB" />
+                            <path
+                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                fill="currentColor" />
+                        </svg>
+                        Submit
+                    </primary-button>
+                </template>
+            </dialog-modal>
         </template>
 
         <div class="mx-9 flex">
@@ -408,14 +553,17 @@
                                                     :client="productCompound.sale.client" :product="productCompound"
                                                     :is-solo="true" />
                                             </td>
-                                            <td @click="navigateToSale(productCompound.sale.id)" class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
+                                            <td @click="navigateToSale(productCompound.sale.id)"
+                                                class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
                                                 {{ productCompound.sale.code }}
                                             </td>
 
-                                            <td @click="navigateToClient(productCompound.sale.client.id)" class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
+                                            <td @click="navigateToClient(productCompound.sale.client.id)"
+                                                class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
                                                 {{ productCompound.sale.client.name }}
                                             </td>
-                                            <th @click="navigateToInventory(productCompound.inventory.id)" scope="row" :class="{ 'strike-through': productCompound.trashed }"
+                                            <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
+                                                :class="{ 'strike-through': productCompound.trashed }"
                                                 class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap cursor-pointer hover:bg-gray-50">
                                                 {{ productCompound.inventory.name }}
                                             </th>
@@ -425,7 +573,8 @@
                                             <td class="py-2 pr-1 text-right">
                                                 {{ numberWithCommas(productCompound.balance) }}
                                             </td>
-                                            <td @click="navigateToSale(productCompound.sale.id)" class="cursor-pointer hover:bg-gray-50">
+                                            <td @click="navigateToSale(productCompound.sale.id)"
+                                                class="cursor-pointer hover:bg-gray-50">
                                                 <sale-status :status="productCompound.paymentStatus" :is-solo="true" />
                                             </td>
                                             <td class="py-2 pr-1 text-right">
@@ -656,6 +805,8 @@ export default {
             section: "overview",
             addStockDialog: false,
             addInventoryDialog: false,
+            makeRequestDialog: false,
+            requestErrorMessage: "",
             chartYear: 0,
             maxDate: new Date().toISOString().substr(0, 10),
             addStockErrorMessage: "",
@@ -682,6 +833,19 @@ export default {
                 threshold: 0,
                 producible: false,
                 productId: 0,
+
+                type: 'INVENTORY',
+                personCollectingAdvance: '',
+                items: [
+                    {
+                        "details": '',
+                        "units": '',
+                        "quantity": 0,
+                        "unitCost": 0,
+                        "totalCost": 0,
+                    },
+
+                ],
 
             }),
             chartOptionsApex: {
@@ -883,6 +1047,32 @@ export default {
             return true
 
         },
+        totalCost() {
+            let totalCost = 0
+            let currentTotal = 0
+            for (let x in this.form.items) {
+                currentTotal = parseFloat(this.form.items[x].quantity * this.form.items[x].unitCost)
+                totalCost += currentTotal
+                this.form.items[x].totalCost = parseFloat(currentTotal.toFixed(2))
+
+                //convert to numbers
+                this.form.items[x].quantity = parseFloat(this.form.items[x].quantity)
+                this.form.items[x].unitCost = parseFloat(this.form.items[x].unitCost)
+
+            }
+            return parseFloat(totalCost.toFixed(2))
+        },
+        requestValidation() {
+
+            if (isNaN(this.totalCost)) {
+                this.requestErrorMessage = "Enter valid details"
+                return false
+            } else if (this.totalCost <= 0) {
+                this.requestErrorMessage = "Enter details"
+                return false
+            } else
+                return true
+        },
     },
     watch: {
         chartYear() {
@@ -922,6 +1112,20 @@ export default {
                     preserveScroll: true,
                     onSuccess: () => {
                         this.addInventoryDialog = false
+                    },
+                })
+        },
+        makeRequest() {
+            this.form
+                .transform(data => ({
+                    ...data,
+                    total: this.totalCost,
+                }))
+                .post(this.route('request-forms.store'), {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        this.makeRequestDialog = false
+                        this.form.reset()
                     },
                 })
         },
@@ -971,6 +1175,19 @@ export default {
                     })
                 };
             }
+        },
+        addRecord() {
+            this.form.items.push({
+                "inventoryId": "",
+                "details": '',
+                "units": '',
+                "quantity": 0,
+                "unitCost": 0,
+                "totalCost": 0,
+            })
+        },
+        removeRecord(index) {
+            this.form.items.splice(index, 1)
         },
     }
 }

@@ -23,6 +23,8 @@ Vue.mixin({
                     return 'Requisition'
                 case 'OPERATIONS':
                     return 'Operations Request'
+                case 'INVENTORY':
+                    return 'One Stop Shop Request'
                 default:
                     return  ''
             }
