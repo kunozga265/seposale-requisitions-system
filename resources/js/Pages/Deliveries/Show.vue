@@ -32,8 +32,8 @@
 
         <template #actions>
             <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
-                <whatsapp v-show="delivery.data.status === 4 || delivery.data.status === 2" template="delivery" :serial="delivery.data.serial"
-                    :sent="delivery.data.whatsapp" />
+                <whatsapp v-show="delivery.data.status === 4 || delivery.data.status === 2" template="delivery"
+                    :serial="delivery.data.serial" :sent="delivery.data.whatsapp" />
 
                 <!--                <a :href="route('deliveries.print',{'id':delivery.data.id})" target="_blank">-->
                 <!--                    <primary-button>Print</primary-button>-->
@@ -116,7 +116,7 @@
                             v-model="form.quantity" />
                         <div class="mt-1 text-xs text-gray-500">
                             Remaining: {{ quantityBalance }} {{ delivery.data.summary.units }}{{ quantityBalance != 1 ?
-                            "s" : "" }}
+                                "s" : "" }}
                         </div>
                     </div>
                     <div v-show="delivery.data.status === 1" class="mb-4">
@@ -293,6 +293,11 @@
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
                         </div>
                     </div>
+                </div>
+
+                <div>
+                    <textarea v-model="form.remarks" placeholder="Leave remarks"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
                 </div>
 
 
@@ -606,7 +611,7 @@
                                 </div>
 
                                 <div class="delivery-profile grid grid-cols-1 md:grid-cols-2 gap-2">
-                                                                  <inertia-link :href="route('sales.show', { id: delivery.data.summary.sale.id })">
+                                    <inertia-link :href="route('sales.show', { id: delivery.data.summary.sale.id })">
                                         <div class="mb-4">
                                             <div class="text-mute text-sm">
                                                 Sales Order
@@ -626,7 +631,7 @@
                                             </div>
                                         </div>
                                     </inertia-link>
-    
+
                                     <div class="mb-4">
                                         <div class="text-mute text-sm">
                                             Site Location
@@ -926,6 +931,7 @@ export default {
                 other: 0,
                 comments: "",
                 personCollectingAdvance: "",
+                remarks: "",
 
                 expenses: {
                     transportation: {
@@ -1061,6 +1067,15 @@ export default {
                     return false
                 } else if (this.form.expenses.other.amount <= 0) {
                     this.error = "Enter other cost"
+                    return false
+                } else {
+                    return true
+                }
+            }
+
+            if (this.requestForms.data.length > 0) {
+                if (this.form.remarks.length === 0 || this.form.remarks == "") {
+                    this.error = "Please leave a remark (Why is more money needed?)"
                     return false
                 } else {
                     return true

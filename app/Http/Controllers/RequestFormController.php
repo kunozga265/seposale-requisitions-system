@@ -453,6 +453,16 @@ class RequestFormController extends Controller
                 $total += $request->expenses["other"]["amount"];
             }
 
+            $remarks = [];
+            if (isset($request->remarks)) {
+                $remarks []= [
+                    "positionTitle" => $user->position->title,
+                    "name" => $user->firstName . " " . $user->lastName,
+                    'comments' => $request->remarks,
+                    'date' => Carbon::now()->getTimestamp(),
+                ];
+            }
+
             $requestForm = RequestForm::create([
                 'code' => (new AppController())->generateUniqueCode("REQUESTFORM"),
                 'code_alt' => $this->getCodeRequestFormNumber(),
@@ -463,8 +473,8 @@ class RequestFormController extends Controller
                 //                'project_id'                    =>  $request->projectId,
                 // 'information' => json_encode($information),
                 'total' => $total,
-
                 'delivery_id' => $summary->delivery->id,
+
 
                 //Requested by
                 'user_id' => $user->id,
@@ -477,7 +487,7 @@ class RequestFormController extends Controller
                 'totalStages' => $stagesCount == 0 ? null : $stagesCount,
                 'stages' => json_encode($stages),
                 'quotes' => json_encode($request->quotes ?? []),
-                'remarks' => json_encode([]),
+                'remarks' => json_encode($remarks),
                 'receipts' => json_encode([]),
 
                 //Management Approval
