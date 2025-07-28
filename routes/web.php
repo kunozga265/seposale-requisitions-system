@@ -568,6 +568,13 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('inventories.update');
     });
+    Route::group(['prefix'=>'damages'],function() {
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\DamageController@store",
+            'roles' =>['employee','management']
+        ])->name('damages.store');
+    });
 
 
     Route::group(['prefix'=>'notifications'],function() {

@@ -299,6 +299,8 @@ class ProductionController extends Controller
             $material = Material::first();
             $material_inventory_account = $material->inventoryAccount;
             $material_inventory_account_balance = $material->inventoryAccount->balance;
+            $operating_expenses_account = AccountingAccount::where("code", 6050)->first();
+            $operating_expenses_account_balance = $operating_expenses_account->balance;
 
             //Record materials produced
             foreach ($request->inventories as $inventoryObject) {
@@ -385,7 +387,7 @@ class ProductionController extends Controller
                 if ($inventoryObject["damages"] > 0) {
                     $damages_cost = $this->recordDamages($inventory, $inventoryObject["damages"], $request->date, $production);
 
-                    $operating_expenses_account = AccountingAccount::where("code", 6050)->first();
+
                     $operating_expenses_record = $operating_expenses_account->records()->create([
                         "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                         "reference" => strtoupper(""),
@@ -393,15 +395,14 @@ class ProductionController extends Controller
                         "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
                         "description" => "{$inventory->name} Damages - " . $inventory->formattedUnits($inventoryObject["damages"]),
                         "amount" => $damages_cost,
-                        "opening_balance" => $operating_expenses_account->balance,
-                        "closing_balance" => $operating_expenses_account->balance + $damages_cost,
+                        "opening_balance" => $operating_expenses_account_balance,
+                        "closing_balance" => $operating_expenses_account_balance + $damages_cost,
                         "type" => "DEBIT", // incrementing the account balance
                         "accounting_account_id" => $inventory_account->id,
                         "production_id" => $production->id,
                     ]);
-                    $operating_expenses_account->update([
-                        "balance" => $operating_expenses_account->balance + $damages_cost
-                    ]);
+
+                    $operating_expenses_account_balance += $damages_cost;
 
                     //decrease inventory
                     $inventory_record = $inventory_account->records()->create([
@@ -433,6 +434,10 @@ class ProductionController extends Controller
                 }
                 $index++;
             }
+
+            $operating_expenses_account->update([
+                "balance" => $operating_expenses_account->balance
+            ]);
 
             if ((new AppController())->isApi($request)) {
                 //API Response
@@ -515,12 +520,58 @@ class ProductionController extends Controller
         }
     }
 
-    private function recordDamages($inventory, $quantity, $date, $production)
+    private function recordDamages($inventory, $fixed_quantity, $date, $production)
     {
         $cost = 0;
-        if ($quantity > 0) {
+
+        if ($fixed_quantity > 0) {
+            $quantity = $fixed_quantity;
             do {
                 $batch = $inventory->batches()->where("accounting_balance", ">", 0)->orderBy("date", "asc")->first();
+                $count = 0;
+                if (is_object($batch)) {
+                    //check if batch quantity is greater
+                    if ($batch->accounting_balance >= $quantity) {
+                        $count = $quantity;
+                        $balance = $batch->accounting_balance - $quantity;
+                    }
+                    //this branch if batch balance is lower
+                    else {
+                        $count = $batch->accounting_balance;
+                        $balance = 0;
+                    }
+
+                    //update the balance
+                    $batch->update([
+                        "accounting_balance" => $balance,
+                    ]);
+
+                    $damages_cost = $batch->price * $count;
+                    //create a record of the transaction
+                    if ($damages_cost > 0 && $count > 0) {
+                        Damage::create([
+                            "date" => $date,
+                            "batch_id" => $batch->id,
+                            "inventory_id" => $inventory->id,
+                            "quantity" => $count,
+                            "cost" => $damages_cost,
+                        ]);
+                    } else {
+                        // return Redirect::back()->with("error", "{$inventory->name} is out of stock. Some damages not recorded. Record manually.");
+                        break;
+                    }
+                } else {
+                    // return Redirect::back()->with("error", "{$inventory->name} is out of stock");
+                    break;
+                }
+                $cost += $damages_cost;
+                $quantity -= $count;
+            } while ($quantity > 0);
+
+
+            $quantity = $fixed_quantity;
+            do {
+                $batch = $inventory->batches()->where("balance", ">", 0)->orderBy("date", "asc")->first();
                 $count = 0;
                 if (is_object($batch)) {
                     //check if batch quantity is greater
@@ -534,40 +585,21 @@ class ProductionController extends Controller
                         $balance = 0;
                     }
 
-                    // dd("Count: $count", "Quantity Remaining: $quantity", "Batch: $batch", "Balance: $balance");
-
                     //update the balance
                     $batch->update([
                         "balance" => $balance,
                     ]);
-                    //update the balance
-                    $q = $inventory->available_stock - $count;
-                    $inventory->update([
-                        'available_stock' => $q
-                    ]);
-
-                    $damages_cost = $batch->price * $count;
-                    //create a record of the transaction
-                    if ($damages_cost > 0 && $count > 0) {
-                        Damage::create([
-                            "date" => $date,
-                            "batch_id" => $batch->id,
-                            "inventory_id" => $inventory->id,
-                            "quantity" => $count,
-                            "production_id" => $production->id,
-                            "cost" => $damages_cost,
-                        ]);
-                    }else{
-                        // return Redirect::back()->with("error", "{$inventory->name} is out of stock. Some damages not recorded. Record manually.");
-                        break;
-                    }
                 } else {
-                    // return Redirect::back()->with("error", "{$inventory->name} is out of stock");
                     break;
                 }
-                $cost += $damages_cost;
+
                 $quantity -= $count;
             } while ($quantity > 0);
+
+            //update the balance
+            $inventory->update([
+                'available_stock' => $inventory->available_stock - $fixed_quantity
+            ]);
         }
         return $cost;
     }
