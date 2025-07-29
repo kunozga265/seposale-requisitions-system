@@ -555,6 +555,7 @@ class ProductionController extends Controller
                             "inventory_id" => $inventory->id,
                             "quantity" => $count,
                             "cost" => $damages_cost,
+                            "production_id" => $production->id
                         ]);
                     } else {
                         // return Redirect::back()->with("error", "{$inventory->name} is out of stock. Some damages not recorded. Record manually.");
