@@ -15,13 +15,13 @@ class DamageResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
+            "id" => intval($this->id),
             "batch" => $this->batch,
             "inventory" => $this->inventory,
             // "production_id" => $this->production,
-            "quantity" => $this->quantity,
-            "date" => $this->date,
-            "cost" => $this->cost,
+            "quantity" => floatval($this->quantity),
+            "date" => intval($this->date),
+            "cost" => floatval($this->cost),
         ];
     }
 }
