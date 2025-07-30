@@ -23,6 +23,7 @@ class ClientResource extends JsonResource
             "phoneNumberOther" => $this->phone_number_other != null ? "+{$this->phone_number_other}" : "",
             "organisation" => intval($this->organisation),
             "alias" => $this->alias,
+            "type" => $this->type,
             "sales" => SaleResource::collection($this->sales),
 //            "quotations" => QuotationResource::collection($this->sales),
         ];

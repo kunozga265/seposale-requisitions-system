@@ -8,6 +8,7 @@ use App\Http\Resources\SiteSaleResource;
 use App\Models\Account;
 use App\Models\AccountingAccount;
 use App\Models\Client;
+use App\Models\ClientType;
 use App\Models\Inventory;
 use App\Models\InventorySummary;
 use App\Models\PaymentMethod;
@@ -76,10 +77,12 @@ class SiteSaleController extends Controller
         if (is_object($site)) {
             $products = $site->inventories()->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
+             $types = ClientType::orderBy("name","asc")->get();
             $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
             return Inertia::render('SiteSales/Create', [
                 "products" => InventoryResource::collection($products),
                 "clients" => ClientResource::collection($clients),
+                 "clientTypes" => $types,
                 'paymentMethods' => $payment_methods,
                 "site" => $site,
             ]);

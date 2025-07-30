@@ -6,6 +6,7 @@ use App\Http\Controllers\AccountingAccountController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\PayableController;
 use App\Models\AccountingAccount;
+use App\Models\ClientType;
 use App\Models\Expense;
 use App\Models\MaterialsType;
 use App\Models\Payable;
@@ -51,10 +52,9 @@ class DatabaseSeeder extends Seeder
         // $this->call(ProductAccountsTableSeeder::class);
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
+        
+        $this->call(ClientTypeTableSeeder::class);
 
-        MaterialsType::create([ 
-            "name"=> "Diesel",
-            "slug"=> "diesel",
-        ]);
+       
     }
 }

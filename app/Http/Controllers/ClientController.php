@@ -10,6 +10,7 @@ use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\Client;
+use App\Models\ClientType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -42,12 +43,12 @@ class ClientController extends Controller
                 //API Response
                 return response()->json(new ClientResource($client));
             } else {
-                $sales = $client->sales()->orderBy("date","desc")->get();
-                $receipts = $client->receipts()->orderBy("date","desc")->get();
+                $sales = $client->sales()->orderBy("date", "desc")->get();
+                $receipts = $client->receipts()->orderBy("date", "desc")->get();
                 $invoices = $client->invoices()->latest()->get();
                 $quotations = $client->quotations()->latest()->get();
-                $siteSales = $client->siteSales()->orderBy("date","desc")->get();
-                $collections = $client->collections()->orderBy("date","desc")->get();
+                $siteSales = $client->siteSales()->orderBy("date", "desc")->get();
+                $collections = $client->collections()->orderBy("date", "desc")->get();
                 //Web Response
                 return Inertia::render('Clients/Show', [
                     'client' => new ClientResource($client),
@@ -73,7 +74,9 @@ class ClientController extends Controller
 
     public function create(Request $request)
     {
+        $types = ClientType::orderBy("name", "asc")->get();
         return Inertia::render('Clients/Create', [
+            "clientTypes" => $types
         ]);
     }
 
@@ -83,10 +86,22 @@ class ClientController extends Controller
 
         $request->validate([
             'name' => ['required'],
+            'client_type_id' => ['required'],
         ]);
 
+        if ($request->client_type_id == 0) {
+            $request->validate([
+                'client_type' => ['required'],
+            ]);
+            $client_type_id = ClientType::create([
+                "name" => ucwords($request->client_type)
+            ])->id;
+        } else {
+            $client_type_id = $request->client_type_id;
+        }
+
         $client = Client::create([
-            'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
+            'serial' => (new AppController())->generateUniqueCode("CLIENT"),
             'name' => ucwords($request->name),
             'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
             'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
@@ -94,6 +109,7 @@ class ClientController extends Controller
             'address' => $request->address,
             'organisation' => $request->organisation,
             'alias' => $request->alias,
+            'client_type_id' => $client_type_id,
         ]);
 
         if ((new AppController())->isApi($request))
@@ -111,8 +127,10 @@ class ClientController extends Controller
 
         if (is_object($client)) {
 
+            $types = ClientType::orderBy("name", "asc")->get();
             return Inertia::render('Clients/Edit', [
                 'client' => new ClientResource($client),
+                "clientTypes" => $types
             ]);
         } else {
             return Redirect::back()->with('error', 'Client not found');
@@ -129,7 +147,20 @@ class ClientController extends Controller
             //Validate all the important attributes
             $request->validate([
                 'name' => ['required'],
+                'client_type_id' => ['required'],
             ]);
+
+            if ($request->client_type_id == 0) {
+                $request->validate([
+                    'client_type' => ['required'],
+                ]);
+                $client_type_id = ClientType::create([
+                    "name" => ucwords($request->client_type)
+                ])->id;
+            } else {
+                $client_type_id = $request->client_type_id;
+            }
+
 
             $client->update([
                 'name' => ucwords($request->name),
@@ -139,6 +170,7 @@ class ClientController extends Controller
                 'address' => $request->address,
                 'organisation' => $request->organisation,
                 'alias' => $request->alias,
+                'client_type_id' => $client_type_id,
             ]);
 
 
@@ -169,10 +201,8 @@ class ClientController extends Controller
             }
 
             return $number;
-        }else{
+        } else {
             return null;
         }
     }
-
-
 }

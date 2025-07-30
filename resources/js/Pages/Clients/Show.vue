@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      Client
+      Client Details
     </template>
 
     <template #breadcrumbs>
@@ -80,6 +80,10 @@
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Name</div>
                   <div>{{ client.data.name }}</div>
+                </div>
+                <div v-if=" client.data.type != null" class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Type</div>
+                  <div>{{ client.data.type.name }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Organisation</div>

@@ -546,7 +546,77 @@
                                     </thead>
                                     <tbody>
                                         <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                                            v-for="(productCompound, index) in collections" :key="index">
+                                            v-for="(productCompound, index) in collectionsCompound.main" :key="index">
+                                            <td class="">
+                                                <collection
+                                                    class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
+                                                    :client="productCompound.sale.client" :product="productCompound"
+                                                    :is-solo="true" />
+                                            </td>
+                                            <td @click="navigateToSale(productCompound.sale.id)"
+                                                class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
+                                                {{ productCompound.sale.code }}
+                                            </td>
+
+                                            <td @click="navigateToClient(productCompound.sale.client.id)"
+                                                class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
+                                                {{ productCompound.sale.client.name }}
+                                            </td>
+                                            <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
+                                                :class="{ 'strike-through': productCompound.trashed }"
+                                                class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap cursor-pointer hover:bg-gray-50">
+                                                {{ productCompound.inventory.name }}
+                                            </th>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{ numberWithCommas(productCompound.amount) }}
+                                            </td>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{ numberWithCommas(productCompound.balance) }}
+                                            </td>
+                                            <td @click="navigateToSale(productCompound.sale.id)"
+                                                class="cursor-pointer hover:bg-gray-50">
+                                                <sale-status :status="productCompound.paymentStatus" :is-solo="true" />
+                                            </td>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{
+                                                    numberWithCommas(productCompound.quantity)
+                                                }}
+                                            </td>
+                                            <td class="py-2 pr-1 text-right">
+                                                {{ numberWithCommas(productCompound.collected) }}
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="page-section-content ">
+                        <div class="card default-table">
+                            <div class="p-2 relative overflow-x-auto">
+                                <table class="overflow-auto w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <tr>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Collection Status
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Code</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Client</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Balance</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-left">Payment Status</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Quantity</th>
+                                            <th scope="col" class="p-2 pb-0 heading-font text-right">Collected</th>
+
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
+                                            v-for="(productCompound, index) in collectionsCompound.production" :key="index">
                                             <td class="">
                                                 <collection
                                                     class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
@@ -943,6 +1013,19 @@ export default {
             return {
                 start: this.getTimestampFromDate(this.form.dates.start),
                 end: this.getTimestampFromDate(this.form.dates.end),
+            }
+        },
+        collectionsCompound() {
+            let main = (this.collections).filter((collection) => {
+                return collection.inventory.producible != true
+            })
+            let production = (this.collections).filter((collection) => {
+                return collection.inventory.producible == true
+            })
+
+            return {
+                main: main,
+                production: production,
             }
         },
         filteredRecords() {

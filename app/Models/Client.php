@@ -40,6 +40,10 @@ class Client extends Model
     {
         return $this->hasMany(Collection::class);
     }
+    public function type()
+    {
+        return $this->belongsTo(ClientType::class, "client_type_id");
+    }
 
     public function getName()
     {
@@ -72,7 +76,8 @@ class Client extends Model
         'email',
         'address',
         "organisation",
-        "alias"
+        "alias",
+        "client_type_id"
     ];
 
     protected $hidden = [

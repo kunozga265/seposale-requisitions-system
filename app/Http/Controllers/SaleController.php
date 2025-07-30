@@ -11,6 +11,7 @@ use App\Models\Account;
 use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
 use App\Models\Client;
+use App\Models\ClientType;
 use App\Models\Delivery;
 use App\Models\Inventory;
 use App\Models\PaymentMethod;
@@ -157,9 +158,11 @@ class SaleController extends Controller
     {
         $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
+         $types = ClientType::orderBy("name","asc")->get();
         return Inertia::render('Sales/Create', [
             "products" => ProductResource::collection($products),
             "clients" => ClientResource::collection($clients),
+             "clientTypes" => $types
         ]);
     }
 
@@ -515,10 +518,12 @@ class SaleController extends Controller
 
             $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
+             $types = ClientType::orderBy("name","asc")->get();
             return Inertia::render('Sales/Edit', [
                 'sale' => new SaleResource($sale),
                 "products" => ProductResource::collection($products),
                 "clients" => ClientResource::collection($clients),
+                 "clientTypes" => $types
             ]);
         } else {
             return Redirect::back()->with('error', 'Sale not found');

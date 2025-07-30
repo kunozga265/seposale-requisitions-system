@@ -6,6 +6,7 @@ use App\Http\Resources\ClientResource;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\QuotationResource;
 use App\Models\Client;
+use App\Models\ClientType;
 use App\Models\Product;
 use App\Models\Quotation;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -47,9 +48,11 @@ class QuotationController extends Controller
     {
         $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
+        $types = ClientType::orderBy("name","asc")->get();
         return Inertia::render('Quotations/Create', [
             "products" => ProductResource::collection($products),
             "clients" => ClientResource::collection($clients),
+            "clientTypes" => $types
         ]);
     }
 
@@ -179,10 +182,12 @@ class QuotationController extends Controller
 
             $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
              $clients = Client::orderBy("name", 'asc')->get();
+              $types = ClientType::orderBy("name","asc")->get();
             return Inertia::render('Quotations/Edit',[
                 'quotation'   => new QuotationResource($quotation),
                  "products" => ProductResource::collection($products),
                 "clients" => ClientResource::collection($clients),
+                 "clientTypes" => $types
             ]);
         }else {
             return Redirect::back()->with('error','Quotation not found');
