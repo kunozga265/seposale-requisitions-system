@@ -13770,7 +13770,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ["products", "clients"],
+  props: ["products", "clients", "clientTypes"],
   components: {
     WhatsappLabel: _Components_WhatsappLabel_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
     DialogModal: _Jetstream_DialogModal_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
@@ -13808,6 +13808,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         address: '',
         organisation: false,
         alias: '',
+        clientTypeId: null,
+        clientType: '',
         location: '',
         recipientName: '',
         recipientProfession: '',
@@ -13888,6 +13890,15 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         if (this.form.name.length === 0) {
           this.error = "Enter customer name";
           return false;
+        } else if (this.form.clientTypeId === null) {
+          this.error = "Please enter customer type";
+          return false;
+        } else if (this.form.clientTypeId == 0 && this.form.clientType.length === 0) {
+          this.error = "Please enter customer (other) type";
+          return false;
+        } else if (this.form.phoneNumber.length === 0 && this.form.phoneNumberOther.length === 0) {
+          this.error = "Enter at least one phone number";
+          return false;
         }
       } else {
         if (parseInt(this.clientIndex) < 0 || this.client == null) {
@@ -13901,9 +13912,12 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           return false;
         }
       }
-
+      if (this.form.location.length === 0) {
+        this.error = "Enter site location";
+        return false;
+      }
       //products and services
-      if (isNaN(this.totalCost)) {
+      else if (isNaN(this.totalCost)) {
         this.error = "Enter valid product and services details";
         return false;
       } else if (this.totalCost <= 0) {
@@ -13948,7 +13962,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           recipient_name: _this.form.recipientName,
           recipient_profession: _this.form.recipientProfession,
           recipient_phone_number: _this.form.recipientPhoneNumber,
-          local_purchase_order: _this.form.localPurchaseOrder
+          local_purchase_order: _this.form.localPurchaseOrder,
+          client_type_id: _this.form.clientTypeId,
+          client_type: _this.form.clientType
         });
       }).post(this.route('sales.store'));
     },
@@ -14066,7 +14082,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ["sale", "products", "clients"],
+  props: ["sale", "products", "clients", "clientTypes"],
   components: {
     WhatsappLabel: _Components_WhatsappLabel_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
     DialogModal: _Jetstream_DialogModal_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
@@ -14098,6 +14114,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
         address: '',
         organisation: false,
         alias: '',
+        clientTypeId: null,
+        clientType: '',
         location: this.sale.data.location,
         recipientName: this.sale.data.recipientName,
         recipientProfession: this.sale.data.recipientProfession,
@@ -14173,8 +14191,17 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     },
     validation: function validation() {
       if (this.checkClient === "new") {
-        if (this.form.name.length == 0) {
+        if (this.form.name.length === 0) {
           this.error = "Enter customer name";
+          return false;
+        } else if (this.form.clientTypeId === null) {
+          this.error = "Please enter customer type";
+          return false;
+        } else if (this.form.clientTypeId == 0 && this.form.clientType.length === 0) {
+          this.error = "Please enter customer (other) type";
+          return false;
+        } else if (this.form.phoneNumber.length === 0 && this.form.phoneNumberOther.length === 0) {
+          this.error = "Enter at least one phone number";
           return false;
         }
       } else {
@@ -14189,7 +14216,10 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
                     return false
                 }
                 else*/
-      if (isNaN(this.totalCost)) {
+      if (this.form.location.length === 0) {
+        this.error = "Enter site location";
+        return false;
+      } else if (isNaN(this.totalCost)) {
         this.error = "Enter valid product and services details";
         return false;
       } else if (this.totalCost <= 0) {
@@ -14245,7 +14275,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           recipient_name: _this.form.recipientName,
           recipient_profession: _this.form.recipientProfession,
           recipient_phone_number: _this.form.recipientPhoneNumber,
-          local_purchase_order: _this.form.localPurchaseOrder
+          local_purchase_order: _this.form.localPurchaseOrder,
+          client_type_id: _this.form.clientTypeId,
+          client_type: _this.form.clientType
         });
       }).post(this.route('sales.update', {
         id: this.sale.data.id
@@ -48884,7 +48916,29 @@ var render = function render() {
       },
       expression: "client.alias"
     }
-  })], 1), _vm._v(" "), _c("div", {
+  })], 1), _vm._v(" "), _vm.client.type != null ? _c("div", {
+    staticClass: "p-2 mb-2"
+  }, [_c("jet-label", {
+    attrs: {
+      "for": "type",
+      value: "Type"
+    }
+  }), _vm._v(" "), _c("jet-input", {
+    staticClass: "block w-full",
+    attrs: {
+      id: "type",
+      type: "text",
+      autocomplete: "seposale-customer-type",
+      disabled: ""
+    },
+    model: {
+      value: _vm.client.type.name,
+      callback: function callback($$v) {
+        _vm.$set(_vm.client.type, "name", $$v);
+      },
+      expression: "client.type.name"
+    }
+  })], 1) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "p-2 mb-2"
   }, [_c("whatsapp-label", {
     attrs: {
@@ -49037,6 +49091,77 @@ var render = function render() {
         _vm.$set(_vm.form, "name", $$v);
       },
       expression: "form.name"
+    }
+  })], 1), _vm._v(" "), _c("div", {
+    staticClass: "p-2 mb-2",
+    "class": {
+      "md:col-span-2": _vm.form.clientTypeId != 0
+    }
+  }, [_c("jet-label", {
+    attrs: {
+      "for": "clientType",
+      value: "Select Type"
+    }
+  }), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.clientTypeId,
+      expression: "form.clientTypeId"
+    }],
+    staticClass: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white",
+    attrs: {
+      id: "clientType",
+      required: ""
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.form, "clientTypeId", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_vm._l(_vm.clientTypes, function (type, index) {
+    return _c("option", {
+      key: index,
+      domProps: {
+        value: type.id
+      }
+    }, [_vm._v("\n                                            " + _vm._s(type.name) + "\n                                        ")]);
+  }), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "0"
+    }
+  }, [_vm._v("Other")])], 2)], 1), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.form.clientTypeId == 0,
+      expression: "form.clientTypeId == 0"
+    }],
+    staticClass: "p-2 mb-2"
+  }, [_c("jet-label", {
+    attrs: {
+      "for": "other",
+      value: "Type (Other)"
+    }
+  }), _vm._v(" "), _c("jet-input", {
+    staticClass: "block w-full",
+    attrs: {
+      id: "other",
+      type: "text",
+      autocomplete: "seposale-customer-type"
+    },
+    model: {
+      value: _vm.form.clientType,
+      callback: function callback($$v) {
+        _vm.$set(_vm.form, "clientType", $$v);
+      },
+      expression: "form.clientType"
     }
   })], 1), _vm._v(" "), _c("div", {
     directives: [{
@@ -50104,7 +50229,29 @@ var render = function render() {
       },
       expression: "client.alias"
     }
-  })], 1), _vm._v(" "), _c("div", {
+  })], 1), _vm._v(" "), _vm.client.type != null ? _c("div", {
+    staticClass: "p-2 mb-2"
+  }, [_c("jet-label", {
+    attrs: {
+      "for": "type",
+      value: "Type"
+    }
+  }), _vm._v(" "), _c("jet-input", {
+    staticClass: "block w-full",
+    attrs: {
+      id: "type",
+      type: "text",
+      autocomplete: "seposale-customer-type",
+      disabled: ""
+    },
+    model: {
+      value: _vm.client.type.name,
+      callback: function callback($$v) {
+        _vm.$set(_vm.client.type, "name", $$v);
+      },
+      expression: "client.type.name"
+    }
+  })], 1) : _vm._e(), _vm._v(" "), _c("div", {
     staticClass: "p-2 mb-2"
   }, [_c("whatsapp-label", {
     attrs: {
@@ -50257,6 +50404,77 @@ var render = function render() {
         _vm.$set(_vm.form, "name", $$v);
       },
       expression: "form.name"
+    }
+  })], 1), _vm._v(" "), _c("div", {
+    staticClass: "p-2 mb-2",
+    "class": {
+      "md:col-span-2": _vm.form.clientTypeId != 0
+    }
+  }, [_c("jet-label", {
+    attrs: {
+      "for": "clientType",
+      value: "Select Type"
+    }
+  }), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.form.clientTypeId,
+      expression: "form.clientTypeId"
+    }],
+    staticClass: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white",
+    attrs: {
+      id: "clientType",
+      required: ""
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.$set(_vm.form, "clientTypeId", $event.target.multiple ? $$selectedVal : $$selectedVal[0]);
+      }
+    }
+  }, [_vm._l(_vm.clientTypes, function (type, index) {
+    return _c("option", {
+      key: index,
+      domProps: {
+        value: type.id
+      }
+    }, [_vm._v("\n                      " + _vm._s(type.name) + "\n                    ")]);
+  }), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "0"
+    }
+  }, [_vm._v("Other")])], 2)], 1), _vm._v(" "), _c("div", {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: _vm.form.clientTypeId == 0,
+      expression: "form.clientTypeId == 0"
+    }],
+    staticClass: "p-2 mb-2"
+  }, [_c("jet-label", {
+    attrs: {
+      "for": "other",
+      value: "Type (Other)"
+    }
+  }), _vm._v(" "), _c("jet-input", {
+    staticClass: "block w-full",
+    attrs: {
+      id: "other",
+      type: "text",
+      autocomplete: "seposale-customer-type"
+    },
+    model: {
+      value: _vm.form.clientType,
+      callback: function callback($$v) {
+        _vm.$set(_vm.form, "clientType", $$v);
+      },
+      expression: "form.clientType"
     }
   })], 1), _vm._v(" "), _c("div", {
     directives: [{

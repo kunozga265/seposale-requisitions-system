@@ -158,11 +158,11 @@ class SaleController extends Controller
     {
         $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
-         $types = ClientType::orderBy("name","asc")->get();
+        $types = ClientType::orderBy("name", "asc")->get();
         return Inertia::render('Sales/Create', [
             "products" => ProductResource::collection($products),
             "clients" => ClientResource::collection($clients),
-             "clientTypes" => $types
+            "clientTypes" => $types
         ]);
     }
 
@@ -198,7 +198,19 @@ class SaleController extends Controller
             } else {
                 $request->validate([
                     'name' => ['required'],
+                    'client_type_id' => ['required'],
                 ]);
+
+                if ($request->client_type_id == 0) {
+                    $request->validate([
+                        'client_type' => ['required'],
+                    ]);
+                    $client_type_id = ClientType::create([
+                        "name" => ucwords($request->client_type)
+                    ])->id;
+                } else {
+                    $client_type_id = $request->client_type_id;
+                }
 
                 $client = Client::create([
                     'serial' => (new AppController())->generateUniqueCode("CLIENT"),
@@ -209,6 +221,7 @@ class SaleController extends Controller
                     'address' => $request->address,
                     'organisation' => $request->organisation,
                     'alias' => $request->alias,
+                    'client_type_id' => $client_type_id,
                 ]);
             }
 
@@ -518,12 +531,12 @@ class SaleController extends Controller
 
             $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
-             $types = ClientType::orderBy("name","asc")->get();
+            $types = ClientType::orderBy("name", "asc")->get();
             return Inertia::render('Sales/Edit', [
                 'sale' => new SaleResource($sale),
                 "products" => ProductResource::collection($products),
                 "clients" => ClientResource::collection($clients),
-                 "clientTypes" => $types
+                "clientTypes" => $types
             ]);
         } else {
             return Redirect::back()->with('error', 'Sale not found');
@@ -565,7 +578,19 @@ class SaleController extends Controller
                 } else {
                     $request->validate([
                         'name' => ['required'],
+                        'client_type_id' => ['required'],
                     ]);
+
+                    if ($request->client_type_id == 0) {
+                        $request->validate([
+                            'client_type' => ['required'],
+                        ]);
+                        $client_type_id = ClientType::create([
+                            "name" => ucwords($request->client_type)
+                        ])->id;
+                    } else {
+                        $client_type_id = $request->client_type_id;
+                    }
 
                     $client = Client::create([
                         'serial' => (new AppController())->generateUniqueCode("CLIENT"),
@@ -576,6 +601,7 @@ class SaleController extends Controller
                         'address' => $request->address,
                         'organisation' => $request->organisation,
                         'alias' => $request->alias,
+                        'client_type_id' => $client_type_id,
                     ]);
                 }
 
@@ -841,7 +867,7 @@ class SaleController extends Controller
                     return false;
                 }
 
-               
+
 
                 $grouped = array_reduce($summaries, function ($carry, $item) {
                     $carry[$item['account_id']][] = $item;

@@ -74,8 +74,8 @@
                       <jet-input id="alias-name" type="text" class="block w-full" v-model="client.alias"
                         autocomplete="seposale-customer-alias-name" disabled />
                     </div>
-                      <div v-if="client.type != null" class="p-2 mb-2">
-                       <jet-label for="type" value="Type" />
+                    <div v-if="client.type != null" class="p-2 mb-2">
+                      <jet-label for="type" value="Type" />
                       <jet-input id="type" type="text" class="block w-full" v-model="client.type.name"
                         autocomplete="seposale-customer-type" disabled />
                     </div>

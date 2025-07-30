@@ -76,6 +76,12 @@
                                                 v-model="client.alias" autocomplete="seposale-customer-alias-name"
                                                 disabled />
                                         </div>
+                                        <div v-if="client.type != null" class="p-2 mb-2">
+                                            <jet-label for="type" value="Type" />
+                                            <jet-input id="type" type="text" class="block w-full"
+                                                v-model="client.type.name" autocomplete="seposale-customer-type"
+                                                disabled />
+                                        </div>
                                         <div class="p-2 mb-2">
                                             <whatsapp-label title="Phone Number" />
                                             <jet-input id="phoneNumber" type="text" class="block w-full"
@@ -119,6 +125,24 @@
 
                                         <jet-input id="name" type="text" class="block w-full" v-model="form.name"
                                             autocomplete="seposale-customer-name" />
+                                    </div>
+
+                                    <div class="p-2 mb-2" :class="{ 'md:col-span-2': form.clientTypeId != 0 }">
+                                        <jet-label for="clientType" value="Select Type" />
+                                        <select v-model="form.clientTypeId" id="clientType"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            required>
+                                            <option v-for="(type, index) in clientTypes" :value="type.id" :key="index">
+                                                {{ type.name }}
+                                            </option>
+                                            <option value="0">Other</option>
+                                        </select>
+                                    </div>
+
+                                    <div v-show="form.clientTypeId == 0" class="p-2 mb-2">
+                                        <jet-label for="other" value="Type (Other)" />
+                                        <jet-input id="other" type="text" class="block w-full" v-model="form.clientType"
+                                            autocomplete="seposale-customer-type" />
                                     </div>
 
                                     <div v-show="form.organisation" class="p-2 mb-2 md:col-span-2">
@@ -528,7 +552,7 @@ import DialogModal from "@/Jetstream/DialogModal.vue";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 
 export default {
-    props: ["products", "clients"],
+    props: ["products", "clients", "clientTypes"],
     components: {
         WhatsappLabel,
         DialogModal, PrimaryButton,
@@ -571,6 +595,8 @@ export default {
                 address: '',
                 organisation: false,
                 alias: '',
+                clientTypeId: null,
+                clientType: '',
                 location: '',
                 recipientName: '',
                 recipientProfession: '',
@@ -669,6 +695,15 @@ export default {
                 if (this.form.name.length === 0) {
                     this.error = "Enter customer name"
                     return false
+                } else if (this.form.clientTypeId === null) {
+                    this.error = "Please enter customer type"
+                    return false
+                } else if (this.form.clientTypeId == 0 && this.form.clientType.length === 0) {
+                    this.error = "Please enter customer (other) type"
+                    return false
+                } else if (this.form.phoneNumber.length === 0 && this.form.phoneNumberOther.length === 0) {
+                    this.error = "Enter at least one phone number"
+                    return false
                 }
             } else {
                 if (parseInt(this.clientIndex) < 0 || this.client == null) {
@@ -683,9 +718,13 @@ export default {
                     return false
                 }
             }
-
+            
+            if (this.form.location.length === 0) {
+                this.error = "Enter site location"
+                return false
+            }
             //products and services
-            if (isNaN(this.totalCost)) {
+            else if (isNaN(this.totalCost)) {
                 this.error = "Enter valid product and services details"
                 return false
             } else if (this.totalCost <= 0) {
@@ -733,6 +772,8 @@ export default {
                     recipient_profession: this.form.recipientProfession,
                     recipient_phone_number: this.form.recipientPhoneNumber,
                     local_purchase_order: this.form.localPurchaseOrder,
+                    client_type_id: this.form.clientTypeId,
+                    client_type: this.form.clientType
                 }))
                 .post(this.route('sales.store'))
         },
