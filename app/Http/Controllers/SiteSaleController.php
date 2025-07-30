@@ -165,9 +165,21 @@ class SiteSaleController extends Controller
                     }
                 }
             } else {
-                $request->validate([
+               $request->validate([
                     'name' => ['required'],
+                    'client_type_id' => ['required'],
                 ]);
+
+                if ($request->client_type_id == 0) {
+                    $request->validate([
+                        'client_type' => ['required'],
+                    ]);
+                    $client_type_id = ClientType::create([
+                        "name" => ucwords($request->client_type)
+                    ])->id;
+                } else {
+                    $client_type_id = $request->client_type_id;
+                }
 
                 $client = Client::create([
                     'serial' => (new AppController())->generateUniqueCode("CLIENT"),
@@ -178,6 +190,7 @@ class SiteSaleController extends Controller
                     'address' => $request->address,
                     'organisation' => $request->organisation,
                     'alias' => $request->alias,
+                     'client_type_id' => $client_type_id,
                 ]);
             }
 
