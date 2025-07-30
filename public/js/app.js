@@ -14762,7 +14762,9 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     },
     updateDelivery: function updateDelivery() {
       var _this3 = this;
+      console.log("update the delivery");
       if (this.outsource) {
+        console.log("it is outsourced");
         this.form.transform(function (data) {
           return _objectSpread(_objectSpread({}, data), {}, {
             delivery_date: _this3.getTimestampFromDate(_this3.deliveryDate)
@@ -14777,6 +14779,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
           }
         });
       } else {
+        console.log("send to one stop shop");
         this.form.transform(function (data) {
           return _objectSpread(_objectSpread({}, data), {}, {
             inventory_id: _this3.form.inventoryId,
@@ -14819,28 +14822,36 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       return date != null ? new Date(date).getTime() / 1000 : null;
     },
     navigateToDelivery: function navigateToDelivery(productCompound) {
+      console.log("navigate to delivery");
       if (!productCompound.isService) {
+        console.log("is not service");
         if (productCompound.status == 2) {
           if (productCompound.siteSaleSummary != null) {
+            console.log("navigate to site sale summary");
             this.$page.props.flash.warning = productCompound.description + " is being processed under " + productCompound.siteSaleSummary.site.name;
             this.$inertia.get(this.route('sites.sales.show', {
               'code': productCompound.siteSaleSummary.site.code,
               'id': productCompound.siteSaleSummary.sale.id
             }));
           } else {
+            console.log("being processed under local branch");
             this.$page.props.flash.warning = productCompound.description + " is being processed under local branch";
           }
         }
         //if delivery is initiated it will take them to the delivery page
         else if (productCompound.delivery != null) {
+          console.log("has delivery");
           if (parseInt(productCompound.delivery.status) == 0) {
             if (productCompound.collection != null) {
               //collection page
+              console.log("navigate to collection page");
             } else {
+              console.log("delivery not initiated");
               this.selectedProduct = productCompound;
               this.updateDeliveryDialog = true;
             }
           } else {
+            console.log("navigate to delivery");
             this.$inertia.get(this.route('deliveries.show', {
               'id': productCompound.delivery.id
             }));
