@@ -21,14 +21,14 @@ class QuotationController extends Controller
 {
     public function index(Request $request)
     {
-//        $user=(new AppController())->getAuthUser($request);
-//
-//        if($user->hasRole('management') || $user->hasRole('administrator')){
-//            $projects= Project::orderBy('name','asc')->paginate((new AppController())->paginate);
-//
-//        }else {
-//            $projects = Project::orderBy('name', 'asc')->where('verified', 1)->where('status', 1)->paginate((new AppController())->paginate);
-//        }
+        //        $user=(new AppController())->getAuthUser($request);
+        //
+        //        if($user->hasRole('management') || $user->hasRole('administrator')){
+        //            $projects= Project::orderBy('name','asc')->paginate((new AppController())->paginate);
+        //
+        //        }else {
+        //            $projects = Project::orderBy('name', 'asc')->where('verified', 1)->where('status', 1)->paginate((new AppController())->paginate);
+        //        }
 
         $quotations = Quotation::latest()->paginate(100);
 
@@ -46,9 +46,9 @@ class QuotationController extends Controller
 
     public function create(Request $request)
     {
-        $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
+        $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
-        $types = ClientType::orderBy("name","asc")->get();
+        $types = ClientType::orderBy("name", "asc")->get();
         return Inertia::render('Quotations/Create', [
             "products" => ProductResource::collection($products),
             "clients" => ClientResource::collection($clients),
@@ -58,10 +58,10 @@ class QuotationController extends Controller
 
     private function getCodeNumber()
     {
-        $last_invoice = Quotation::orderBy("code","desc")->first();
-        if (is_object($last_invoice)){
+        $last_invoice = Quotation::orderBy("code", "desc")->first();
+        if (is_object($last_invoice)) {
             return $last_invoice->code + 1;
-        }else{
+        } else {
             return 1;
         }
     }
@@ -78,28 +78,40 @@ class QuotationController extends Controller
         ]);
 
         //get client info
-        if (isset($request->client_id)){
+        if (isset($request->client_id)) {
             $request->validate([
                 'client_id' => ['required'],
             ]);
 
             $client = Client::find($request->client_id);
-            if (!is_object($client)){
+            if (!is_object($client)) {
                 if ((new AppController())->isApi($request)) {
                     //API Response
                     return response()->json(['message' => "Client not found"], 404);
-                }else{
+                } else {
                     //Web Response
-                    return Redirect::back()->with('error','Client not found');
+                    return Redirect::back()->with('error', 'Client not found');
                 }
             }
-        }else{
+        } else {
             $request->validate([
                 'name' => ['required'],
+                'client_type_id' => ['required'],
             ]);
 
+            if ($request->client_type_id == 0) {
+                $request->validate([
+                    'client_type' => ['required'],
+                ]);
+                $client_type_id = ClientType::create([
+                    "name" => ucwords($request->client_type)
+                ])->id;
+            } else {
+                $client_type_id = $request->client_type_id;
+            }
+
             $client = Client::create([
-                'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
+                'serial' => (new AppController())->generateUniqueCode("CLIENT"),
                 'name' => $request->name,
                 'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                 'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
@@ -107,6 +119,7 @@ class QuotationController extends Controller
                 'address' => $request->address,
                 'organisation' => $request->organisation,
                 'alias' => $request->alias,
+                'client_type_id' => $client_type_id,
             ]);
         }
 
@@ -114,7 +127,7 @@ class QuotationController extends Controller
 
             return Quotation::create([
                 'code' => $this->getCodeNumber(),
-                'serial' =>  (new AppController())->generateUniqueCode("QUOTATION"),
+                'serial' => (new AppController())->generateUniqueCode("QUOTATION"),
                 //Customer Details
                 'client_id' => $client->id,
                 'location' => $request->location,
@@ -129,15 +142,14 @@ class QuotationController extends Controller
                 'user_id' => $user->id,
                 'quotes' => json_encode($request->quotes ?? []),
             ]);
-
         });
 
         //Run notifications
-//        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+        //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
 
 
-//        $report = (new ReportController())->getCurrentReport();
-//        $report->requestForms()->attach($requestForm);
+        //        $report = (new ReportController())->getCurrentReport();
+        //        $report->requestForms()->attach($requestForm);
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -151,46 +163,46 @@ class QuotationController extends Controller
     public function show(Request $request, $id)
     {
         //find out if the request is valid
-        $quotation=Quotation::find($id);
+        $quotation = Quotation::find($id);
 
-        if(is_object($quotation)){
+        if (is_object($quotation)) {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(new QuotationResource($quotation));
-            }else{
+            } else {
                 //Web Response
-                return Inertia::render('Quotations/Show',[
+                return Inertia::render('Quotations/Show', [
                     'quotation' => new QuotationResource($quotation)
                 ]);
             }
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Quotation not found"], 404);
-            }else{
+            } else {
                 //Web Response
-                return Redirect::route('dashboard')->with('error','Quotation not found');
+                return Redirect::route('dashboard')->with('error', 'Quotation not found');
             }
         }
     }
 
-    public function edit(Request $request,$id)
+    public function edit(Request $request, $id)
     {
-        $quotation=Quotation::find($id);
+        $quotation = Quotation::find($id);
 
-        if(is_object($quotation)){
+        if (is_object($quotation)) {
 
-            $products = Product::where("id","!=",(new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
-             $clients = Client::orderBy("name", 'asc')->get();
-              $types = ClientType::orderBy("name","asc")->get();
-            return Inertia::render('Quotations/Edit',[
+            $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
+            $clients = Client::orderBy("name", 'asc')->get();
+            $types = ClientType::orderBy("name", "asc")->get();
+            return Inertia::render('Quotations/Edit', [
                 'quotation'   => new QuotationResource($quotation),
-                 "products" => ProductResource::collection($products),
+                "products" => ProductResource::collection($products),
                 "clients" => ClientResource::collection($clients),
-                 "clientTypes" => $types
+                "clientTypes" => $types
             ]);
-        }else {
-            return Redirect::back()->with('error','Quotation not found');
+        } else {
+            return Redirect::back()->with('error', 'Quotation not found');
         }
     }
 
@@ -199,9 +211,9 @@ class QuotationController extends Controller
         //get user
         $user = (new AppController())->getAuthUser($request);
 
-        $quotation=Quotation::find($id);
+        $quotation = Quotation::find($id);
 
-        if(is_object($quotation)){
+        if (is_object($quotation)) {
 
             //Validate all the important attributes
             $request->validate([
@@ -210,28 +222,40 @@ class QuotationController extends Controller
             ]);
 
             //get client info
-            if (isset($request->client_id)){
+            if (isset($request->client_id)) {
                 $request->validate([
                     'client_id' => ['required'],
                 ]);
 
                 $client = Client::find($request->client_id);
-                if (!is_object($client)){
+                if (!is_object($client)) {
                     if ((new AppController())->isApi($request)) {
                         //API Response
                         return response()->json(['message' => "Client not found"], 404);
-                    }else{
+                    } else {
                         //Web Response
-                        return Redirect::back()->with('error','Client not found');
+                        return Redirect::back()->with('error', 'Client not found');
                     }
                 }
-            }else{
+            } else {
                 $request->validate([
                     'name' => ['required'],
+                    'client_type_id' => ['required'],
                 ]);
 
+                if ($request->client_type_id == 0) {
+                    $request->validate([
+                        'client_type' => ['required'],
+                    ]);
+                    $client_type_id = ClientType::create([
+                        "name" => ucwords($request->client_type)
+                    ])->id;
+                } else {
+                    $client_type_id = $request->client_type_id;
+                }
+
                 $client = Client::create([
-                    'serial' =>  (new AppController())->generateUniqueCode("CLIENT"),
+                    'serial' => (new AppController())->generateUniqueCode("CLIENT"),
                     'name' => $request->name,
                     'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                     'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
@@ -239,6 +263,7 @@ class QuotationController extends Controller
                     'address' => $request->address,
                     'organisation' => $request->organisation,
                     'alias' => $request->alias,
+                    'client_type_id' => $client_type_id,
                 ]);
             }
 
@@ -263,11 +288,11 @@ class QuotationController extends Controller
             });
 
             //Run notifications
-//        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
+            //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
 
 
-//        $report = (new ReportController())->getCurrentReport();
-//        $report->requestForms()->attach($requestForm);
+            //        $report = (new ReportController())->getCurrentReport();
+            //        $report->requestForms()->attach($requestForm);
 
             if ((new AppController())->isApi($request))
                 //API Response
@@ -276,55 +301,55 @@ class QuotationController extends Controller
                 //Web Response
                 return Redirect::route('quotations.index')->with('success', 'Quotation updated!');
             }
-        }else {
-            return Redirect::back()->with('error','Quotation not found');
+        } else {
+            return Redirect::back()->with('error', 'Quotation not found');
         }
     }
 
-    public function destroy(Request $request,$id)
+    public function destroy(Request $request, $id)
     {
         //find out if the request is valid
-        $quotation=Quotation::find($id);
+        $quotation = Quotation::find($id);
 
-        if(is_object($quotation)){
+        if (is_object($quotation)) {
 
             $quotation->delete();
 
             if ((new AppController())->isApi($request)) {
                 //API Response
-                return response()->json(['message'=>'Quotation has been deleted']);
-            }else{
+                return response()->json(['message' => 'Quotation has been deleted']);
+            } else {
                 //Web Response
-                return Redirect::route('quotations.index')->with('success','Quotation has been deleted');
+                return Redirect::route('quotations.index')->with('success', 'Quotation has been deleted');
             }
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Quotation not found"], 404);
-            }else{
+            } else {
                 //Web Response
-                return Redirect::back()->with('error','Quotation not found');
+                return Redirect::back()->with('error', 'Quotation not found');
             }
         }
     }
 
 
-    public function print(Request $request,$id)
+    public function print(Request $request, $id)
     {
         //find out if the request is valid
-        $quotation=Quotation::find($id);
+        $quotation = Quotation::find($id);
 
-        if(is_object($quotation)){
+        if (is_object($quotation)) {
 
             /*
                         $pdf=App::make('dompdf.wrapper');
                         $pdf->loadHTML('request');
                         return $pdf->stream('Request Form');*/
 
-            $filename="QUOTATION#".(new AppController())->getZeroedNumber($quotation->code)." - ".$quotation->client->name."-".date('Ymd');
+            $filename = "QUOTATION#" . (new AppController())->getZeroedNumber($quotation->code) . " - " . $quotation->client->name . "-" . date('Ymd');
 
-            $now_d=Carbon::createFromTimestamp($quotation->created_at->getTimestamp(),'Africa/Lusaka')->format('F j, Y');
-            $now_t=Carbon::createFromTimestamp($quotation->created_at->getTimestamp(),'Africa/Lusaka')->format('H:i');
+            $now_d = Carbon::createFromTimestamp($quotation->created_at->getTimestamp(), 'Africa/Lusaka')->format('F j, Y');
+            $now_t = Carbon::createFromTimestamp($quotation->created_at->getTimestamp(), 'Africa/Lusaka')->format('H:i');
 
             $total_in_words = SpellNumber::value($quotation->total)
                 ->locale('en')
@@ -332,7 +357,7 @@ class QuotationController extends Controller
                 ->fraction('Tambala')
                 ->toMoney();
 
-            str_replace($total_in_words," and "," of ");
+            str_replace($total_in_words, " and ", " of ");
 
             $pdf = PDF::loadView('quotation', [
                 'code'          => (new AppController())->getZeroedNumber($quotation->code),
@@ -342,16 +367,15 @@ class QuotationController extends Controller
                 'total_in_words' => $total_in_words
             ]);
             return $pdf->download("$filename.pdf");
-
-        }else {
+        } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Quotation not found"], 404);
-            }else{
+            } else {
 
 
                 //Web Response
-                return Redirect::route('dashboard')->with('error','Quotation not found');
+                return Redirect::route('dashboard')->with('error', 'Quotation not found');
             }
         }
     }

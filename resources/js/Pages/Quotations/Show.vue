@@ -147,7 +147,7 @@
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Phone Number</div>
-                  <div>{{ quotation.data.client.phoneNumber }}</div>
+                  <div>{{ quotation.data.client.phoneNumberOther }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Email</div>
