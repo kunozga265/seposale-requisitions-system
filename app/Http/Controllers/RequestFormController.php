@@ -455,7 +455,7 @@ class RequestFormController extends Controller
 
             $remarks = [];
             if (isset($request->remarks)) {
-                $remarks []= [
+                $remarks[] = [
                     "positionTitle" => $user->position->title,
                     "name" => $user->firstName . " " . $user->lastName,
                     'comments' => $request->remarks,
@@ -1523,6 +1523,45 @@ class RequestFormController extends Controller
                     //Web Response
                     return Redirect::back()->with('error', 'Request cannot be reconciled');
                 }
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Request form not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Request form not found');
+            }
+        }
+    }
+
+    public function attachReceipts(Request $request, $id)
+    {
+        $request->validate([
+            "receipts" => "required"
+        ]);
+
+        $requestForm = RequestForm::find($id);
+
+        if (is_object($requestForm)) {
+
+            $receipts = json_decode($requestForm->receipts);
+
+            foreach ($request->receipts as $receipt) {
+                $receipts[] =  $receipt;
+            }
+
+            $requestForm->update([
+                'receipts' => json_encode($receipts),
+                // "receipts" => json_encode($receipts)
+            ]);
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Receipts attached!"], 201);
+            } else {
+                //Web Response
+                return Redirect::back()->with('success', 'Receipts attached!');
             }
         } else {
             if ((new AppController())->isApi($request)) {

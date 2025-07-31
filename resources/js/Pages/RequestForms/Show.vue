@@ -36,6 +36,8 @@
         <primary-button v-if="request.data.canInitiate" @click.native="initiateDialog = true">Initiate</primary-button>
         <primary-button v-if="request.data.canReconcile"
           @click.native="reconcileDialog = true">Reconcile</primary-button>
+        <secondary-button
+          @click.native="attachReceiptsDialog = true">Attach Receipts</secondary-button>
       </span>
     </template>
 
@@ -275,6 +277,7 @@
         </primary-button>
       </template>
     </dialog-modal>
+    
     <dialog-modal :show="reconcileDialog" @close="reconcileDialog = false">
       <template #title>
         Reconcile Request
@@ -322,6 +325,64 @@
         </secondary-button>
 
         <primary-button class="ml-2" @click.native="reconcile" :disabled="form.processing">
+          <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
+            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+              fill="#E5E7EB" />
+            <path
+              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+              fill="currentColor" />
+          </svg>
+          Proceed
+        </primary-button>
+      </template>
+    </dialog-modal>
+    <dialog-modal :show="attachReceiptsDialog" @close="attachReceiptsDialog = false">
+      <template #title>
+        Attach Receipts
+      </template>
+
+      <template #content>
+
+        <div class="mb-4">
+          <span>Please upload associated documents, supporting the expenditure of these funds</span>
+        </div>
+        <jet-validation-errors class="mb-4" />
+
+
+        <div class="mb-4">
+          <jet-label for="receipt" value="Upload document" />
+          <input type="file" id="receipt" @input="fileUpload($event.target.files[0])"
+            class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4">
+          <div v-for="(receipt, index) in receiptUploads" :key="index">
+            <div class="relative" v-if="receipt.ext === 'pdf'">
+              <i @click="removeReceipt(index)" style="top:-12px; right:-12px;  z-index: 2;"
+                class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
+              <div style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
+                class="h-9 w-9 bg-white absolute"></div>
+              <pdf class="w-32" :source="fileUrl(receipt.file)" />
+            </div>
+            <div class="relative" v-else>
+              <i @click="removeReceipt(index)" style="top:-12px; right:-12px;  z-index: 2;"
+                class="cursor mdi mdi-close-circle text-red-600 absolute right-0 text-2xl"></i>
+              <div style="top: -6px; width: 20px; height: 20px; right: -10px; z-index: 1; border-radius: 50%;"
+                class="h-9 w-9 bg-white absolute"></div>
+              <img class="w-32" :src="fileUrl(receipt.file)" alt="Receipt Image">
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template #footer>
+        <secondary-button @click.native="attachReceiptsDialog = false">
+          Cancel
+        </secondary-button>
+
+        <primary-button class="ml-2" @click.native="attachReceipts" :disabled="form.processing">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
             viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -715,6 +776,7 @@ export default {
       discardDialog: false,
       initiateDialog: false,
       reconcileDialog: false,
+      attachReceiptsDialog: false,
       attachmentDialog: false,
       attachmentIndex: null,
       attachmentType: '',
@@ -953,6 +1015,21 @@ export default {
         }))
         .post(this.route('request-forms.reconcile', { 'id': this.request.data.id }), {
           onSuccess: () => this.reconcileDialog = false,
+        })
+    },
+    attachReceipts() {
+      this.form
+        .transform(data => ({
+          ...data,
+          receipts: this.receiptFiles,
+        }))
+        .post(this.route('request-forms.attach-receipts', { 'id': this.request.data.id }), {
+          onSuccess: () => {
+            this.attachReceiptsDialog = false
+            this.receiptUploads = []
+             this.form.reset()
+              document.getElementById('receipt').value = ""
+          },
         })
     },
     displayAttachment(index, type) {
