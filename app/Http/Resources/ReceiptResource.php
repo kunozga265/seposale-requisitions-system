@@ -33,6 +33,7 @@ class ReceiptResource extends JsonResource
             ] : null,
             'whatsapp'              => $this->whatsapp != null ? intval($this->whatsapp) : false ,
             'transaction'           => $this->transaction != null ? true : false ,
+            'record'           => $this->record != null ? true : false ,
         ];
     }
 }

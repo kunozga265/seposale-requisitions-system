@@ -82,10 +82,10 @@
                         }}
                         </td>
                         <td class="p-2 text-left ">{{ receipt.paymentMethod }}</td>
-                        <td class="p-2 text-left ">{{ receipt.amount }}</td>
+                        <td class="p-2 text-right ">{{ numberWithCommas(receipt.amount) }}</td>
                         <td class="p-2 text-left ">{{ receipt.generatedBy.fullName }}</td>
-                        <td>
-                          <input id="default-radio-1" :checked="receipt.transaction" type="checkbox" disabled
+                        <td class="text-center">
+                          <input id="default-radio-1" :checked="receipt.record" type="checkbox" disabled
                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         </td>
 
