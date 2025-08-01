@@ -124,6 +124,9 @@ class CollectionController extends Controller
                 return Redirect::back()->with("error", "Please enter quantity collected");
             } else if ($balance < $request->quantity) {
                 return Redirect::back()->with("error", "Quantity is more than what remains");
+            
+            } else if ($summary->inventory->stock() < $request->quantity) {
+                return Redirect::back()->with("error", "Quantity is more than available stock");
             } else {
                 $balance -= $request->quantity;
                 $collected_quantity += $request->quantity;
@@ -209,8 +212,6 @@ class CollectionController extends Controller
                 $partial_payment = $paid_balance;
                 $sale_balance = $amount;
 
-                error_log("amount: $amount");
-                error_log("remainder: $remainder");
                 if ($partial_payment > 0) {
                     $sale_balance = $amount - $partial_payment;
                     //there's some amount partially paid

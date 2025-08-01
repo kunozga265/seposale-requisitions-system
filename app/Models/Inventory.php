@@ -93,7 +93,10 @@ class Inventory extends Model
     public function stock()
     {
         $count = 0;
-        $batches = $this->batches()->where("accounting_balance", ">", 0)->get();
+        $batches = $this->batches()
+            ->where("accounting_balance", ">", 0)
+            ->where("ready_date", ">", 1753567200)
+            ->get();
         foreach ($batches as $batch) {
             if ($this->producible == 1) {
                 $now = Carbon::now();
