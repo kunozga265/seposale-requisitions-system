@@ -564,6 +564,11 @@ class CollectionController extends Controller
 
         if (is_object($collection)) {
 
+            if($collection->records->count() != 0){
+                
+                return Redirect::back()->with('error', 'No accounts updated');
+            }
+
             $paid_balance = $collection->siteSaleSummary->paidBalance();
 
             //revenue calculations
