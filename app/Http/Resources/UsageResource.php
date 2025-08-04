@@ -24,7 +24,7 @@ class UsageResource extends JsonResource
             ],
             "date" => floatval($this->date),
             "quantity" => floatval($this->quantity),
-            "cost" => $this->cost,
+            "cost" => floatval($this->cost),
             "material" => $this->material,
         ];
     }
