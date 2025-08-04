@@ -118,7 +118,7 @@
                                             {{ material.data.units }}s Used
                                         </div>
                                         <div class="heading-font font-bold text-xl mb-4">
-                                            {{ metrics.total }}
+                                            {{ metrics.total.toFixed(1) }}
                                         </div>
                                     </div>
 
