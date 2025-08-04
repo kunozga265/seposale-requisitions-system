@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Controllers\AppController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UsageResource extends JsonResource
@@ -14,12 +15,17 @@ class UsageResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             "id" => $this->id,
+            "production" => [
+                "id" => $this->production?->id,
+                "code" => (new AppController())->getZeroedNumber($this->production?->code)
+            ],
             "date" => floatval($this->date),
             "quantity" => floatval($this->quantity),
             "cost" => $this->cost,
-            "material" => new MaterialResource($this->material),
+            "material" => $this->material,
         ];
     }
 }

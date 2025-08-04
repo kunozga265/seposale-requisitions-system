@@ -445,7 +445,7 @@
 
                                 </div>
 
-                                <inertia-link href="#" v-for="(material, index) in materials.data" :key="index"
+                                <inertia-link :href="route('materials.show',{code:site.code, id:material.id})" v-for="(material, index) in materials.data" :key="index"
                                     class="record p-2 mb-1 rounded flex justify-between items-center cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">
                                     <div class="flex items-center">
                                         <div class="h-8 w-8 rounded-full flex justify-center items-center"

@@ -17,6 +17,10 @@ class Usage extends Model
         return $this->belongsTo(Batch::class);
     }
 
+    public function production(){
+        return $this->belongsTo(Production::class)->withTrashed();
+    }
+
     protected $fillable = [
         "date",
         "quantity",

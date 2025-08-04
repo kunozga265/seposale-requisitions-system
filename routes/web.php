@@ -524,6 +524,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('materials.update');
 
+             Route::get('/{code}/materials/{id}', [
+            "uses"  => "App\Http\Controllers\MaterialController@show",
+            'roles' =>['employee','management']
+        ])->name('materials.show');
+
 
 
     });

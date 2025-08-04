@@ -2,16 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BatchResource;
 use App\Http\Resources\MaterialResource;
+use App\Http\Resources\UsageResource;
 use App\Models\Batch;
 use App\Models\Material;
+use App\Models\Site;
 use App\Models\SystemLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class MaterialController extends Controller
 {
+    public function show(Request $request, $code, $id)
+    {
+        $site = Site::where("code", $code)->first();
+
+        if (is_object($site)) {
+            //
+            $material = $site->materials()->where("id", $id)->first();
+
+            if (is_object($material)) {
+                $section  = strtolower($request->query("section"));
+
+
+                $batches = [];
+                $usages = [];
+
+
+                switch ($section) {
+                    case "batches":
+                        //get batches
+                        $batches = $material->batches()->orderBy("date", "desc")->get();
+                        break;
+                    default:
+                        $section = "overview";
+                        $usages = $material->usages()->orderBy("date", "asc")->get();
+                }
+
+                return Inertia::render('Materials/Show', [
+                    "site" => $site,
+                    "section" => $section,
+                    "material" => new MaterialResource($material),
+                    "usages" => UsageResource::collection($usages),
+                    "batches" => BatchResource::collection($batches),
+                ]);
+            } else {
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => "Site not found"], 404);
+                } else {
+                    //Web Response
+                    return Redirect::route('dashboard')->with('error', 'Site not found');
+                }
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Site not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('dashboard')->with('error', 'Site not found');
+            }
+        }
+    }
+
     public function store(Request $request)
     {
         $request->validate([

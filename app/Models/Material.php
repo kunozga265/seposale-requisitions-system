@@ -52,6 +52,11 @@ class Material extends Model
         return "$formatted {$this->units}$plural";
     }
 
+        public function usages()
+    {
+        return $this->hasMany(Usage::class);
+    }
+
     protected $fillable = [
         "name",
         "units",
