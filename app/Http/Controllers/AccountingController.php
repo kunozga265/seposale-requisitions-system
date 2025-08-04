@@ -198,7 +198,7 @@ class AccountingController extends Controller
             "reference" => strtoupper(""),
             'date' => Carbon::now()->getTimestamp(),
             "name" => "!!Account Update!!",
-            "description" => "!!$type TRANSACTION!!",
+            "description" => "!!$type TRANSACTION!! {$request->description}",
             "amount" => $amount,
             "opening_balance" => $account->balance,
             "closing_balance" => $new_account_balance,
