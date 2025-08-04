@@ -15,11 +15,11 @@ class MaterialResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id"=> $this->id,
+            "id"=> intval($this->id),
             "name"=> $this->name,
             "units"=> $this->units,
-            "quantity"=> $this->quantity,
-            "threshold"=> $this->threshold,
+            "quantity"=> floatval($this->quantity),
+            "threshold"=> floatval($this->threshold),
             "type"=> $this->type,
             "batchesValue"=> $this->batchesValue(),
             "inventoryValue" => $this->inventoryAccount != null ? $this->inventoryAccount->balance : 0
