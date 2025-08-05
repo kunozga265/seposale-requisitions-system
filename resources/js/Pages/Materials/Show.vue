@@ -177,6 +177,7 @@
                                                 <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-left">Production Code</th>
                                                 <th scope="col" class="p-2 pb-0 heading-font text-right">Quantity</th>
+                                                <th scope="col" class="p-2 pb-0 heading-font text-right">Cost</th>
                                             </tr>
 
                                         </thead>
@@ -193,6 +194,10 @@
                                                
                                                 <td class="p-2 text-right">{{
                                                     numberWithCommas(usage.quantity.toFixed(2))
+                                                }}
+                                                </td>
+                                                <td class="p-2 text-right">{{
+                                                    numberWithCommas(usage.cost.toFixed(2))
                                                 }}
                                                 </td>
                                             </tr>
