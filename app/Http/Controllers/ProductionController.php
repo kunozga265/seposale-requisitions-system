@@ -159,7 +159,7 @@ class ProductionController extends Controller
             }
 
             // dd("". $total_quantity);
-            error_log('Some message here.');
+            // error_log('Some message here.');
 
 
             $closing_stock = [];
@@ -352,34 +352,6 @@ class ProductionController extends Controller
 
                     ]);
                     $inventory_account_balance += $amount;
-
-
-                    // //update materials accounts
-                    foreach ($filteredMaterials as $material_object) {
-                        $inventory_record = $material_inventory_account->records()->create([
-                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                            "reference" => strtoupper(""),
-                            "date" => Carbon::now()->getTimestamp() + $index,
-                            "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
-                            "description" => $material_object["description"],
-                            "amount" => $material_object["cost"],
-                            "opening_balance" => $material_inventory_account_balance,
-                            "closing_balance" => $material_inventory_account_balance - $material_object["cost"],
-                            "type" => "CREDIT", // decrementing the account balance
-                            "accounting_account_id" => $material_inventory_account->id,
-                            "accounting_record_id" => $inventory_record->id,
-                            "production_id" => $production->id,
-                        ]);
-                        $material_inventory_account_balance -= $material_object["cost"];
-                    }
-
-                    $inventory_record->update([
-                        // "accounting_record_id" => $inventory_record->id,
-                    ]);
-
-                    $material_inventory_account->update([
-                        "balance" => $material_inventory_account_balance
-                    ]);
                 }
 
                 $index++;
@@ -434,6 +406,33 @@ class ProductionController extends Controller
                 }
                 $index++;
             }
+
+            // //update materials accounts
+            foreach ($filteredMaterials as $material_object) {
+                $material_inventory_account->records()->create([
+                    "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                    "reference" => strtoupper(""),
+                    "date" => Carbon::now()->getTimestamp() + $index,
+                    "name" => "Production Report #" . (new AppController())->getZeroedNumber($production->code),
+                    "description" => $material_object["description"],
+                    "amount" => $material_object["cost"],
+                    "opening_balance" => $material_inventory_account_balance,
+                    "closing_balance" => $material_inventory_account_balance - $material_object["cost"],
+                    "type" => "CREDIT", // decrementing the account balance
+                    "accounting_account_id" => $material_inventory_account->id,
+                    "accounting_record_id" => $inventory_record->id,
+                    "production_id" => $production->id,
+                ]);
+                $material_inventory_account_balance -= $material_object["cost"];
+            }
+
+            $inventory_record->update([
+                // "accounting_record_id" => $inventory_record->id,
+            ]);
+
+            $material_inventory_account->update([
+                "balance" => $material_inventory_account_balance
+            ]);
 
             $operating_expenses_account->update([
                 "balance" => $operating_expenses_account->balance
