@@ -248,7 +248,7 @@ class ReceiptController extends Controller
                                         "reference" => strtoupper($receipt->reference),
                                         "date" => $receipt->date + $index,
                                         "name" => $receipt->client->name,
-                                         "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
+                                        "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
                                         "amount" => $amount,
                                         "opening_balance" => $wallet_account_balance,
                                         "closing_balance" => $wallet_account_balance + $amount,
@@ -265,7 +265,7 @@ class ReceiptController extends Controller
                                         "reference" => strtoupper($receipt->reference),
                                         "date" => $receipt->date + $index,
                                         "name" => $receipt->client->name,
-                                         "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
+                                        "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
                                         "amount" => $amount,
                                         "opening_balance" => $receivables_balance,
                                         "closing_balance" => $receivables_balance - $amount,
@@ -599,53 +599,96 @@ class ReceiptController extends Controller
     {
 
         $request->validate([
-            "type" => "required"
+            "receipt_code" => "required"
         ]);
 
         $sale = $request->type == "ORDINARY" ? Sale::find($id) : SiteSale::find($id);
 
         if (is_object($sale)) {
+            //Validate all the important attributes
+            $request->validate([
+                'receipt_code' => ['required'],
+                'type' => ['required'],
+            ]);
 
-            $receipt = Cache::lock(Auth::id() . ':receipt:store', 10)->get(function () use ($request, $sale) {
+            $receipt = Receipt::where("code", $request->receipt_code)->first();
 
-                //Validate all the important attributes
-                $request->validate([
-                    'code' => ['required'],
+            if (is_object($receipt)) {
+
+                //Checking
+                $total = 0;
+                $filteredProducts = [];
+                foreach ($request->information as $item) {
+                    $amount = $item["amount"];
+                    $total += $amount;
+
+                    $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
+                    if (isset($summary->balance)) {
+                        $balance = $summary->balance - $amount;
+                        if ($balance < 0) {
+                            return Redirect::back()->with("error", "Payment is more than what is required");
+                        }
+                    }
+                    if ($amount > 0) {
+                        $filteredProducts[] = $item;
+                    }
+                }
+
+                $new_balance = $sale->balance - $total;
+                if ($new_balance < 0) {
+                    return Redirect::back()->with("error", "Payment is more than what is required");
+                } else if ($total <= 0) {
+                    return Redirect::back()->with("error", "Receipt amount is zero");
+                }
+
+                if ($receipt->amount < $total) {
+                    return Redirect::back()->with("error", "Payment is more than the receipt amount");
+                }
+
+                $receipt = Cache::lock(Auth::id() . ':receipt:attach', 10)->get(function () use ($request, $receipt, $filteredProducts) {
+
+
+                    foreach ($filteredProducts as $item) {
+                        $amount = $item["amount"];
+                        $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
+
+                        if (isset($summary->balance)) {
+                            $summary->update([
+                                "balance" => $summary->balance - $amount
+                            ]);
+                        }
+                    }
+
+                    return $receipt;
+                });
+
+                $sale->update([
+                    "balance" => $new_balance,
+                    "editable" => false,
+                    "status" => $new_balance == 0 ? 2 : 1
                 ]);
 
-                $receipt = Receipt::where("code", $request->code)->first();
-
-                switch ($request->type) {
-                    case "ORDINARY":
-                        $receipt->update([
-                            "sale_id" => $sale->id
-                        ]);
-                        break;
-                    default:
-                        $receipt->update([
-                            "site_sale_id" => $sale->id
-                        ]);
-                }
+                $sale->attachedReceipts()->attach($receipt);
 
                 //Logging
                 SystemLog::create([
                     "user_id" => Auth::id(),
-                    "message" => "Receipt #{$receipt->code} attached to Sale #{$sale->formattedCode()}",
+                    "message" => "Receipt #{$receipt->code} attached to Sale #{$receipt->formattedCode()}",
                     "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
                     "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
 
                 ]);
 
-                return $receipt;
-            });
 
-
-            if ((new AppController())->isApi($request))
-                //API Response
-                return response()->json($receipt, 201);
-            else {
-                //Web Response
-                return Redirect::back()->with('success', 'Receipt attached!');
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json($receipt, 201);
+                else {
+                    //Web Response
+                    return Redirect::back()->with('success', 'Receipt attached!');
+                }
+            } else {
+                return Redirect::back()->with('error', 'Receipt not found');
             }
         } else {
             return Redirect::back()->with('error', 'Sale not found');

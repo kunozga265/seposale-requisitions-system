@@ -22,6 +22,11 @@ class SiteSale extends Model
         return $this->hasMany(Receipt::class);
     }
 
+    public function attachedReceipts()
+    {
+        return $this->belongsToMany(Receipt::class, 'receipt_sale', 'sale_id', 'receipt_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

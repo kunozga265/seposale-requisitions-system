@@ -54,12 +54,18 @@ class Sale extends Model
         return (new AppController())->getZeroedNumber($this->code_alt);
     }
 
-    public function profit(){
+    public function profit()
+    {
         $sum = 0;
-        foreach($this->products as $summary){
+        foreach ($this->products as $summary) {
             $sum += $summary->profit();
         }
         return $sum;
+    }
+
+    public function attachedReceipts()
+    {
+        return $this->belongsToMany(Receipt::class, 'receipt_sale', 'sale_id', 'receipt_id');
     }
 
     protected $fillable = [
