@@ -206,6 +206,7 @@
                             </div>
                         </div>
                     </div>
+
                     <dialog-modal v-if="selectedProduct != null" :show="updateDeliveryDialog"
                         @close="closeUpdateDeliveryDialog">
                         <template #title>
@@ -293,6 +294,19 @@
                                             </tr>
                                         </tbody>
                                     </table>
+
+                                   <div class="mb-4">
+                                     <div class="flex justify-between">
+                                        <jet-label for="amount" value="Amount" />
+                                        <div class="flex items-center mb-2 text-xs text-gray-500">
+                                          {{ numberWithCommas((selectedProductAmount/selectedProduct.unitCost).toFixed(2)) }} {{ selectedProduct.units }}(s)
+                                        </div>
+                                    </div>
+                                    <money
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                        v-bind="moneyMaskOptions" v-model="selectedProductAmount" />
+
+                                   </div>
 
                                     <div class="mb-2 md:col-span-2 text-gray-500 text-xs font-bold">Delivery Method?
                                     </div>
@@ -917,8 +931,10 @@ export default {
                 deliveryMethod: null,
                 waiver: false,
                 receiptCode: "",
+
             }),
             selectedProduct: null,
+            selectedProductAmount: 0,
             outsource: false,
         }
     },
@@ -1061,6 +1077,7 @@ export default {
                     .transform(data => ({
                         ...data,
                         inventory_id: this.form.inventoryId,
+                        amount: this.selectedProductAmount,
                         summary_id: this.selectedProduct.id,
                         delivery_date: this.getTimestampFromDate(this.deliveryDate),
                         delivery_method: this.form.deliveryMethod,
@@ -1114,6 +1131,7 @@ export default {
                             //collection page
                         } else {
                             this.selectedProduct = productCompound
+                            this.selectedProductAmount = productCompound.amount
                             this.updateDeliveryDialog = true
                         }
                     } else {
@@ -1124,6 +1142,7 @@ export default {
                         //collection page
                     } else {
                         this.selectedProduct = productCompound
+                        this.selectedProductAmount = productCompound.amount
                         this.updateDeliveryDialog = true
                     }
                 }

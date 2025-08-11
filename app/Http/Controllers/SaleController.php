@@ -436,6 +436,7 @@ class SaleController extends Controller
     public function makeSiteSale(Request $request)
     {
         $request->validate([
+            "amount"  => "required",
             "inventory_id"  => "required",
             "summary_id"  => "required",
             "delivery_method"  => "required",
@@ -449,6 +450,13 @@ class SaleController extends Controller
 
         $summary = Summary::find($request->summary_id);
         $inventory = Inventory::find($request->inventory_id);
+
+          $paid = $summary->amount - $summary->balance;
+
+        if($paid > $request->amount){
+            return Redirect::back()->with("error","Paid amount greater than the amount being transferred");
+        }
+     
 
         $siteSaleSummary = (new SiteSaleController())->storeFromSale($request, $summary, $inventory);
         $status = 2; //sale has been transferred to oss for collection

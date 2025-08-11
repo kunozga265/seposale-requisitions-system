@@ -33,6 +33,7 @@ class SummaryResource extends JsonResource
             "paymentStatus" => intval((new DeliveryController)->getPaymentStatus($this->amount, $this->balance)),
             "quantity" => $this->quantity,
             "description" => $this->description,
+            "unitCost" => $this->cost(),
             "units" => $this->units,
             "delivery" => $this->delivery != null ? [
                 "id" => intval($this->delivery->id),
