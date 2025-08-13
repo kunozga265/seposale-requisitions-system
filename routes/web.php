@@ -267,7 +267,7 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
 
         Route::post('/attach-receipts/{id}', [
             "uses"  => "App\Http\Controllers\RequestFormController@attachReceipts",
-             'roles' =>['accountant']
+            'roles' =>['employee','management']
         ])->name('request-forms.attach-receipts');
 
         Route::get('/print/{id}', [
