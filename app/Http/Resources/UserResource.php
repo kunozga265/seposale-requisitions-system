@@ -22,7 +22,7 @@ class UserResource extends JsonResource
             'fullName'        =>  $this->firstName." ".$this->lastName,
             'email'           =>  $this->email,
             'position'        =>  new PositionResource($this->position),
-            'roles'           =>  $this->roles
+            'roles'           =>  RoleResource::collection($this->roles)
         ];
     }
 }
