@@ -5,14 +5,16 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\RequestFormResource;
 use App\Models\RequestForm;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AppController extends Controller
 {
      public function dashboard(Request $request)
     {
         //get user
-        $user = (new AppController())->getAuthUser($request);
+        $user = User::find(Auth::id());
 
         $active = RequestForm::where('user_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
         $activeCount = $active->count();
