@@ -18,13 +18,15 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::group(['prefix'=>'1.0.0'],function (){
+
+Route::group(['prefix' => '1.0.0'], function () {
 
     //Unauthenticated Routes
-    Route::post("/users/login",[UserController::class,'login']);
-    Route::post("/users/register",[UserController::class,'register']);
-    Route::get("/projects/create",[
-        ProjectController::class,'create'
+    Route::post("/users/login", [UserController::class, 'login']);
+    Route::post("/users/register", [UserController::class, 'register']);
+    Route::get("/projects/create", [
+        ProjectController::class,
+        'create'
     ]);
     Route::post('reports/generate', [
         "uses" => "App\Http\Controllers\ReportController@generate",
@@ -32,219 +34,227 @@ Route::group(['prefix'=>'1.0.0'],function (){
     ]);
 
 
-    Route::post("/upload",[
+    Route::post("/upload", [
         "uses" => "App\Http\Controllers\AppController@uploadFile",
-        'roles' =>['employee','administrator']
+        'roles' => ['employee', 'administrator']
     ]);
 
-    Route::post("/upload/delete",[
+    Route::post("/upload/delete", [
         "uses" => "App\Http\Controllers\AppController@removeFile",
-        'roles' =>['employee','administrator']
+        'roles' => ['employee', 'administrator']
     ]);
 
     //Authenticated Routes
-    Route::group(["middleware"=>["auth:sanctum","roles"]],function (){
+    Route::group(["middleware" => ["auth:sanctum", "roles"]], function () {
 
-        Route::get("/dashboard",[
+        Route::get("/dashboard", [
             "uses" => "App\Http\Controllers\RequestFormController@dashboard",
         ]);
 
-        Route::group(['prefix'=>'positions'],function (){
-            Route::get("/",[PositionController::class,'index']);
+        Route::group(['prefix' => 'positions'], function () {
+            Route::get("/", [PositionController::class, 'index']);
         });
 
-        Route::group(['prefix'=>'users'],function (){
-            Route::get("/",[UserController::class,'index']);
+        Route::group(['prefix' => 'users'], function () {
+            Route::get("/", [UserController::class, 'index']);
 
-            Route::get("/view/{id}",[
-                UserController::class,'show'
+            Route::get("/view/{id}", [
+                UserController::class,
+                'show'
             ]);
 
-            Route::post("/verify/{id}",[
+            Route::post("/verify/{id}", [
                 "uses" => "App\Http\Controllers\UserController@verify",
-                'roles' =>['management']
+                'roles' => ['management']
             ]);
 
-            Route::post("/disable/{id}",[
+            Route::post("/disable/{id}", [
                 "uses" => "App\Http\Controllers\UserController@disable",
-                'roles' =>['management']
+                'roles' => ['management']
             ]);
 
-            Route::post("/disable/{id}",[
+            Route::post("/disable/{id}", [
                 "uses" => "App\Http\Controllers\UserController@discard",
-                'roles' =>['management']
+                'roles' => ['management']
             ]);
         });
 
-        Route::group(['prefix'=>'grades'],function (){
-            Route::get("/",function (){
-//            return
+        Route::group(['prefix' => 'grades'], function () {
+            Route::get("/", function () {
+                //            return
             });
         });
 
-        Route::group(['prefix'=>'request-forms'],function (){
+        Route::get("/dashboard", [
+            "uses" => "App\Http\Controllers\API\AppController@dashboard",
+            'roles' => ['employee', 'management']
+        ]);
 
-            Route::get("/",[
-                "uses" => "App\Http\Controllers\API\AppController@dashboard",
-                'roles' =>['employee','management']
+
+        Route::group(['prefix' => 'request-forms'], function () {
+
+            Route::get("/", [
+                "uses" => "App\Http\Controllers\RequestFormController@index",
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::get("/approved",[
+            Route::get("/approved", [
                 "uses" => "App\Http\Controllers\RequestFormController@approved",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::get("/finance",[
+            Route::get("/finance", [
                 "uses" => "App\Http\Controllers\RequestFormController@finance",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::get("/pending",[
+            Route::get("/pending", [
                 "uses" => "App\Http\Controllers\RequestFormController@dashboard",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::get("/view/{id}",[
+            Route::get("/view/{id}", [
                 "uses" => "App\Http\Controllers\RequestFormController@show",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::post("/",[
+            Route::post("/", [
                 "uses" => "App\Http\Controllers\RequestFormController@store",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::post("/approve/{id}",[
+            Route::post("/approve/{id}", [
                 "uses" => "App\Http\Controllers\RequestFormController@approve",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::post("/deny/{id}",[
+            Route::post("/deny/{id}", [
                 "uses" => "App\Http\Controllers\RequestFormController@deny",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::post("/edit/{id}",[
+            Route::post("/edit/{id}", [
                 "uses" => "App\Http\Controllers\RequestFormController@update",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
-            Route::post("/initiate/{id}",[
+            Route::post("/initiate/{id}", [
                 "uses" => "App\Http\Controllers\RequestFormController@initiate",
-                'roles' =>['accountant']
+                'roles' => ['accountant']
             ]);
 
-            Route::post("/reconcile/{id}",[
+            Route::post("/reconcile/{id}", [
                 "uses" => "App\Http\Controllers\RequestFormController@reconcile",
-                'roles' =>['accountant']
+                'roles' => ['accountant']
             ]);
 
             Route::delete('/delete/{id}', [
                 "uses"  => "App\Http\Controllers\RequestFormController@destroy",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
             Route::delete('/discard/{id}', [
                 "uses"  => "App\Http\Controllers\RequestFormController@discard",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
             Route::post('/add-remarks/{id}', [
                 "uses"  => "App\Http\Controllers\RequestFormController@appendRemarks",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
             Route::get('/print/{id}', [
                 "uses"  => "App\Http\Controllers\RequestFormController@print",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
 
             Route::get('/find/{code}', [
                 "uses"  => "App\Http\Controllers\RequestFormController@findRequestForm",
-                'roles' =>['employee','management']
+                'roles' => ['employee', 'management']
             ]);
-
         });
 
-        Route::group(['prefix'=>'projects'],function (){
+        Route::group(['prefix' => 'projects'], function () {
 
-            Route::get("/",[
-                ProjectController::class,'index'
+            Route::get("/", [
+                ProjectController::class,
+                'index'
             ]);
 
-            Route::get("/view/{id}",[
-                ProjectController::class,'show'
+            Route::get("/view/{id}", [
+                ProjectController::class,
+                'show'
             ]);
 
-            Route::post("/",[
+            Route::post("/", [
                 "uses" => "App\Http\Controllers\ProjectController@store",
-                'roles' =>['administrator']
+                'roles' => ['administrator']
             ]);
 
-            Route::post("/edit/{id}",[
+            Route::post("/edit/{id}", [
                 "uses" => "App\Http\Controllers\ProjectController@update",
-                'roles' =>['administrator']
+                'roles' => ['administrator']
             ]);
 
-            Route::post("/verify/{id}",[
+            Route::post("/verify/{id}", [
                 "uses" => "App\Http\Controllers\ProjectController@verify",
-                'roles' =>['management']
+                'roles' => ['management']
             ]);
 
-            Route::delete("/delete/{id}",[
+            Route::delete("/delete/{id}", [
                 "uses" => "App\Http\Controllers\ProjectController@destroy",
-                'roles' => ['administrator','management']
+                'roles' => ['administrator', 'management']
             ]);
 
             Route::post('/close/{id}', [
                 "uses"  => "App\Http\Controllers\ProjectController@close",
-                'roles' => ['administrator','management']
+                'roles' => ['administrator', 'management']
             ]);
-
         });
 
-        Route::group(['prefix'=>'vehicles'],function (){
+        Route::group(['prefix' => 'vehicles'], function () {
 
-            Route::get("/",[
-                VehicleController::class,'index'
+            Route::get("/", [
+                VehicleController::class,
+                'index'
             ]);
 
-            Route::get("/view/{id}",[
-                VehicleController::class,'show'
+            Route::get("/view/{id}", [
+                VehicleController::class,
+                'show'
             ]);
 
-            Route::post("/",[
+            Route::post("/", [
                 "uses" => "App\Http\Controllers\VehicleController@store",
-                'roles' =>['administrator']
+                'roles' => ['administrator']
             ]);
 
-            Route::post("/edit/{id}",[
+            Route::post("/edit/{id}", [
                 "uses" => "App\Http\Controllers\VehicleController@update",
-                'roles' =>['administrator']
+                'roles' => ['administrator']
             ]);
 
-            Route::post("/verify/{id}",[
+            Route::post("/verify/{id}", [
                 "uses" => "App\Http\Controllers\VehicleController@verify",
-                'roles' =>['management']
+                'roles' => ['management']
             ]);
 
-            Route::delete("/delete/{id}",[
+            Route::delete("/delete/{id}", [
                 "uses" => "App\Http\Controllers\VehicleController@destroy",
-                'roles' =>['administrator']
+                'roles' => ['administrator']
             ]);
 
             Route::post('/close/{id}', [
                 "uses"  => "App\Http\Controllers\VehicleController@close",
-                'roles' => ['administrator','management']
+                'roles' => ['administrator', 'management']
             ]);
-
         });
 
-        Route::group(['prefix'=>'gases'],function () {
+        Route::group(['prefix' => 'gases'], function () {
 
             Route::get('/', [
                 "uses"  => "App\Http\Controllers\GasController@edit",
-                'roles' =>['administrator']
+                'roles' => ['administrator']
             ]);
 
             Route::post('/', [
@@ -253,13 +263,11 @@ Route::group(['prefix'=>'1.0.0'],function (){
             ]);
         });
 
-        Route::group(['prefix'=>'notifications'],function() {
+        Route::group(['prefix' => 'notifications'], function () {
             Route::get('/', [
                 "uses" => "App\Http\Controllers\NotificationController@index",
                 'roles' => ['employee', 'management']
             ]);
         });
-
     });
-
 });
