@@ -85,7 +85,7 @@ Route::group(['prefix'=>'1.0.0'],function (){
         Route::group(['prefix'=>'request-forms'],function (){
 
             Route::get("/",[
-                "uses" => "App\Http\Controllers\RequestFormController@index",
+                "uses" => "App\Http\Controllers\API\AppController@dashboard",
                 'roles' =>['employee','management']
             ]);
 
