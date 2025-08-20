@@ -40,11 +40,14 @@ class RequestFormResource extends JsonResource
        $canApproveOrDeny=$this->user->id != $user->id && $this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
         // $canApproveOrDeny=$this->approvalBy == null && $this->approvalStatus!=2 && $nextApprove;
 
+        
+
 
         return [
             'id'                                  =>  $this->id,
             'code'                                =>  (new AppController())->getZeroedNumber($this->code_alt),
             'type'                                =>  $this->type,
+            'name'                                =>  $this->getName(),
             'personCollectingAdvance'             =>  $this->personCollectingAdvance,
             'purpose'                             =>  $this->purpose,
             // 'project'                             =>  new ProjectResource($this->project),

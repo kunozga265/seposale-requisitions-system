@@ -19,17 +19,17 @@ class RequestForm extends Model
 
     public function approvedBy()
     {
-        return $this->belongsToMany(User::class,'requests_user','request_id','user_id');
+        return $this->belongsToMany(User::class, 'requests_user', 'request_id', 'user_id');
     }
 
     public function deniedBy()
     {
-        return $this->belongsTo(User::class,'denied_by_id','id');
+        return $this->belongsTo(User::class, 'denied_by_id', 'id');
     }
 
     public function approvalBy()
     {
-        return $this->belongsTo(User::class,'approval_by_id','id');
+        return $this->belongsTo(User::class, 'approval_by_id', 'id');
     }
 
     public function vehicle()
@@ -49,21 +49,37 @@ class RequestForm extends Model
 
     public function payables()
     {
-        return $this->hasMany(Payable::class, "request_id","id");
+        return $this->hasMany(Payable::class, "request_id", "id");
     }
 
     public function expense()
     {
-        return $this->hasOne(Expense::class, "request_id","id");
+        return $this->hasOne(Expense::class, "request_id", "id");
     }
 
 
     public function items()
     {
-        return $this->hasMany(RequestFormItem::class, "request_id","id");
+        return $this->hasMany(RequestFormItem::class, "request_id", "id");
     }
 
-    protected $fillable=[
+    public function getName()
+    {
+        switch ($this->type) {
+            case 'PETTY_CASH':
+                return 'Petty Cash Request';
+            case 'REQUISITION':
+                return 'Requisition';
+            case 'OPERATIONS':
+                return 'Operations Request';
+            case 'INVENTORY':
+                return 'One Stop Shop Request';
+            default:
+                return  '';
+        }
+    }
+
+    protected $fillable = [
         "code",
         "code_alt",
         "type",
