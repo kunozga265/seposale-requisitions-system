@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\RequestFormResource;
+use App\Http\Resources\API\RequestFormResource;
 use App\Models\RequestForm;
 use App\Models\User;
 use Illuminate\Http\Request;

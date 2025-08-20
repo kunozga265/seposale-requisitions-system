@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\API;
 
+use App\Http\Resources\PositionResource;
+use App\Http\Resources\RoleResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -14,7 +16,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+       return [
             'id'              =>  $this->id,
             'firstName'       =>  $this->firstName,
             'middleName'      =>  $this->middleName,
@@ -22,7 +24,7 @@ class UserResource extends JsonResource
             'fullName'        =>  $this->firstName." ".$this->lastName,
             'email'           =>  $this->email,
             'position'        =>  new PositionResource($this->position),
-            'roles'           =>  $this->roles
+            'roles'           =>  RoleResource::collection($this->roles)
         ];
     }
 }
