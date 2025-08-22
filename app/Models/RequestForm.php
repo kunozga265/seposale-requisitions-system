@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\AppController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -14,7 +15,7 @@ class RequestForm extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,);
     }
 
     public function approvedBy()
@@ -77,6 +78,30 @@ class RequestForm extends Model
             default:
                 return  '';
         }
+    }
+    public function getFullName()
+    {
+        $code = (new AppController())->getZeroedNumber($this->code_alt);
+        $type = '';
+        switch ($this->type) {
+            case 'PETTY_CASH':
+                $type = 'Petty Cash Request';
+                break;
+            case 'REQUISITION':
+                $type = 'Requisition';
+                break;
+            case 'OPERATIONS':
+                $type = 'Operations Request';
+                break;
+            case 'INVENTORY':
+                $type = 'One Stop Shop Request';
+                break;
+            default:
+                $type =  '';
+                break;
+        }
+
+        return "$type #$code";
     }
 
     protected $fillable = [
