@@ -90,6 +90,11 @@ Route::group(['prefix' => '1.0.0'], function () {
             'roles' => ['employee', 'management']
         ]);
 
+        Route::get("/initialise", [
+            "uses" => "App\Http\Controllers\API\AppController@initialise",
+            'roles' => ['employee', 'management']
+        ]);
+
 
         Route::group(['prefix' => 'request-forms'], function () {
 
