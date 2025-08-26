@@ -1137,6 +1137,10 @@ class RequestFormController extends Controller
                         }
             */
 
+            foreach ($requestForm->items as $item) {
+                $item->delete();
+            }
+
             $requestForm->delete();
 
             if ((new AppController())->isApi($request)) {
