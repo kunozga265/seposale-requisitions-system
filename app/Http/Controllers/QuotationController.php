@@ -30,7 +30,7 @@ class QuotationController extends Controller
         //            $projects = Project::orderBy('name', 'asc')->where('verified', 1)->where('status', 1)->paginate((new AppController())->paginate);
         //        }
 
-        $quotations = Quotation::latest()->paginate(100);
+        $quotations = Quotation::latest()->paginate((new AppController())->paginate);
 
 
         if ((new AppController())->isApi($request))

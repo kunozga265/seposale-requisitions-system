@@ -20,7 +20,7 @@ class InvoiceController extends Controller
 {
     public function index(Request $request)
     {
-        $invoices = Invoice::latest()->paginate(100);
+        $invoices = Invoice::latest()->paginate((new AppController())->paginate);
 
 
         if ((new AppController())->isApi($request))
