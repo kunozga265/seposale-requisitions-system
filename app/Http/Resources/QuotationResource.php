@@ -27,12 +27,12 @@ class QuotationResource extends JsonResource
             'recipientProfession' => $this->recipient_profession,
             'recipientPhoneNumber' => $this->recipient_phone_number,
             'information' => json_decode($this->information),
-            'total' => $this->total,
+            'total' => floatval($this->total),
             'requestedBy' => new UserResource($this->user),
             'quotes' => json_decode($this->quotes),
             'date' => $this->created_at->getTimestamp(),
             'hasSale' => $this->sale_id != null,
-            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) == 1 : false ,
         ];
     }
 
