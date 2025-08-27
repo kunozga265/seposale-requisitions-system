@@ -274,5 +274,20 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
         });
+
+        Route::group(['prefix' => 'quotations'], function () {
+            Route::get('/', [
+                "uses" => "App\Http\Controllers\QuotationController@index",
+                'roles' => ['employee', 'management']
+            ]);
+        });
+
+        Route::group(['prefix' => 'invoices'], function () {
+            Route::get('/', [
+                "uses" => "App\Http\Controllers\InvoiceController@index",
+                'roles' => ['employee', 'management']
+            ]);
+        });
+        
     });
 });
