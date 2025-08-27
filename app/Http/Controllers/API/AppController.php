@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\API\RequestFormResource;
+use App\Http\Resources\ClientResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Client;
 use App\Models\Product;
 use App\Models\RequestForm;
 use App\Models\User;
@@ -73,8 +75,11 @@ class AppController extends Controller
 
         switch ($request->query('section')) {
             case "PRODUCTS":
-                $products = Product::all();
-                return response()->json(ProductResource::collection($products));
+                $clients = Product::all();
+                return response()->json(ProductResource::collection($clients));
+            case "CLIENTS":
+                $clients = Client::paginate(200);
+                return response()->json(ClientResource::collection($clients));
             default:
                 return response()->json([]);
         }
