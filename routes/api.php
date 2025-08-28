@@ -280,11 +280,26 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\QuotationController@index",
                 'roles' => ['employee', 'management']
             ]);
+            Route::post('/store', [
+                "uses" => "App\Http\Controllers\QuotationController@store",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
         Route::group(['prefix' => 'invoices'], function () {
             Route::get('/', [
                 "uses" => "App\Http\Controllers\InvoiceController@index",
+                'roles' => ['employee', 'management']
+            ]);
+        });
+
+        Route::group(['prefix' => 'sales'], function () {
+            Route::get('/', [
+                "uses" => "App\Http\Controllers\SaleController@index",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::post('/store', [
+                "uses" => "App\Http\Controllers\SaleController@store",
                 'roles' => ['employee', 'management']
             ]);
         });
