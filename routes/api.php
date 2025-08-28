@@ -284,6 +284,10 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\QuotationController@store",
                 'roles' => ['employee', 'management']
             ]);
+              Route::delete('/delete/{id}', [
+                "uses" => "App\Http\Controllers\QuotationController@destroy",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
         Route::group(['prefix' => 'invoices'], function () {
@@ -300,6 +304,10 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
             Route::post('/store', [
                 "uses" => "App\Http\Controllers\SaleController@store",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::delete('/delete/{id}', [
+                "uses" => "App\Http\Controllers\SaleController@destroy",
                 'roles' => ['employee', 'management']
             ]);
         });
