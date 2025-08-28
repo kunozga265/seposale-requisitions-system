@@ -7,6 +7,7 @@ use App\Http\Resources\API\RequestFormResource;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Client;
+use App\Models\ClientType;
 use App\Models\Product;
 use App\Models\RequestForm;
 use App\Models\User;
@@ -75,11 +76,14 @@ class AppController extends Controller
 
         switch ($request->query('section')) {
             case "PRODUCTS":
-                $clients = Product::all();
-                return response()->json(ProductResource::collection($clients));
+                $products = Product::all();
+                return response()->json(ProductResource::collection($products));
             case "CLIENTS":
                 $clients = Client::paginate(200);
                 return response()->json(ClientResource::collection($clients));
+            case "CLIENT_TYPES":
+                $types = ClientType::all();
+                return response()->json($types);
             default:
                 return response()->json([]);
         }
