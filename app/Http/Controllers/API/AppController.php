@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AppController extends Controller
 {
+    public $paginate = 20;
+    
     public function dashboard(Request $request)
     {
         //get user

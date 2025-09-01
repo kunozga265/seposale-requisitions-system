@@ -299,7 +299,7 @@ Route::group(['prefix' => '1.0.0'], function () {
 
         Route::group(['prefix' => 'sales'], function () {
             Route::get('/', [
-                "uses" => "App\Http\Controllers\SaleController@index",
+                "uses" => "App\Http\Controllers\API\SaleController@index",
                 'roles' => ['employee', 'management']
             ]);
             Route::post('/store', [
