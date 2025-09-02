@@ -16,7 +16,7 @@ class SaleResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            'id' => intval($this->id),
             'serial' => $this->serial,
             'code' => "LL".(new AppController())->getZeroedNumber($this->code_alt),
             'status' => intval($this->status),
