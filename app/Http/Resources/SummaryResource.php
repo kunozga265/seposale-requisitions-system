@@ -17,7 +17,7 @@ class SummaryResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
+            "id" => intval($this->id),
             "client" => $this->sale->client,
             "product" => [
                 "id" => $this->product,
@@ -27,13 +27,13 @@ class SummaryResource extends JsonResource
             "isService" => $this->product->id == (new AppController())->SERVICES_PRODUCT_ID,
             "variant" => $this->variant,
             "variantId" => intval($this->product_variant_id),
-            "date" => $this->date,
+            "date" => intval($this->date),
             'amount' => floatval($this->amount),
             'balance' => floatval($this->balance),
             "paymentStatus" => intval((new DeliveryController)->getPaymentStatus($this->amount, $this->balance)),
-            "quantity" => $this->quantity,
+            "quantity" => floatval($this->quantity),
             "description" => $this->description,
-            "unitCost" => $this->cost(),
+            "unitCost" => floatval($this->cost()),
             "units" => $this->units,
             "delivery" => $this->delivery != null ? [
                 "id" => intval($this->delivery->id),
