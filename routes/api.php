@@ -92,7 +92,7 @@ Route::group(['prefix' => '1.0.0'], function () {
 
         Route::get("/initialise", [
             "uses" => "App\Http\Controllers\API\AppController@initialise",
-            'roles' => ['employee', 'management']
+     
         ]);
 
 
