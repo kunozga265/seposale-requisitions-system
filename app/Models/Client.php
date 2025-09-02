@@ -11,18 +11,6 @@ class Client extends Model
     use HasFactory;
     use SoftDeletes;
 
-     public function __get($name)
-    {
-        if ($name === 'organisation') {
-            return intval($this->organisation) == 1;
-        }
-
-        // It's important to call the parent __get() method
-        // to allow other properties to be accessed normally.
-        return parent::__get($name);
-    }
-
-
     public function sales()
     {
         return $this->hasMany(Sale::class);
