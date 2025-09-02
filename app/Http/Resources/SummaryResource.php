@@ -47,7 +47,7 @@ class SummaryResource extends JsonResource
                  "id" => intval($this->sale->id),
                  'code' => "LL".(new AppController())->getZeroedNumber($this->sale->code_alt),
             ],
-            'profit' => $this->profit(),
+            'profit' => floatval($this->profit()),
         ];
     }
 }
