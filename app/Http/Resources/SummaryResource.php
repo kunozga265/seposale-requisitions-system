@@ -20,7 +20,7 @@ class SummaryResource extends JsonResource
             "id" => intval($this->id),
             "client" => $this->sale->client,
             "product" => [
-                "id" => $this->product,
+                "id" => $this->product->id,
                 "name" => $this->product->name,
                 "inventories" => InventoryResource::collection($this->product->inventories),
             ],
