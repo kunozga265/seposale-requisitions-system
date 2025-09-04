@@ -34,7 +34,7 @@ class DeliveryResource extends JsonResource
             "due" => $this->status == 1 ? Carbon::createFromTimestamp($this->due_date)->diffForHumans() : null,
             "overdue" => $this->status == 1 ? $this->overdue() : false,
             "logs" => SystemLogResource::collection($this->logs),
-            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) == 1 : false ,
             "costBalance" => $this->availableCostBalance(),
         ];
     }
