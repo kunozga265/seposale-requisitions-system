@@ -40,8 +40,7 @@ class RequestFormController extends Controller
             //For Pie Chart
             $pettyCashRequestsCount = $user->requestForms()->where('type', 'PETTY_CASH')->count();
             $requisitionRequestsCount = $user->requestForms()->where('type', 'REQUISITION')->count();
-            $vehicleMaintenanceRequestsCount = $user->requestForms()->where('type', 'VEHICLE_MAINTENANCE')->count();
-            $fuelRequestsCount = $user->requestForms()->where('type', 'FUEL')->count();
+
 
             //Page Info
             $approvedRequestsCount = $user->requestForms()->where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->count();
@@ -58,8 +57,6 @@ class RequestFormController extends Controller
             'totalRequests' => $totalRequests,
             'pettyCashRequestsCount' => $pettyCashRequestsCount,
             'requisitionRequestsCount' => $requisitionRequestsCount,
-            'vehicleMaintenanceRequestsCount' => $vehicleMaintenanceRequestsCount,
-            'fuelRequestsCount' => $fuelRequestsCount,
             'approvedRequestsCount' => $approvedRequestsCount,
             'pendingRequestsCount' => $pendingRequestsCount,
             'deniedRequestsCount' => $deniedRequestsCount,
