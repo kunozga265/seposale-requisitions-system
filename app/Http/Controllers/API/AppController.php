@@ -23,7 +23,7 @@ class AppController extends Controller
         //get user
         $user = User::find(Auth::id());
 
-        $active = RequestForm::where('user_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
+        $active = RequestForm::where('user_id', $user->id)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
         $activeCount = $active->count();
 
         $awaitingInitiationCount = 0;
