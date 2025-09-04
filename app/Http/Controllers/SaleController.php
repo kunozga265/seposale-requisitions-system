@@ -505,7 +505,7 @@ class SaleController extends Controller
         $accounts = AccountingAccount::where('special_type', 'WALLET')
             ->orderBy('name', 'asc')
             ->get();
-        $users = User::orderBy("firstName")->get();
+        // $users = User::orderBy("firstName")->get();
 
         if (is_object($sale)) {
             if ((new AppController())->isApi($request)) {
@@ -517,7 +517,7 @@ class SaleController extends Controller
                     'sale' => new SaleResource($sale),
                     'paymentMethods' => $payment_methods,
                     'accounts' => $accounts,
-                    'users' => UserResource::collection($users),
+                    // 'users' => UserResource::collection($users),
                 ]);
             }
         } else {

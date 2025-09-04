@@ -302,6 +302,10 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\SaleController@index",
                 'roles' => ['employee', 'management']
             ]);
+            Route::get('/view/{id}', [
+                "uses" => "App\Http\Controllers\API\SaleController@show",
+                'roles' => ['employee', 'management']
+            ]);
             Route::post('/store', [
                 "uses" => "App\Http\Controllers\SaleController@store",
                 'roles' => ['employee', 'management']

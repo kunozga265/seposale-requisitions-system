@@ -16,4 +16,23 @@ class SaleController extends Controller
         $sales = Sale::orderBy("date", "desc")->paginate((new AppController())->paginate);
         return response()->json(SaleResource::collection($sales));
     }
+
+        public function show(Request $request, $id)
+    {
+        //find out if the request is valid
+        $sale = sale::withTrashed()->find($id);
+        // $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
+        // $accounts = Account::all();
+        // $accounts = AccountingAccount::where('special_type', 'WALLET')
+            // ->orderBy('name', 'asc')
+            // ->get();
+        // $users = User::orderBy("firstName")->get();
+
+        if (is_object($sale)) {
+            return response()->json(new SaleResource($sale));
+         
+        } else {
+            return response()->json(['message' => "sale not found"], 404);
+        }
+    }
 }
