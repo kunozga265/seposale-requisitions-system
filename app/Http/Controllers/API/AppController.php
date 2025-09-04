@@ -11,13 +11,14 @@ use App\Models\ClientType;
 use App\Models\Product;
 use App\Models\RequestForm;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AppController extends Controller
 {
     public $paginate = 20;
-    
+
     public function dashboard(Request $request)
     {
         //get user
@@ -61,6 +62,17 @@ class AppController extends Controller
 
         $totalCount = $toApprove->count() + $active->count();
 
+        $clients = [];
+        $products = [];
+
+        //get latest/updated clients and products
+        if ($request->query('timestamp') != null) {
+            $date = Carbon::createFromTimestamp($request->query('timestamp'));
+
+            $clients = Client::where("updated_at", ">=", $date)->get();
+            $products = Product::where("updated_at", ">=", $date)->get();
+        }
+
         return response()->json([
             'to_approve' => RequestFormResource::collection($toApprove),
             'active' => RequestFormResource::collection($active),
@@ -69,7 +81,10 @@ class AppController extends Controller
             'awaiting_initiation_count' => $awaitingInitiationCount,
             'awaiting_reconciliation_count' => $awaitingReconciliationCount,
             'active_count' => $activeCount,
-            'total_count' => $totalCount
+            'total_count' => $totalCount,
+            'products' => ProductResource::collection($products),
+            'clients' => ClientResource::collection($clients),
+
         ]);
     }
 
