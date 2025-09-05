@@ -92,7 +92,7 @@ Route::group(['prefix' => '1.0.0'], function () {
 
         Route::get("/initialise", [
             "uses" => "App\Http\Controllers\API\AppController@initialise",
-     
+
         ]);
 
 
@@ -284,7 +284,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\QuotationController@store",
                 'roles' => ['employee', 'management']
             ]);
-              Route::delete('/delete/{id}', [
+            Route::delete('/delete/{id}', [
                 "uses" => "App\Http\Controllers\QuotationController@destroy",
                 'roles' => ['employee', 'management']
             ]);
@@ -310,11 +310,34 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\SaleController@store",
                 'roles' => ['employee', 'management']
             ]);
+            Route::post('/store/make-site-sale', [
+                "uses"  => "App\Http\Controllers\SaleController@makeSiteSale",
+                'roles' => ['employee', 'management']
+            ])->name('sales.make-site-sale');
+
             Route::delete('/delete/{id}', [
                 "uses" => "App\Http\Controllers\SaleController@destroy",
                 'roles' => ['employee', 'management']
             ]);
         });
-        
+
+        Route::group(['prefix' => 'deliveries'], function () {
+            Route::get('/', [
+                "uses" => "App\Http\Controllers\API\DeliveryController@index",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::get('/show/{id}', [
+                "uses" => "App\Http\Controllers\API\DeliveryController@show",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::get('/update/{id}', [
+                "uses" => "App\Http\Controllers\DeliveryController@update",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::get('/request-forms/{id}', [
+                "uses" => "App\Http\Controllers\API\DeliveryController@getRequisitions",
+                'roles' => ['employee', 'management']
+            ]);
+        });
     });
 });
