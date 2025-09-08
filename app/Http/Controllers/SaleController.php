@@ -497,6 +497,38 @@ class SaleController extends Controller
     }
 
 
+    public function show(Request $request, $id)
+    {
+        //find out if the request is valid
+        $sale = sale::withTrashed()->find($id);
+        $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
+        $accounts = Account::all();
+        $users = User::orderBy("firstName")->get();
+
+        if (is_object($sale)) {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(new SaleResource($sale));
+            } else {
+                //Web Response
+                return Inertia::render('Sales/Show', [
+                    'sale' => new SaleResource($sale),
+                    'paymentMethods' => $payment_methods,
+                    'accounts' => $accounts,
+                    'users' => UserResource::collection($users),
+                ]);
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "sale not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('dashboard')->with('error', 'Sale not found');
+            }
+        }
+    }
+
 
     public function edit(Request $request, $id)
     {
