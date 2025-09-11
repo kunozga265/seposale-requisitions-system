@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class DeliveryController extends Controller
 {
-    public function index(Request $request, $id)
+    public function index(Request $request)
     {
         //find out if the request is valid
         $deliveries = Delivery::orderBy("due_date", "desc")->paginate((new AppController())->paginate);;
