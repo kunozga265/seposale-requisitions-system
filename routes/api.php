@@ -298,7 +298,7 @@ Route::group(['prefix' => '1.0.0'], function () {
         });
 
         Route::group(['prefix' => 'receipts'], function () {
-            Route::get('/', [
+            Route::get('/create', [
                 "uses" => "App\Http\Controllers\API\ReceiptController@create",
                 'roles' => ['employee', 'management']
             ]);
