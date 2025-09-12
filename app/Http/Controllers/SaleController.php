@@ -502,7 +502,7 @@ class SaleController extends Controller
         //find out if the request is valid
         $sale = sale::withTrashed()->find($id);
         $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
-        $accounts = Account::all();
+        $accounts = AccountingAccount::where("special_type","WALLET")->orderBy("name", "asc")->get();
         $users = User::orderBy("firstName")->get();
 
         if (is_object($sale)) {
