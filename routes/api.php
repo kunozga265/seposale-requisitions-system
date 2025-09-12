@@ -302,6 +302,10 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\ReceiptController@create",
                 'roles' => ['employee', 'management']
             ]);
+            Route::post('/', [
+                "uses" => "App\Http\Controllers\ReceiptController@store",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
         Route::group(['prefix' => 'sales'], function () {
