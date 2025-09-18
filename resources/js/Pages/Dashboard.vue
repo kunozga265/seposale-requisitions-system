@@ -200,7 +200,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card mb-0">
+                                <!-- <div class="card mb-0">
 
                                     <div class="flex justify-start items-center">
                                         <div class="ml-3 mr-1 relative">
@@ -217,8 +217,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card mb-0">
+                                </div> -->
+                                <!-- <div class="card mb-0">
 
                                     <div class="flex justify-start items-center">
                                         <div class="ml-3 mr-1 relative">
@@ -247,7 +247,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div class="card mb-0"
                                      v-if="unverifiedUsersCount>0 && (checkRole($page.props.auth.data,'management') || checkRole($page.props.auth.data,'administrator'))">
@@ -308,7 +308,7 @@
 
                         </div>
                     </div>
-                    <div class="page-section">
+                    <!-- <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Accounts
@@ -331,16 +331,6 @@
                                         <div class="flex items-center">
                                             <img :src="fileUrl(account.photo)"
                                                  class="h-8 rounded flex justify-center items-center" alt="">
-                                            <!--                      <div-->
-                                            <!--                          :style="{ backgroundImage:`url(${fileUrl(account.photo)})` }"-->
-
-                                            <!--                          class="image-placeholder bg-gray-100 rounded-full flex justify-center items-center"-->
-                                            <!--                      >-->
-                                            <!--                        <div class="text-xs"-->
-                                            <!--                        >-->
-
-                                            <!--                        </div>-->
-                                            <!--                      </div>-->
                                             <div class="ml-3 text-sm ">
                                                 <div class="text-sm">{{ account.name }}</div>
                                                 <div class="text-xs text-gray-500">
@@ -359,7 +349,7 @@
                                     <div class="text-xs mb-1 text-gray-500">Net Profit</div>
                                     <div class="heading-font font-bold text-xl mb-1" :class="{'text-red': financialPosition.net < 0, 'text-green': financialPosition.net > 0, }">MK{{ numberWithCommas(financialPosition.net) }}</div>
                                     <div class="text-xs mb-1 text-gray-500">
-<!--                                        <span class="font-bold text-green">Up 100%</span> from last month-->
+
                                     </div>
                                     <div class="mb-4"></div>
                                     <div class="mb-2">
@@ -628,21 +618,15 @@
                                 <div class="card mb-0 md:col-span-2 lg:col-span-3">
                                     <div class="flex justify-between mb-4">
 
-                                        <jet-dropdown align="left" width="48">-->
+                                        <jet-dropdown align="left" width="48">
                                             <template #trigger>
-                                                <!--                                                                                                <div-->
-                                                <!--                                                                                                    class="text-xs text-gray-500 py-1 px-4 border rounded-full cursor-pointer hover:bg-gray-50 transition ease-in-out duration-200">-->
-                                                <!--                                                                                                    {{ selectedShop.name }} <i class="mdi mdi-menu-down"></i>-->
-                                                <!--                                                                                                </div>-->
+
                                                 <div class="heading-font mb-4 cursor-pointer">{{ selectedShop.name }} <i
                                                     class="mdi mdi-menu-down"></i></div>
                                             </template>
 
                                             <template #content>
-                                                <!--                    &lt;!&ndash; Account Management &ndash;&gt;-->
-                                                <!--                    <div class="block px-4 py-2 text-xs text-gray-400">-->
-                                                <!--                        Quick Actions-->
-                                                <!--                    </div>-->
+                                               
 
                                                 <div v-for="(shop,index) in shops.data">
                                                     <div
@@ -725,19 +709,7 @@
                                 </div>
 
 
-                                <!--                                <div class="card mb-0 profit-loss">-->
-                                <!--                                    <div class="heading-font mb-4">Product Summary</div>-->
-
-                                <!--                                    <div>-->
-                                <!--                                        <PieChart-->
-                                <!--                                            :chart-options="productsChartOptions"-->
-                                <!--                                            :chart-data="productsData"-->
-                                <!--                                            chart-id="types"-->
-                                <!--                                            dataset-id-key="types"-->
-                                <!--                                            :height="280"-->
-                                <!--                                        />-->
-                                <!--                                    </div>-->
-                                <!--                                </div>-->
+                              
 
                                 <div class="card mb-0 md:col-span-2 lg:col-span-1">
                                     <div class="flex justify-between mb-4">
@@ -775,10 +747,7 @@
                                                 :is-solo="true"/>
 
                                         </div>
-                                        <!--                                        <div class="heading-font text-xs text-gray-500">-->
-                                        <!--                                            {{ numberWithCommas(productCompound.quantity - productCompound.collected) }}-->
-                                        <!--                                            {{ productCompound.inventory.units }}{{ (productCompound.quantity - productCompound.collected) !== 1 ? "s" : "" }}-->
-                                        <!--                                        </div>-->
+                                        
                                     </div>
                                 </div>
 
@@ -825,10 +794,7 @@
                                                     <div class="text-xs text-gray-500" v-if="true">
                                                         <i class="mdi mdi mdi-adjust text-xs text-gray-500"></i>
                                                         {{ productName(delivery.summary) }}
-                                                        <!--                                                    <span v-if="delivery.location">-->
-                                                        <!--                                                        <i class="mdi mdi mdi-map-marker-outline text-xs text-gray-500"></i>-->
-                                                        <!--                                                        {{delivery.location}}-->
-                                                        <!--                                                    </span>-->
+                                                       
                                                     </div>
                                                 </div>
                                             </div>
@@ -874,10 +840,7 @@
                                                 <div class="text-xs text-gray-500" v-if="true">
                                                     <i class="mdi mdi mdi-adjust text-xs text-gray-500"></i>
                                                     {{ productName(delivery.summary) }}
-                                                    <!--                                                    <span v-if="delivery.location">-->
-                                                    <!--                                                        <i class="mdi mdi mdi-map-marker-outline text-xs text-gray-500"></i>-->
-                                                    <!--                                                        {{delivery.location}}-->
-                                                    <!--                                                    </span>-->
+                                                   
                                                 </div>
                                             </div>
                                         </div>
@@ -893,7 +856,7 @@
                             </div>
 
                         </div>
-                    </div>
+                    </div> -->
 
                     <!--          <div v-if="dashboardReports.data.length > 0" class="page-section">
                                 <div class="page-section-header">
@@ -1400,278 +1363,278 @@ export default {
     },
 
     created() {
-        for (let x in this.dashboardReports.data) {
-            console.log(this.dashboardReports.data[x])
-            // this.positionsData.datasets[0].data.push(this.dashboardReports.data[x].requestsCount)
-            // this.positionsData.labels.push(this.dashboardReports.data[x].month)
-        }
+        // for (let x in this.dashboardReports.data) {
+        //     console.log(this.dashboardReports.data[x])
+        //     // this.positionsData.datasets[0].data.push(this.dashboardReports.data[x].requestsCount)
+        //     // this.positionsData.labels.push(this.dashboardReports.data[x].month)
+        // }
     },
     computed: {
         //unfiltered position
-        financialPosition(){
-            //get sales
-            let sales = 0
-            for (let x in this.allSales.data) {
-                sales += this.allSales.data[x].amount
-            }
+        // financialPosition(){
+        //     //get sales
+        //     let sales = 0
+        //     for (let x in this.allSales.data) {
+        //         sales += this.allSales.data[x].amount
+        //     }
 
-            //get receivables
-            let receivables = this.receivablesTotal
+        //     //get receivables
+        //     let receivables = this.receivablesTotal
 
-            //get expenses
-            let expenses = this.expensesTotal
+        //     //get expenses
+        //     let expenses = this.expensesTotal
 
-            //get payables
-            let payables = parseFloat(this.payables.total)
+        //     //get payables
+        //     let payables = parseFloat(this.payables.total)
 
-            //get undelivered clients
-            let undeliveredClientsTotal = this.undeliveredClientsTotal
+        //     //get undelivered clients
+        //     let undeliveredClientsTotal = this.undeliveredClientsTotal
 
-            const income = sales + receivables
-            const expenditure = expenses + payables + undeliveredClientsTotal
-            return {
-                income: income,
-                expenditure: expenditure,
-                net: income - expenditure,
-            }
-        },
-        accountsTotal() {
-            let total = 0;
+        //     const income = sales + receivables
+        //     const expenditure = expenses + payables + undeliveredClientsTotal
+        //     return {
+        //         income: income,
+        //         expenditure: expenditure,
+        //         net: income - expenditure,
+        //     }
+        // },
+        // accountsTotal() {
+        //     let total = 0;
 
-            for (let x in this.accounts) {
-                total += parseFloat(this.accounts[x].balance)
-            }
-            return total
-        },
-        totalCollectionsPending() {
-            let total = 0;
+        //     for (let x in this.accounts) {
+        //         total += parseFloat(this.accounts[x].balance)
+        //     }
+        //     return total
+        // },
+        // totalCollectionsPending() {
+        //     let total = 0;
 
-            for (let x in this.shops.data) {
-                total += this.shops.data[x].pendingCollections.length
-            }
+        //     for (let x in this.shops.data) {
+        //         total += this.shops.data[x].pendingCollections.length
+        //     }
 
-            return total
-        },
-        receivablesTotal() {
-            let sum = 0;
-            for (let x in this.receivables) {
-                sum += parseFloat(this.receivables[x].principal)
-            }
-            return sum
-        },
-        undeliveredClientsTotal() {
-            let sum = 0;
-            for (let x in this.undeliveredClients) {
-                sum += this.undeliveredClients[x].due
-            }
-            return sum
-        },
-        selectedShop() {
-            return this.shops.data[this.shopIndex]
-        },
-        filteredSales() {
+        //     return total
+        // },
+        // receivablesTotal() {
+        //     let sum = 0;
+        //     for (let x in this.receivables) {
+        //         sum += parseFloat(this.receivables[x].principal)
+        //     }
+        //     return sum
+        // },
+        // undeliveredClientsTotal() {
+        //     let sum = 0;
+        //     for (let x in this.undeliveredClients) {
+        //         sum += this.undeliveredClients[x].due
+        //     }
+        //     return sum
+        // },
+        // selectedShop() {
+        //     return this.shops.data[this.shopIndex]
+        // },
+        // filteredSales() {
 
-            let filtered = this.allReceipts.data;
+        //     let filtered = this.allReceipts.data;
 
-            /* Filter Sales By Date */
-            if (this.form.dates != null) {
-                if (this.form.dates.start != null) {
-                    filtered = (filtered).filter((sale) => {
-                        return sale.date >= this.getTimestampFromDate(this.form.dates.start)
-                    })
-                }
-                if (this.form.dates.end != null) {
-                    filtered = (filtered).filter((sale) => {
-                        return sale.date <= this.getTimestampFromDate(this.form.dates.end)
-                    })
-                }
-            }
+        //     /* Filter Sales By Date */
+        //     if (this.form.dates != null) {
+        //         if (this.form.dates.start != null) {
+        //             filtered = (filtered).filter((sale) => {
+        //                 return sale.date >= this.getTimestampFromDate(this.form.dates.start)
+        //             })
+        //         }
+        //         if (this.form.dates.end != null) {
+        //             filtered = (filtered).filter((sale) => {
+        //                 return sale.date <= this.getTimestampFromDate(this.form.dates.end)
+        //             })
+        //         }
+        //     }
 
-            return filtered
-        },
-        salesData() {
-            let sales = [{
-                name: 'Sales',
-                data: []
-            }];
+        //     return filtered
+        // },
+        // salesData() {
+        //     let sales = [{
+        //         name: 'Sales',
+        //         data: []
+        //     }];
 
-            for (let x in this.filteredSales) {
-                sales[0].data.push({
-                    x: this.filteredSales[x].date * 1000,
-                    y: this.filteredSales[x].amount
-                })
-            }
+        //     for (let x in this.filteredSales) {
+        //         sales[0].data.push({
+        //             x: this.filteredSales[x].date * 1000,
+        //             y: this.filteredSales[x].amount
+        //         })
+        //     }
 
-            return sales
-        },
-        salesTotal() {
-            let sum = 0
-            for (let x in this.filteredSales) {
-                sum += this.filteredSales[x].amount
-            }
-            return sum
-        },
-        filteredProducts() {
-            let products = []
+        //     return sales
+        // },
+        // salesTotal() {
+        //     let sum = 0
+        //     for (let x in this.filteredSales) {
+        //         sum += this.filteredSales[x].amount
+        //     }
+        //     return sum
+        // },
+        // filteredProducts() {
+        //     let products = []
 
-            for (let x in this.filteredSales) {
-                for (let y in this.filteredSales[x].information) {
-                    products.push(this.filteredSales[x].information[y])
-                }
-            }
+        //     for (let x in this.filteredSales) {
+        //         for (let y in this.filteredSales[x].information) {
+        //             products.push(this.filteredSales[x].information[y])
+        //         }
+        //     }
 
-            return products.reduce(function (arr, product) {
-                (arr[product.product_id] = arr[product.product_id] || []).push(product);
-                return arr;
-            }, {})
-        },
-        productsData() {
-            let list = []
-            let labels = []
-            let data = []
-            let sum = 0
+        //     return products.reduce(function (arr, product) {
+        //         (arr[product.product_id] = arr[product.product_id] || []).push(product);
+        //         return arr;
+        //     }, {})
+        // },
+        // productsData() {
+        //     let list = []
+        //     let labels = []
+        //     let data = []
+        //     let sum = 0
 
-            for (let x in this.filteredProducts) {
-                sum = 0
-                labels.push(this.filteredProducts[x][0].product_name)
-                for (let y in this.filteredProducts[x]) {
-                    sum += this.filteredProducts[x][y].amount
-                }
-                data.push(sum)
-                list.push({
-                    "name": this.filteredProducts[x][0].product_name,
-                    "total": sum
-                })
-            }
+        //     for (let x in this.filteredProducts) {
+        //         sum = 0
+        //         labels.push(this.filteredProducts[x][0].product_name)
+        //         for (let y in this.filteredProducts[x]) {
+        //             sum += this.filteredProducts[x][y].amount
+        //         }
+        //         data.push(sum)
+        //         list.push({
+        //             "name": this.filteredProducts[x][0].product_name,
+        //             "total": sum
+        //         })
+        //     }
 
-            this.listOfProducts = list
+        //     this.listOfProducts = list
 
-            return {
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#3375bf', '#4aa4a3', '#492d8a', '#e7632a', '#ed0b4b', '#62bdf9', '#e0f96a', '#8ef96d'],
-                }],
-                labels: labels
-            }
-        },
+        //     return {
+        //         datasets: [{
+        //             data: data,
+        //             backgroundColor: ['#3375bf', '#4aa4a3', '#492d8a', '#e7632a', '#ed0b4b', '#62bdf9', '#e0f96a', '#8ef96d'],
+        //         }],
+        //         labels: labels
+        //     }
+        // },
 
-        filteredShopSales() {
-            let filtered = this.selectedShop.receipts
+        // filteredShopSales() {
+        //     let filtered = this.selectedShop.receipts
 
-            /* Filter Sales By Date */
-            if (this.form.productDates != null) {
-                if (this.form.productDates.start != null) {
-                    filtered = (filtered).filter((sale) => {
-                        return sale.date >= this.getTimestampFromDate(this.form.productDates.start)
-                    })
-                }
-                if (this.form.productDates.end != null) {
-                    filtered = (filtered).filter((sale) => {
-                        return sale.date <= this.getTimestampFromDate(this.form.productDates.end)
-                    })
-                }
-            }
+        //     /* Filter Sales By Date */
+        //     if (this.form.productDates != null) {
+        //         if (this.form.productDates.start != null) {
+        //             filtered = (filtered).filter((sale) => {
+        //                 return sale.date >= this.getTimestampFromDate(this.form.productDates.start)
+        //             })
+        //         }
+        //         if (this.form.productDates.end != null) {
+        //             filtered = (filtered).filter((sale) => {
+        //                 return sale.date <= this.getTimestampFromDate(this.form.productDates.end)
+        //             })
+        //         }
+        //     }
 
-            return filtered
-        },
-        shopSales() {
-            let sales = [{
-                name: 'Sales',
-                data: []
-            }];
-            for (let x in this.filteredShopSales) {
-                sales[0].data.push({
-                    x: this.filteredShopSales[x].date * 1000,
-                    y: this.filteredShopSales[x].amount
-                })
-            }
-            return sales
-        },
-        shopTotal() {
-            let sum = 0
-            for (let x in this.filteredShopSales) {
-                sum += this.filteredShopSales[x].amount
-            }
-            return sum
-        },
-        filteredShopProducts() {
-            let products = []
+        //     return filtered
+        // },
+        // shopSales() {
+        //     let sales = [{
+        //         name: 'Sales',
+        //         data: []
+        //     }];
+        //     for (let x in this.filteredShopSales) {
+        //         sales[0].data.push({
+        //             x: this.filteredShopSales[x].date * 1000,
+        //             y: this.filteredShopSales[x].amount
+        //         })
+        //     }
+        //     return sales
+        // },
+        // shopTotal() {
+        //     let sum = 0
+        //     for (let x in this.filteredShopSales) {
+        //         sum += this.filteredShopSales[x].amount
+        //     }
+        //     return sum
+        // },
+        // filteredShopProducts() {
+        //     let products = []
 
-            for (let x in this.filteredShopSales) {
-                for (let y in this.filteredShopSales[x].information) {
-                    products.push(this.filteredShopSales[x].information[y])
-                }
-            }
+        //     for (let x in this.filteredShopSales) {
+        //         for (let y in this.filteredShopSales[x].information) {
+        //             products.push(this.filteredShopSales[x].information[y])
+        //         }
+        //     }
 
-            return products.reduce(function (arr, product) {
-                (arr[product.product_id] = arr[product.product_id] || []).push(product);
-                return arr;
-            }, {})
-        },
-        shopProductsData() {
-            // let list = []
-            let labels = []
-            let data = []
-            let sum = 0
+        //     return products.reduce(function (arr, product) {
+        //         (arr[product.product_id] = arr[product.product_id] || []).push(product);
+        //         return arr;
+        //     }, {})
+        // },
+        // shopProductsData() {
+        //     // let list = []
+        //     let labels = []
+        //     let data = []
+        //     let sum = 0
 
-            for (let x in this.filteredShopProducts) {
-                sum = 0
-                labels.push(this.filteredShopProducts[x][0].product_name)
-                for (let y in this.filteredShopProducts[x]) {
-                    sum += this.filteredShopProducts[x][y].amount
-                }
-                data.push(sum)
-                // list.push({
-                //     "name":this.filteredShopProducts[x][0].product_name,
-                //     "total":sum
-                // })
-            }
+        //     for (let x in this.filteredShopProducts) {
+        //         sum = 0
+        //         labels.push(this.filteredShopProducts[x][0].product_name)
+        //         for (let y in this.filteredShopProducts[x]) {
+        //             sum += this.filteredShopProducts[x][y].amount
+        //         }
+        //         data.push(sum)
+        //         // list.push({
+        //         //     "name":this.filteredShopProducts[x][0].product_name,
+        //         //     "total":sum
+        //         // })
+        //     }
 
-            // this.listOfProducts = list
+        //     // this.listOfProducts = list
 
-            return {
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#1a56db', '#ed0b4b', '#b1bbc9', '#e3ebf6'],
-                }],
-                labels: labels
-            }
-        },
-        filteredCategories() {
-            return this.expenses.data.reduce(function (arr, expense) {
-                (arr[expense.expenseType.id] = arr[expense.expenseType.id] || []).push(expense);
-                return arr;
-            }, {})
-        },
-        expensesData() {
-            let labels = []
-            let data = []
-            let sum = 0
+        //     return {
+        //         datasets: [{
+        //             data: data,
+        //             backgroundColor: ['#1a56db', '#ed0b4b', '#b1bbc9', '#e3ebf6'],
+        //         }],
+        //         labels: labels
+        //     }
+        // },
+        // filteredCategories() {
+        //     return this.expenses.data.reduce(function (arr, expense) {
+        //         (arr[expense.expenseType.id] = arr[expense.expenseType.id] || []).push(expense);
+        //         return arr;
+        //     }, {})
+        // },
+        // expensesData() {
+        //     let labels = []
+        //     let data = []
+        //     let sum = 0
 
-            for (let x in this.filteredCategories) {
-                sum = 0
-                labels.push(this.filteredCategories[x][0].expenseType.name)
-                for (let y in this.filteredCategories[x]) {
-                    sum += this.filteredCategories[x][y].total
-                }
-                data.push(sum)
-            }
+        //     for (let x in this.filteredCategories) {
+        //         sum = 0
+        //         labels.push(this.filteredCategories[x][0].expenseType.name)
+        //         for (let y in this.filteredCategories[x]) {
+        //             sum += this.filteredCategories[x][y].total
+        //         }
+        //         data.push(sum)
+        //     }
 
-            return {
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#4aa4a3', '#492d8a', '#e7632a','#ed0b4b','#62bdf9', '#3375bf', '#e0f96a','#8ef96d'],
-                }],
-                labels: labels
-            }
-        },
-        expensesTotal() {
-            let sum = 0
-            for (let x in this.expenses.data) {
-                sum += this.expenses.data[x].total
-            }
-            return sum
-        },
+        //     return {
+        //         datasets: [{
+        //             data: data,
+        //             backgroundColor: ['#4aa4a3', '#492d8a', '#e7632a','#ed0b4b','#62bdf9', '#3375bf', '#e0f96a','#8ef96d'],
+        //         }],
+        //         labels: labels
+        //     }
+        // },
+        // expensesTotal() {
+        //     let sum = 0
+        //     for (let x in this.expenses.data) {
+        //         sum += this.expenses.data[x].total
+        //     }
+        //     return sum
+        // },
 
 
     },

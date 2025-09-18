@@ -25,7 +25,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "50kg",
             "quantity" => 1,
             "cost" => 20000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         ProductVariant::create([
@@ -33,7 +33,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "50 kg",
             "quantity" => 1,
             "cost" => 18000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         $product = Product::create([
@@ -45,7 +45,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 20,
             "cost" => 510000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         ProductVariant::create([
@@ -53,16 +53,16 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 575000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
-//        ProductVariant::create([
-//            "description" => "30 Tonnes",
-//            "unit" => "Tonne",
-//            "quantity" => 30,
-//            "cost" => 640000,
-//            "product_id"=>$product->id
-//        ]);
+        //        ProductVariant::create([
+        //            "description" => "30 Tonnes",
+        //            "unit" => "Tonne",
+        //            "quantity" => 30,
+        //            "cost" => 640000,
+        //            "product_id"=>$product->id
+        //        ]);
 
         $product = Product::create([
             "name" => "Pebble Stone",
@@ -73,7 +73,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 20,
             "cost" => 510000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         ProductVariant::create([
@@ -81,16 +81,16 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 575000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
-//        ProductVariant::create([
-//            "description" => "30 Tonnes",
-//            "unit" => "Tonne",
-//            "quantity" => 30,
-//            "cost" => 640000,
-//            "product_id"=>$product->id
-//        ]);
+        //        ProductVariant::create([
+        //            "description" => "30 Tonnes",
+        //            "unit" => "Tonne",
+        //            "quantity" => 30,
+        //            "cost" => 640000,
+        //            "product_id"=>$product->id
+        //        ]);
 
         $product = Product::create([
             "name" => "Quarry Dust",
@@ -101,7 +101,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 20,
             "cost" => 470000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         ProductVariant::create([
@@ -109,16 +109,16 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 525000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
-//        ProductVariant::create([
-//            "description" => "30 Tonnes",
-//            "unit" => "Tonne",
-//            "quantity" => 30,
-//            "cost" => 580000,
-//            "product_id"=>$product->id
-//        ]);
+        //        ProductVariant::create([
+        //            "description" => "30 Tonnes",
+        //            "unit" => "Tonne",
+        //            "quantity" => 30,
+        //            "cost" => 580000,
+        //            "product_id"=>$product->id
+        //        ]);
 
         $product = Product::create([
             "name" => "Cement Block",
@@ -129,7 +129,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "150*200*400(mm)",
             "quantity" => 1,
             "cost" => 1300,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         ProductVariant::create([
@@ -137,7 +137,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "200*200*400(mm)",
             "quantity" => 1,
             "cost" => 1700,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         $product = Product::create([
@@ -149,7 +149,7 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 350000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         ProductVariant::create([
@@ -157,8 +157,14 @@ class ProductTableSeeder extends Seeder
             "unit" => "Tonne",
             "quantity" => 25,
             "cost" => 750000,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
+        $product = Product::create([
+            "name" => "Other",
+        ]);
+        $product = Product::create([
+            "name" => "Services",
+        ]);
     }
 }

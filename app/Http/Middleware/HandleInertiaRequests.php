@@ -45,6 +45,9 @@ class HandleInertiaRequests extends Middleware
             'publicPath'=> function() use ($request){
                 return env("APP_URL");
             },
+            'sitePath'=> function() use ($request){
+                return env("SITE_URL");
+            },
             'auth'=> function() use ($request){
                 if (Auth::check())
                     return new UserResource(Auth::user());

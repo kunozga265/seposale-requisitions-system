@@ -138,54 +138,54 @@ class AppController extends Controller
 
 
         $unverifiedUsers = (new AppController())->getRoleUsers('unverified');
-        $unverifiedVehicles = Vehicle::where('verified', 0)->get();
-        $unverifiedProjects = Project::where('verified', 0)->get();
+        // $unverifiedVehicles = Vehicle::where('verified', 0)->get();
+        // $unverifiedProjects = Project::where('verified', 0)->get();
 
-        //deliveries
-        $deliveriesUnderway = Delivery::where("status", 1)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
-        $deliveriesUncompleted = Delivery::where("status", 2)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
+        // //deliveries
+        // $deliveriesUnderway = Delivery::where("status", 1)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
+        // $deliveriesUncompleted = Delivery::where("status", 2)->where("due_date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("due_date", "asc")->get();
 
 
-        //one stop shops
-        $sites = Site::orderBy("name", "asc")->get();
+        // //one stop shops
+        // $sites = Site::orderBy("name", "asc")->get();
 
-        //receipts
-        $allReceipts = Receipt::where("sale_id", "!=", null)->where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date", "asc")->get();
+        // //receipts
+        // $allReceipts = Receipt::where("sale_id", "!=", null)->where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date", "asc")->get();
 
-        $allSales = Receipt::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date", "asc")->get();
+        // $allSales = Receipt::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date", "asc")->get();
 
-        //generate sales
-        $sales = Sale::where("status", "<", 2)->orderBy("date", "desc")->get();
+        // //generate sales
+        // $sales = Sale::where("status", "<", 2)->orderBy("date", "desc")->get();
 
-        //accounts
-        $accounts = AccountingAccount::where("special_type","WALLET")->orderBy("name", "asc")->get();
+        // //accounts
+        // $accounts = AccountingAccount::where("special_type","WALLET")->orderBy("name", "asc")->get();
 
-        //expenses
-        $expenses = Expense::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date","asc")->get();
+        // //expenses
+        // $expenses = Expense::where("date",">=",env('TIMESTAMP_CUTOFF'))->orderBy("date","asc")->get();
 
-        $salesAwaitingInitiation = [];
-        $salesAwaitingPayment = [];
+        // $salesAwaitingInitiation = [];
+        // $salesAwaitingPayment = [];
 
-        $undeliveredSales = [];
-        $summaries = Summary::where("date",">=",env('TIMESTAMP_CUTOFF'))->get();
-        foreach ($summaries as $summary) {
-            if ($summary->delivery != null) {
-                if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status == 0) {
-                    $salesAwaitingInitiation [] = $summary;
-                }
-                if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status < 3) {
-                    $undeliveredSales [] = $summary;
-                }
-                if (($summary->getPaymentStatus() == 0) && ($summary->delivery->status == 2 || $summary->delivery->status == 4)) {
-                    $salesAwaitingPayment [] = $summary;
-                }
-            }
+        // $undeliveredSales = [];
+        // $summaries = Summary::where("date",">=",env('TIMESTAMP_CUTOFF'))->get();
+        // foreach ($summaries as $summary) {
+        //     if ($summary->delivery != null) {
+        //         if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status == 0) {
+        //             $salesAwaitingInitiation [] = $summary;
+        //         }
+        //         if (($summary->getPaymentStatus() == 1 || $summary->getPaymentStatus() == 2) && $summary->delivery->status < 3) {
+        //             $undeliveredSales [] = $summary;
+        //         }
+        //         if (($summary->getPaymentStatus() == 0) && ($summary->delivery->status == 2 || $summary->delivery->status == 4)) {
+        //             $salesAwaitingPayment [] = $summary;
+        //         }
+        //     }
 
-        }
+        // }
 
-        $undeliveredClients = $this->groupSales($undeliveredSales, false);
-        $receivables = $this->groupSales($salesAwaitingPayment, true);
-        $payables = (new PayableController())->getPayables();
+        // $undeliveredClients = $this->groupSales($undeliveredSales, false);
+        // $receivables = $this->groupSales($salesAwaitingPayment, true);
+        // $payables = (new PayableController())->getPayables();
 
 
 
@@ -194,18 +194,18 @@ class AppController extends Controller
             return response()->json([
                 'toApprove' => RequestFormResource::collection($toApprove),
                 'active' => RequestFormResource::collection($active),
-                'sales' => SaleResource::collection($sales),
-                'deliveriesUnderway' => DeliveryResource::collection($deliveriesUnderway),
-                'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
-                'sites' => SiteResource::collection($sites),
-                'allReceipts' => ReceiptResource::collection($allReceipts),
-                'allSales' => ReceiptResource::collection($allSales),
-                'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
-                'undeliveredClients' => $undeliveredClients,
-                'accounts' => $accounts,
-                'receivables' => $receivables,
-                'expenses' => $expenses,
-                'payables' => $payables,
+                // 'sales' => SaleResource::collection($sales),
+                // 'deliveriesUnderway' => DeliveryResource::collection($deliveriesUnderway),
+                // 'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
+                // 'sites' => SiteResource::collection($sites),
+                // 'allReceipts' => ReceiptResource::collection($allReceipts),
+                // 'allSales' => ReceiptResource::collection($allSales),
+                // 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
+                // 'undeliveredClients' => $undeliveredClients,
+                // 'accounts' => $accounts,
+                // 'receivables' => $receivables,
+                // 'expenses' => $expenses,
+                // 'payables' => $payables,
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,
                 'awaitingInitiationCount' => $awaitingInitiationCount,
@@ -213,8 +213,6 @@ class AppController extends Controller
                 'activeCount' => $activeCount,
                 'totalCount' => $totalCount,
                 'unverifiedUsersCount' => $unverifiedUsers->count(),
-                'unverifiedVehiclesCount' => $unverifiedVehicles->count(),
-                'unverifiedProjectsCount' => $unverifiedProjects->count(),
                 'dashboardReports' => $dashboardReports
             ]);
         else {
@@ -222,18 +220,18 @@ class AppController extends Controller
             return Inertia::render('Dashboard', [
                 'toApprove' => RequestFormResource::collection($toApprove),
                 'active' => RequestFormResource::collection($active),
-                'sales' => SaleResource::collection($sales),
-                'deliveriesUnderway' => DeliveryResource::collection($deliveriesUnderway),
-                'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
-                'shops' => SiteResource::collection($sites),
-                'allReceipts' => ReceiptResource::collection($allReceipts),
-                'allSales' => ReceiptResource::collection($allSales),
-                'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
-                'undeliveredClients' => $undeliveredClients,
-                'accounts' => $accounts,
-                'receivables' => $receivables,
-                'expenses' =>ExpenseResource::collection($expenses),
-                'payables' => $payables,
+                // 'sales' => SaleResource::collection($sales),
+                // 'deliveriesUnderway' => DeliveryResource::collection($deliveriesUnderway),
+                // 'deliveriesUncompleted' => DeliveryResource::collection($deliveriesUncompleted),
+                // 'shops' => SiteResource::collection($sites),
+                // 'allReceipts' => ReceiptResource::collection($allReceipts),
+                // 'allSales' => ReceiptResource::collection($allSales),
+                // 'salesAwaitingInitiation' => SummaryResource::collection($salesAwaitingInitiation),
+                // 'undeliveredClients' => $undeliveredClients,
+                // 'accounts' => $accounts,
+                // 'receivables' => $receivables,
+                // 'expenses' =>ExpenseResource::collection($expenses),
+                // 'payables' => $payables,
 
                 //counts
                 'awaitingApprovalCount' => $awaitingApprovalCount,
@@ -242,8 +240,7 @@ class AppController extends Controller
                 'activeCount' => $activeCount,
                 'totalCount' => $totalCount,
                 'unverifiedUsersCount' => $unverifiedUsers->count(),
-                'unverifiedVehiclesCount' => $unverifiedVehicles->count(),
-                'unverifiedProjectsCount' => $unverifiedProjects->count(),
+                
                 'dashboardReports' => $dashboardReports
             ]);
         }

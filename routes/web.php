@@ -993,6 +993,31 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
         ])->name('settings.inventory.attach-account');
        
     });
+    Route::group(['prefix'=>'vacancies'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\VacancyController@index",
+            'roles' =>['administrator','management']
+        ])->name('vacancies.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\VacancyController@create",
+            'roles' =>['administrator','management']
+        ])->name('vacancies.create');
+
+        Route::get('/show/{id}', [
+            "uses"  => "App\Http\Controllers\VacancyController@show",
+            'roles' =>['administrator','management']
+        ])->name('vacancies.show');
+
+        Route::get('/application/{id}', [
+            "uses"  => "App\Http\Controllers\VacancyController@application",
+            'roles' =>['administrator','management']
+        ])->name('vacancies.application');
+       
+       
+       
+    });
 
 
 

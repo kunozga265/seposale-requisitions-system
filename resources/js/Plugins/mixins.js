@@ -5,6 +5,9 @@ Vue.mixin({
         fileUrl: function (path) {
             return this.$page.props.publicPath+path
         },
+        siteUrl: function (path) {
+            return this.$page.props.sitePath+path
+        },
         checkRole(user,role){
             for(let x in user.roles){
                 if(user.roles[x].name===role)

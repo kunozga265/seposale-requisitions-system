@@ -327,6 +327,28 @@
                 
                 </ul>
               </li>
+              <li v-if=" checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                <div @click="more = !more"
+                  class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                  <div>
+                    <i class="text-lg mdi mdi-menu"></i>
+                    <span class="ml-3">More</span>
+                  </div>
+                  <div>
+                    <i class="text-lg mdi" :class="{ 'mdi-menu-down': !more, 'mdi-menu-up': more }"></i>
+                  </div>
+                </div>
+                <ul v-show="more">
+                  <li>
+                    <a :href="route('vacancies.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Vacancies
+                    </a>
+                  </li>
+                  
+                
+                </ul>
+              </li>
               <li>
                 <a :href="route('profile.show')"
                   class="mb-2 flex items-center p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -508,6 +530,7 @@ export default {
       sites: false,
       operations: false,
       reports: false,
+      more: false,
     }
   },
 
