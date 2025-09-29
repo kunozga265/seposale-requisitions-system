@@ -302,11 +302,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\ReceiptController@create",
                 'roles' => ['employee', 'management']
             ]);
-            Route::post('/', [
+            Route::post('/sale/{id}', [
                 "uses" => "App\Http\Controllers\ReceiptController@store",
                 'roles' => ['employee', 'management']
             ]);
-        });
+    });
 
         Route::group(['prefix' => 'sales'], function () {
             Route::get('/', [
