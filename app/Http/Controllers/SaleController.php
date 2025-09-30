@@ -35,7 +35,7 @@ use Rmunate\Utilities\SpellNumber;
 
 class SaleController extends Controller
 {
-    private $paginate = 100;
+    private $paginate = 20;
 
     public function index(Request $request, $section)
     {
@@ -60,6 +60,8 @@ class SaleController extends Controller
             $sales = Sale::orderBy("date", "desc")->paginate($this->paginate);
             $headline = "all";
         }
+
+        $allSales = Sale::orderBy("date", "desc")->paginate($this->paginate);
 
         $unsorted = Sale::orderBy("date", "desc")->get();
         $sorted = [];
@@ -146,7 +148,7 @@ class SaleController extends Controller
         else {
             //Web Response
             return Inertia::render('Sales/Index', [
-                'sales' => SaleResource::collection($section == "block" ? $sales : $unsorted),
+                'sales' => SaleResource::collection($section == "block" ? $sales : $allSales),
                 'headline' => $headline,
                 'section' => $section,
                 'chartData' => $chartData

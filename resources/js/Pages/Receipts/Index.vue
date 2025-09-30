@@ -94,8 +94,10 @@
                   </table>
                 </div>
 
+                
               </div>
-
+              
+              <pagination :object="receipts"/>
               <!-- <div class="grid grid-cols-1 md:grid-cols-2">
                 <inertia-link :href="route('receipts.show', { id: receipt.id })"
                   v-for="(receipt, index) in receipts.data" :key="index">
@@ -178,7 +180,7 @@ import Request from "@/Components/Request";
 import PrimaryButton from "@/Jetstream/Button";
 import SaleStatus from "@/Components/SaleStatus.vue";
 import JetInput from "@/Jetstream/Input";
-
+import Pagination from "@/Components/Pagination.vue";
 
 export default {
   props: [
@@ -189,6 +191,7 @@ export default {
     AppLayout,
     PrimaryButton,
     JetInput,
+    Pagination,
   },
   data() {
     return {

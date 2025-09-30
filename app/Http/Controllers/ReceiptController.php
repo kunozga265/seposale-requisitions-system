@@ -29,7 +29,7 @@ class ReceiptController extends Controller
 {
     public function index(Request $request)
     {
-        $receipts = Receipt::orderBy("date", "desc")->get();
+        $receipts = Receipt::orderBy("date", "desc")->paginate((new AppController())->paginate);
 
 
         if ((new AppController())->isApi($request))

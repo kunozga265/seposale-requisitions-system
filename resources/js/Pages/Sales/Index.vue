@@ -223,7 +223,7 @@
                     </div>
                     <div class="page-section-content ">
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                             <div class="card no-shadow">
                                 <div class="flex justify-start items-center">
                                     <div class="">
@@ -256,12 +256,8 @@
                                              class="absolute h-full w-full font-bold flex justify-center items-center">
                                             {{ Math.floor((metrics.collected / metrics.total) * 100) }}%
                                         </div>
-                                        <!--                    <DoughnutChart-->
-                                        <!--                        :chart-options="chartOptions"-->
-                                        <!--                        :chart-data="collectedSalesData"-->
-                                        <!--                        chart-id="awaitingReconciliation"-->
-                                        <!--                        dataset-id-key="awaitingReconciliation"-->
-                                        <!--                    />-->
+                                     
+                                        
                                     </div>
                                 </div>
 
@@ -280,17 +276,12 @@
                                              class="absolute h-full w-full font-bold flex justify-center items-center text-red-500">
                                             {{ Math.floor((metrics.balance / metrics.total) * 100) }}%
                                         </div>
-                                        <!--                    <DoughnutChart-->
-                                        <!--                        :chart-options="chartOptions"-->
-                                        <!--                        :chart-data="uncollectedSalesData"-->
-                                        <!--                        chart-id="awaitingReconciliation"-->
-                                        <!--                        dataset-id-key="awaitingReconciliation"-->
-                                        <!--                    />-->
+                                     
                                     </div>
                                 </div>
                             </div>
 
-                        </div>
+                        </div> -->
 
                         <div class="card w-full sales-table">
                             <!--                            {{ invoices.data }}-->
@@ -439,6 +430,8 @@
                                 </table>
                             </div>
                         </div>
+
+                    <pagination :object="sales"/>
                     </div>
                 </div>
 
@@ -459,6 +452,8 @@ import JetLabel from "@/Jetstream/Label.vue";
 import JetInput from "@/Jetstream/Input.vue";
 import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
 import BarChart from "@/Components/Charts/BarChart.vue";
+import Pagination from "@/Components/Pagination.vue";
+
 
 
 export default {
@@ -476,6 +471,7 @@ export default {
         AppLayout,
         PrimaryButton,
         DoughnutChart,
+        Pagination,
     },
     data() {
         return {

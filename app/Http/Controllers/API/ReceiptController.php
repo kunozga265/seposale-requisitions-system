@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\AccountingAccountController;
+use App\Http\Controllers\AppController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AccountingAccountResource;
 use App\Models\AccountingAccount;
@@ -106,7 +107,6 @@ class ReceiptController extends Controller
                     );
                     // return Redirect::back()->with("error", "Receipt amount is zero");
                 }
-
 
                 // $receipt = Receipt::find(1);
                 $receipt = Receipt::create([
