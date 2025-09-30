@@ -536,9 +536,21 @@ class NotificationController extends Controller
         ]);
         $check = $this->processWhatsappMessage($request->template, $request->serial);
         if ($check) {
-            return Redirect::back()->with('success', 'Notification successfully sent!');
+              if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Notification successfully sent!"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('success', 'Notification successfully sent!');
+            }
         } else {
-            return Redirect::back()->with('error', 'Error! Failed to send the notification.');
+             if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Error! Failed to send the notification."], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Error! Failed to send the notification.');
+            }
         }
     }
 

@@ -268,9 +268,15 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
         });
 
+
         Route::group(['prefix' => 'notifications'], function () {
             Route::get('/', [
                 "uses" => "App\Http\Controllers\NotificationController@index",
+                'roles' => ['employee', 'management']
+            ]);
+
+            Route::post('/whatsapp', [
+                "uses" => "App\Http\Controllers\NotificationController@sendWhatsappMessage",
                 'roles' => ['employee', 'management']
             ]);
         });
@@ -303,10 +309,10 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
             Route::post('/sale/{id}', [
-                "uses" => "App\Http\Controllers\ReceiptController@store",
+                "uses" => "App\Http\Controllers\API\ReceiptController@store",
                 'roles' => ['employee', 'management']
             ]);
-    });
+        });
 
         Route::group(['prefix' => 'sales'], function () {
             Route::get('/', [
