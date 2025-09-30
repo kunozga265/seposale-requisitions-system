@@ -1,5 +1,5 @@
 <template>
-    <app-layout>
+    <app-layout >
         <template #header>
             Dashboard
         </template>
@@ -1097,6 +1097,7 @@
             </div>
         </div>
     </app-layout>
+    
 </template>
 
 <script>

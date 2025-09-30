@@ -77,7 +77,7 @@
                           </span>
                           
                         </td>
-                        <td class="p-2 text-left">{{ receipt.code }}</td>
+                        <td @click="navigateToReceipt(receipt.id)"  class="p-2 text-left">{{ receipt.code }}</td>
                         <td @click="navigateToClient(receipt.client.id)" class="p-2 text-left ">{{ receipt.client.name
                         }}
                         </td>
@@ -222,7 +222,7 @@ export default {
     },
   },
   methods: {
-    navigateToInvoice(id) {
+    navigateToReceipt(id) {
       this.$inertia.get(this.route('receipts.show', { 'id': id }))
     },
     navigateToClient(id) {
