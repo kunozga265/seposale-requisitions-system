@@ -7,6 +7,7 @@ use App\Http\Resources\AccountingAccountResource;
 use App\Http\Resources\API\RequestFormResource;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Account;
 use App\Models\AccountingAccount;
 use App\Models\Client;
 use App\Models\ClientType;
@@ -74,6 +75,7 @@ class AppController extends Controller
 
             $clients = Client::where("updated_at", ">=", $date)->get();
             $products = Product::where("updated_at", ">=", $date)->get();
+            $accounts = Account::where("updated_at", ">=", $date)->get();
         }
 
         return response()->json([
@@ -87,6 +89,7 @@ class AppController extends Controller
             'total_count' => $totalCount,
             'products' => ProductResource::collection($products),
             'clients' => ClientResource::collection($clients),
+            'accounts' => AccountingAccountResource::collection($accounts),
 
         ]);
     }
