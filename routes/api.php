@@ -314,6 +314,14 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
         });
 
+        Route::group(['prefix' => 'accounts'], function () {
+            Route::get('/', [
+                "uses" => "App\Http\Controllers\API\AccountingController@index",
+                'roles' => ['employee', 'management']
+            ]);
+          
+        });
+
         Route::group(['prefix' => 'sales'], function () {
             Route::get('/', [
                 "uses" => "App\Http\Controllers\API\SaleController@index",
