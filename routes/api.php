@@ -294,6 +294,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\QuotationController@destroy",
                 'roles' => ['employee', 'management']
             ]);
+
+            Route::get('/print/{id}', [
+                "uses"  => "App\Http\Controllers\QuotationController@print",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
         Route::group(['prefix' => 'invoices'], function () {
@@ -301,6 +306,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\InvoiceController@index",
                 'roles' => ['employee', 'management']
             ]);
+
+            Route::get('/print/{id}', [
+                "uses"  => "App\Http\Controllers\InvoiceController@print",
+                'roles' => ['employee', 'management']
+            ])->name('invoices.print');
         });
 
         Route::group(['prefix' => 'receipts'], function () {
@@ -312,6 +322,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\ReceiptController@store",
                 'roles' => ['employee', 'management']
             ]);
+
+            Route::get('/print/{id}', [
+                "uses"  => "App\Http\Controllers\ReceiptController@print",
+                'roles' => ['employee', 'management']
+            ])->name('receipts.print');
         });
 
         Route::group(['prefix' => 'accounts'], function () {
@@ -319,7 +334,6 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\AccountingController@index",
                 'roles' => ['employee', 'management']
             ]);
-          
         });
 
         Route::group(['prefix' => 'sales'], function () {
@@ -344,6 +358,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\SaleController@destroy",
                 'roles' => ['employee', 'management']
             ]);
+
+            Route::get('/print/{id}', [
+                "uses"  => "App\Http\Controllers\SaleController@print",
+                'roles' => ['employee', 'management']
+            ])->name('sales.print');
         });
 
         Route::group(['prefix' => 'deliveries'], function () {
