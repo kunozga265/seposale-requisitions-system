@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\API;
 
-use App\Http\Controllers\AppController;
+use App\Http\Controllers\API\AppController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ReceiptResource extends JsonResource

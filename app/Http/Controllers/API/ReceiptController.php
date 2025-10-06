@@ -11,7 +11,7 @@ use App\Models\PaymentMethod;
 use App\Models\Sale;
 use App\Models\SiteSale;
 use Illuminate\Http\Request;
-use App\Http\Resources\ReceiptResource;
+use App\Http\Resources\API\ReceiptResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\AccountingRecord;
