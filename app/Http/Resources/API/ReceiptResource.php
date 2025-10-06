@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\API;
 
-use App\Http\Controllers\API\AppController;
+use App\Http\Controllers\AppController;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ReceiptResource extends JsonResource
