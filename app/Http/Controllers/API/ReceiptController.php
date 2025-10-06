@@ -32,6 +32,13 @@ use Rmunate\Utilities\SpellNumber;
 
 class ReceiptController extends Controller
 {
+     public function index(Request $request)
+    {
+        $receipts = Receipt::orderBy("date", "desc")->paginate((new AppController())->paginate);
+        return response()->json(ReceiptResource::collection($receipts));
+        
+    }
+
     public function create()
     {
         $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
