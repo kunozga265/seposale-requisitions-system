@@ -82,6 +82,15 @@ class Site extends Model
                         "code" => (new AppController())->getZeroedNumber($summary->sale->code),
                         'client' => $summary->sale->client,
                     ],
+                    "status" => intval($summary->status),
+                    "delivery" => $summary->delivery != null ? [
+                        "id" => intval($summary->delivery->id),
+                        "status" => intval($summary->delivery->status),
+                    ] : null,
+                    "overdue" => $summary->delivery != null ? $summary->delivery->overdue() : false,
+                    'profit' => $summary->profit(),
+                    "unitCost" => $summary->cost(),
+                    'pendingPayments' => $summary->paidBalance() < 0 ? abs($summary->paidBalance()) : 0,
                 ];
             }
         }
