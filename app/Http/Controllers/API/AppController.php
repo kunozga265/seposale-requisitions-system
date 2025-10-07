@@ -71,6 +71,7 @@ class AppController extends Controller
 
         $clients = [];
         $products = [];
+        $accounts = [];
 
         //get latest/updated clients and products
         if ($request->query('timestamp') != null) {
