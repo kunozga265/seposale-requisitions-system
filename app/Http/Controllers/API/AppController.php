@@ -11,7 +11,9 @@ use App\Models\Account;
 use App\Models\AccountingAccount;
 use App\Models\Client;
 use App\Models\ClientType;
+use App\Models\Site;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\RequestForm;
 use App\Models\User;
 use Carbon\Carbon;
@@ -74,9 +76,16 @@ class AppController extends Controller
             $date = Carbon::createFromTimestamp($request->query('timestamp'));
 
             $clients = Client::where("updated_at", ">=", $date)->get();
-            $products = Product::where("updated_at", ">=", $date)->get();
             $accounts = Account::where("updated_at", ">=", $date)->get();
+            
+            
+            if(ProductVariant::where("updated_at", ">=", $date)->exists()){
+                $products = Product::all();
+            }
+
         }
+
+        $sites = Site::orderBy("name","asc")->get();
 
         return response()->json([
             'to_approve' => RequestFormResource::collection($toApprove),
@@ -90,6 +99,7 @@ class AppController extends Controller
             'products' => ProductResource::collection($products),
             'clients' => ClientResource::collection($clients),
             'accounts' => AccountingAccountResource::collection($accounts),
+            'sites' => $sites,
 
         ]);
     }
