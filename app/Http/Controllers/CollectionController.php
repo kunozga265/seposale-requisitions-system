@@ -121,12 +121,29 @@ class CollectionController extends Controller
             $collected_quantity = $summary->collected;
             $balance = $summary->quantity - $collected_quantity;
             if ($request->quantity == 0) {
+                 if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(['message' => "Please enter quantity collected"], 404);
+            else {
+                //Web Response
                 return Redirect::back()->with("error", "Please enter quantity collected");
+            }
             } else if ($balance < $request->quantity) {
+                 if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(['message' => "Quantity is more than what remains"], 404);
+            else {
+                //Web Response
                 return Redirect::back()->with("error", "Quantity is more than what remains");
-            
+            }
             } else if ($summary->inventory->stock() < $request->quantity) {
+                 if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(['message' => "Quantity is more than available stock"], 404);
+            else {
+                //Web Response
                 return Redirect::back()->with("error", "Quantity is more than available stock");
+            }
             } else {
                 $balance -= $request->quantity;
                 $collected_quantity += $request->quantity;
@@ -434,7 +451,13 @@ class CollectionController extends Controller
                 return Redirect::route('sites.summaries.show', ['code' => $summary->sale->site->code, 'id' => $inventorySummary->id])->with('success', 'Collection recorded!');
             }
         } else {
-            return Redirect::back()->with('error', 'Resource not found');
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(['message' => 'Resource not found'], 404);
+            else {
+                //Web Response
+                return Redirect::back()->with('error', 'Resource not found');
+            }
         }
     }
 
@@ -564,8 +587,8 @@ class CollectionController extends Controller
 
         if (is_object($collection)) {
 
-            if($collection->records->count() != 0){
-                
+            if ($collection->records->count() != 0) {
+
                 return Redirect::back()->with('error', 'No accounts updated');
             }
 
@@ -631,7 +654,7 @@ class CollectionController extends Controller
 
                 if ($partial_payment > 0) {
                     $sale_balance = $amount - $partial_payment;
-                    $partial_addon = $sale_balance > 0 ? "Partial" : ""; 
+                    $partial_addon = $sale_balance > 0 ? "Partial" : "";
                     //there's some amount partially paid
                     $unearned_revenue_record = AccountingRecord::create([
                         "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
@@ -676,7 +699,7 @@ class CollectionController extends Controller
                 }
 
                 if ($sale_balance > 0) {
-                    $partial_addon = $partial_payment > 0 ? "Partial" : ""; 
+                    $partial_addon = $partial_payment > 0 ? "Partial" : "";
                     //record receivables
                     $receivables_record = AccountingRecord::create([
                         "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
@@ -726,7 +749,7 @@ class CollectionController extends Controller
             $revenue_account->update([
                 "balance" => $revenue_account_balance
             ]);
-          
+
             //calculate cost
             $now = Carbon::now()->getTimestamp();
 
