@@ -136,8 +136,7 @@ class CollectionController extends Controller
                     //Web Response
                     return Redirect::back()->with("error", "Quantity is more than what remains");
                 }
-                //temporary hack for only production products
-            } else if (($summary->inventory->stock() < $request->quantity) && !$summary->inventory->producible) {
+            } else if (($summary->inventory->stock() < $request->quantity)) {
                 if ((new AppController())->isApi($request))
                     //API Response
                     return response()->json(['message' => "Quantity is more than available stock"], 404);
