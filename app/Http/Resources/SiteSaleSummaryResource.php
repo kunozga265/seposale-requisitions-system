@@ -21,21 +21,22 @@ class SiteSaleSummaryResource extends JsonResource
 
 
         return [
-            "id" => $this->id,
+            "id" => intval($this->id),
             "inventory" => $this->inventory,
-            "inventoryStock" => $this->inventory->stock(),
+            "inventoryStock" => floatval($this->inventory->stock()),
             'amount' => floatval($this->amount),
             'balance' => floatval($this->balance),
-            'paymentStatus' => $this->getPaymentStatus(),
+            'paymentStatus' => intval($this->getPaymentStatus()),
             'collected' => floatval($this->collected),
             'collectionStatus' => $this->getCollectionStatus(),
             'quantity' => floatval($this->quantity),
-            "collections" =>(new SiteSaleSummaryController())->getCollections($this->collections),
+            "collections" => (new SiteSaleSummaryController())->getCollections($this->collections),
             "site" => $this->sale->site,
             "trashed" => $this->deleted_at != null,
             "sale" => [
                 "id" => $this->sale->id,
                 "code" => (new AppController())->getZeroedNumber($this->sale->code),
+                'client' => $this->sale->client,
             ],
             "status" => intval($this->status),
             "delivery" => $this->delivery != null ? [
@@ -43,9 +44,9 @@ class SiteSaleSummaryResource extends JsonResource
                 "status" => intval($this->delivery->status),
             ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
-            'profit' => $this->profit(),
-            "unitCost" => $this->cost(),
-            'pendingPayments' => $this->paidBalance() < 0 ? abs($this->paidBalance()) : 0,
+            'profit' => floatval($this->profit()),
+            "unitCost" => floatval($this->cost()),
+            'pendingPayments' => floatval($this->paidBalance() < 0 ? abs($this->paidBalance()) : 0),
         ];
     }
 }

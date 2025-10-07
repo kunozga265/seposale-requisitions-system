@@ -65,12 +65,12 @@ class Site extends Model
         foreach ($summaries as $summary) {
             if ($summary->getCollectionStatus() < 2 && $summary->sale->site->id == $this->id) {
                 $filtered[] = [
-                    "id" => $summary->id,
+                    "id" => intval($summary->id),
                     "inventory" => $summary->inventory,
-                    "inventoryStock" => $summary->inventory->stock(),
+                    "inventoryStock" => floatval($summary->inventory->stock()),
                     'amount' => floatval($summary->amount),
                     'balance' => floatval($summary->balance),
-                    'paymentStatus' => $summary->getPaymentStatus(),
+                    'paymentStatus' => intval($summary->getPaymentStatus()),
                     'collected' => floatval($summary->collected),
                     'collectionStatus' => $summary->getCollectionStatus(),
                     'quantity' => floatval($summary->quantity),
@@ -78,7 +78,7 @@ class Site extends Model
                     "site" => $summary->site,
                     "trashed" => $summary->deleted_at != null,
                     "sale" => [
-                        "id" => $summary->sale->id,
+                        "id" => intval($summary->sale->id),
                         "code" => (new AppController())->getZeroedNumber($summary->sale->code),
                         'client' => $summary->sale->client,
                     ],
@@ -88,9 +88,9 @@ class Site extends Model
                         "status" => intval($summary->delivery->status),
                     ] : null,
                     "overdue" => $summary->delivery != null ? $summary->delivery->overdue() : false,
-                    'profit' => $summary->profit(),
-                    "unitCost" => $summary->cost(),
-                    'pendingPayments' => $summary->paidBalance() < 0 ? abs($summary->paidBalance()) : 0,
+                    'profit' => floatval($summary->profit()),
+                    "unitCost" => floatval($summary->cost()),
+                    'pendingPayments' => floatval($summary->paidBalance() < 0 ? abs($summary->paidBalance()) : 0),
                 ];
             }
         }
