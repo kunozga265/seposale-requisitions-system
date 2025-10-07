@@ -121,29 +121,30 @@ class CollectionController extends Controller
             $collected_quantity = $summary->collected;
             $balance = $summary->quantity - $collected_quantity;
             if ($request->quantity == 0) {
-                 if ((new AppController())->isApi($request))
-                //API Response
-                return response()->json(['message' => "Please enter quantity collected"], 404);
-            else {
-                //Web Response
-                return Redirect::back()->with("error", "Please enter quantity collected");
-            }
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(['message' => "Please enter quantity collected"], 404);
+                else {
+                    //Web Response
+                    return Redirect::back()->with("error", "Please enter quantity collected");
+                }
             } else if ($balance < $request->quantity) {
-                 if ((new AppController())->isApi($request))
-                //API Response
-                return response()->json(['message' => "Quantity is more than what remains"], 404);
-            else {
-                //Web Response
-                return Redirect::back()->with("error", "Quantity is more than what remains");
-            }
-            } else if ($summary->inventory->stock() < $request->quantity) {
-                 if ((new AppController())->isApi($request))
-                //API Response
-                return response()->json(['message' => "Quantity is more than available stock"], 404);
-            else {
-                //Web Response
-                return Redirect::back()->with("error", "Quantity is more than available stock");
-            }
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(['message' => "Quantity is more than what remains"], 404);
+                else {
+                    //Web Response
+                    return Redirect::back()->with("error", "Quantity is more than what remains");
+                }
+                //temporary hack for only production products
+            } else if (($summary->inventory->stock() < $request->quantity) || $summary->inventory->producible) {
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(['message' => "Quantity is more than available stock"], 404);
+                else {
+                    //Web Response
+                    return Redirect::back()->with("error", "Quantity is more than available stock");
+                }
             } else {
                 $balance -= $request->quantity;
                 $collected_quantity += $request->quantity;
