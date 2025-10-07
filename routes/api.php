@@ -389,7 +389,7 @@ Route::group(['prefix' => '1.0.0'], function () {
         });
 
         Route::group(['prefix' => 'collections'], function () {
-            Route::post('store/{id}', [
+            Route::post('/store/{id}', [
                 "uses" => "App\Http\Controllers\CollectionController@store",
                 'roles' => ['employee', 'management']
             ]);
