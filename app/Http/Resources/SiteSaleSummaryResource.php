@@ -37,6 +37,7 @@ class SiteSaleSummaryResource extends JsonResource
                 "id" => $this->sale->id,
                 "code" => (new AppController())->getZeroedNumber($this->sale->code),
                 'client' => $this->sale->client,
+                'date' => intval($this->sale->date),
             ],
             "status" => intval($this->status),
             "delivery" => $this->delivery != null ? [
