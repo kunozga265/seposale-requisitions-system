@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AccountingAccountResource;
 use App\Http\Resources\API\RequestFormResource;
+use App\Http\Resources\API\SiteResource;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Account;
@@ -99,7 +100,7 @@ class AppController extends Controller
             'products' => ProductResource::collection($products),
             'clients' => ClientResource::collection($clients),
             'accounts' => AccountingAccountResource::collection($accounts),
-            'sites' => $sites,
+            'sites' => SiteResource::collection($sites),
 
         ]);
     }
