@@ -417,8 +417,14 @@ class SaleController extends Controller
             //                (new InvoiceController())->storeFromSale($sale);
 
 
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale generated"], 201);
+            } else {
+                //Web Response
+                return Redirect::route("sales.show", ["id" => $sale->id])->with("success", "Sale created!");
+            }
             //Web Response
-            return Redirect::route("sales.show", ["id" => $sale->id])->with("success", "Sale created!");
         } else {
             if ((new AppController())->isApi($request)) {
                 //API Response
