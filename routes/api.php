@@ -208,7 +208,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
 
-             Route::get('/generate-sale/{id}', [
+             Route::post('/generate-sale/{id}', [
                 "uses"  => "App\Http\Controllers\SaleController@storeFromQuotation",
                 'roles' => ['employee', 'management']
             ]);
