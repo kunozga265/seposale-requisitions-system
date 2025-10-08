@@ -14,6 +14,7 @@ use App\Models\Client;
 use App\Models\ClientType;
 use App\Models\Site;
 use App\Models\Product;
+use App\Models\PaymentMethod;
 use App\Models\ProductVariant;
 use App\Models\RequestForm;
 use App\Models\User;
@@ -122,6 +123,9 @@ class AppController extends Controller
             case "CLIENT_TYPES":
                 $types = ClientType::all();
                 return response()->json($types);
+            case "PAYMENT_METHODS":
+                $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
+                return response()->json($payment_methods);
             default:
                 return response()->json([]);
         }
