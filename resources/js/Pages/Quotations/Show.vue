@@ -143,11 +143,11 @@
 	c-1.766,1.766-4.414,2.648-7.062,1.766c-15.007-5.297-65.324-26.483-92.69-79.448c-0.883-2.648-0.883-5.297,0.883-7.062
 	l21.186-23.834c1.766-2.648,2.648-6.179,1.766-8.828l-25.6-57.379C193.324,138.593,190.676,135.945,187.145,135.945" />
                     </svg></div>
-                  <div>{{ quotation.data.client.phoneNumber }}</div>
+                  <div>{{ quotation.data.client.phone_number }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Phone Number</div>
-                  <div>{{ quotation.data.client.phoneNumberOther }}</div>
+                  <div>{{ quotation.data.client.phone_number_other }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Email</div>

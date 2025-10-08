@@ -79,11 +79,7 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
         });
 
-        Route::group(['prefix' => 'grades'], function () {
-            Route::get("/", function () {
-                //            return
-            });
-        });
+
 
         Route::get("/dashboard", [
             "uses" => "App\Http\Controllers\API\AppController@dashboard",
@@ -179,94 +175,6 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
         });
 
-        Route::group(['prefix' => 'projects'], function () {
-
-            Route::get("/", [
-                ProjectController::class,
-                'index'
-            ]);
-
-            Route::get("/view/{id}", [
-                ProjectController::class,
-                'show'
-            ]);
-
-            Route::post("/", [
-                "uses" => "App\Http\Controllers\ProjectController@store",
-                'roles' => ['administrator']
-            ]);
-
-            Route::post("/edit/{id}", [
-                "uses" => "App\Http\Controllers\ProjectController@update",
-                'roles' => ['administrator']
-            ]);
-
-            Route::post("/verify/{id}", [
-                "uses" => "App\Http\Controllers\ProjectController@verify",
-                'roles' => ['management']
-            ]);
-
-            Route::delete("/delete/{id}", [
-                "uses" => "App\Http\Controllers\ProjectController@destroy",
-                'roles' => ['administrator', 'management']
-            ]);
-
-            Route::post('/close/{id}', [
-                "uses"  => "App\Http\Controllers\ProjectController@close",
-                'roles' => ['administrator', 'management']
-            ]);
-        });
-
-        Route::group(['prefix' => 'vehicles'], function () {
-
-            Route::get("/", [
-                VehicleController::class,
-                'index'
-            ]);
-
-            Route::get("/view/{id}", [
-                VehicleController::class,
-                'show'
-            ]);
-
-            Route::post("/", [
-                "uses" => "App\Http\Controllers\VehicleController@store",
-                'roles' => ['administrator']
-            ]);
-
-            Route::post("/edit/{id}", [
-                "uses" => "App\Http\Controllers\VehicleController@update",
-                'roles' => ['administrator']
-            ]);
-
-            Route::post("/verify/{id}", [
-                "uses" => "App\Http\Controllers\VehicleController@verify",
-                'roles' => ['management']
-            ]);
-
-            Route::delete("/delete/{id}", [
-                "uses" => "App\Http\Controllers\VehicleController@destroy",
-                'roles' => ['administrator']
-            ]);
-
-            Route::post('/close/{id}', [
-                "uses"  => "App\Http\Controllers\VehicleController@close",
-                'roles' => ['administrator', 'management']
-            ]);
-        });
-
-        Route::group(['prefix' => 'gases'], function () {
-
-            Route::get('/', [
-                "uses"  => "App\Http\Controllers\GasController@edit",
-                'roles' => ['administrator']
-            ]);
-
-            Route::post('/', [
-                "uses" => "App\Http\Controllers\GasController@update",
-                'roles' => ['administrator']
-            ]);
-        });
 
 
         Route::group(['prefix' => 'notifications'], function () {
@@ -297,6 +205,11 @@ Route::group(['prefix' => '1.0.0'], function () {
 
             Route::get('/print/{id}', [
                 "uses"  => "App\Http\Controllers\QuotationController@print",
+                'roles' => ['employee', 'management']
+            ]);
+
+             Route::get('/generate-sale/{id}', [
+                "uses"  => "App\Http\Controllers\SaleController@storeFromQuotation",
                 'roles' => ['employee', 'management']
             ]);
         });
@@ -367,6 +280,8 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses"  => "App\Http\Controllers\SaleController@print",
                 'roles' => ['employee', 'management']
             ])->name('sales.print');
+
+           
         });
 
         Route::group(['prefix' => 'deliveries'], function () {
