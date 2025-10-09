@@ -17,6 +17,8 @@ use App\Models\Product;
 use App\Models\PaymentMethod;
 use App\Models\ProductVariant;
 use App\Models\RequestForm;
+use App\Models\Transporter;
+use App\Models\Supplier;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -73,6 +75,8 @@ class AppController extends Controller
         $clients = [];
         $products = [];
         $accounts = [];
+        $transporters = [];
+        $suppliers = [];
 
         //get latest/updated clients and products
         if ($request->query('timestamp') != null) {
@@ -80,6 +84,8 @@ class AppController extends Controller
 
             $clients = Client::where("updated_at", ">=", $date)->get();
             $accounts = Account::where("updated_at", ">=", $date)->get();
+            $transporters = Transporter::where("updated_at", ">=", $date)->get();
+            $suppliers = Supplier::where("updated_at", ">=", $date)->get();
             
             
             if(ProductVariant::where("updated_at", ">=", $date)->exists()){
@@ -103,6 +109,8 @@ class AppController extends Controller
             'clients' => ClientResource::collection($clients),
             'accounts' => AccountingAccountResource::collection($accounts),
             'sites' => SiteResource::collection($sites),
+            'transporters' => $transporters,
+            'suppliers' => $suppliers,
 
         ]);
     }
@@ -126,6 +134,12 @@ class AppController extends Controller
             case "PAYMENT_METHODS":
                 $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
                 return response()->json($payment_methods);
+            case "TRANSPORTERS":
+                $transporters = Transporter::orderBy("name", "asc")->get();
+                return response()->json($transporters);
+            case "SUPPLIERS":
+                $suppliers = Supplier::orderBy("name", "asc")->get();
+                return response()->json($suppliers);
             default:
                 return response()->json([]);
         }
