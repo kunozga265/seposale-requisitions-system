@@ -173,6 +173,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses"  => "App\Http\Controllers\RequestFormController@findRequestForm",
                 'roles' => ['employee', 'management']
             ]);
+
+              Route::post('/from-delivery/{id}', [
+                "uses" => "App\Http\Controllers\API\RequestFormController@storeFromDelivery",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
 
@@ -301,6 +306,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\DeliveryController@getRequisitions",
                 'roles' => ['employee', 'management']
             ]);
+          
         });
 
         Route::group(['prefix' => 'collections'], function () {
