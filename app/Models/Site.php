@@ -86,7 +86,7 @@ class Site extends Model
                     "status" => intval($summary->status),
                     "delivery" => $summary->delivery != null ? [
                         "id" => intval($summary->delivery->id),
-                        "code" => (new AppController())->getZeroedNumber($this->delivery->code),
+                        "code" => (new AppController())->getZeroedNumber($summary->delivery->code),
                         "status" => intval($summary->delivery->status),
                     ] : null,
                     "overdue" => $summary->delivery != null ? $summary->delivery->overdue() : false,
