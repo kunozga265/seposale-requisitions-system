@@ -185,9 +185,21 @@ class DeliveryController extends Controller
                 $delivered_quantity = $summary->delivery->quantity_delivered;
                 $balance = $summary->quantity - $delivered_quantity;
                 if ($request->quantity == 0) {
-                    return Redirect::back()->with("error", "Please enter quantity delivered");
+                    if ((new AppController())->isApi($request))
+                        //API Response
+                        return response()->json(['message' => 'Please enter quantity delivered'], 201);
+                    else {
+                        //Web Response
+                        return Redirect::back()->with("error", "Please enter quantity delivered");
+                    }
                 } else if ($balance < $request->quantity) {
-                    return Redirect::back()->with("error", "Quantity is more than what is required");
+                     if ((new AppController())->isApi($request))
+                        //API Response
+                        return response()->json(['message' => 'Quantity is more than what is required'], 201);
+                    else {
+                        //Web Response
+                        return Redirect::back()->with("error", "Quantity is more than what is required");
+                    }
                 } else {
                     $balance -= $request->quantity;
                     $delivered_quantity += $request->quantity;
@@ -425,13 +437,19 @@ class DeliveryController extends Controller
 
             if ((new AppController())->isApi($request))
                 //API Response
-                return response()->json(new SaleResource($summary), 201);
+                return response()->json(['message' => 'Delivery initiated!'], 201);
             else {
                 //Web Response
                 return Redirect::back()->with('success', 'Delivery initiated!');
             }
         } else {
-            return Redirect::back()->with('error', 'Delivery not found');
+              if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(['message' => 'Delivery not found'], 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('error', 'Delivery not found');
+            }
         }
     }
 
