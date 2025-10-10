@@ -298,7 +298,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\DeliveryController@show",
                 'roles' => ['employee', 'management']
             ]);
-            Route::get('/update/{id}', [
+            Route::post('/update/{id}', [
                 "uses" => "App\Http\Controllers\DeliveryController@update",
                 'roles' => ['employee', 'management']
             ]);
