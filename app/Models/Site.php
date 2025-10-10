@@ -81,11 +81,12 @@ class Site extends Model
                         "id" => intval($summary->sale->id),
                         "code" => (new AppController())->getZeroedNumber($summary->sale->code),
                         'client' => $summary->sale->client,
-                          'date' => intval($summary->sale->date),
+                        'date' => intval($summary->sale->date),
                     ],
                     "status" => intval($summary->status),
                     "delivery" => $summary->delivery != null ? [
                         "id" => intval($summary->delivery->id),
+                        "code" => $this->delivery->code,
                         "status" => intval($summary->delivery->status),
                     ] : null,
                     "overdue" => $summary->delivery != null ? $summary->delivery->overdue() : false,
