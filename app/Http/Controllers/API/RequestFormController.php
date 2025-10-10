@@ -218,4 +218,14 @@ class RequestFormController extends Controller
             }
         }
     }
+
+      private function getCodeRequestFormNumber()
+    {
+        $last = RequestForm::orderBy("code_alt", "desc")->first();
+        if (is_object($last)) {
+            return $last->code_alt + 1;
+        } else {
+            return 1;
+        }
+    }
 }
