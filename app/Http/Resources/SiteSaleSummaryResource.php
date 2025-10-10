@@ -40,7 +40,7 @@ class SiteSaleSummaryResource extends JsonResource
             "delivery" => $this->delivery != null ? [
                 "id" => intval($this->delivery->id),
                 "status" => intval($this->delivery->status),
-                "code" => $this->delivery->code,
+                "code" => (new AppController())->getZeroedNumber($this->delivery->code),
             ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
             'profit' => floatval($this->profit()),
