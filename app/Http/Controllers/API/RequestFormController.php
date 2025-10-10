@@ -9,7 +9,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Resources\API\RequestFormResource;
 use App\Models\RequestForm;
 use App\Models\AccountingAccount;
-use App\Models\SUmmary;
+use App\Models\Summary;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
