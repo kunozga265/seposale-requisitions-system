@@ -105,24 +105,24 @@ class RequestFormController extends Controller
             $items = [];
             $total = 0;
             if (isset($request->transportation)) {
-                $request->validate([
-                    'transporter_id' => ['required'],
-                ]);
+                // $request->validate([
+                //     'transporter_id' => ['required'],
+                // ]);
                 $transportation = $request->transportation;
                 $transportation['accountId'] = $summary->product->inventory_account_id;
-                $transportation['transporterId'] = $request->transporter_id;
+                // $transportation['transporterId'] = $request->transporter_id;
                 $items[] = $transportation;
 
                 $total += $transportation["totalCost"];
             }
             if (isset($request->supplier)) {
 
-                $request->validate([
-                    'supplier_id' => ['required'],
-                ]);
+                // $request->validate([
+                //     'supplier_id' => ['required'],
+                // ]);
                 $supplier = $request->supplier;
                 $supplier['accountId'] = $summary->product->inventory_account_id;
-                $supplier['supplierId'] = $request->supplier_id;
+                // $supplier['supplierId'] = $request->supplier_id;
                 $items[] = $supplier;
 
                 $total += $supplier["totalCost"];
