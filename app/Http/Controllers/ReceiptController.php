@@ -582,6 +582,15 @@ class ReceiptController extends Controller
                 return $receipt;
             });
 
+               //clear all proof of payments
+            $pops = $sale->pops()->where("active", 1)->get();
+
+            foreach ($pops as $pop) {
+                $pop->update([
+                    "active" => false
+                ]);
+            }
+
 
             if ((new AppController())->isApi($request))
                 //API Response

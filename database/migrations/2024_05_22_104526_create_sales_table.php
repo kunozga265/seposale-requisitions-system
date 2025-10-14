@@ -16,7 +16,7 @@ class CreateSalesTable extends Migration
         if (!Schema::hasTable('sales')) {
             Schema::create('sales', function (Blueprint $table) {
                 $table->id();
-                $table->string("code")->unique();
+                $table->string("code")->nullable();
                 $table->string("serial")->unique();
                 $table->integer("code_alt")->unique();
                 $table->integer("status");

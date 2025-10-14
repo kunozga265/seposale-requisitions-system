@@ -32,11 +32,10 @@ use Rmunate\Utilities\SpellNumber;
 
 class ReceiptController extends Controller
 {
-     public function index(Request $request)
+    public function index(Request $request)
     {
         $receipts = Receipt::orderBy("date", "desc")->paginate((new AppController())->paginate);
         return response()->json(ReceiptResource::collection($receipts));
-        
     }
 
     public function create()
@@ -551,7 +550,6 @@ class ReceiptController extends Controller
                     "balance" => $receivables_balance
                 ]);
 
-                //
 
 
                 // Transaction::create([
@@ -579,6 +577,16 @@ class ReceiptController extends Controller
 
                 return $receipt;
             });
+
+            //clear all proof of payments
+            $pops = $sale->pops()->where("active", 1)->get();
+
+            foreach ($pops as $pop) {
+                $pop->update([
+                    "active" => false
+                ]);
+            }
+
 
 
 
@@ -630,12 +638,12 @@ class ReceiptController extends Controller
                     if (isset($summary->balance)) {
                         $balance = $summary->balance - $amount;
                         if ($balance < 0) {
-                          return response()->json(
-                        [
-                            "message" => "Payment is more than what is required",
-                        ],
-                        400
-                    );
+                            return response()->json(
+                                [
+                                    "message" => "Payment is more than what is required",
+                                ],
+                                400
+                            );
                         }
                     }
                     if ($amount > 0) {

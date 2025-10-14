@@ -39,6 +39,7 @@ class SaleResource extends JsonResource
             'comments' => json_decode($this->comments),
             'products' => SummaryResource::collection($this->products),
             'receipts' => ReceiptResource::collection($this->receipts),
+            'pops' => PaymentReceiptResource::collection($this->pops),
             'generatedBy' => new UserResource($this->user),
             'delivery' => new DeliveryResource($this->delivery),
             'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false ,

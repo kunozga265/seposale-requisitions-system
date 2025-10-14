@@ -295,18 +295,21 @@
                                         </tbody>
                                     </table>
 
-                                   <div class="mb-4">
-                                     <div class="flex justify-between">
-                                        <jet-label for="amount" value="Amount" />
-                                        <div class="flex items-center mb-2 text-xs text-gray-500">
-                                          {{ numberWithCommas((selectedProductAmount/selectedProduct.unitCost).toFixed(2)) }} {{ selectedProduct.units }}(s)
+                                    <div class="mb-4">
+                                        <div class="flex justify-between">
+                                            <jet-label for="amount" value="Amount" />
+                                            <div class="flex items-center mb-2 text-xs text-gray-500">
+                                                {{
+                                                    numberWithCommas((selectedProductAmount /
+                                                        selectedProduct.unitCost).toFixed(2))
+                                                }} {{ selectedProduct.units }}(s)
+                                            </div>
                                         </div>
-                                    </div>
-                                    <money
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                        v-bind="moneyMaskOptions" v-model="selectedProductAmount" />
+                                        <money
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            v-bind="moneyMaskOptions" v-model="selectedProductAmount" />
 
-                                   </div>
+                                    </div>
 
                                     <div class="mb-2 md:col-span-2 text-gray-500 text-xs font-bold">Delivery Method?
                                     </div>
@@ -814,6 +817,216 @@
 
                         </div>
                     </div>
+
+                    <div class="page-section md:col-span-2">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Proof of Payments
+                            </div>
+                        </div>
+                        <div class="page-section-content">
+                            <div class="" v-if="sale.data.pops.length > 0">
+
+                                <div class="grid grid-cols-2 md:grid-cols-3 ">
+
+                                    <div @click="displayAttachment(pop)" class="app-card"
+                                        v-for="(pop, index) in sale.data.pops" :key="index">
+                                        <div class="header justify-between items-center border-b">
+                                            <div>
+                                                <div>
+                                                    <span
+                                                        class="date rounded py-1 px-2 bg-gray-200 text-gray-600 text-xs font-bold uppercase">{{
+                                                            getDate(pop.date * 1000)
+                                                        }}</span>
+                                                </div>
+                                                <!-- <div class="type">Payment Method</div> -->
+
+
+                                            </div>
+                                            <div class="flex items-center ">
+                                                <div class="currency ">MK</div>
+                                                <div class="total">{{ numberWithCommas(pop.amount) }}</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="name font-normal ml-3 flex justify-between">
+                                                <div>{{ pop.paymentMethod.name }}</div>
+                                                <div>Recorded By {{ pop.user.firstName }}
+                                                    {{ pop.user.middleName }}
+                                                    {{ pop.user.lastName }}
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div v-for="(pop, index) in this.pops" :key="index">
+                                        <div v-if="pop.ext === 'pdf'" @click="displayAttachment(index, 'pop')"
+                                            class="cursor">
+                                            <pdf class="w-32" :source="fileUrl(pop.file)" />
+                                        </div>
+                                        <div v-else @click="displayAttachment(index, 'pop')" class="cursor">
+                                            <img class="w-32" :src="fileUrl(pop.file)" alt="Proof of Payment Image">
+                                        </div>
+                                    </div> -->
+                                </div>
+                            </div>
+
+                            <primary-button @click.native="popDialog = true" class="ml-3">Add Proof of Payment
+                            </primary-button>
+
+                            <dialog-modal :show="popDialog" @close="popDialog = false">
+                                <template #title>
+                                    Add Proof of Payment
+                                </template>
+
+                                <template #content>
+                                    <jet-validation-errors class="mb-4" />
+
+                                    <div v-show="!popValidation"
+                                        class="flex items-center w-full text-red md:col-span-2 mb-4">
+                                        <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{
+                                            popMessage }}</div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="mb-4 md:col-span-2">
+                                            <jet-label for="Date" value="Date" />
+                                            <vue-date-time-picker color="#1a56db" v-model="popDate"
+                                                :max-date="maxDate" />
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <jet-label for="paymentMethod" value="Select Payment Method" />
+                                            <select v-model="form.popPaymentMethodId" id="paymentMethod"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                required>
+                                                <option v-for="(paymentMethod, index) in paymentMethods"
+                                                    :value="paymentMethod.id" :key="index">
+                                                    {{ paymentMethod.name }}
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <jet-label for="amount" value="Amount" />
+                                            <money
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                v-bind="moneyMaskOptions" v-model="form.popAmount" />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center mb-4">
+                                            <input id="default-radio-1" type="radio" value="file" v-model="form.popType"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="default-radio-1"
+                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Upload
+                                                File</label>
+
+                                            <input checked id="default-radio-2" type="radio" value="text"
+                                                v-model="form.popType"
+                                                class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="default-radio-2"
+                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Text</label>
+
+                                            <input checked id="default-radio-2" type="radio" value="none"
+                                                v-model="form.popType"
+                                                class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="default-radio-2"
+                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">None</label>
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <div v-if="form.popType == 'file'" class="mb-4 md:col-span-2">
+                                        <jet-label for="description" value="Description" />
+                                        <!-- <div class="text-mute text-sm mb-1">
+                                            Upload Delivery Note
+                                        </div> -->
+                                        <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                                            accept="image/*, .pdf"
+                                            class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
+                                        <div class="text-red-500 text-xs" v-if="form.errors.photo">Required
+                                        </div>
+                                    </div>
+                                    <div v-else-if="form.popType == 'text'" class="mb-4 md:col-span-2">
+                                        <jet-label for="description" value="Enter Text" />
+                                        <textarea
+                                            class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                                            v-model="form.popDescription"></textarea>
+                                    </div>
+
+
+
+                                </template>
+
+                                <template #footer>
+                                    <secondary-button @click.native="popDialog = false">
+                                        Cancel
+                                    </secondary-button>
+
+                                    <primary-button v-if="popValidation" class="ml-2" @click.native="addPoP">
+                                        <svg v-show="form.processing" role="status"
+                                            class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101"
+                                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                fill="#E5E7EB" />
+                                            <path
+                                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                fill="currentColor" />
+                                        </svg>
+                                        Proceed
+                                    </primary-button>
+                                </template>
+                            </dialog-modal>
+
+                            <dialog-modal :show="attachmentDialog" @close="attachmentDialog = false">
+
+                                <template #content>
+                                    <div v-if="attachmentType === 'pdf'">
+                                        <pdf class="w-full mb-4" :source="fileUrl(selectedPop.file)" />
+                                        <a :href="fileUrl(selectedPop.file)" target="_blank">
+                                            <primary-button @click.native="attachmentDialog = false">
+                                                Print
+                                            </primary-button>
+                                        </a>
+                                    </div>
+                                    <div
+                                        v-else-if="attachmentType == 'jpg' || attachmentType == 'png' || attachmentType == 'jpeg'">
+                                        <img class="w-full mb-4" :src="fileUrl(selectedPop.file)" alt="PoP Image">
+
+                                        <a :href="fileUrl(selectedPop.file)" target="_blank">
+                                            <primary-button @click.native="attachmentDialog = false">
+                                                Print
+                                            </primary-button>
+                                        </a>
+                                    </div>
+                                    <div v-else-if="attachmentType == 'text'">
+                                        <div>
+                                            {{ selectedPop.description }}
+                                        </div>
+                                    </div>
+                                    <div v-else>
+                                        <div>
+                                            No details
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <template #footer>
+                                    <secondary-button @click.native="attachmentDialog = false">
+                                        close
+                                    </secondary-button>
+
+                                </template>
+                            </dialog-modal>
+
+                        </div>
+                    </div>
+
                     <div class="page-section">
                         <div class="page-section-content">
                             <div class="card p-0">
@@ -895,16 +1108,21 @@ export default {
             attachReceiptDialog: false,
             attachmentDialog: false,
             attachmentIndex: null,
-            attachmentType: '',
+            attachmentType: null,
             denyDialog: false,
             deleteDialog: false,
             closeDialog: false,
+            popDialog: false,
             paymentMethodIndex: -1,
             accountIndex: -1,
             backdateCheck: false,
 
             fullPaymentCheck: false,
             date: null,
+
+            selectedPop: null,
+            popDate: null,
+            popMessage: "",
 
             backdateDeliveryCheck: false,
             deliveryDate: null,
@@ -931,6 +1149,14 @@ export default {
                 deliveryMethod: null,
                 waiver: false,
                 receiptCode: "",
+
+                //pop
+
+                popType: null,
+                popDescription: null,
+                popAmount: 0,
+                popFile: null,
+                popPaymentMethodId: null,
 
             }),
             selectedProduct: null,
@@ -994,10 +1220,55 @@ export default {
                     return this.quotes[this.attachmentIndex]
                 else if (this.attachmentType === 'receipt')
                     return this.receipts[this.attachmentIndex]
-
+                else if (this.attachmentType === 'pop')
+                    return this.pops[this.attachmentIndex]
             }
 
             return null
+        },
+        // pops() {
+        //     let data = []
+        //     let split = null
+
+        //     for (let x in this.sale.data.pops) {
+        //         if()
+        //         split = this.sale.data.pops[x].file.split('.')
+        //         data.push({
+        //             file: this.sale.data.pops[x].file,
+        //             ext: split[1]
+        //         })
+        //     }
+        //     return data
+        // },
+        popValidation() {
+            if (this.popDate == null) {
+                this.popMessage = "Enter Date"
+                return false
+            }
+            else if (this.form.popPaymentMethodId == null || this.form.popPaymentMethodId <= 0) {
+                this.popMessage = "Select Payment Method"
+                return false
+            }
+            else if (this.form.popAmount == null || this.form.popAmount <= 0) {
+                this.popMessage = "Enter Amount"
+                return false
+            }
+            else if (this.form.popType == null) {
+                this.popMessage = "Select PoP Type"
+                return false
+            }
+
+            else if (this.form.popType == 'file' && this.form.popFile == null) {
+                this.popMessage = "Upload Photo"
+                return false
+            }
+            else if (this.form.popType == 'text' && (this.form.popDescription == null || this.form.popDescription.length == 0)) {
+                this.popMessage = "Enter Text"
+                return false
+            } else {
+                this.popMessage = ""
+                return true
+            }
         },
         amountValidation() {
             return this.sale.data.balance >= this.receiptAmount;
@@ -1053,6 +1324,23 @@ export default {
                     type: "ORDINARY",
                 }))
                 .post(this.route('receipts.attach', { 'id': this.sale.data.id }), {
+                    preserveScroll: true,
+                    onSuccess: () => this.attachReceiptDialog = false,
+                })
+        },
+        addPoP() {
+            this.form
+                .transform(data => ({
+                    ...data,
+                    amount: this.form.popAmount,
+                    description: this.form.popDescription,
+                    file: this.form.popFile,
+                    type: this.form.popType,
+                    payment_method_id: this.form.popPaymentMethodId,
+                    date: this.getTimestampFromDate(this.popDate),
+
+                }))
+                .post(this.route('sales.add-pop', { 'id': this.sale.data.id }), {
                     preserveScroll: true,
                     onSuccess: () => this.attachReceiptDialog = false,
                 })
@@ -1165,6 +1453,39 @@ export default {
                     preserveScroll: true,
                     onSuccess: () => this.deleteDialog = false,
                 })
+        },
+        displayAttachment(pop) {
+            this.selectedPop = pop
+            this.attachmentDialog = true
+
+            if (pop.file != null) {
+                const split = pop.file.split('.')
+                this.attachmentType = split[1]
+            } else if (pop.description != null) {
+                this.attachmentType = 'text'
+            } else {
+                this.attachmentType = null
+            }
+
+
+        },
+
+        photoUpload(file) {
+            const reader = new FileReader();
+            if (file) {
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+                        type: "PROOF-OF-PAYMENT",
+                        file: e.target.result
+                    }).then(res => {
+                        this.form.popFile = res.data.file
+
+                    }).catch(function (res) {
+                        // this.form.errors.push(res.data.message)
+                    })
+                };
+            }
         },
     }
 }

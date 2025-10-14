@@ -15,6 +15,7 @@ use App\Models\ClientType;
 use App\Models\Delivery;
 use App\Models\Inventory;
 use App\Models\PaymentMethod;
+use App\Models\PaymentReceipt;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Quotation;
@@ -784,6 +785,69 @@ class SaleController extends Controller
             } else {
                 //Web Response
                 return Redirect::route('sales.index', ['section' => 'tabular'])->with('success', 'Sale has been closed');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Sale not found');
+            }
+        }
+    }
+
+    public function addPoP(Request $request, $id)
+    {
+        $request->validate([
+            'date' => ['required'],
+            'amount' => ['required'],
+            'type' => ['required'],
+            'payment_method_id' => ['required'],
+        ]);
+
+        //find out if the request is valid
+        $sale = sale::find($id);
+
+        if (is_object($sale)) {
+
+            switch ($request->type) {
+                case 'file':
+                    $request->validate([
+                        'file' => ['required'],
+                    ]);
+                    break;
+                case 'text':
+                    $request->validate([
+                        'description' => ['required'],
+                    ]);
+            }
+
+            PaymentReceipt::create([
+                'date' => $request->date,
+                'amount' => $request->amount,
+                'file' => $request->file,
+                'description' => $request->description,
+                'payment_method_id' => $request->payment_method_id,
+                'sale_id' => $sale->id,
+                'user_id' => Auth::id(),
+            ]);
+
+             (new NotificationController())->notifyAccounts(
+                $sale,
+                "proof_of_payment",
+                amount: $request->amount
+            );
+
+            //send whatsapp notification
+            // (new NotificationController())->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number:"265997748584", amount: $request->amount);
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => 'Proof of Payment Added!']);
+            } else {
+                //Web Response
+                return Redirect::route('sales.index', ['section' => 'tabular'])->with('success', 'Proof of Payment Added!');
             }
         } else {
             if ((new AppController())->isApi($request)) {

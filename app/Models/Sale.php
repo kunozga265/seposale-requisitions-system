@@ -33,6 +33,11 @@ class Sale extends Model
         return $this->hasMany(Receipt::class);
     }
 
+    public function pops()
+    {
+        return $this->hasMany(PaymentReceipt::class);
+    }
+
     public function expense()
     {
         return $this->hasOne(Expense::class);

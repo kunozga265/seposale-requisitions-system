@@ -36,19 +36,19 @@ use Google;
 class NotificationController extends Controller
 {
     private $credentials = [
-       
-           "type"=> "service_account",
-  "project_id"=> "seposale-fdbdc",
-  "private_key_id"=> "4c6cd87321cf6f967a997ccc371173ac43bc958b",
-  "private_key"=> "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDdE91LOMrxByCL\ngJQI/wcLk7oPKyXdx66YPXNhtIi2eWYBRJzE/HCm21cC+0538EIOrXGDCXxIXJOy\nKAP8dOLLub3KS1efKXl6AF71Ing9kxj7lOo4mRxrz01/poqHnJpzNh2ayW9CXcm+\nn6C59IVJwsdj6ktTgNeurCg6uH0NLo5yddcurEU9aJ6CGd6sf9N+vM6hI/8+ZGBh\nN6Kd6aj6CbRRtHYt2sXrF0KJ9kpfs4QaYFJKkBgut0+FhG7JK8CZo+KT9bg/H+se\nhY4TYv8JrIkJlWCC0uuywx99IBuLqaq2eCBXIHAZ2nXym2oY4WfP1ChQYbYgcGw6\nZbomi515AgMBAAECggEAV+U17lo+FWYIAm60bH84hdnN94noHCzvtYd5ADeOwz2w\n2IA28/qJr001YvIXWIglO0CqCLcUupBUCFjwfMbcBLNsSal6xMTwjxjmp/90XsbF\nAAFMvgPh0NsyrLXCDfitT3EMhCXiHji7pRZCCKy28YSHUaotGJ35InE/7Vi8HyjO\nEPOTzlKqyjdETxD9zf98eEL86LGfDFwJtosO1/B0SeokNqOpOaqVQTu0x4ElDjec\npzQpQsJ4jVuwOk/+lHR/Urwjp1WQwfUi+54Eh6z3UGzg3JGaIyi+7iy8yq2JIgUq\n4Pz5DysRmUlHurytDUu4k88vMC5Uz6COCuFwxQ62oQKBgQD4bQntmodJJRCL5X2o\n5qJGXrwvivBQV56J0MhziHLccrL/oKhU+DW934toHp04/NqNtTKcpz54hfuawD7H\nLfao+0UHjn1QIenGjl0+8U4AgjYsm47YQ6H+HadZq8p1oKuSGYGtkGt7xoAIww/P\nSYQc1f8L+0GvtLmOTTjbuE2CDwKBgQDj0V9KKMq9t6VZ1vU3RrekUIEAwBIfojQN\n34meglT1nPgXAy+AQ1y65qxpwQrQ8MDN2Wt8COlyOuMv4LOHViqZ8eNkEMbZOV73\nXFmrHiMm9ISTMyFE1wSTwNpFE6ZpUl5BHDeqip2uaE+l+VjArQI3aL1D8//8YUlS\nTJnFw9fP9wKBgQDrVE9tV08EiSntfA3Xa/MY+jEGUHVphjbWkoLwfrdgAP9zjDsp\nkp9GKHckwKtrCov2ZUl2gC97eGBpredKQ04/sRcpG1+2AwozXzURpQChFrg+9XUR\nhK/1yx12onf9iaA9nA/t3LsU22r54d4eHKQbtNQQA4mr6mVEWf6clTBHHQKBgEr/\nl1YrnardNVMhH/MFldlDI2Ti1lSRqn9SstR65YtCFK5GvzGDe5iP7fyWr3/fcimS\nRP89U9TmK/qMB64rILUzW3+KwluqtmfKgD6EGmBtqONotrAZ9QjLOU/6SxNrKVpX\n9r9vCL/s2SOztZMgoZUqJvyi7Afi4ydzzj+73GU7AoGAHHUo/ccpb6pAKpqxT99r\n9QvEtVfXx1Bpx8EutBTjJvXPwJxUxz+4TuwVo69iFO9m9KMu/z3+JCl/wuUyewQ2\nhOPSlYgcE1tFQc2cf+E+2oseUypHqOXMhuMa8Botb9sMZitXxnXmKPqKy465JWPY\nu0OozMt7Wt4KuGO9tRV7xEM=\n-----END PRIVATE KEY-----\n",
-  "client_email"=> "firebase-adminsdk-fbsvc@seposale-fdbdc.iam.gserviceaccount.com",
-  "client_id"=> "107446959849143819633",
-  "auth_uri"=> "https://accounts.google.com/o/oauth2/auth",
-  "token_uri"=> "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url"=> "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url"=> "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40seposale-fdbdc.iam.gserviceaccount.com",
-  "universe_domain"=> "googleapis.com"
-      
+
+        "type" => "service_account",
+        "project_id" => "seposale-fdbdc",
+        "private_key_id" => "4c6cd87321cf6f967a997ccc371173ac43bc958b",
+        "private_key" => "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDdE91LOMrxByCL\ngJQI/wcLk7oPKyXdx66YPXNhtIi2eWYBRJzE/HCm21cC+0538EIOrXGDCXxIXJOy\nKAP8dOLLub3KS1efKXl6AF71Ing9kxj7lOo4mRxrz01/poqHnJpzNh2ayW9CXcm+\nn6C59IVJwsdj6ktTgNeurCg6uH0NLo5yddcurEU9aJ6CGd6sf9N+vM6hI/8+ZGBh\nN6Kd6aj6CbRRtHYt2sXrF0KJ9kpfs4QaYFJKkBgut0+FhG7JK8CZo+KT9bg/H+se\nhY4TYv8JrIkJlWCC0uuywx99IBuLqaq2eCBXIHAZ2nXym2oY4WfP1ChQYbYgcGw6\nZbomi515AgMBAAECggEAV+U17lo+FWYIAm60bH84hdnN94noHCzvtYd5ADeOwz2w\n2IA28/qJr001YvIXWIglO0CqCLcUupBUCFjwfMbcBLNsSal6xMTwjxjmp/90XsbF\nAAFMvgPh0NsyrLXCDfitT3EMhCXiHji7pRZCCKy28YSHUaotGJ35InE/7Vi8HyjO\nEPOTzlKqyjdETxD9zf98eEL86LGfDFwJtosO1/B0SeokNqOpOaqVQTu0x4ElDjec\npzQpQsJ4jVuwOk/+lHR/Urwjp1WQwfUi+54Eh6z3UGzg3JGaIyi+7iy8yq2JIgUq\n4Pz5DysRmUlHurytDUu4k88vMC5Uz6COCuFwxQ62oQKBgQD4bQntmodJJRCL5X2o\n5qJGXrwvivBQV56J0MhziHLccrL/oKhU+DW934toHp04/NqNtTKcpz54hfuawD7H\nLfao+0UHjn1QIenGjl0+8U4AgjYsm47YQ6H+HadZq8p1oKuSGYGtkGt7xoAIww/P\nSYQc1f8L+0GvtLmOTTjbuE2CDwKBgQDj0V9KKMq9t6VZ1vU3RrekUIEAwBIfojQN\n34meglT1nPgXAy+AQ1y65qxpwQrQ8MDN2Wt8COlyOuMv4LOHViqZ8eNkEMbZOV73\nXFmrHiMm9ISTMyFE1wSTwNpFE6ZpUl5BHDeqip2uaE+l+VjArQI3aL1D8//8YUlS\nTJnFw9fP9wKBgQDrVE9tV08EiSntfA3Xa/MY+jEGUHVphjbWkoLwfrdgAP9zjDsp\nkp9GKHckwKtrCov2ZUl2gC97eGBpredKQ04/sRcpG1+2AwozXzURpQChFrg+9XUR\nhK/1yx12onf9iaA9nA/t3LsU22r54d4eHKQbtNQQA4mr6mVEWf6clTBHHQKBgEr/\nl1YrnardNVMhH/MFldlDI2Ti1lSRqn9SstR65YtCFK5GvzGDe5iP7fyWr3/fcimS\nRP89U9TmK/qMB64rILUzW3+KwluqtmfKgD6EGmBtqONotrAZ9QjLOU/6SxNrKVpX\n9r9vCL/s2SOztZMgoZUqJvyi7Afi4ydzzj+73GU7AoGAHHUo/ccpb6pAKpqxT99r\n9QvEtVfXx1Bpx8EutBTjJvXPwJxUxz+4TuwVo69iFO9m9KMu/z3+JCl/wuUyewQ2\nhOPSlYgcE1tFQc2cf+E+2oseUypHqOXMhuMa8Botb9sMZitXxnXmKPqKy465JWPY\nu0OozMt7Wt4KuGO9tRV7xEM=\n-----END PRIVATE KEY-----\n",
+        "client_email" => "firebase-adminsdk-fbsvc@seposale-fdbdc.iam.gserviceaccount.com",
+        "client_id" => "107446959849143819633",
+        "auth_uri" => "https://accounts.google.com/o/oauth2/auth",
+        "token_uri" => "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url" => "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url" => "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40seposale-fdbdc.iam.gserviceaccount.com",
+        "universe_domain" => "googleapis.com"
+
     ];
 
     public function index(Request $request)
@@ -200,10 +200,8 @@ class NotificationController extends Controller
                 //Mail::to($manager)->send(new RequestFormPendingApprovalMail($manager, $message, $subject));
 
                 //Send a push notification to the app for the manager
-            $this->pushNotification("USER-{$manager->id}", $subject, $message);
+                $this->pushNotification("USER-{$manager->id}", $subject, $message);
             }
-
-            
         } elseif ($type == "REQUEST_FORM_RESUBMITTED") {
             $name = $object->user->firstName . " " . $object->user->lastName;
             $position = $object->user->position;
@@ -224,11 +222,10 @@ class NotificationController extends Controller
 
                 //Send email to manager
                 //Mail::to($manager)->send(new RequestFormPendingApprovalMail($manager, $message, $subject));
-                
+
                 //Send a push notification to the app for the manager
                 $this->pushNotification("USER-{$manager->id}", $subject, $message);
             }
-
         }
     }
 
@@ -435,9 +432,8 @@ class NotificationController extends Controller
                 //Mail::to($accountant)->send(new RequestFormWaitingInitiationMail($accountant, $message, $subject));
 
                 //Send a push notification to the app for the accountant
-                 $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
             }
-
         } elseif ($type == "WAITING_RECONCILE") {
             $title = $requestForm->getFullName();
             $message = "$title has been initiated. Please ensure all required information has been submitted to reconcile this request.";
@@ -457,10 +453,38 @@ class NotificationController extends Controller
 
                 //Send email to accountants
                 //Mail::to($accountant)->send(new RequestFormWaitingReconciliationMail($accountant, $title, $subject));
-     
-                 //Send a push notification to the app for the accountant
-                 $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+
+                //Send a push notification to the app for the accountant
+                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
             }
+        }
+    }
+
+    public function notifyAccounts($object, $type, $amount = null)
+    {
+        $role = Role::where('name', 'accountant')->first();
+        $accountants = $role->users;
+
+
+        if ($type == "proof_of_payment") {
+            $sale = $object;
+
+
+            // $name = $requestForm->user->firstName . " " . $requestForm->user->lastName;
+            $message = "A payment of MK{$amount} has been received from {$sale->client->name}. \nPlease generate a receipt for this order.";
+            $subject = "Proof of Payment";
+
+            foreach ($accountants as $accountant) {
+                error_log($accountant->id);
+
+                //Send email to accountants
+                //Mail::to($accountant)->send(new RequestFormWaitingInitiationMail($accountant, $message, $subject));
+
+                //Send a push notification to the app for the accountant
+                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+            }
+
+            $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
         }
     }
 
@@ -500,11 +524,11 @@ class NotificationController extends Controller
         $token1 = $client->getRefreshToken();
         $token = $client->getAccessToken();
         //        $token = $client->();
-        
 
-     
 
-        $res = $httpClient->request('post','https://fcm.googleapis.com/v1/projects/seposale-fdbdc/messages:send', [
+
+
+        $res = $httpClient->request('post', 'https://fcm.googleapis.com/v1/projects/seposale-fdbdc/messages:send', [
             //            'headers' => [
             //                'Authorization' => 'Bearer AAAAQdj1ZOU:APA91bHbQ6JbhcEoHTyQthEp1j8QjlDUM7ftsFmcMRUvgKuZJBy5-IQQ_6eZZAfJ5fUM1qP60dATN-DiOzM3LcUnjcjR7-vGzE02iC7jCEuJU3GC_qrLXcxyY6P7zy57joaqbytyWj59',
             //                'Content-Type' => 'application/json',
@@ -523,8 +547,6 @@ class NotificationController extends Controller
                 ]
             ]
         ]);
-
-        
     }
 
 
@@ -536,7 +558,7 @@ class NotificationController extends Controller
         ]);
         $check = $this->processWhatsappMessage($request->template, $request->serial);
         if ($check) {
-              if ((new AppController())->isApi($request)) {
+            if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Notification successfully sent!"], 404);
             } else {
@@ -544,7 +566,7 @@ class NotificationController extends Controller
                 return Redirect::back()->with('success', 'Notification successfully sent!');
             }
         } else {
-             if ((new AppController())->isApi($request)) {
+            if ((new AppController())->isApi($request)) {
                 //API Response
                 return response()->json(['message' => "Error! Failed to send the notification."], 404);
             } else {
@@ -588,7 +610,7 @@ class NotificationController extends Controller
      * @param bool $check
      * @return bool
      */
-    public function processWhatsappMessage(string $template, string $serial, string $notify = "", $balance = 0): bool
+    public function processWhatsappMessage(string $template, string $serial, string $notify = "", $balance = 0, $phone_number = null, $amount = 0): bool
     {
         $check = false;
 
@@ -645,6 +667,66 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         "text" => "{$sale->client->serial}/sales/{$sale->serial}"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                $check = $this->pushWhatsappMessage($body);
+                if ($check) {
+                    $sale->update([
+                        "whatsapp" => true
+                    ]);
+                }
+                break;
+
+            case "proof_of_payment":
+                $sale = Sale::where('serial', $serial)->first();
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            // [
+                            //     "type" => "header",
+                            //     "parameters" => [
+                            //         [
+                            //             "type" => "text",
+                            //             //Code
+                            //             "text" => $sale->formattedCode()
+                            //         ]
+                            //     ]
+                            // ],
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Total
+                                        "text" => number_format($amount, 2)
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Client Name
+                                        "text" => $sale->client->getName()
+                                    ],
+                                ]
+                            ],
+                            [
+                                "type" => "button",
+                                "sub_type" => "url",
+                                "index" => "0",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        "text" => "{$sale->id}"
                                     ]
                                 ]
                             ]

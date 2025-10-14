@@ -432,6 +432,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.close');
 
+        Route::post('/proof-of-payment/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@addPoP",
+            'roles' =>['employee','management']
+        ])->name('sales.add-pop');
+
         
 
 

@@ -578,6 +578,7 @@
               </div>
             </div>
           </div>
+         
           <div>
             <div class="page-section">
               <!--                            <div class="page-section-header">-->
@@ -861,6 +862,8 @@ export default {
           return this.quotes[this.attachmentIndex]
         else if (this.attachmentType === 'receipt')
           return this.receipts[this.attachmentIndex]
+        else if (this.attachmentType === 'pop')
+          return this.pops[this.attachmentIndex]
 
       }
 
@@ -891,6 +894,19 @@ export default {
         })
       }
       return receipts
+    },
+    pops() {
+      let data = []
+      let split = null
+
+      for (let x in this.request.data.pops) {
+        split = this.request.data.pops[x].split('.')
+        data.push({
+          file: this.request.data.pops[x],
+          ext: split[1]
+        })
+      }
+      return data
     },
     receiptFiles() {
       let files = []
