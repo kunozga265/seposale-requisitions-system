@@ -174,8 +174,13 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
 
-              Route::post('/from-delivery/{id}', [
+            Route::post('/from-delivery/{id}', [
                 "uses" => "App\Http\Controllers\API\RequestFormController@storeFromDelivery",
+                'roles' => ['employee', 'management']
+            ]);
+
+            Route::post('/proof-of-payment/{id}', [
+                "uses"  => "App\Http\Controllers\SaleController@addPoP",
                 'roles' => ['employee', 'management']
             ]);
         });
@@ -213,7 +218,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
 
-             Route::post('/generate-sale/{id}', [
+            Route::post('/generate-sale/{id}', [
                 "uses"  => "App\Http\Controllers\SaleController@storeFromQuotation",
                 'roles' => ['employee', 'management']
             ]);
@@ -285,8 +290,6 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses"  => "App\Http\Controllers\SaleController@print",
                 'roles' => ['employee', 'management']
             ])->name('sales.print');
-
-           
         });
 
         Route::group(['prefix' => 'deliveries'], function () {
@@ -306,7 +309,6 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\DeliveryController@getRequisitions",
                 'roles' => ['employee', 'management']
             ]);
-          
         });
 
         Route::group(['prefix' => 'collections'], function () {

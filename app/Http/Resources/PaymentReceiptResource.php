@@ -15,12 +15,16 @@ class PaymentReceiptResource extends JsonResource
      */
     public function toArray($request)
     {
+
+
+
         return [
             'date' => intval($this->date),
             'amount' => floatval($this->amount),
             // 'path' => $this->path,
             'description' => $this->description,
             'file' => $this->file,
+            'type' => $this->getType(),
             'paymentMethod' => $this->paymentMethod,
             'active' => $this->active == 1,
             'sale' => $this->sale != null ? [
