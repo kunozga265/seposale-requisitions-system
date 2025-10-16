@@ -179,10 +179,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
 
-            Route::post('/proof-of-payment/{id}', [
-                "uses"  => "App\Http\Controllers\SaleController@addPoP",
-                'roles' => ['employee', 'management']
-            ]);
+            
         });
 
 
@@ -290,6 +287,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses"  => "App\Http\Controllers\SaleController@print",
                 'roles' => ['employee', 'management']
             ])->name('sales.print');
+
+            Route::post('/proof-of-payment/{id}', [
+                "uses"  => "App\Http\Controllers\SaleController@addPoP",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
         Route::group(['prefix' => 'deliveries'], function () {
