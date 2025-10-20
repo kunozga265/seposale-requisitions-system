@@ -312,6 +312,31 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
         });
+        Route::group(['prefix' => 'deliveries'], function () {
+            Route::get('/', [
+                "uses" => "App\Http\Controllers\API\DeliveryController@index",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::get('/show/{id}', [
+                "uses" => "App\Http\Controllers\API\DeliveryController@show",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::post('/update/{id}', [
+                "uses" => "App\Http\Controllers\DeliveryController@update",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::get('/request-forms/{id}', [
+                "uses" => "App\Http\Controllers\API\DeliveryController@getRequisitions",
+                'roles' => ['employee', 'management']
+            ]);
+        });
+        Route::group(['prefix' => 'operations'], function () {
+            Route::post('/transporters/store', [
+            "uses"  => "App\Http\Controllers\TransporterController@store",
+            'roles' => ['employee','management']
+        ]);
+
+        });
 
         Route::group(['prefix' => 'collections'], function () {
             Route::post('/store/{id}', [
