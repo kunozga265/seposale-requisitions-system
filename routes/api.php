@@ -178,8 +178,6 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\RequestFormController@storeFromDelivery",
                 'roles' => ['employee', 'management']
             ]);
-
-            
         });
 
 
@@ -332,10 +330,13 @@ Route::group(['prefix' => '1.0.0'], function () {
         });
         Route::group(['prefix' => 'operations'], function () {
             Route::post('/transporters/store', [
-            "uses"  => "App\Http\Controllers\TransporterController@store",
-            'roles' => ['employee','management']
-        ]);
-
+                "uses"  => "App\Http\Controllers\TransporterController@store",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::post('/suppliers/store', [
+                "uses"  => "App\Http\Controllers\SupplierController@store",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
         Route::group(['prefix' => 'collections'], function () {
