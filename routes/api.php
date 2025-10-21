@@ -361,9 +361,14 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses"  => "App\Http\Controllers\SiteController@sales",
                 'roles' => ['employee', 'management']
             ]);
-            
+
             Route::get('/{code}/collections', [
                 "uses"  => "App\Http\Controllers\SiteController@collections",
+                'roles' => ['employee', 'management']
+            ]);
+
+            Route::post('/{code}/collections/{id}/cancel', [
+                "uses" => "App\Http\Controllers\CollectionController@cancel",
                 'roles' => ['employee', 'management']
             ]);
         });

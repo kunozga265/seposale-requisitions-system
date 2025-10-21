@@ -557,7 +557,13 @@ class CollectionController extends Controller
                     "site_sale_id" => $summary->sale->id,
                 ]);
 
-                return Redirect::back()->with('success', 'Delivery cancelled successfully');
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => "Delivery cancelled successfully"], 200);
+                } else {
+                    //Web Response
+                    return Redirect::back()->with('success', 'Delivery cancelled successfully');
+                }
             }
         } else {
             if ((new AppController())->isApi($request)) {
