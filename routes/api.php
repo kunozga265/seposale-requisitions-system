@@ -348,7 +348,7 @@ Route::group(['prefix' => '1.0.0'], function () {
 
         Route::group(['prefix' => 'sites'], function () {
             Route::get('/{code}/daily-reports/latest', [
-                "uses"  => "App\Http\Controllers\SiteController@printReport",
+                "uses"  => "App\Http\Controllers\API\SiteController@printReport",
                 'roles' => ['employee', 'management']
             ]);
 
@@ -358,12 +358,12 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
 
             Route::get('/{code}/sales', [
-                "uses"  => "App\Http\Controllers\SiteController@sales",
+                "uses"  => "App\Http\Controllers\API\SiteController@sales",
                 'roles' => ['employee', 'management']
             ]);
 
             Route::get('/{code}/collections', [
-                "uses"  => "App\Http\Controllers\SiteController@collections",
+                "uses"  => "App\Http\Controllers\API\SiteController@collections",
                 'roles' => ['employee', 'management']
             ]);
 
