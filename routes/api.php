@@ -345,5 +345,27 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
         });
+
+        Route::group(['prefix' => 'sites'], function () {
+            Route::get('/{code}/daily-reports/latest', [
+                "uses"  => "App\Http\Controllers\SiteController@printReport",
+                'roles' => ['employee', 'management']
+            ]);
+
+            Route::get('/{code}/daily-reports/print/{id}', [
+                "uses"  => "App\Http\Controllers\InventorySummaryController@print",
+                'roles' => ['employee', 'management']
+            ]);
+
+            Route::get('/{code}/sales', [
+                "uses"  => "App\Http\Controllers\SiteController@sales",
+                'roles' => ['employee', 'management']
+            ]);
+            
+            Route::get('/{code}/collections', [
+                "uses"  => "App\Http\Controllers\SiteController@collections",
+                'roles' => ['employee', 'management']
+            ]);
+        });
     });
 });
