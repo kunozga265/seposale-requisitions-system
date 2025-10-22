@@ -35,8 +35,8 @@ class SiteSaleController extends Controller
             $sale = SiteSale::withTrashed()->find($id);
             $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
             $accounts = AccountingAccount::where('special_type', 'WALLET')
-            ->orderBy('name', 'asc')
-            ->get();
+                ->orderBy('name', 'asc')
+                ->get();
 
             if (is_object($sale)) {
                 if ((new AppController())->isApi($request)) {
@@ -77,12 +77,12 @@ class SiteSaleController extends Controller
         if (is_object($site)) {
             $products = $site->inventories()->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
-             $types = ClientType::orderBy("name","asc")->get();
+            $types = ClientType::orderBy("name", "asc")->get();
             $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
             return Inertia::render('SiteSales/Create', [
                 "products" => InventoryResource::collection($products),
                 "clients" => ClientResource::collection($clients),
-                 "clientTypes" => $types,
+                "clientTypes" => $types,
                 'paymentMethods' => $payment_methods,
                 "site" => $site,
             ]);
@@ -139,60 +139,72 @@ class SiteSaleController extends Controller
 
 
 
-        $sale = Cache::lock($user->id . ':sites.sales:store', 10)->get(function () use ($site, $user, $request) {
+        //Validate all the important attributes
+        $request->validate([
+            'products' => ['required'],
+            'total' => ['required'],
+            'payment_method_id' => ['required'],
+        ]);
 
-            //Validate all the important attributes
+        //get client info
+        if (isset($request->client_id)) {
             $request->validate([
-                'products' => ['required'],
-                'total' => ['required'],
-                'payment_method_id' => ['required'],
+                'client_id' => ['required'],
             ]);
 
-            //get client info
-            if (isset($request->client_id)) {
-                $request->validate([
-                    'client_id' => ['required'],
-                ]);
-
-                $client = Client::find($request->client_id);
-                if (!is_object($client)) {
-                    if ((new AppController())->isApi($request)) {
-                        //API Response
-                        return response()->json(['message' => "Client not found"], 404);
-                    } else {
-                        //Web Response
-                        return Redirect::back()->with('error', 'Client not found');
-                    }
-                }
-            } else {
-               $request->validate([
-                    'name' => ['required'],
-                    'client_type_id' => ['required'],
-                ]);
-
-                if ($request->client_type_id == 0) {
-                    $request->validate([
-                        'client_type' => ['required'],
-                    ]);
-                    $client_type_id = ClientType::create([
-                        "name" => ucwords($request->client_type)
-                    ])->id;
+            $client = Client::find($request->client_id);
+            if (!is_object($client)) {
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => "Client not found"], 404);
                 } else {
-                    $client_type_id = $request->client_type_id;
+                    //Web Response
+                    return Redirect::back()->with('error', 'Client not found');
                 }
-
-                $client = Client::create([
-                    'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                    'name' => $request->name,
-                    'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
-                    'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
-                    'email' => $request->email,
-                    'address' => $request->address,
-                    'organisation' => $request->organisation,
-                    'alias' => $request->alias,
-                     'client_type_id' => $client_type_id,
-                ]);
             }
+        } else {
+            $request->validate([
+                'name' => ['required'],
+                'client_type_id' => ['required'],
+                'phoneNumber' => ['required'],
+            ]);
+
+            if ($request->client_type_id == 0) {
+                $request->validate([
+                    'client_type' => ['required'],
+                ]);
+                $client_type_id = ClientType::create([
+                    "name" => ucwords($request->client_type)
+                ])->id;
+            } else {
+                $client_type_id = $request->client_type_id;
+            }
+
+            if (Client::where("phone_number", $request->phoneNumber)->exists()) {
+                $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
+                else {
+                    //Web Response
+                    return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
+                }
+            }
+
+
+            $client = Client::create([
+                'serial' => (new AppController())->generateUniqueCode("CLIENT"),
+                'name' => $request->name,
+                'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+                'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
+                'email' => $request->email,
+                'address' => $request->address,
+                'organisation' => $request->organisation,
+                'alias' => $request->alias,
+                'client_type_id' => $client_type_id,
+            ]);
+        }
+        $sale = Cache::lock($user->id . ':sites.sales:store', 10)->get(function () use ($site, $user, $request, $client) {
 
             $inventorySummary = (new InventorySummaryController())->getSummary($site->id);
 
@@ -273,14 +285,14 @@ class SiteSaleController extends Controller
         $amount = $request->amount;
         $paid = $summary->amount - $summary->balance;
 
-        if($amount == $summary->amount){
+        if ($amount == $summary->amount) {
             $quantity = $summary->quantity;
             $balance = $summary->balance;
-        }else{
-             $quantity = round($amount / $summary->cost());
+        } else {
+            $quantity = round($amount / $summary->cost());
             $balance = $amount - $paid;
         }
-      
+
 
         $siteSaleSummary = Cache::lock(Auth::id() . ':sites.sales:store-from-sale', 10)->get(function () use ($summary, $inventory, $quantity, $amount, $balance) {
 
@@ -327,7 +339,7 @@ class SiteSaleController extends Controller
 
             //attach financials
             foreach ($summary->receiptSummaries as $receiptSummary) {
-             
+
                 $receiptSummary->update([
                     "site_sale_summary_id" => $siteSaleSummary->id,
                 ]);
@@ -416,7 +428,7 @@ class SiteSaleController extends Controller
         }
     }
 
-     public function destroy(Request $request, $id)
+    public function destroy(Request $request, $id)
     {
         //find out if the request is valid
         $sale = SiteSale::find($id);
@@ -442,7 +454,7 @@ class SiteSaleController extends Controller
                 return response()->json(['message' => 'Sale has been deleted']);
             } else {
                 //Web Response
-                return Redirect::route('sites.inventories.show', ['code' => $sale->site->code, "id"=> $sale->inventorySummary->id])->with('success', 'Sale has been deleted');
+                return Redirect::route('sites.inventories.show', ['code' => $sale->site->code, "id" => $sale->inventorySummary->id])->with('success', 'Sale has been deleted');
             }
         } else {
             if ((new AppController())->isApi($request)) {

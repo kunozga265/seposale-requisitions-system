@@ -174,59 +174,70 @@ class SaleController extends Controller
         //get user
         $user = (new AppController())->getAuthUser($request);
 
-        $sale = Cache::lock($user->id . ':sales:store', 10)->get(function () use ($user, $request) {
+        //Validate all the important attributes
+        $request->validate([
+            'products' => ['required'],
+            'total' => ['required'],
+        ]);
 
-            //Validate all the important attributes
+        //get client info
+        if (isset($request->client_id)) {
             $request->validate([
-                'products' => ['required'],
-                'total' => ['required'],
+                'client_id' => ['required'],
             ]);
 
-            //get client info
-            if (isset($request->client_id)) {
-                $request->validate([
-                    'client_id' => ['required'],
-                ]);
-
-                $client = Client::find($request->client_id);
-                if (!is_object($client)) {
-                    if ((new AppController())->isApi($request)) {
-                        //API Response
-                        return response()->json(['message' => "Client not found"], 404);
-                    } else {
-                        //Web Response
-                        return Redirect::back()->with('error', 'Client not found');
-                    }
-                }
-            } else {
-                $request->validate([
-                    'name' => ['required'],
-                    'client_type_id' => ['required'],
-                ]);
-
-                if ($request->client_type_id == 0) {
-                    $request->validate([
-                        'client_type' => ['required'],
-                    ]);
-                    $client_type_id = ClientType::create([
-                        "name" => ucwords($request->client_type)
-                    ])->id;
+            $client = Client::find($request->client_id);
+            if (!is_object($client)) {
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => "Client not found"], 404);
                 } else {
-                    $client_type_id = $request->client_type_id;
+                    //Web Response
+                    return Redirect::back()->with('error', 'Client not found');
                 }
-
-                $client = Client::create([
-                    'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                    'name' => $request->name,
-                    'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
-                    'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
-                    'email' => $request->email,
-                    'address' => $request->address,
-                    'organisation' => $request->organisation,
-                    'alias' => $request->alias,
-                    'client_type_id' => $client_type_id,
-                ]);
             }
+        } else {
+            $request->validate([
+                'name' => ['required'],
+                'client_type_id' => ['required'],
+                'phoneNumber' => ['required'],
+            ]);
+
+            if ($request->client_type_id == 0) {
+                $request->validate([
+                    'client_type' => ['required'],
+                ]);
+                $client_type_id = ClientType::create([
+                    "name" => ucwords($request->client_type)
+                ])->id;
+            } else {
+                $client_type_id = $request->client_type_id;
+            }
+            if (Client::where("phone_number", $request->phoneNumber)->exists()) {
+                $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
+                else {
+                    //Web Response
+                    return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
+                }
+            }
+
+            $client = Client::create([
+                'serial' => (new AppController())->generateUniqueCode("CLIENT"),
+                'name' => $request->name,
+                'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+                'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
+                'email' => $request->email,
+                'address' => $request->address,
+                'organisation' => $request->organisation,
+                'alias' => $request->alias,
+                'client_type_id' => $client_type_id,
+            ]);
+        }
+        $sale = Cache::lock($user->id . ':sales:store', 10)->get(function () use ($user, $request, $client) {
+
 
 
             $sale = Sale::create([
@@ -562,59 +573,70 @@ class SaleController extends Controller
 
         if (is_object($sale)) {
 
-            Cache::lock($user->id . ':sales:update', 10)->get(function () use ($user, $request, $sale) {
+            //Validate all the important attributes
+            $request->validate([
+                'products' => ['required'],
+                'total' => ['required'],
+            ]);
 
-                //Validate all the important attributes
+            //get client info
+            if (isset($request->client_id)) {
                 $request->validate([
-                    'products' => ['required'],
-                    'total' => ['required'],
+                    'client_id' => ['required'],
                 ]);
 
-                //get client info
-                if (isset($request->client_id)) {
-                    $request->validate([
-                        'client_id' => ['required'],
-                    ]);
-
-                    $client = Client::find($request->client_id);
-                    if (!is_object($client)) {
-                        if ((new AppController())->isApi($request)) {
-                            //API Response
-                            return response()->json(['message' => "Client not found"], 404);
-                        } else {
-                            //Web Response
-                            return Redirect::back()->with('error', 'Client not found');
-                        }
-                    }
-                } else {
-                    $request->validate([
-                        'name' => ['required'],
-                        'client_type_id' => ['required'],
-                    ]);
-
-                    if ($request->client_type_id == 0) {
-                        $request->validate([
-                            'client_type' => ['required'],
-                        ]);
-                        $client_type_id = ClientType::create([
-                            "name" => ucwords($request->client_type)
-                        ])->id;
+                $client = Client::find($request->client_id);
+                if (!is_object($client)) {
+                    if ((new AppController())->isApi($request)) {
+                        //API Response
+                        return response()->json(['message' => "Client not found"], 404);
                     } else {
-                        $client_type_id = $request->client_type_id;
+                        //Web Response
+                        return Redirect::back()->with('error', 'Client not found');
                     }
-
-                    $client = Client::create([
-                        'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                        'name' => $request->name,
-                        'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
-                        'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
-                        'email' => $request->email,
-                        'address' => $request->address,
-                        'organisation' => $request->organisation,
-                        'alias' => $request->alias,
-                        'client_type_id' => $client_type_id,
-                    ]);
                 }
+            } else {
+                $request->validate([
+                    'name' => ['required'],
+                    'client_type_id' => ['required'],
+                    'phoneNumber' => ['required'],
+                ]);
+
+                if ($request->client_type_id == 0) {
+                    $request->validate([
+                        'client_type' => ['required'],
+                    ]);
+                    $client_type_id = ClientType::create([
+                        "name" => ucwords($request->client_type)
+                    ])->id;
+                } else {
+                    $client_type_id = $request->client_type_id;
+                }
+                if (Client::where("phone_number", $request->phoneNumber)->exists()) {
+                    $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
+                    if ((new AppController())->isApi($request))
+                        //API Response
+                        return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
+                    else {
+                        //Web Response
+                        return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
+                    }
+                }
+
+                $client = Client::create([
+                    'serial' => (new AppController())->generateUniqueCode("CLIENT"),
+                    'name' => $request->name,
+                    'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+                    'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
+                    'email' => $request->email,
+                    'address' => $request->address,
+                    'organisation' => $request->organisation,
+                    'alias' => $request->alias,
+                    'client_type_id' => $client_type_id,
+                ]);
+            }
+            Cache::lock($user->id . ':sales:update', 10)->get(function () use ($client, $request, $sale) {
+
 
                 $sale->update([
                     'client_id' => $client->id,
@@ -833,7 +855,7 @@ class SaleController extends Controller
                 'user_id' => Auth::id(),
             ]);
 
-             (new NotificationController())->notifyAccounts(
+            (new NotificationController())->notifyAccounts(
                 $sale,
                 "proof_of_payment",
                 amount: $request->amount

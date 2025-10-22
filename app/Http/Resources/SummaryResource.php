@@ -38,14 +38,14 @@ class SummaryResource extends JsonResource
             "delivery" => $this->delivery != null ? [
                 "id" => intval($this->delivery->id),
                 "status" => intval($this->delivery->status),
-               "code" => (new AppController())->getZeroedNumber($this->delivery->code),
+                "code" => (new AppController())->getZeroedNumber($this->delivery->code),
             ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
             "status" => intval($this->status),
             "siteSaleSummary" => new SiteSaleSummaryResource($this->siteSaleSummary),
             "sale" => [
-                 "id" => intval($this->sale->id),
-                 'code' => "LL".(new AppController())->getZeroedNumber($this->sale->code_alt),
+                "id" => intval($this->sale->id),
+                'code' => "LL" . (new AppController())->getZeroedNumber($this->sale->code_alt),
             ],
             'profit' => floatval($this->profit()),
         ];

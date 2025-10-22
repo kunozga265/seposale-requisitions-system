@@ -97,6 +97,7 @@ class QuotationController extends Controller
             $request->validate([
                 'name' => ['required'],
                 'client_type_id' => ['required'],
+                'phoneNumber' => ['required'],
             ]);
 
             if ($request->client_type_id == 0) {
@@ -108,6 +109,17 @@ class QuotationController extends Controller
                 ])->id;
             } else {
                 $client_type_id = $request->client_type_id;
+            }
+
+            if (Client::where("phone_number", $request->phoneNumber)->exists()) {
+                $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
+                else {
+                    //Web Response
+                    return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
+                }
             }
 
             $client = Client::create([
@@ -241,6 +253,7 @@ class QuotationController extends Controller
                 $request->validate([
                     'name' => ['required'],
                     'client_type_id' => ['required'],
+                    'phoneNumber' => ['required'],
                 ]);
 
                 if ($request->client_type_id == 0) {
@@ -252,6 +265,17 @@ class QuotationController extends Controller
                     ])->id;
                 } else {
                     $client_type_id = $request->client_type_id;
+                }
+
+                if (Client::where("phone_number", $request->phoneNumber)->exists()) {
+                    $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
+                    if ((new AppController())->isApi($request))
+                        //API Response
+                        return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
+                    else {
+                        //Web Response
+                        return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
+                    }
                 }
 
                 $client = Client::create([
