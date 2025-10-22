@@ -275,6 +275,8 @@ class InventoryController extends Controller
                 'available_stock' => $availableStock
             ]);
 
+            return response()->json(new InventoryResource($inventory), 201);
+
             Batch::create([
                 "date" => $request->date,
                 "ready_date" => $request->date,

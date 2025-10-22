@@ -371,6 +371,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\CollectionController@cancel",
                 'roles' => ['employee', 'management']
             ]);
+
+            Route::post('/{code}/add-stock', [
+                "uses"  => "App\Http\Controllers\InventoryController@update",
+                'roles' => ['employee', 'management']
+            ]);
         });
     });
 });
