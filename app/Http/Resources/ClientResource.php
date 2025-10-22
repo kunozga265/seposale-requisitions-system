@@ -24,7 +24,7 @@ class ClientResource extends JsonResource
             "organisation" => intval($this->organisation) == 1,
             "alias" => $this->alias,
             "type" => $this->type,
-            "sales" => SaleResource::collection($this->sales),
+            // "sales" => SaleResource::collection($this->sales),
 //            "quotations" => QuotationResource::collection($this->sales),
         ];
 
