@@ -882,6 +882,39 @@ class SaleController extends Controller
         }
     }
 
+    public function attachPurchaseOrder(Request $request, $id)
+    {
+        $request->validate([
+            'local_purchase_order' => ['required'],
+        ]);
+
+        //find out if the request is valid
+        $sale = sale::find($id);
+
+        if (is_object($sale)) {
+
+            $sale->update([
+                'local_purchase_order' => $request->local_purchase_order,
+            ]);
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => 'Local purchase order attached!']);
+            } else {
+                //Web Response
+                return Redirect::back()->with('success', 'Local purchase order attached!');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Sale not found');
+            }
+        }
+    }
+
     public function print(Request $request, $id)
     {
         //find out if the request is valid

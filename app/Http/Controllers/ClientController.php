@@ -11,6 +11,12 @@ use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\Client;
 use App\Models\ClientType;
+use App\Models\Sale;
+use App\Models\Receipt;
+use App\Models\Invoice;
+use App\Models\Quotation;
+use App\Models\SiteSale;
+use App\Models\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -146,6 +152,94 @@ class ClientController extends Controller
             ]);
         } else {
             return Redirect::back()->with('error', 'Client not found');
+        }
+    }
+    public function merge(Request $request)
+    {
+
+        $ids = [];
+        if ($request->query('ids') != null) {
+            $ids = $request->query('ids');
+        }
+
+        if (count($ids) <= 0) {
+
+            return Redirect::back()->with('error', 'Clients to merge not found');
+        }
+
+        $clients = Client::whereIn('id', $ids)->get();
+
+        $types = ClientType::orderBy("name", "asc")->get();
+        return Inertia::render('Clients/Merge', [
+            'clients' => $clients,
+            "clientTypes" => $types
+        ]);
+    }
+
+      public function mergeList(Request $request)
+    {
+
+        $request->validate([
+            'ids' => ['required'],
+            'name' => ['required'],
+            'phoneNumber' => ['required'],
+            'client_type_id' => ['required'],
+        ]);
+
+        if ($request->client_type_id == 0) {
+            $request->validate([
+                'client_type' => ['required'],
+            ]);
+            $client_type_id = ClientType::create([
+                "name" => ucwords($request->client_type)
+            ])->id;
+        } else {
+            $client_type_id = $request->client_type_id;
+        }
+
+        $client = Client::create([
+            'serial' => (new AppController())->generateUniqueCode("CLIENT"),
+            'name' => ucwords($request->name),
+            'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+            'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
+            'email' => $request->email,
+            'address' => $request->address,
+            'organisation' => $request->organisation,
+            'alias' => $request->alias,
+            'client_type_id' => $client_type_id,
+        ]);
+
+
+        //replace all client references
+        Sale::whereIn('client_id', $request->ids)->update([
+            'client_id' => $client->id,
+        ]);
+        Receipt::whereIn('client_id', $request->ids)->update([
+            'client_id' => $client->id,
+        ]);
+        Invoice::whereIn('client_id', $request->ids)->update([
+            'client_id' => $client->id,
+        ]);
+        Quotation::whereIn('client_id', $request->ids)->update([
+            'client_id' => $client->id,
+        ]);
+        SiteSale::whereIn('client_id', $request->ids)->update([
+            'client_id' => $client->id,
+        ]);
+        Collection::whereIn('client_id', $request->ids)->update([
+            'client_id' => $client->id,
+        ]);
+            
+        //delete client objects
+        Client::whereIn('id', $request->ids)->delete();
+
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(new ClientResource($client), 201);
+        else {
+            //Web Response
+            return Redirect::route('clients.index')->with('success', 'Client merged!');
         }
     }
 

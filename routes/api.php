@@ -178,6 +178,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\RequestFormController@storeFromDelivery",
                 'roles' => ['employee', 'management']
             ]);
+
+            Route::post('/attach-receipts/{id}', [
+                "uses"  => "App\Http\Controllers\RequestFormController@attachReceipts",
+                'roles' => ['employee', 'management']
+            ]);
         });
 
 

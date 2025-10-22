@@ -437,7 +437,10 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             'roles' =>['employee','management']
         ])->name('sales.add-pop');
 
-        
+        Route::post('/attach-purchase-order/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@attachPurchaseOrder",
+            'roles' =>['employee','management']
+        ])->name('sales.attach-purchase-order');
 
 
 
@@ -650,6 +653,16 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\ClientController@store",
             'roles' =>['employee','management']
         ])->name('clients.store');
+
+        Route::get('/merge', [
+            "uses"  => "App\Http\Controllers\ClientController@merge",
+            'roles' =>['employee','management']
+        ])->name('clients.merge');
+
+        Route::post('/merge', [
+            "uses"  => "App\Http\Controllers\ClientController@mergeList",
+            'roles' =>['employee','management']
+        ])->name('clients.merge-list');
 
         Route::get('/view/{id}', [
             "uses" => "App\Http\Controllers\ClientController@show",
