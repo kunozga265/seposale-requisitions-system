@@ -283,8 +283,8 @@ class AppController extends Controller
         $ext = $this->getExtension($explodedFile);
 
         switch ($type) {
-            case 'VEHICLE':
-                $filename = "files/vehicles/" . $type . "-" . uniqid() . "." . $ext;
+            case 'PROOF_OF_PAYMENT':
+                $filename = "files/proof-of-payments/" . $type . "-" . uniqid() . "." . $ext;
                 break;
             case 'QUOTE':
                 $filename = "files/quotes/" . $type . "-" . uniqid() . "." . $ext;
@@ -294,6 +294,11 @@ class AppController extends Controller
                 break;
             case 'DELIVERY_NOTE':
                 $filename = "files/deliveries/" . $type . "-" . uniqid() . "." . $ext;
+                break;
+            case 'COLLECTION_NOTE':
+                $filename = "files/collections/" . $type . "-" . uniqid() . "." . $ext;
+            case 'PAYMENT_VOUCHER':
+                $filename = "files/collections/" . $type . "-" . uniqid() . "." . $ext;
                 break;
             default:
                 $filename = "files/other/" . $type . "-" . uniqid() . "." . $ext;
