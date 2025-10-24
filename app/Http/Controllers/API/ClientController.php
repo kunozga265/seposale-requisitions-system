@@ -37,9 +37,9 @@ class ClientController extends Controller
             $active_sales = $active_sales_raw->get();
 
             //check unpaid site sales and collections
-            $active_site_sales_raw = SiteSaleSummary::where("date", ">=", env('TIMESTAMP_CUTOFF'))
-                ->whereHas('sale', function ($query) use ($client) {
+            $active_site_sales_raw = SiteSaleSummary::whereHas('sale', function ($query) use ($client) {
                     $query->where('client_id', $client->id);
+                    $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
                 })
                 ->where('balance', '>', 0)
                 ->orWhereColumn('quantity', 'collected');
