@@ -350,6 +350,16 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
         });
+        Route::group(['prefix' => 'clients'], function () {
+            Route::get('/show/{id}', [
+                "uses" => "App\Http\Controllers\API\ClientController@show",
+                'roles' => ['employee', 'management']
+            ]);
+            Route::get('/details/{id}', [
+                "uses" => "App\Http\Controllers\API\ClientController@getDetails",
+                'roles' => ['employee', 'management']
+            ]);
+        });
 
         Route::group(['prefix' => 'sites'], function () {
             Route::get('/{code}/daily-reports/latest', [
