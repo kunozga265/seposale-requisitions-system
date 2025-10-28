@@ -226,7 +226,7 @@ class SaleController extends Controller
 
             $client = Client::create([
                 'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                'name' => $request->name,
+                'name' => ucwords($request->name),
                 'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                 'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
                 'email' => $request->email,
@@ -625,7 +625,7 @@ class SaleController extends Controller
 
                 $client = Client::create([
                     'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                    'name' => $request->name,
+                    'name' => ucwords($request->name),
                     'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                     'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
                     'email' => $request->email,

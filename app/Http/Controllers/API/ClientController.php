@@ -25,24 +25,28 @@ class ClientController extends Controller
 
         if (is_object($client)) {
             //check unpaid sales and deliveries
-            $active_sales_raw = Summary::where("date", ">=", env('TIMESTAMP_CUTOFF'))
-                ->whereHas('sale', function ($query) use ($client) {
-                    $query->where('client_id', $client->id);
-                })
-                ->where('balance', '>', 0)
-                ->orWhereHas('delivery', function ($query) use ($client) {
-                    $query->where('status', 1);
+            $active_sales_raw = Summary::whereHas('sale.client', function ($query) use ($client) {
+                $query->where('id', $client->id);
+            })
+                ->where('date', '>=', env('TIMESTAMP_CUTOFF'))
+                ->where(function ($query) {
+                    $query->where('balance', '>', 0)
+                        ->orWhereHas('delivery', function ($deliveryQuery) {
+                            $deliveryQuery->where('status', 1);
+                        });
                 });
             $active_sales_count = $active_sales_raw->count();
             $active_sales = $active_sales_raw->get();
 
             //check unpaid site sales and collections
             $active_site_sales_raw = SiteSaleSummary::whereHas('sale', function ($query) use ($client) {
-                    $query->where('client_id', $client->id);
-                    $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
-                })
-                ->where('balance', '>', 0)
-                ->orWhereColumn('quantity', 'collected');
+                $query->where('client_id', $client->id)->where("date", ">=", env('TIMESTAMP_CUTOFF'));
+            }) ->where(function ($query) {
+                    $query->where('balance', '>', 0)
+                        ->orWhereColumn('quantity', '!=' ,'collected');
+                });
+                // ->where('balance', '>', 0)
+                // ->orWhereColumn('quantity', 'collected');
 
             $active_site_sales_count = $active_site_sales_raw->count();
             $active_site_sales = $active_site_sales_raw->get();
