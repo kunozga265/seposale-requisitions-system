@@ -35,7 +35,7 @@ class SummaryResource extends JsonResource
             "description" => $this->description,
             "unitCost" => floatval($this->cost()),
             "units" => $this->units,
-            "delivery" => $this->delivery != null ? [
+            "delivery" => $this->delivery != null && $this->delivery?->status != 0 ? [
                 "id" => intval($this->delivery->id),
                 "status" => intval($this->delivery->status),
                 "code" => (new AppController())->getZeroedNumber($this->delivery->code),
