@@ -17,24 +17,26 @@ class SiteSaleResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
+            'id' => intval($this->id),
             'code' => (new AppController())->getZeroedNumber($this->code),
             'status' => intval($this->status),
             'client' => $this->client->toRawResource(),
             'total' => floatval($this->total),
             'balance' => floatval($this->balance),
-            'date' => $this->date,
+            'date' => intval($this->date),
             'paymentMethod' => $this->paymentMethod,
             'reference' => $this->reference,
             'site' => [
+                "id" => intval($this->site->id),
+                "name" => $this->site->name,
                 "code" => $this->site->code
             ],
-            'editable' => intval($this->editable),
+            'editable' => $this->editable == 1,
             'products' => SiteSaleSummaryResource::collection($this->products()->withTrashed()->get()),
             'receipts' => ReceiptResource::collection($this->receipts),
             'generatedBy' => new UserResource($this->user),
-            'profit' => $this->profit(),
-            'pendingPayments' => $this->pendingPayments(),
+            'profit' => floatval($this->profit()),
+            'pendingPayments' => floatval($this->pendingPayments()),
         ];
     }
 }
