@@ -19,7 +19,7 @@ class CreateInventorySummariesTable extends Migration
             $table->integer("code")->unique();
             $table->json("opening_stock");
             $table->json("closing_stock");
-            $table->json("comments");
+            $table->json("comments")->nullable();
             $table->integer("user_id");
             $table->integer("site_id");
             $table->double("date");
