@@ -284,10 +284,12 @@ class NotificationController extends Controller
 
                 //Send email to employees who can approve
                 //Mail::to($employee)->send(new RequestFormPendingApprovalMail($employee, $message, $subject));
-            }
+               
+                //Send a push notification to the app for the user
+                $this->pushNotification("USER-{$employee->id}", $subject, $message);
 
-            //Send a push notification to the app for the user
-            $this->pushNotification("POSITION-{$position->id}", $subject, $message);
+            }
+            
         } elseif ($type == "REQUEST_FORM_RESUBMITTED") {
             //Find the next person(s) to approve
             $position = Position::find($object->stagesApprovalPosition);
@@ -484,7 +486,7 @@ class NotificationController extends Controller
                 $this->pushNotification("USER-{$accountant->id}", $subject, $message);
             }
 
-            $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
+            // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
         }
     }
 
@@ -514,6 +516,9 @@ class NotificationController extends Controller
     {
         // error_log($to);
         // $to = "POSITION-2";
+        // $to = "USER-10";
+
+        
 
         //notification
         // create the Google client
