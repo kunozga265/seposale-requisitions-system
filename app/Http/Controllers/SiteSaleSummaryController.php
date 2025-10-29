@@ -16,6 +16,7 @@ class SiteSaleSummaryController extends Controller
                 "date" => intval($collection->date),
                 "code" => $collection->code,
                 "message" => "{$collection->quantity} collected by $by $phone_number",
+                "photo" => $collection->photo,
             ];
         }
 
