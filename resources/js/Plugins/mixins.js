@@ -10,7 +10,7 @@ Vue.mixin({
         },
         checkRole(user,role){
             for(let x in user.roles){
-                if(user.roles[x].name===role)
+                if(user.roles[x].name.trim().toLowerCase()==role.trim().toLowerCase())
                     return true
             }
             return false

@@ -21,7 +21,7 @@ use App\Models\RequestForm;
 use App\Models\RequestFormItem;
 use App\Models\Sale;
 use App\Models\Summary;
-use App\Models\Transaction;
+use App\Models\Supplier;
 use App\Models\Transporter;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -560,20 +560,22 @@ class RequestFormController extends Controller
             $stagesApprovalPosition = $stages[0]->position;
         }
 
-        $items = [];
+        // $items = [];
         $total = 0;
-        foreach ($request->payables as $payable) {
+        foreach ($request->payables as $_payable) {
 
-            $items[] = [
-                "details" => $payable["description"],
-                "units" => 'Unit',
-                "quantity" => 1,
-                "unitCost" => $payable["total"],
-                "totalCost" => $payable["total"],
-                "expenseTypeId" => env('OPERATIONS_EXPENSE_TYPE_ID'),
-                "transporterId" => $payable["transporter"] != null ? $payable["transporter"]["id"] : null,
-                "supplierId" => $payable["supplier"] != null ? $payable["supplier"]["id"] : null,
-            ];
+            // $items[] = [
+            //     "details" => $payable["description"],
+            //     "units" => 'Unit',
+            //     "quantity" => 1,
+            //     "unitCost" => $payable["total"],
+            //     "totalCost" => $payable["total"],
+            //     "expenseTypeId" => env('OPERATIONS_EXPENSE_TYPE_ID'),
+            //     "transporterId" => $payable["transporter"] != null ? $payable["transporter"]["id"] : null,
+            //     "supplierId" => $payable["supplier"] != null ? $payable["supplier"]["id"] : null,
+            // ];
+
+            $total += $_payable["total"];
         }
 
         $requestForm = RequestForm::create([
@@ -584,7 +586,7 @@ class RequestFormController extends Controller
             'personCollectingAdvance' => $request->personCollectingAdvance,
             'purpose' => "Payables for {$request->payables[0]["description"]}",
             // 'information' => json_encode($information),
-            // 'total' => $request->total,
+            'total' => $total,
 
             'delivery_id' => null,
 
@@ -604,14 +606,31 @@ class RequestFormController extends Controller
 
             //Management Approval
             'approvalStatus' => 0,
-            'editable' => true,
+            'editable' => false,
         ]);
 
+        $accounts_payable_account = (new AccountingAccountController())->getAccount(2010);
         //attach requisition to payables
         foreach ($request->payables as $payable) {
             $_payable = Payable::find($payable["id"]);
             $_payable->update([
                 "request_id" => $requestForm->id
+            ]);
+
+            //create request form items
+            $requestForm->items()->create([
+                'details' => $_payable->description,
+                'units' => "Unit",
+                'quantity' => 1,
+                'unit_cost' => $_payable->total,
+                'total_cost' => $_payable->total,
+                'balance' => $_payable->total,
+                'accounting_account_id' => $accounts_payable_account->id,
+                'transporter_id' => $_payable->transporter?->id,
+                'supplier_id' => $_payable->supplier?->id,
+                'status' => 0, //Pending,
+                'payable_id' => $_payable->id,
+                'request_id' => $requestForm->id,
             ]);
         }
 
@@ -925,6 +944,8 @@ class RequestFormController extends Controller
         $requestForm = RequestForm::find($id);
         $expenseTypes = ExpenseType::orderBy("name", "asc")->get();
         $accounts = AccountingAccount::orderBy("name", "asc")->get();
+        $transporters = Transporter::orderBy("name", "asc")->get();
+        $suppliers = Supplier::orderBy("name", "asc")->get();
 
         if (is_object($requestForm)) {
             if ((new AppController())->isApi($request)) {
@@ -936,6 +957,8 @@ class RequestFormController extends Controller
                     'request' => new RequestFormResource($requestForm),
                     'expenseTypes' => $expenseTypes,
                     'accounts' => $accounts,
+                    'transporters' => $transporters,
+                    'suppliers' => $suppliers,
                 ]);
             }
         } else {
@@ -1347,6 +1370,12 @@ class RequestFormController extends Controller
                         "status" => $request_form_item_balance == 0 ? 2 : 1 // Mark as paid if balance is zero or less
                     ]);
 
+                    //update payable here
+                    if ($request_form_item_balance == 0) {
+                        $request_form_item->payable?->update([
+                            "paid" => true
+                        ]);
+                    }
 
                     $main_record = AccountingRecord::create([
                         "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
@@ -1406,11 +1435,7 @@ class RequestFormController extends Controller
                 'approvalStatus' => 3
             ]);
 
-            foreach ($requestForm->payables as $payable) {
-                $payable->update([
-                    "paid" => true
-                ]);
-            }
+
 
             (new NotificationController())->notifyUser($requestForm, "INITIATED");
             (new NotificationController())->notifyFinance($requestForm, "WAITING_RECONCILE");

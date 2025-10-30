@@ -6,7 +6,14 @@ use App\Http\Resources\DeliveryResource;
 use App\Http\Resources\PayableResource;
 use App\Http\Resources\RequestFormResource;
 use App\Models\Payable;
+use App\Models\RequestForm;
+use App\Models\AccountingAccount;
+use App\Models\AccountingRecord;
+use App\Models\RequestFormItem;
+use App\Models\SystemLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class PayableController extends Controller
@@ -16,46 +23,187 @@ class PayableController extends Controller
         return Inertia::render('Payables/Index', $this->getPayables());
     }
 
+    public function storeFromRequisition(Request $request, $id)
+    {
+        $requestForm = RequestForm::find($id);
+
+        if (is_object($requestForm)) {
+            $request->validate([
+                'items' => 'required',
+            ]);
+
+            $accounts_payable_account = (new AccountingAccountController())->getAccount(2010);
+            $accounts_payable_balance = $accounts_payable_account->balance;
+
+            $filtered_transactions = [];
+
+            foreach ($request->items as $item) {
+                if ($item["amount"] > 0) {
+                    $filtered_transactions[] = $item;
+                }
+            }
+
+            foreach ($filtered_transactions as $item) {
+                if ($item["transporterId"] == null && $item["supplierId"] == null) {
+                    if ((new AppController())->isApi($request)) {
+                        //API Response
+                        return response()->json(['message' => "{$item['details']} needs to be attached to either transporter or supplier to record payable"], 404);
+                    } else {
+                        //Web Response
+                        return Redirect::back()->with('error', "{$item['details']} needs to be attached to either transporter or supplier to record payable");
+                    }
+                }
+            }
+
+            $grouped = array_reduce($filtered_transactions, function ($carry, $item) {
+                $carry[$item['accountId']][] = $item;
+                return $carry;
+            }, []);
+
+            $index = 0;
+            foreach ($grouped as $items) {
+                $alternative_account = AccountingAccount::find($items[0]["accountId"]);
+                $alternative_account_balance = $alternative_account->balance;
+
+                foreach ($items as $item) {
+                    $request_form_item = RequestFormItem::find($item["id"]);
+                    $request_form_item_balance = $request_form_item->balance - $item["amount"];
+                    $request_form_item->update([
+                        "balance" => $request_form_item_balance,
+                        "status" => $request_form_item_balance == 0 ? 2 : 1 // Mark as paid if balance is zero or less
+                    ]);
+
+
+                    $main_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($request->reference),
+                        "date" => $item["date"] + $index,
+                        "name" => "Requisition #{$requestForm->formattedCode()} - " . $item["name"],
+                        "description" => $item["details"],
+                        "amount" => $item["amount"],
+                        "opening_balance" => $accounts_payable_balance,
+                        "closing_balance" => $accounts_payable_balance + $item["amount"],
+                        "type" => "CREDIT", // increasing the account balance
+                        "accounting_account_id" => $accounts_payable_account->id,
+                        "request_form_item_id" => $request_form_item->id,
+                        "accounting_record_id" => null, // This will be updated later
+                    ]);
+                    $accounts_payable_balance += $item["amount"];
+
+                    $alternate_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($request->reference),
+                        "date" => $item["date"] + $index,
+                        "name" => "Requisition #{$requestForm->formattedCode()} - " . $item["name"],
+                        "description" => $item["details"],
+                        "amount" => $item["amount"],
+                        "opening_balance" => $alternative_account_balance,
+                        "closing_balance" => $alternative_account_balance + $item["amount"],
+                        "type" => "DEBIT",
+                        "accounting_account_id" => $alternative_account->id,
+                        "accounting_record_id" => $main_record->id,
+                        "request_form_item_id" => $request_form_item->id,
+                    ]);
+                    $alternative_account_balance += $item["amount"];
+
+                    $main_record->update([
+                        "accounting_record_id" => $alternate_record->id
+                    ]);
+
+                    $index++;
+
+                    Payable::create([
+                        "code" => (new PayableController())->getCodeNumber(),
+                        "description" => $item["details"],
+                        "total" => $item["amount"],
+                        "date" => $item["date"] + $index,
+                        "contents" => json_encode([]),
+                        "account_id" => $alternative_account->id,
+                        "transporter_id" => $item["transporterId"],
+                        "supplier_id" => $item["supplierId"],
+                        "delivery_id" => $requestForm->delivery->id,
+                        "sale_id" => $requestForm->delivery->summary->sale->id,
+                        // "request_id" => $requestForm->id,
+                        "paid" => false,
+                    ]);
+                }
+
+                //Update the account balance
+                $alternative_account->update([
+                    "balance" => $alternative_account_balance
+                ]);
+            }
+
+            //Update the account balance
+            $accounts_payable_account->update([
+                "balance" => $accounts_payable_balance
+            ]);
+
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Payables have been recorded",
+                "request_form_id" => $requestForm->id,
+            ]);
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Payables have been recorded"], 200);
+            } else {
+                //Web Response
+                return Redirect::back()->with('success', 'Payables have been recorded');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Request form not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('dashboard')->with('error', 'Request form not found');
+            }
+        }
+    }
+
     public function getPayables()
     {
-        $payables = Payable::where("paid",0)->orderBy("date","asc")->get();
+        $payables = Payable::where("paid", 0)->orderBy("date", "asc")->get();
         $suppliers = [];
         $transporters = [];
 
-        foreach ($payables as $payable){
-            if($payable->transporter != null){
-                $transporters[]=$payable;
-            }else if($payable->supplier != null){
-                $suppliers[]=$payable;
+        foreach ($payables as $payable) {
+            if ($payable->transporter != null) {
+                $transporters[] = $payable;
+            } else if ($payable->supplier != null) {
+                $suppliers[] = $payable;
             }
         }
 
-//        $suppliers = $this->convertToArray($suppliers);
-//        $transporters = $this->convertToArray($transporters);
+        //        $suppliers = $this->convertToArray($suppliers);
+        //        $transporters = $this->convertToArray($transporters);
 
 
         $groupedTransporters = array_reduce($transporters, function ($carry, $item) {
-            $carry[$item['transporter_id']][] = $this->convertToArray(($item));
+            $carry[$item['transporter_id']][] = $this->convertToArray($item);
             return $carry;
         }, []);
 
         $groupedSuppliers = array_reduce($suppliers, function ($carry, $item) {
-            $carry[$item['supplier_id']][] = $this->convertToArray(($item));
+            $carry[$item['supplier_id']][] = $this->convertToArray($item);
             return $carry;
         }, []);
 
         $all = [];
         $total = 0;
 
-        foreach ($groupedTransporters as $groupedTransporter){
+        foreach ($groupedTransporters as $groupedTransporter) {
             $sum = 0;
-            $name = $groupedTransporter[0]["description"];
+            $name = $groupedTransporter[0]["payee"];
             $items = [];
-            foreach ($groupedTransporter as $item){
-                $items [] = $item;
+            foreach ($groupedTransporter as $item) {
+                $items[] = $item;
                 $sum += $item["total"];
             }
-            $all[]=[
+            $all[] = [
                 "name" => $name,
                 "category" => "Transporter",
                 "items" => $items,
@@ -64,15 +212,15 @@ class PayableController extends Controller
             $total += $sum;
         }
 
-        foreach ($groupedSuppliers as $groupedSupplier){
+        foreach ($groupedSuppliers as $groupedSupplier) {
             $sum = 0;
-            $name = $groupedSupplier[0]["description"];
+            $name = $groupedSupplier[0]["payee"];
             $items = [];
-            foreach ($groupedSupplier as $item){
-                $items [] = $item;
+            foreach ($groupedSupplier as $item) {
+                $items[] = $item;
                 $sum += $item["total"];
             }
-            $all[]=[
+            $all[] = [
                 "name" => $name,
                 "category" => "Supplier",
                 "items" => $items,
@@ -81,7 +229,7 @@ class PayableController extends Controller
             $total += $sum;
         }
 
-        usort($all, function($a, $b) {
+        usort($all, function ($a, $b) {
             if ($a['total'] < $b['total']) {
                 return 1;
             } elseif ($a['total'] > $b['total']) {
@@ -104,8 +252,8 @@ class PayableController extends Controller
             "checked"               => false,
             "id"                    => $arr->id,
             "code"                  => $arr->formattedCode(),
-//            "payee"                 => $arr->payee(),
-            "description"           => $arr->description,
+            "payee"                 => $arr->getName(),
+            "description"           => trim($arr->description),
             "total"                 => $arr->total,
             "date"                  => $arr->date,
             "contents"              => json_decode($arr->contents),

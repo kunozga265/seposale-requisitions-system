@@ -19,15 +19,30 @@ class Payable extends Model
     {
         return $this->belongsTo(Sale::class);
     }
+    public function getName()
+    {
+        if($this->transporter != null){
+            return $this->transporter->name;
+        }else if($this->supplier != null){
+            return $this->supplier->name;
+        }else if($this->requestForm != null) {
+            return $this->requestForm->user->fullName();
+        }else 
+        return "Other";
+    }
 
     public function delivery()
     {
         return $this->belongsTo(Delivery::class);
     }
+    public function requestFormItem()
+    {
+        return $this->hasOne(RequestFormItem::class);
+    }
 
     public function requestForm()
     {
-        return $this->belongsTo(RequestForm::class, "request_id","id");
+        return $this->belongsTo(RequestForm::class, "request_id", "id");
     }
 
     public function transporter()
@@ -38,6 +53,10 @@ class Payable extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class);
+    }
+    public function account()
+    {
+        return $this->belongsTo(AccountingAccount::class);
     }
 
     public function formattedCode()
@@ -53,6 +72,7 @@ class Payable extends Model
         "date",
         "contents",
         "expense_type_id",
+        "account_id",
         "sale_id",
         "delivery_id",
         "transporter_id",

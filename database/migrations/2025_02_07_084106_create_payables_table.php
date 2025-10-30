@@ -21,7 +21,7 @@ class CreatePayablesTable extends Migration
             $table->double("total");
             $table->double("date");
             $table->json("contents");
-            $table->integer("expense_type_id");
+            $table->integer("account_id");
             $table->integer("request_id")->nullable();
             $table->integer("sale_id")->nullable();
             $table->integer("delivery_id")->nullable();

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnToRequestsTable extends Migration
+class AddColumnToRequestFormItemsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddColumnToRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::table('requests', function (Blueprint $table) {
-            $table->integer("delivery_id")->nullable();
+        Schema::table('request_form_items', function (Blueprint $table) {
+            $table->integer("payable_id")->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddColumnToRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::table('requests', function (Blueprint $table) {
-            $table->dropColumn('delivery_id');
+        Schema::table('request_form_items', function (Blueprint $table) {
+             $table->dropColumn('payable_id');
         });
     }
 }

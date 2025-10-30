@@ -260,6 +260,11 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
              'roles' =>['accountant']
         ])->name('request-forms.initiate');
 
+        Route::post('/record-payables/{id}', [
+            "uses"  => "App\Http\Controllers\PayableController@storeFromRequisition",
+             'roles' =>['accountant']
+        ])->name('request-forms.record-payables');
+
         Route::post('/reconcile/{id}', [
             "uses"  => "App\Http\Controllers\RequestFormController@reconcile",
              'roles' =>['accountant']
@@ -975,6 +980,40 @@ Route::group(['middleware'=>['auth:sanctum', 'verified','roles']],function (){
             "uses"  => "App\Http\Controllers\DeliveryController@update",
             'roles' => ['employee','management']
         ])->name('transporters.update');
+
+    });
+
+    Route::group(['prefix'=>'suppliers'],function() {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\SupplierController@index",
+            'roles' =>['employee','management']
+        ])->name('suppliers.index');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\SupplierController@show",
+            'roles' => ['employee', 'management']
+        ])->name('suppliers.show');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\SupplierController@create",
+            'roles' => ['employee','management']
+        ])->name('suppliers.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\SupplierController@store",
+            'roles' => ['employee','management']
+        ])->name('suppliers.store');
+
+        // Route::get('/edit/{id}', [
+        //     "uses"  => "App\Http\Controllers\SupplierController@edit",
+        //     'roles' => ['employee','management']
+        // ])->name('suppliers.edit');
+
+        // Route::post('/update/{id}', [
+        //     "uses"  => "App\Http\Controllers\SupplierController@update",
+        //     'roles' => ['employee','management']
+        // ])->name('suppliers.update');
 
     });
 

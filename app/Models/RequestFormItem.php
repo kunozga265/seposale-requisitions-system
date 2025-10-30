@@ -17,6 +17,16 @@ class RequestFormItem extends Model
        return $this->hasMany(AccountingRecord::class);
     }
 
+    public function transporter(){
+       return $this->belongsTo(Transporter::class,"transporter_id");
+    }
+    public function supplier(){
+       return $this->belongsTo(Supplier::class,"supplier_id");
+    }
+    public function payable(){
+       return $this->belongsTo(Payable::class,"payable_id");
+    }
+
     public function requestForm(){
        return $this->belongsTo(RequestForm::class,"request_id");
     }
@@ -38,6 +48,7 @@ class RequestFormItem extends Model
         "supplier_id",
         "inventory_id",
         "material_id",
+        "payable_id",
         "comments",
     ];
 }

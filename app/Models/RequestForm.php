@@ -104,6 +104,10 @@ class RequestForm extends Model
         return "$type #$code";
     }
 
+    public function formattedCode(){
+        return (new AppController())->getZeroedNumber($this->code_alt);
+    }
+
     protected $fillable = [
         "code",
         "code_alt",

@@ -36,8 +36,7 @@
         <primary-button v-if="request.data.canInitiate" @click.native="initiateDialog = true">Initiate</primary-button>
         <primary-button v-if="request.data.canReconcile"
           @click.native="reconcileDialog = true">Reconcile</primary-button>
-        <secondary-button
-          @click.native="attachReceiptsDialog = true">Attach Receipts</secondary-button>
+        <secondary-button @click.native="attachReceiptsDialog = true">Attach Receipts</secondary-button>
       </span>
     </template>
 
@@ -186,8 +185,21 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
+          <div class="flex items-center mb-4 md:col-span-2">
+            <input id="default-radio-1" type="radio" value="NORMAL" v-model="initiationType"
+              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label for="default-radio-1"
+              class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Normal</label>
 
-          <div class="mb-2 md:col-span-2">
+            <input checked id="default-radio-2" type="radio" value="ON_CREDIT" v-model="initiationType"
+              class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+            <label for="default-radio-2" class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">On
+              Credit</label>
+          </div>
+
+
+
+          <div v-if="initiationType == 'NORMAL'" class="mb-2 md:col-span-2">
             <jet-label for="paymentMethod" value="Select Credit Account" />
             <select v-model="accountIndex" id="paymentMethod"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -203,27 +215,35 @@
             </div>
           </div>
 
-          <div class="mb-2">
+          <div v-if="initiationType == 'NORMAL'" class="mb-2">
             <jet-label for="reference" value="Reference" />
             <jet-input type="text" class="block w-full" v-model="form.reference" />
           </div>
-          <div class="mb-4">
+          <div v-if="initiationType == 'NORMAL'" class="mb-4">
             <jet-label for="person" value="Recipient" />
             <jet-input id="person" type="text" class="block w-full" v-model="form.recipient" autocomplete="person" />
           </div>
 
         </div>
 
-        <div class="mb-4" v-for="(product, index) in form.items" :key="index">
+        <div class="mb-4" v-for="(item, index) in form.items" :key="index">
           <div class="flex justify-between">
-            <jet-label for="amount" :value="product.details" />
+            <div class="mb-0">
+              <jet-label class="mb-0 pb-0" for="amount" :value="item.details" />
+              <!-- <div v-if="item.transporter != null" class=" text-xs text-gray-500">
+                {{ item.transporter.name }}
+              </div>
+              <div v-if="item.supplier != null" class=" text-xs text-gray-500">
+                {{ item.supplier.name }}
+              </div> -->
+            </div>
+
             <div class="flex items-center mb-2">
-              <div @click="product.amount = product.balance"
+              <div @click="item.amount = item.balance"
                 class="cursor flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                :class="{ 'info': product.amount == product.balance }">
+                :class="{ 'info': item.amount == item.balance }">
                 <div>Full Amount</div>
-                <i v-show="product.amount == product.balance"
-                  class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                <i v-show="item.amount == item.balance" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
               </div>
             </div>
           </div>
@@ -232,16 +252,16 @@
               <!-- <jet-label for="amount" value="amount" /> -->
               <money
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                v-bind="moneyMaskOptions" v-model="product.amount" />
+                v-bind="moneyMaskOptions" v-model="item.amount" />
               <div class="mt-1 text-xs text-gray-500">
-                MK{{ numberWithCommas(product.balance) }}
+                MK{{ numberWithCommas(item.balance) }}
               </div>
 
             </div>
             <div>
               <select
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                v-model="product.accountId">
+                v-model="item.accountId">
                 <option value="0">
                   Select Debit Account
                 </option>
@@ -252,8 +272,34 @@
 
             </div>
 
-            <vue-date-time-picker :key="index" color="#1a56db" v-model="product.date" :min-date="minDate"
+            <vue-date-time-picker :key="index" color="#1a56db" v-model="item.date" :min-date="minDate"
               :max-date="maxDate" />
+
+            <div>
+              <select
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                v-model="item.transporterId">
+                <option value="0">
+                  Select Transporter
+                </option>
+                <option :key="index" v-for="(transporter, index) in transporters" :value="transporter.id">
+                  {{ transporter.name }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <select
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                v-model="item.supplierId">
+                <option value="0">
+                  Select Supplier
+                </option>
+                <option :key="index" v-for="(supplier, index) in suppliers" :value="supplier.id">
+                  {{ supplier.name }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
       </template>
@@ -277,7 +323,7 @@
         </primary-button>
       </template>
     </dialog-modal>
-    
+
     <dialog-modal :show="reconcileDialog" @close="reconcileDialog = false">
       <template #title>
         Reconcile Request
@@ -578,7 +624,7 @@
               </div>
             </div>
           </div>
-         
+
           <div>
             <div class="page-section">
               <!--                            <div class="page-section-header">-->
@@ -753,7 +799,11 @@ import JetInput from "@/Jetstream/Input";
 import { Money } from "v-money";
 
 export default {
-  props: ['request', 'expenseTypes', 'accounts'],
+  props: ['request', 'expenseTypes', 
+  'accounts',
+  'transporters',
+  'suppliers',
+],
   components: {
     Money,
     AppLayout,
@@ -771,6 +821,7 @@ export default {
   },
   data() {
     return {
+      initiationType: "NORMAL",
       loading: false,
       approveDialog: false,
       deleteDialog: false,
@@ -812,6 +863,7 @@ export default {
       if (this.request.data.items[x].balance > 0) {
         this.form.items.push({
           id: this.request.data.items[x].id,
+          name: this.getTitle(this.request.data.items[x]),
           details: this.request.data.items[x].details,
           quantity: this.request.data.items[x].quantity,
           totalCost: this.request.data.items[x].totalCost,
@@ -820,7 +872,9 @@ export default {
           amount: 0,
           units: this.request.data.items[x].units,
           accountId: this.request.data.items[x].accountId ?? 0,
+          transporter: this.request.data.items[x].transporter,
           transporterId: this.request.data.items[x].transporterId ?? 0,
+          supplier: this.request.data.items[x].supplier,
           supplierId: this.request.data.items[x].supplierId ?? 0,
           comments: this.request.data.items[x].comments ?? "",
           date: null
@@ -919,21 +973,22 @@ export default {
       return this.date ? (new Date(this.date).getTime()) / 1000 : null
     },
     initiationValidation() {
-      if (this.account == null) {
-        this.error = "Select an account to credit"
-        return false
-      } else if (!this.balanceValidate) {
-        this.error = "Not enough funds in this account"
-        return false
+      if (this.initiationType == "NORMAL") {
+        if (this.account == null) {
+          this.error = "Select an account to credit"
+          return false
+        } else if (!this.balanceValidate) {
+          this.error = "Not enough funds in this account"
+          return false
+        }
+        else if (this.form.reference.length === 0 || this.form.reference === "") {
+          this.error = "Enter a reference"
+          return false
+        } else if (this.form.recipient.length === 0 || this.form.recipient === "") {
+          this.error = "Enter a recipient"
+          return false
+        }
       }
-      else if (this.form.reference.length === 0 || this.form.reference === "") {
-        this.error = "Enter a reference"
-        return false
-      } else if (this.form.recipient.length === 0 || this.form.recipient === "") {
-        this.error = "Enter a recipient"
-        return false
-      }
-
 
       let check = true
       let sum = 0;
@@ -1010,17 +1065,27 @@ export default {
     },
     initiate() {
 
+      if (this.initiationType == "NORMAL") {
+        this.form
+          .transform(data => ({
+            ...data,
+            "items": this.formatInformation(),
+            account_id: this.account == null ? null : this.account.id,
 
-      this.form
-        .transform(data => ({
-          ...data,
-          "items": this.formatInformation(),
-          account_id: this.account == null ? null : this.account.id,
-
-        }))
-        .post(this.route('request-forms.initiate', { 'id': this.request.data.id }), {
-          onSuccess: () => this.initiateDialog = false,
-        })
+          }))
+          .post(this.route('request-forms.initiate', { 'id': this.request.data.id }), {
+            onSuccess: () => this.initiateDialog = false,
+          })
+      } else if (this.initiationType == "ON_CREDIT") {
+        this.form
+          .transform(data => ({
+            ...data,
+            "items": this.formatInformation(),
+          }))
+          .post(this.route('request-forms.record-payables', { 'id': this.request.data.id }), {
+            onSuccess: () => this.initiateDialog = false,
+          })
+      }
     },
     reconcile() {
       this.form
@@ -1043,8 +1108,8 @@ export default {
           onSuccess: () => {
             this.attachReceiptsDialog = false
             this.receiptUploads = []
-             this.form.reset()
-              document.getElementById('receipt').value = ""
+            this.form.reset()
+            document.getElementById('receipt').value = ""
           },
         })
     },
@@ -1080,6 +1145,14 @@ export default {
         'file': file
       })
       this.receiptUploads.splice(index, 1)
+    },
+    getTitle(item) {
+      if (item.transporter)
+        return item.transporter.name
+      else if (item.supplier)
+        return item.supplier.name
+      else
+        return "Other Cost"
     },
   }
 }

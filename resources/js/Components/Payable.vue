@@ -5,11 +5,12 @@
 
 
             <div class="flex justify-between mb-2">
-                <div class="heading-font mb-2">{{ payable[0].description }}</div>
+                <div class="heading-font mb-2">{{ payable[0].payee }}</div>
                 <!--                      <div class="heading-font font-bold text-base mb-4">MK123,456,789.00</div>-->
-                <div @click="processPayables">
-                    <span class="cursor-pointer text-red text-sm font-bold heading-font">Make Payment</span>
-                </div>
+                <!-- <div > -->
+                    <PrimaryButton @click.native="processPayables">Make Payment</PrimaryButton>
+                    <!-- <span class="cursor-pointer text-red text-sm font-bold heading-font">Make Payment</span> -->
+                <!-- </div> -->
             </div>
 
             <table class="table-fixed w-full text-gray-500 dark:text-gray-400">
@@ -59,19 +60,19 @@
                     </td>
 
                     <td  v-if="item.requestForm != null" class="p-2 text-left">
-                        <inertia-link :href="route('request-forms.show',{id:item.requestForm.data.id})" class=" p-2">{{ item.requestForm.data.code }}</inertia-link>
+                        <inertia-link :href="route('request-forms.show',{id:item.requestForm.data.id})" class=" ">{{ item.requestForm.data.code }}</inertia-link>
                     </td>
                     <td  v-else class="p-2 text-left">
                         <span>-</span>
                     </td>
                     <td class="p-2 text-left">
-                        <inertia-link :href="route('clients.show',{id:item.delivery.data.client.id})" class=" p-2">
+                        <inertia-link :href="route('clients.show',{id:item.delivery.data.client.id})" class=" ">
                             {{ item.delivery.data.client.name }}
                         </inertia-link>
 
                     </td>
                     <td class="p-2 text-left">
-                        <inertia-link :href="route('deliveries.show',{id:item.delivery.data.id})" class=" p-2">
+                        <inertia-link :href="route('deliveries.show',{id:item.delivery.data.id})" class=" ">
                             {{ item.delivery.data.summary.description }}
                         </inertia-link>
 
@@ -255,6 +256,8 @@ export default {
             }
             if (this.form.payables.length > 0) {
                 this.showDialog = true;
+            }else{
+                alert('Select at least one item')
             }
 
         },

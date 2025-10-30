@@ -21,7 +21,7 @@ class RequestFormResource extends JsonResource
         //get user
         $user = (new AppController())->getAuthUser($request);
         $canEdit = $this->editable && $this->user->id == $user->id && $this->delivery == null;
-        $canDelete = $this->editable && $this->user->id == $user->id && ($this->approvedBy->isEmpty()) && $this->deniedBy == null;
+        $canDelete = ($this->editable || ($this->approvedBy->isEmpty()))  && $this->user->id == $user->id && ($this->approvedBy->isEmpty()) && $this->deniedBy == null;
         $canDiscard = $this->editable && $this->user->id == $user->id && (!($this->approvedBy->isEmpty()) || $this->deniedBy != null);
         $canInitiate = ($this->approvalStatus == 1 || $this->approvalStatus == 3) && $user->hasRole('accountant');
         $canReconcile = $this->approvalStatus == 3 && $user->hasRole('accountant');
