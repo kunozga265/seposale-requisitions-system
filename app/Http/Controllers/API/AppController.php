@@ -83,7 +83,7 @@ class AppController extends Controller
             $date = Carbon::createFromTimestamp($request->query('timestamp'));
 
             $clients = Client::where("updated_at", ">=", $date)->get();
-            $accounts = Account::where("updated_at", ">=", $date)->get();
+            $accounts = AccountingAccount::where("updated_at", ">=", $date)->get();
             $transporters = Transporter::where("updated_at", ">=", $date)->get();
             $suppliers = Supplier::where("updated_at", ">=", $date)->get();
             
