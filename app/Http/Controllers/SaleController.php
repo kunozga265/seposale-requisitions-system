@@ -77,15 +77,22 @@ class SaleController extends Controller
 
                 if ($item == 0) {
                     $sum = 0;
+                    $gross = 0;
+                    $costs = 0;
                     foreach ($sale->products as $summary) {
                         if ($summary->getPaymentStatus() > 0) {
-                            $sum += $summary->amount;
+                            $sum += $summary->paid();
+                            dump($summary->amount - $summary->balance);
+                            $gross += $summary->gross();
+                            $costs += $summary->costs();
                         }
                     }
                     $sorted[0] = [
                         'month' => $currentMonth,
                         'year' => $currentYear,
-                        'total' => $sum
+                        'total' => $sum,
+                        'gross' => $gross,
+                        'costs' => $costs
                     ];
                 } else {
                     $month = date('F', $unsorted[$item]->date);
@@ -93,28 +100,40 @@ class SaleController extends Controller
 
                     if ($currentMonth === $month && $currentYear === $year) {
                         $sum = $sorted[$index]['total'];
+                        $gross = $sorted[$index]['gross'];
+                        $costs = $sorted[$index]['costs'];
                         foreach ($sale->products as $summary) {
                             if ($summary->getPaymentStatus() > 0) {
                                 $sum += $summary->amount;
+                                $gross += $summary->gross();
+                                $costs += $summary->costs();
                             }
                         }
                         $sorted[$index]['total'] = $sum;
+                        $sorted[$index]['gross'] = $gross;
+                        $sorted[$index]['costs'] = $costs;
                     } else {
                         $index += 1;
                         $currentMonth = date('F', $unsorted[$item]->date);
                         $currentYear = date('Y', $unsorted[$item]->date);
 
                         $sum = 0;
+                        $gross = 0;
+                        $costs = 0;
                         foreach ($sale->products as $summary) {
                             if ($summary->getPaymentStatus() > 0) {
-                                $sum += $summary->amount;
+                                $sum += $summary->paid();
+                                $gross += $summary->gross();
+                                $costs += $summary->costs();
                             }
                         }
 
                         $sorted[$index] = [
                             'month' => $currentMonth,
                             'year' => $currentYear,
-                            'total' => $sum
+                            'total' => $sum,
+                            'gross' => $gross,
+                            'costs' => $costs
                         ];
                     }
                 }
@@ -142,6 +161,8 @@ class SaleController extends Controller
         for ($i = 0; $i < count($chartData); $i++) {
             $chartData[$i]["data"] = array_reverse($chartData[$i]["data"]);
         }
+
+        // dd($chartData);
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -466,7 +487,7 @@ class SaleController extends Controller
         $summary = Summary::find($request->summary_id);
         $inventory = Inventory::find($request->inventory_id);
 
-        $paid = $summary->amount - $summary->balance;
+        $paid = $summary->paid();
 
         if ($paid > $request->amount) {
             return Redirect::back()->with("error", "Paid amount greater than the amount being transferred");

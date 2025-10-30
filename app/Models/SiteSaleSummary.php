@@ -127,6 +127,15 @@ class SiteSaleSummary extends Model
         return $this->amount - $this->balance - $total;
     }
 
+    public function collectionCosts()
+    {
+        $sum = 0;
+        foreach ($this->collections as $collection) {
+            $sum += $collection->cost;
+        }
+        return $sum;
+    }
+
     public function profit()
     {
         $paid = $this->amount - $this->balance;
@@ -137,11 +146,7 @@ class SiteSaleSummary extends Model
         }
         //has collection
         else {
-            $sum = 0;
-            foreach ($this->collections as $collection) {
-                $sum += $collection->cost;
-            }
-            $profit = $paid * ($this->collected / $this->quantity) - $sum;
+            $profit = $paid * ($this->collected / $this->quantity) - $this->collectionCosts();
         }
         return $profit;
     }

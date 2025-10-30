@@ -57,7 +57,7 @@ class Summary extends Model
             return false;
         } else if ($this->delivery->quantity_delivered == 0) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -83,9 +83,9 @@ class Summary extends Model
 
     public function getCollectionStatus()
     {
-        if($this->siteSaleSummary == null){
+        if ($this->siteSaleSummary == null) {
             return 0;
-        }else{
+        } else {
             return $this->siteSaleSummary->getCollectionStatus();
         }
     }
@@ -108,7 +108,7 @@ class Summary extends Model
     {
         $total = 0;
         $notes = [];
-        if($this->delivery != null){
+        if ($this->delivery != null) {
             $notes = json_decode($this->delivery->notes, true) ?? [];
         }
         foreach ($notes as $note) {
@@ -117,13 +117,26 @@ class Summary extends Model
         return $this->amount - $this->balance - $total;
     }
 
-    public function profit(){
+    public function gross()
+    {
+        return $this->amount - $this->costs();
+    }
+    public function paid()
+    {
+        return $this->amount - $this->balance;
+    }
+    public function costs()
+    {
+        return $this->delivery?->costs();
+    }
+    public function profit()
+    {
 
-         if($this->siteSaleSummary == null){
-             $paid = $this->amount-$this->balance;
-             $profit = $paid - $this->delivery?->costs();   
-             return $profit;         
-        }else{
+        if ($this->siteSaleSummary == null) {
+            $paid = $this->amount - $this->balance;
+            $profit = $paid - $this->costs();
+            return $profit;
+        } else {
             return $this->siteSaleSummary->profit();
         }
     }
