@@ -82,7 +82,6 @@ class SaleController extends Controller
                     foreach ($sale->products as $summary) {
                         if ($summary->getPaymentStatus() > 0) {
                             $sum += $summary->paid();
-                            dump($summary->amount - $summary->balance);
                             $gross += $summary->gross();
                             $costs += $summary->costs();
                         }
