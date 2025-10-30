@@ -14,7 +14,9 @@ class AddColumnToRequestsTable extends Migration
     public function up()
     {
         Schema::table('requests', function (Blueprint $table) {
-            $table->integer("delivery_id")->nullable();
+            if (!Schema::hasColumn('requests', 'delivery_id')) {
+                $table->integer("delivery_id")->nullable();
+            }
         });
     }
 
