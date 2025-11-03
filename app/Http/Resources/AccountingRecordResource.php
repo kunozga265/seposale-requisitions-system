@@ -42,7 +42,7 @@ class AccountingRecordResource extends JsonResource
             "account" => $this->accountingAccount,
             "receiptCode" => $this->receipt?->code,
             "productionCode" => $this->production?->code,
-            "requisitionCode" => $this->requestFormItem?->requestForm->code_alt,
+            "requisitionCode" => $this->requestFormItem?->requestForm?->code_alt,
             "collectionCode" => $this->collection?->code,
             "saleCode" => $this->summary?->sale->code,
             "siteSaleCode" => $this->siteSaleSummary?->sale->code,

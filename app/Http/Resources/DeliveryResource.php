@@ -36,6 +36,7 @@ class DeliveryResource extends JsonResource
             "logs" => SystemLogResource::collection($this->logs),
             'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) == 1 : false ,
             "costBalance" => $this->availableCostBalance(),
+            "costs" => floatval($this->costs()),
         ];
     }
 }
