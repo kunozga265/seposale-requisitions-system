@@ -11,7 +11,9 @@ use App\Http\Resources\SiteSaleResource;
 use App\Http\Resources\CollectionResource;
 use App\Http\Resources\SummaryResource;
 use App\Http\Resources\SiteSaleSummaryResource;
+use App\Http\Resources\DeliveryNoteResource;
 use App\Models\Client;
+use App\Models\DeliveryNote;
 use App\Models\SiteSaleSummary;
 use App\Models\Summary;
 use Illuminate\Http\Request;
@@ -41,12 +43,12 @@ class ClientController extends Controller
             //check unpaid site sales and collections
             $active_site_sales_raw = SiteSaleSummary::whereHas('sale', function ($query) use ($client) {
                 $query->where('client_id', $client->id)->where("date", ">=", env('TIMESTAMP_CUTOFF'));
-            }) ->where(function ($query) {
-                    $query->where('balance', '>', 0)
-                        ->orWhereColumn('quantity', '!=' ,'collected');
-                });
-                // ->where('balance', '>', 0)
-                // ->orWhereColumn('quantity', 'collected');
+            })->where(function ($query) {
+                $query->where('balance', '>', 0)
+                    ->orWhereColumn('quantity', '!=', 'collected');
+            });
+            // ->where('balance', '>', 0)
+            // ->orWhereColumn('quantity', 'collected');
 
             $active_site_sales_count = $active_site_sales_raw->count();
             $active_site_sales = $active_site_sales_raw->get();
@@ -57,8 +59,35 @@ class ClientController extends Controller
             $quotations = $client->quotations()->latest()->get();
             $siteSales = $client->siteSales()->orderBy("date", "desc")->get();
             $collections = $client->collections()->orderBy("date", "desc")->get();
-            //Web Response
+            $delivery_notes = DeliveryNote::whereHas('delivery.summary.sale', function ($query) use ($client) {
+                $query->where('client_id', $client->id);
+            })
+                ->where("date", ">=", env('TIMESTAMP_CUTOFF'))
+                ->orderBy("date", "desc");
 
+
+            $total_payments = 0;
+            // Use a keyed array for O(1) lookups instead of O(N) in_array() checks
+            $processed_receipts = [];
+
+            // Combine both sales collections into one
+            $all_sales = array_merge($sales, $siteSales);
+
+            foreach ($all_sales as $sale) {
+                foreach ($sale->receipts as $receipt) {
+                    $receipt_id = $receipt->id;
+
+                    // Check if we have already processed this specific receipt ID
+                    if (!isset($processed_receipts[$receipt_id])) {
+                        $total_payments += $receipt->amount;
+
+                        // Mark this ID as processed
+                        $processed_receipts[$receipt_id] = true;
+                    }
+                }
+            }
+
+            //Response
             return response()->json([
                 "counts" => [
                     "active_sales" => $active_sales_count,
@@ -69,7 +98,10 @@ class ClientController extends Controller
                     "quotations" => $quotations->count(),
                     "siteSales" => $siteSales->count(),
                     "collections" => $collections->count(),
+                    "delivery_notes" => $delivery_notes->count(),
                 ],
+
+                "total_payments" => $total_payments,
 
                 'active_sales ' => SummaryResource::collection($active_sales),
                 'active_site_sales ' => SiteSaleSummaryResource::collection($active_site_sales),
@@ -79,6 +111,7 @@ class ClientController extends Controller
                 'quotations' => QuotationResource::collection($quotations->take((new AppController())->paginate)),
                 'siteSales' => SiteSaleResource::collection($siteSales->take((new AppController())->paginate)),
                 'collections' => CollectionResource::collection($collections->take((new AppController())->paginate)),
+                'delivery_notes' => DeliveryNoteResource::collection($delivery_notes->take((new AppController())->paginate)),
 
             ]);
         } else {
@@ -110,6 +143,14 @@ class ClientController extends Controller
                 case "COLLECTIONS":
                     $collections = $client->collections()->orderBy("date", "desc")->paginate((new AppController())->paginate);
                     return response()->json(CollectionResource::collection($collections));
+                case "DELIVERY_NOTES":
+                    $delivery_notes = DeliveryNote::whereHas('delivery.summary.sale', function ($query) use ($client) {
+                        $query->where('client_id', $client->id);
+                    })
+                        // ->where("date", ">=", env('TIMESTAMP_CUTOFF'))
+                        ->orderBy("date", "desc")
+                        ->paginate((new AppController())->paginate);
+                    return response()->json(DeliveryNoteResource::collection($delivery_notes));
                 default:
                     return response()->json([]);
             }

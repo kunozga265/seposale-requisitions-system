@@ -7,6 +7,7 @@ use App\Http\Resources\RequestFormResource;
 use App\Http\Resources\SaleResource;
 use App\Models\AccountingRecord;
 use App\Models\Delivery;
+use App\Models\DeliveryNote;
 use App\Models\Expense;
 use App\Models\Payable;
 use App\Models\Summary;
@@ -222,6 +223,20 @@ class DeliveryController extends Controller
                     "date"  => Carbon::now()->getTimestamp(),
                 ];
 
+                DeliveryNote::create([
+                    "serial" => (new AppController())->generateUniqueCode("DELIVERY_NOTE"),
+                    "code" => $this->getNoteCodeNumber($summary->delivery),
+                    "date"  => Carbon::now()->getTimestamp(),
+                    "quantity" => floatval($request->quantity),
+                    "cost" => $request->cost,
+                    "total" => ($request->quantity / $summary->quantity) * $summary->amount,
+                    "balance" => $balance,
+                    "photo" => $request->photo,
+                    "recipient_name" => $request->recipient_name,
+                    "recipient_phone_number" => $request->recipient_phone_number,
+                    "delivery_id" => $summary->delivery->id,
+                ]);
+
 
                 //record cogs
                 $cogs_record = $summary->product->cogsAccount->records()->create([
@@ -412,7 +427,7 @@ class DeliveryController extends Controller
                 $summary->delivery->update([
                     "status" => $balance == 0 ? 2 : 1,
                     "quantity_delivered" => $delivered_quantity,
-                    "notes" => json_encode($notes)
+                    // "notes" => json_encode($notes)
                 ]);
 
                 $message = $summary->delivery->status == 2 ?
@@ -579,6 +594,16 @@ class DeliveryController extends Controller
         if (is_object($last)) {
 
             return $last->code != null ? $last->code + 1 : 1;
+        } else {
+            return 1;
+        }
+    }
+
+     public function getNoteCodeNumber(Delivery $delivery)
+    {
+        $last = $delivery->deliveryNotes()->orderBy("code", "desc")->first();
+        if (is_object($last)) {
+            return $last->code + 1;
         } else {
             return 1;
         }

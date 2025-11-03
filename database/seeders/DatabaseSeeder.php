@@ -3,11 +3,15 @@
 namespace Database\Seeders;
 
 use App\Http\Controllers\AccountingAccountController;
+use App\Http\Controllers\AppController;
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\PayableController;
 use App\Models\AccountingAccount;
 use App\Models\ClientType;
 use App\Models\Client;
+use App\Models\Delivery;
+use App\Models\DeliveryNote;
 use App\Models\Expense;
 use App\Models\MaterialsType;
 use App\Models\Payable;
@@ -57,9 +61,30 @@ class DatabaseSeeder extends Seeder
         // $this->call(ClientTypeTableSeeder::class);
 
         //capitalise each client's name
-        Client::all()->each(function ($client) {
-            $client->name = ucwords($client->name);
-            $client->save();
+        // Client::all()->each(function ($client) {
+        //     $client->name = ucwords($client->name);
+        //     $client->save();
+        // });
+
+        //transfer all notes to objects
+        Delivery::all()->each(function ($delivery) {
+
+            $notes = json_decode($delivery->notes, true) ?? [];
+            foreach ($notes as $note) {
+               DeliveryNote::create([
+                    "serial" => (new AppController())->generateUniqueCode("DELIVERY_NOTE"),
+                    "code" =>(new DeliveryController())->getNoteCodeNumber($delivery),
+                    "date"  => $note["date"],
+                    "quantity" => $note["quantity"],
+                    "cost" => $note["cost"],
+                    "total" => $note["total"],
+                    "balance" => $note["balance"],
+                    "photo" => $note["photo"],
+                    "recipient_name" => $note["recipientName"],
+                    "recipient_phone_number" => $note["recipientPhoneNumber"],
+                    "delivery_id" => $delivery->id,
+                ]);
+            }
         });
     }
 }

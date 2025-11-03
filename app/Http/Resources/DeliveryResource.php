@@ -23,7 +23,7 @@ class DeliveryResource extends JsonResource
             "status" => intval($this->status),
             "photo" => $this->photo,
             "trackingNumber" => $this->tracking_number,
-            "notes" => json_decode($this->notes),
+            "notes" => DeliveryNoteResource::collection($this->deliveryNotes),
             "client" => $this->summary->sale->client,
             "location" => $this->summary->sale->location,
             "expense" => new ExpenseResource($this->expense),

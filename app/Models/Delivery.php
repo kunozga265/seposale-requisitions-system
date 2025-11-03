@@ -38,6 +38,10 @@ class Delivery extends Model
     {
         return $this->hasMany(Expense::class);
     }
+    public function deliveryNotes()
+    {
+        return $this->hasMany(DeliveryNote::class);
+    }
 
     public function overdue()
     {
@@ -68,9 +72,9 @@ class Delivery extends Model
 
     public function availableCostBalance(){
         $total = 0;
-        $notes = json_decode($this->notes, true) ?? [];
-        foreach($notes as $note){
-            $total += $note["cost"] ?? 0;
+        // $notes = json_decode($this->notes, true) ?? [];
+        foreach($this->deliveryNotes as $note){
+            $total += $note->cost ?? 0;
         }
         return $this->costs() - $total;
     }

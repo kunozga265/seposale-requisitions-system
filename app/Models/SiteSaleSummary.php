@@ -136,6 +136,17 @@ class SiteSaleSummary extends Model
         return $sum;
     }
 
+    public function gross()
+    {
+        return $this->amount - $this->collectionCosts();
+    }
+    public function paid()
+    {
+        return $this->amount - $this->balance;
+    }
+
+
+
     public function profit()
     {
         $paid = $this->amount - $this->balance;

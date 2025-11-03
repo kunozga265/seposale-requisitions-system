@@ -16,6 +16,7 @@ use App\Models\AccountingRecord;
 use App\Models\Client;
 use App\Models\Collection;
 use App\Models\Delivery;
+use App\Models\DeliveryNote;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Payable;
@@ -420,6 +421,10 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (Client::where('serial', $code)->exists());
+        } elseif ($type == "DELIVERY_NOTE") {
+            do {
+                $code = $this->getNewCode();
+            } while (DeliveryNote::where('serial', $code)->exists());
         }elseif ($type == "ACCOUNTING") {
             do {
                 $code = $this->getNewCode();
