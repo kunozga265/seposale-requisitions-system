@@ -20,8 +20,8 @@ class CreateDeliveryNotesTable extends Migration
             $table->double("date");
             $table->double("quantity");
             $table->double("cost")->nullable();
-            $table->double("total");
-            $table->double("balance");
+            $table->double("total")->nullable();
+            $table->double("balance")->nullable();
             $table->string("photo")->nullable();
             $table->string("recipient_name");
             $table->string("recipient_phone_number");

@@ -77,11 +77,11 @@ class DatabaseSeeder extends Seeder
                     "date"  => $note["date"],
                     "quantity" => $note["quantity"],
                     "cost" => isset($note["cost"]) ? $note["cost"] : null,
-                    "total" => $note["total"],
-                    "balance" => $note["balance"],
-                    "photo" => $note["photo"],
-                    "recipient_name" => $note["recipientName"],
-                    "recipient_phone_number" => $note["recipientPhoneNumber"],
+                    "total" => isset($note["total"]) ? $note["total"] : null,
+                    "balance" => isset($note["balance"]) ? $note["balance"] : null,
+                    "photo" => isset($note["photo"]) ? $note["photo"] : null,
+                    "recipient_name" => isset($note["recipientName"]) ? $note["recipientName"] : null,
+                    "recipient_phone_number" => isset($note["recipientPhoneNumber"]) ? $note["recipientPhoneNumber"] : null,
                     "delivery_id" => $delivery->id,
                 ]);
             }
