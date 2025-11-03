@@ -63,7 +63,7 @@ class ClientController extends Controller
                 $query->where('client_id', $client->id);
             })
                 ->where("date", ">=", env('TIMESTAMP_CUTOFF'))
-                ->orderBy("date", "desc");
+                ->orderBy("date", "desc")->get();
 
 
             $total_payments = 0;
