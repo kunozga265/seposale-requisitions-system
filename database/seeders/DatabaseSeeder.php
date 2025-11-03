@@ -76,7 +76,7 @@ class DatabaseSeeder extends Seeder
                     "code" =>(new DeliveryController())->getNoteCodeNumber($delivery),
                     "date"  => $note["date"],
                     "quantity" => $note["quantity"],
-                    "cost" => $note["cost"],
+                    "cost" => isset($note["cost"]) ? $note["cost"] : null,
                     "total" => $note["total"],
                     "balance" => $note["balance"],
                     "photo" => $note["photo"],
