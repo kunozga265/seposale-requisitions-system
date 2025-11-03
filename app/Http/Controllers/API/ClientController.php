@@ -67,25 +67,23 @@ class ClientController extends Controller
 
 
             $total_payments = 0;
-            // Use a keyed array for O(1) lookups instead of O(N) in_array() checks
-            $processed_receipts = [];
-
-            // Combine both sales collections into one
-            $all_sales = array_merge($sales, $siteSales);
-
-            foreach ($all_sales as $sale) {
+            $receipt_ids = [];
+            foreach ($sales as $sale) {
                 foreach ($sale->receipts as $receipt) {
-                    $receipt_id = $receipt->id;
-
-                    // Check if we have already processed this specific receipt ID
-                    if (!isset($processed_receipts[$receipt_id])) {
+                    $total_payments += $receipt->amount;
+                    $receipt_ids[] = $receipt->id;
+                }
+            }
+            foreach ($siteSales as $sale) {
+                foreach ($sale->receipts as $receipt) {
+                    //in case already paid
+                    if (!in_array($receipt->id, $receipt_ids)) {
                         $total_payments += $receipt->amount;
-
-                        // Mark this ID as processed
-                        $processed_receipts[$receipt_id] = true;
+                        $receipt_ids[] = $receipt->id;
                     }
                 }
             }
+
 
             //Response
             return response()->json([
@@ -100,7 +98,6 @@ class ClientController extends Controller
                     "collections" => $collections->count(),
                     "delivery_notes" => $delivery_notes->count(),
                 ],
-
                 "total_payments" => $total_payments,
 
                 'active_sales ' => SummaryResource::collection($active_sales),
