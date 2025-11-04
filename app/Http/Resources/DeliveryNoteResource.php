@@ -28,6 +28,7 @@ class DeliveryNoteResource extends JsonResource
             "recipientName" => $this->recipient_name,
             "recipientPhoneNumber" => $this->recipient_phone_number,
             "summary" => new SummaryResource($this->delivery->summary),
+            "location" => $this->delivery->summary->sale->location,
             "delivery" => [
                 "id" => intval($this->delivery->id),
                 "status" => intval($this->delivery->status),
