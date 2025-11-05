@@ -377,6 +377,11 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
 
+            Route::get('/{code}/reports', [
+                "uses"  => "App\Http\Controllers\API\SiteController@reports",
+                'roles' => ['employee', 'management']
+            ]);
+
             Route::get('/{code}/collections', [
                 "uses"  => "App\Http\Controllers\API\SiteController@collections",
                 'roles' => ['employee', 'management']
@@ -391,6 +396,13 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses"  => "App\Http\Controllers\InventoryController@update",
                 'roles' => ['employee', 'management']
             ]);
+
+            Route::post('/{code}/sale/{id}', [
+                "uses"  => "App\Http\Controllers\SiteSaleController@show",
+                'roles' => ['employee', 'management']
+            ]);
+
+
         });
     });
 });

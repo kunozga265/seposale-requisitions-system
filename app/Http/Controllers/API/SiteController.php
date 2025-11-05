@@ -6,6 +6,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CollectionResource;
 use App\Http\Resources\SiteSaleResource;
+use App\Http\Resources\InventorySummaryResource;
 use App\Models\Site;
 use App\Models\SiteSale;
 use Carbon\Carbon;
@@ -29,6 +30,18 @@ class SiteController extends Controller
         }
     }
 
+    public function reports(Request $request, $code)
+    {
+        $site = Site::where("code", $code)->first();
+
+        if (is_object($site)) {
+            $summaries = $site->summaries()->orderBy("date", "desc")->paginate((new AppController())->paginate);
+            return response()->json(InventorySummaryResource::collection($summaries));
+        } else {
+            return response()->json(['message' => "Site not found"], 404);
+        }
+    }
+
     public function collections(Request $request, $code)
     {
         $site = Site::where("code", $code)->first();
@@ -36,7 +49,6 @@ class SiteController extends Controller
         if (is_object($site)) {
             $collections = $site->collections()->orderBy("date", "desc")->paginate((new AppController())->paginate);
             return response()->json(CollectionResource::collection($collections));
-       
         } else {
             return response()->json(['message' => "Site not found"], 404);
         }
