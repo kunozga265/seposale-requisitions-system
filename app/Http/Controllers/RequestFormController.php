@@ -306,6 +306,7 @@ class RequestFormController extends Controller
                 'type' => $request->type,
                 'personCollectingAdvance' => $request->personCollectingAdvance,
                 'purpose' => $request->purpose,
+                'site_id' => $request->site_id,
                 //                'project_id'                    =>  $request->projectId,
                 // 'information' => json_encode($request->information),
                 'total' => $request->total,
@@ -1414,6 +1415,8 @@ class RequestFormController extends Controller
                     ]);
 
                     $index++;
+
+                    
                 }
 
                 //Update the account balance
@@ -1434,8 +1437,6 @@ class RequestFormController extends Controller
                 'dateInitiated' => Carbon::now()->getTimestamp(),
                 'approvalStatus' => 3
             ]);
-
-
 
             (new NotificationController())->notifyUser($requestForm, "INITIATED");
             (new NotificationController())->notifyFinance($requestForm, "WAITING_RECONCILE");

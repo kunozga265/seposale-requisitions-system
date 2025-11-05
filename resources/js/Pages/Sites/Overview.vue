@@ -1204,6 +1204,7 @@ export default {
                 .transform(data => ({
                     ...data,
                     total: this.totalCost,
+                    site_id: this.site.data.id
                 }))
                 .post(this.route('request-forms.store'), {
                     preserveScroll: true,

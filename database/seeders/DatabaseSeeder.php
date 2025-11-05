@@ -15,6 +15,7 @@ use App\Models\DeliveryNote;
 use App\Models\Expense;
 use App\Models\MaterialsType;
 use App\Models\Payable;
+use App\Models\PaymentMethod;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -67,24 +68,36 @@ class DatabaseSeeder extends Seeder
         // });
 
         //transfer all notes to objects
-        Delivery::all()->each(function ($delivery) {
+        // Delivery::all()->each(function ($delivery) {
 
-            $notes = json_decode($delivery->notes, true) ?? [];
-            foreach ($notes as $note) {
-               DeliveryNote::create([
-                    "serial" => (new AppController())->generateUniqueCode("DELIVERY_NOTE"),
-                    "code" =>(new DeliveryController())->getNoteCodeNumber($delivery),
-                    "date"  => $note["date"],
-                    "quantity" => $note["quantity"],
-                    "cost" => isset($note["cost"]) ? $note["cost"] : null,
-                    "total" => isset($note["total"]) ? $note["total"] : null,
-                    "balance" => isset($note["balance"]) ? $note["balance"] : null,
-                    "photo" => isset($note["photo"]) ? $note["photo"] : null,
-                    "recipient_name" => isset($note["recipientName"]) ? $note["recipientName"] : null,
-                    "recipient_phone_number" => isset($note["recipientPhoneNumber"]) ? $note["recipientPhoneNumber"] : null,
-                    "delivery_id" => $delivery->id,
-                ]);
-            }
-        });
+        //     $notes = json_decode($delivery->notes, true) ?? [];
+        //     foreach ($notes as $note) {
+        //        DeliveryNote::create([
+        //             "serial" => (new AppController())->generateUniqueCode("DELIVERY_NOTE"),
+        //             "code" =>(new DeliveryController())->getNoteCodeNumber($delivery),
+        //             "date"  => $note["date"],
+        //             "quantity" => $note["quantity"],
+        //             "cost" => isset($note["cost"]) ? $note["cost"] : null,
+        //             "total" => isset($note["total"]) ? $note["total"] : null,
+        //             "balance" => isset($note["balance"]) ? $note["balance"] : null,
+        //             "photo" => isset($note["photo"]) ? $note["photo"] : null,
+        //             "recipient_name" => isset($note["recipientName"]) ? $note["recipientName"] : null,
+        //             "recipient_phone_number" => isset($note["recipientPhoneNumber"]) ? $note["recipientPhoneNumber"] : null,
+        //             "delivery_id" => $delivery->id,
+        //         ]);
+        //     }
+        // });
+
+        AccountingAccount::create([
+            'name' => 'WHT Recoverable / Tax Credits',
+            'code' => 1200,
+            'type' => "DEBIT",
+            'special_type' => "WHT",
+            'accounts_group_id' => 1, // Assuming 1 is the ID for Current Assets
+        ]);
+
+          PaymentMethod::create([
+            "name" => "Withholding"
+        ]);
     }
 }

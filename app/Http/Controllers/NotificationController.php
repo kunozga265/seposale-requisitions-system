@@ -284,12 +284,10 @@ class NotificationController extends Controller
 
                 //Send email to employees who can approve
                 //Mail::to($employee)->send(new RequestFormPendingApprovalMail($employee, $message, $subject));
-               
+
                 //Send a push notification to the app for the user
                 $this->pushNotification("USER-{$employee->id}", $subject, $message);
-
             }
-            
         } elseif ($type == "REQUEST_FORM_RESUBMITTED") {
             //Find the next person(s) to approve
             $position = Position::find($object->stagesApprovalPosition);
@@ -487,7 +485,226 @@ class NotificationController extends Controller
             }
 
             // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
+        } else if ($type == "payables") {
+            $sale = $object;
+
+            $list = "";
+
+            $payables = $sale->payables()->where('paid',0)->get();
+            for ($i = 0; $i < $payables->count(); $i++) {
+                $total = number_format($payables[$i]->total, 2);
+                if ($i < ($payables->count() - 1)) {
+                    $list .= $payables[$i]->getName() . " (MK" . $total . ") " . ", ";
+                } else {
+                    $list .= $payables[$i]->getName() .  " (MK" . $total . ") ";
+                }
+            }
+
+            // $name = $requestForm->user->firstName . " " . $requestForm->user->lastName;
+            $subject = "Payables under Sales Order #". $sale->formattedCode();
+            $message = "The following creditors need to be paid: $list ";
+
+            foreach ($accountants as $accountant) {
+                error_log($accountant->id);
+
+                //Send email to accountants
+                //Mail::to($accountant)->send(new RequestFormWaitingInitiationMail($accountant, $message, $subject));
+
+                //Send a push notification to the app for the accountant
+                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+            }
+
+            // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
         }
+    }
+
+    public function notifyCreditors($requestForm)
+    {
+        $role = Role::where('name', 'accountant')->first();
+        $accountants = $role->users;
+
+        foreach ($requestForm->items as $item) {
+            $check = false;
+            $name = "";
+            $type = "";
+            $phone_number = "";
+
+
+            if ($item->transporter != null) {
+                $check = true;
+                $name = ucwords($item->transporter->name);
+                $type = "delivery";
+                $phone_number = $item->transporter->phone_number;
+            } else if ($item->supplier != null) {
+                $check = true;
+                $name = ucwords($item->supplier->name);
+                $type = "supply";
+                $phone_number = $item->supplier->phone_number;
+            }
+
+            if ($check) {
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => "credit_voucher",
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Transporter/Supplier Name
+                                        "text" => $name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //delivery or supply
+                                        "text" => $type
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //product name
+                                        "text" => $item->product_name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //location
+                                        "text" => ucwords($requestForm->delivery?->summary->sale->location) ?? "Unspecified"
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Item Total
+                                        "text" => number_format($item->total_cost - $item->balance, 2)
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //requisition code
+                                        "text" => $requestForm->formattedCode()
+                                    ],
+                                ]
+                            ],
+                        ]
+                    ]
+                ];
+                $this->pushWhatsappMessage($body);
+
+                $message = "$name has been notified of the credit $type.";
+                $subject = "Credit Voucher Notice";
+
+                foreach ($accountants as $accountant) {
+                    $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+                }
+            }
+        }
+
+
+
+
+
+        // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
+
+    }
+
+    public function notifySupplier($requestForm)
+    {
+        $role = Role::where('name', 'accountant')->first();
+        $accountants = $role->users;
+
+
+        foreach ($requestForm->items as $item) {
+            $check = false;
+            $name = "";
+            $phone_number = "";
+
+
+            if ($item->transporter != null) {
+                $check = true;
+                $name = ucwords($item->transporter->name);
+                $phone_number = $item->transporter->phone_number;
+            } else if ($item->supplier != null) {
+                $check = true;
+                $name = ucwords($item->supplier->name);
+                $phone_number = $item->supplier->phone_number;
+            }
+
+            if ($item->inventory != null) {
+                $qty = $item->inventory->formattedUnits($item->quantity);
+                $item_name = $item->inventory->name . " ($qty)";
+            } else {
+                $item_name = "Transportation x {$item->quantity}";
+            }
+
+
+            if ($check) {
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => "supplier_voucher",
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Transporter/Supplier Name
+                                        "text" => $name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //site name
+                                        "text" => $requestForm->site?->name ?? "Njewa"
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //item name
+                                        "text" => $item_name
+                                    ],
+
+                                    [
+                                        "type" => "text",
+                                        //Item Total
+                                        "text" => number_format($item->total_cost - $item->balance, 2)
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //requisition code
+                                        "text" => $requestForm->formattedCode()
+                                    ],
+                                ]
+                            ],
+                        ]
+                    ]
+                ];
+
+                $this->pushWhatsappMessage($body);
+
+                $message = "$name has been notified of the credit supply.";
+                $subject = "Supply Voucher Notice";
+
+                foreach ($accountants as $accountant) {
+                    $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+                }
+            }
+        }
+
+
+
+
+
+        // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
+
     }
 
     public function requestFormNotifications($requestForm, $type)
@@ -516,9 +733,9 @@ class NotificationController extends Controller
     {
         // error_log($to);
         // $to = "POSITION-2";
-        // $to = "USER-10";
+        $to = "USER-1";
 
-        
+
 
         //notification
         // create the Google client

@@ -114,6 +114,7 @@ class RequestForm extends Model
         "type",
         "personCollectingAdvance",
         "project_id",
+        "site_id",
         "information",
         "total",
         "delivery_id",

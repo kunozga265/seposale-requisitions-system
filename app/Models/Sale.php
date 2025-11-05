@@ -38,6 +38,11 @@ class Sale extends Model
         return $this->hasMany(PaymentReceipt::class);
     }
 
+    public function payables()
+    {
+        return $this->hasMany(Payable::class);
+    }
+
     public function expense()
     {
         return $this->hasOne(Expense::class);

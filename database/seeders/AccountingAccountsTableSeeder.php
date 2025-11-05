@@ -191,6 +191,14 @@ class AccountingAccountsTableSeeder extends Seeder
             'accounts_group_id' => 2, // Assuming 2 is the ID for Inventory Assets
         ]);
 
+        AccountingAccount::create([
+            'name' => 'WHT Recoverable / Tax Credits',
+            'code' => 1200,
+            'type' => "DEBIT",
+            'special_type' => "WHT",
+            'accounts_group_id' => 1, // Assuming 1 is the ID for Current Assets
+        ]);
+
         // Create Property Plant and Equipment (PPE) accounts
         AccountingAccount::create([
             'name' => 'Land',

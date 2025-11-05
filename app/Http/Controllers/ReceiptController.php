@@ -13,6 +13,7 @@ use App\Models\Sale;
 use App\Models\SiteSale;
 use App\Models\SiteSaleSummary;
 use App\Models\Summary;
+use App\Models\PaymentMethod;
 use App\Models\SystemLog;
 use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -76,19 +77,19 @@ class ReceiptController extends Controller
         //get user
         $user = (new AppController())->getAuthUser($request);
 
+        $request->validate([
+            'withholding' => ['required'],
+            'information' => ['required'],
+            'type' => ['required'],
+        ]);
+
         $sale = $request->type == "ORDINARY" ? Sale::find($id) : SiteSale::find($id);
 
         if (is_object($sale)) {
 
             $receipt = Cache::lock($user->id . ':receipt:store', 10)->get(function () use ($user, $request, $sale) {
 
-                //Validate all the important attributes
-                $request->validate([
-                    'account_id' => ['required'],
-                    'payment_method_id' => ['required'],
-                    'information' => ['required'],
-                    'type' => ['required'],
-                ]);
+
 
                 //Checking
                 $total = 0;
@@ -116,6 +117,21 @@ class ReceiptController extends Controller
                     return Redirect::back()->with("error", "Receipt amount is zero");
                 }
 
+                if ($request->withholding) {
+                    $account_id = (new AccountingAccountController())->getAccount(1200)->id;
+                    $payment_method_id = PaymentMethod::where('name','Withholding')->first()->id;
+                } else {
+                    $request->validate([
+                        'account_id' => ['required'],
+                        'payment_method_id' => ['required'],
+                    ]);
+
+                    $account_id = $request->account_id;
+                    $payment_method_id = $request->payment_method_id;
+                }
+                //Validate all the important attributes
+
+
 
                 // $receipt = Receipt::find(1);
                 $receipt = Receipt::create([
@@ -124,8 +140,8 @@ class ReceiptController extends Controller
                     'client_id' => $sale->client->id,
                     // "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
                     // "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
-                    'account_id' => $request->account_id,
-                    'payment_method_id' => $request->payment_method_id,
+                    'account_id' => $account_id,
+                    'payment_method_id' => $payment_method_id,
                     'amount' => $total,
                     'reference' => strtoupper($request->reference),
                     // 'information' => json_encode($filteredProducts),
@@ -133,7 +149,7 @@ class ReceiptController extends Controller
                     'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
                 ]);
 
-                $wallet_account = AccountingAccount::find($request->account_id);
+                $wallet_account = AccountingAccount::find($account_id);
                 $unearned_revenue_account = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
                 $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
 
@@ -582,13 +598,19 @@ class ReceiptController extends Controller
                 return $receipt;
             });
 
-               //clear all proof of payments
+            //clear all proof of payments
             $pops = $sale->pops()->where("active", 1)->get();
 
             foreach ($pops as $pop) {
                 $pop->update([
                     "active" => false
                 ]);
+            }
+
+            if ($request->type == "ORDINARY") {
+                if ($sale->payables->count() > 0) {
+                    (new NotificationController())->notifyAccounts($sale, "payables");
+                }
             }
 
 

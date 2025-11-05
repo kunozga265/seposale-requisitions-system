@@ -669,6 +669,7 @@
 
                                     <div class="mb-4">
                                         <!--                                    <jet-label for="lastRefillDate" value="Backdate" />-->
+                                        <div class="flex justify-between mb-2">
                                         <div class="flex items-center mb-2">
                                             <input checked id="backdate" type="checkbox" value=""
                                                 v-model="backdateCheck"
@@ -676,10 +677,18 @@
                                             <label for="backdate"
                                                 class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
                                         </div>
+                                        <div class="flex items-center mb-2">
+                                            <input checked id="withholding" type="checkbox" value=""
+                                                v-model="form.withholding"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="withholding"
+                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Withholding Tax</label>
+                                        </div>
+                                        </div>
                                         <vue-date-time-picker v-if="backdateCheck" color="#1a56db" v-model="date"
                                             :max-date="maxDate" />
                                     </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    <div v-if="!form.withholding" class="grid grid-cols-1 md:grid-cols-2 gap-2">
 
                                         <div class="mb-4">
                                             <jet-label for="paymentMethod" value="Select Account" />
@@ -1197,6 +1206,8 @@ export default {
                 receiptCode: "",
 
                 //pop
+
+                withholding: false,
 
                 popType: null,
                 popDescription: null,

@@ -13,6 +13,7 @@ use App\Models\RequestFormItem;
 use App\Models\SystemLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -121,11 +122,18 @@ class PayableController extends Controller
                         "account_id" => $alternative_account->id,
                         "transporter_id" => $item["transporterId"],
                         "supplier_id" => $item["supplierId"],
-                        "delivery_id" => $requestForm->delivery->id,
-                        "sale_id" => $requestForm->delivery->summary->sale->id,
+                        "delivery_id" => $requestForm->delivery?->id,
+                        "sale_id" => $requestForm->delivery?->summary->sale->id,
                         // "request_id" => $requestForm->id,
                         "paid" => false,
                     ]);
+
+                    if ($requestForm->type == 'INVENTORY') {
+                        $request_form_item->update([
+                            "transporter_id" => $item["transporterId"],
+                            "supplier_id" => $item["supplierId"],
+                        ]);
+                    }
                 }
 
                 //Update the account balance
@@ -138,6 +146,12 @@ class PayableController extends Controller
             $accounts_payable_account->update([
                 "balance" => $accounts_payable_balance
             ]);
+
+            if ($requestForm->type == 'OPERATIONS') {
+                (new NotificationController())->notifyCreditors($requestForm);
+            } else if ($requestForm->type == 'INVENTORY') {
+                (new NotificationController())->notifySupplier($requestForm);
+            }
 
             //Logging
             SystemLog::create([
