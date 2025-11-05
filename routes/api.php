@@ -397,7 +397,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['employee', 'management']
             ]);
 
-            Route::post('/{code}/sale/{id}', [
+            Route::get('/{code}/sale/{id}', [
                 "uses"  => "App\Http\Controllers\SiteSaleController@show",
                 'roles' => ['employee', 'management']
             ]);
