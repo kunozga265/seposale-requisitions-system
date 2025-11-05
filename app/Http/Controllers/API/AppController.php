@@ -73,6 +73,7 @@ class AppController extends Controller
         $totalCount = $toApprove->count() + $active->count();
 
         $clients = [];
+        $trashed_clients = [];
         $products = [];
         $accounts = [];
         $transporters = [];
@@ -83,18 +84,21 @@ class AppController extends Controller
             $date = Carbon::createFromTimestamp($request->query('timestamp'));
 
             $clients = Client::where("updated_at", ">=", $date)->get();
+            $trashed_clients = Client::where("deleted_at", ">=", $date)->onlyTrashed()->get();
             $accounts = AccountingAccount::where("updated_at", ">=", $date)->get();
             $transporters = Transporter::where("updated_at", ">=", $date)->get();
             $suppliers = Supplier::where("updated_at", ">=", $date)->get();
             
-            
+            $clients = Client::where("updated_at", ">=", $date)->get();
             if(ProductVariant::where("updated_at", ">=", $date)->exists()){
-                $products = Product::all();
+            //    $products = Product::all();
             }
 
         }
 
         $sites = Site::orderBy("name","asc")->get();
+
+        
 
         return response()->json([
             'to_approve' => RequestFormResource::collection($toApprove),
@@ -107,6 +111,7 @@ class AppController extends Controller
             'total_count' => $totalCount,
             'products' => ProductResource::collection($products),
             'clients' => ClientResource::collection($clients),
+            'trashed_clients' => ClientResource::collection($clients),
             'accounts' => AccountingAccountResource::collection($accounts),
             'sites' => SiteResource::collection($sites),
             'transporters' => $transporters,
