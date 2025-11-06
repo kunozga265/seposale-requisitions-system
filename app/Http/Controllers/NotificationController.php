@@ -24,6 +24,7 @@ use App\Models\Quotation;
 use App\Models\Receipt;
 use App\Models\Role;
 use App\Models\Sale;
+use App\Models\CreditVoucher;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -1383,6 +1384,61 @@ class NotificationController extends Controller
                         "whatsapp" => true
                     ]);
                 }
+                break;
+            case "credit_voucher":
+                $credit_voucher = CreditVoucher::where('serial', $serial)->first();
+
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $credit_voucher->phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Transporter/Supplier Name
+                                        "text" => $credit_voucher->contact->name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //delivery or supply
+                                        "text" => $credit_voucher->transporter != null ? "delivery" : "supply"
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //product name
+                                        "text" => $credit_voucher->requestFormItem->product_name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //location
+                                        "text" => ucwords($credit_voucher->requestForm->delivery?->summary->sale->location) ?? "Unspecified"
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Item Total
+                                        "text" => number_format($credit_voucher->amount, 2)
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //requisition code
+                                        "text" => $credit_voucher->requestForm->formattedCode()
+                                    ],
+                                ]
+                            ],
+                        ]
+                    ]
+                ];
+                $check = $this->pushWhatsappMessage($body);
+
                 break;
 
             default:
