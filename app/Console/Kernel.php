@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Http\Controllers\NotificationController;
+use App\Models\Sale;
 use App\Models\PaymentReceipt;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -20,9 +21,10 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
+        //Proof of Payments
         Schedule::call(function () {
             Log::info("Running Proof of Payments hourly reminder");
-            
+
             PaymentReceipt::where("active", true)
                 ->whereHas('sale', function ($query) {
                     $query->where('status', '!=', 2);
@@ -35,6 +37,22 @@ class Kernel extends ConsoleKernel
                     );
                 });
         })->hourly()->between('6:00', '14:00');
+
+        //Proof of Payments
+        Schedule::call(function () {
+            Log::info("Running payables reminder");
+
+            Sale::where('status', '>', 0)
+                ->whereHas('payables', function ($query) {
+                    $query->where('paid', 0);
+                })
+                ->each(function (Sale $sale) {
+                    (new NotificationController())->notifyAccounts(
+                        $sale,
+                        "payables",
+                    );
+                });
+        })->dailyAt('8:00');
     }
 
     /**
