@@ -52,6 +52,10 @@ class RequestForm extends Model
     {
         return $this->hasMany(Payable::class, "request_id", "id");
     }
+    public function creditVouchers()
+    {
+        return $this->hasMany(CreditVoucher::class, "request_id", "id");
+    }
 
     public function expense()
     {

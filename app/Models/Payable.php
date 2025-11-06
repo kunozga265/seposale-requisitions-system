@@ -39,6 +39,10 @@ class Payable extends Model
     {
         return $this->hasOne(RequestFormItem::class);
     }
+    public function creditVoucher()
+    {
+        return $this->hasOne(CreditVoucher::class);
+    }
 
     public function requestForm()
     {
@@ -66,6 +70,7 @@ class Payable extends Model
 
 
     protected $fillable = [
+        "serial",
         "code",
         "description",
         "total",

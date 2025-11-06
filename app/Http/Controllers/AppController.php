@@ -32,6 +32,7 @@ use App\Models\SiteSale;
 use App\Models\Statement;
 use App\Models\Summary;
 use App\Models\User;
+use App\Models\CreditVoucher;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -429,6 +430,14 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (AccountingRecord::where('serial', $code)->exists());
+        }elseif ($type == "CREDIT_VOUCHER") {
+            do {
+                $code = $this->getNewCode();
+            } while (CreditVoucher::where('serial', $code)->exists());
+        }elseif ($type == "PAYABLE") {
+            do {
+                $code = $this->getNewCode();
+            } while (Payable::where('serial', $code)->exists());
         }elseif ($type == "STATEMENT") {
             do {
                 $code = $this->getNewCode();

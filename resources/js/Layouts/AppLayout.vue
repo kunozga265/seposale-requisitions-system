@@ -75,9 +75,9 @@
                     </a>
                   </li>
                   <li>
-                    <a :href="route('expenses.index')"
+                    <a :href="route('credit-vouchers.index')"
                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                      Expenses
+                      Credit Vouchers
                     </a>
                   </li>
 

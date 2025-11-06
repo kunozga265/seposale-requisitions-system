@@ -10,11 +10,13 @@ use App\Models\RequestForm;
 use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
 use App\Models\RequestFormItem;
+use App\Models\CreditVoucher;
 use App\Models\SystemLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class PayableController extends Controller
@@ -113,8 +115,9 @@ class PayableController extends Controller
 
                     $index++;
 
-                    Payable::create([
+                   $payable = Payable::create([
                         "code" => (new PayableController())->getCodeNumber(),
+                        'serial' => (new AppController())->generateUniqueCode("PAYABLE"),
                         "description" => $item["details"],
                         "total" => $item["amount"],
                         "date" => $item["date"] + $index,
@@ -132,6 +135,25 @@ class PayableController extends Controller
                         $request_form_item->update([
                             "transporter_id" => $item["transporterId"],
                             "supplier_id" => $item["supplierId"],
+                        ]);
+                    }
+
+                    if ($requestForm->type == 'OPERATIONS') {
+                        CreditVoucher::create([
+                            'serial' => (new AppController())->generateUniqueCode("CREDIT_VOUCHER"),
+                            "code" => (new CreditVoucherController())->getCodeNumber(),
+                            "date" => Carbon::now()->getTimestamp(),
+                            "amount" => $item["amount"],
+                            "balance" => $item["amount"],
+                            "payable_id" => $payable->id,
+                            "transporter_id" => $item["transporterId"],
+                            "supplier_id" => $item["supplierId"],
+                            "delivery_id" => $requestForm->delivery?->id,
+                            "sale_id" => $requestForm->delivery?->summary->sale->id,
+                            "paid" => false,
+                            "request_id" => $requestForm->id,
+                            "request_form_item" => $request_form_item->id,
+
                         ]);
                     }
                 }

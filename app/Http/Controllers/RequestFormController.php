@@ -1376,6 +1376,9 @@ class RequestFormController extends Controller
                         $request_form_item->payable?->update([
                             "paid" => true
                         ]);
+                        $request_form_item->payable?->creditVoucher?->update([
+                            "paid" => true
+                        ]);
                     }
 
                     $main_record = AccountingRecord::create([

@@ -523,23 +523,25 @@ class NotificationController extends Controller
         $role = Role::where('name', 'accountant')->first();
         $accountants = $role->users;
 
-        foreach ($requestForm->items as $item) {
+        $credit_vouchers = $requestForm->creditVouchers;
+
+        foreach ($credit_vouchers as $credit_voucher) {
             $check = false;
             $name = "";
             $type = "";
             $phone_number = "";
 
 
-            if ($item->transporter != null) {
+            if ($credit_voucher->transporter != null) {
                 $check = true;
-                $name = ucwords($item->transporter->name);
+                $name = ucwords($credit_voucher->transporter->name);
                 $type = "delivery";
-                $phone_number = $item->transporter->phone_number;
-            } else if ($item->supplier != null) {
+                $phone_number = $credit_voucher->transporter->phone_number;
+            } else if ($credit_voucher->supplier != null) {
                 $check = true;
-                $name = ucwords($item->supplier->name);
+                $name = ucwords($credit_voucher->supplier->name);
                 $type = "supply";
-                $phone_number = $item->supplier->phone_number;
+                $phone_number = $credit_voucher->supplier->phone_number;
             }
 
             if ($check) {
@@ -570,7 +572,7 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //product name
-                                        "text" => $item->product_name
+                                        "text" => $credit_voucher->requestFormItem->product_name
                                     ],
                                     [
                                         "type" => "text",
@@ -580,7 +582,7 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //Item Total
-                                        "text" => number_format($item->total_cost - $item->balance, 2)
+                                        "text" => number_format($credit_voucher->amount, 2)
                                     ],
                                     [
                                         "type" => "text",

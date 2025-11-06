@@ -17,7 +17,7 @@ class PayableResource extends JsonResource
         return [
             "id"                    => $this->id,
             "code"                  => $this->formattedCode(),
-            "payee"                 => $this->payee(),
+            "payee"                 => $this->getName(),
             "description"           => $this->description,
             "total"                 => $this->total,
             "date"                  => $this->date,
