@@ -43,6 +43,10 @@ class Payable extends Model
     {
         return $this->hasOne(CreditVoucher::class);
     }
+    public function supplierVoucher()
+    {
+        return $this->hasOne(SupplierVoucher::class);
+    }
 
     public function requestForm()
     {

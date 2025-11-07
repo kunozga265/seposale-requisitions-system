@@ -11,6 +11,7 @@ use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
 use App\Models\RequestFormItem;
 use App\Models\CreditVoucher;
+use App\Models\SupplierVoucher;
 use App\Models\SystemLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -115,7 +116,7 @@ class PayableController extends Controller
 
                     $index++;
 
-                   $payable = Payable::create([
+                    $payable = Payable::create([
                         "code" => (new PayableController())->getCodeNumber(),
                         'serial' => (new AppController())->generateUniqueCode("PAYABLE"),
                         "description" => $item["details"],
@@ -155,6 +156,23 @@ class PayableController extends Controller
                             "request_form_item" => $request_form_item->id,
 
                         ]);
+                    } else if ($requestForm->type == 'INVENTORY') {
+                         SupplierVoucher::create([
+                            'serial' => (new AppController())->generateUniqueCode("SUPPLY_VOUCHER"),
+                            "code" => (new SupplierVoucherController())->getCodeNumber(),
+                            "date" => Carbon::now()->getTimestamp(),
+                            "amount" => $item["amount"],
+                            // "balance" => $item["amount"],
+                            "payable_id" => $payable->id,
+                            "transporter_id" => $item["transporterId"],
+                            "supplier_id" => $item["supplierId"],
+                            "site_id" => $requestForm->site_id,
+                            "paid" => false,
+                            "request_id" => $requestForm->id,
+                            "request_form_item" => $request_form_item->id,
+
+                        ]);
+                        
                     }
                 }
 

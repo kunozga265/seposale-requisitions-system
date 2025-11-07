@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      CreditVoucher
+      Credit Voucher
     </template>
 
     <template #breadcrumbs>

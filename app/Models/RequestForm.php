@@ -56,6 +56,10 @@ class RequestForm extends Model
     {
         return $this->hasMany(CreditVoucher::class, "request_id", "id");
     }
+    public function supplierVouchers()
+    {
+        return $this->hasMany(SupplierVoucher::class, "request_id", "id");
+    }
 
     public function expense()
     {

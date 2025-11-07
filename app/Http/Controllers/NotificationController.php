@@ -25,6 +25,7 @@ use App\Models\Receipt;
 use App\Models\Role;
 use App\Models\Sale;
 use App\Models\CreditVoucher;
+use App\Models\SupplierVoucher;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -538,12 +539,6 @@ class NotificationController extends Controller
             }
         }
 
-
-
-
-
-        // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
-
     }
 
     public function notifySupplier($requestForm)
@@ -551,94 +546,19 @@ class NotificationController extends Controller
         $role = Role::where('name', 'accountant')->first();
         $accountants = $role->users;
 
+         $supplier_vouchers = $requestForm->supplierVouchers;
 
-        foreach ($requestForm->items as $item) {
-            $check = false;
-            $name = "";
-            $phone_number = "";
+        foreach ($supplier_vouchers as $supplier_voucher) {
 
+            $this->processWhatsappMessage("supplier_voucher", $supplier_voucher->serial);
 
-            if ($item->transporter != null) {
-                $check = true;
-                $name = ucwords($item->transporter->name);
-                $phone_number = $item->transporter->phone_number;
-            } else if ($item->supplier != null) {
-                $check = true;
-                $name = ucwords($item->supplier->name);
-                $phone_number = $item->supplier->phone_number;
-            }
+            $message = "{$supplier_voucher->contact->name} has been notified of the credit $supplier_voucher->type.";
+            $subject = "Supplier Voucher Notice";
 
-            if ($item->inventory != null) {
-                $qty = $item->inventory->formattedUnits($item->quantity);
-                $item_name = $item->inventory->name . " ($qty)";
-            } else {
-                $item_name = "Transportation x {$item->quantity}";
-            }
-
-
-            if ($check) {
-                $body = [
-                    "messaging_product" => "whatsapp",
-                    "recipient_type" => "individual",
-                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
-                    "type" => "template",
-                    "template" => [
-                        "name" => "supplier_voucher",
-                        "language" => [
-                            "code" => "en"
-                        ],
-                        "components" => [
-                            [
-                                "type" => "body",
-                                "parameters" => [
-                                    [
-                                        "type" => "text",
-                                        //Transporter/Supplier Name
-                                        "text" => $name
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //site name
-                                        "text" => $requestForm->site?->name ?? "Njewa"
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //item name
-                                        "text" => $item_name
-                                    ],
-
-                                    [
-                                        "type" => "text",
-                                        //Item Total
-                                        "text" => number_format($item->total_cost - $item->balance, 2)
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //requisition code
-                                        "text" => $requestForm->formattedCode()
-                                    ],
-                                ]
-                            ],
-                        ]
-                    ]
-                ];
-
-                $this->pushWhatsappMessage($body);
-
-                $message = "$name has been notified of the credit supply.";
-                $subject = "Supply Voucher Notice";
-
-                foreach ($accountants as $accountant) {
-                    $this->pushNotification("USER-{$accountant->id}", $subject, $message);
-                }
+            foreach ($accountants as $accountant) {
+                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
             }
         }
-
-
-
-
-
-        // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
 
     }
 
@@ -1387,6 +1307,79 @@ class NotificationController extends Controller
                                     ]
                                 ]
                             ]
+                        ]
+                    ]
+                ];
+                $check = $this->pushWhatsappMessage($body);
+
+                break;
+            case "supplier_voucher":
+                $supplier_voucher = SupplierVoucher::where('serial', $serial)->first();
+
+                error_log("{$supplier_voucher->contact->serial}/supplier-vouchers/{$supplier_voucher->serial}");
+
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $supplier_voucher->phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "header",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Code
+                                        "text" => $supplier_voucher->formattedCode()
+                                    ]
+                                ]
+                            ],
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Transporter/Supplier Name
+                                        "text" => $supplier_voucher->contact->name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //site name
+                                        "text" => $supplier_voucher->site?->name ?? "Njewa"
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //item name
+                                        "text" => $supplier_voucher->details
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Item Total
+                                        "text" => number_format($supplier_voucher->amount, 2)
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //requisition code
+                                        "text" => $supplier_voucher->requestForm->formattedCode()
+                                    ],
+                                ]
+                            ],
+                            // [
+                            //     "type" => "button",
+                            //     "sub_type" => "url",
+                            //     "index" => "0",
+                            //     "parameters" => [
+                            //         [
+                            //             "type" => "text",
+                            //             "text" => "{$supplier_voucher->contact->serial}/supplier-vouchers/{$supplier_voucher->serial}"
+                            //         ]
+                            //     ]
+                            // ]
                         ]
                     ]
                 ];

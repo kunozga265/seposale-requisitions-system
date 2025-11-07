@@ -727,6 +727,24 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         ])->name('credit-vouchers.print');
     });
 
+    Route::group(['prefix' => 'supplier-vouchers'], function () {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\SupplierVoucherController@index",
+            'roles' => ['accountant', 'management']
+        ])->name('supplier-vouchers.index');
+
+        Route::get('/view/{id}', [
+            "uses"  => "App\Http\Controllers\SupplierVoucherController@show",
+            'roles' => ['employee', 'management']
+        ])->name('supplier-vouchers.show');
+
+         Route::get('/print/{id}', [
+            "uses"  => "App\Http\Controllers\SupplierVoucherController@print",
+            'roles' => ['employee', 'management']
+        ])->name('supplier-vouchers.print');
+    });
+
     Route::group(['prefix' => 'expenses'], function () {
 
         Route::get('/', [

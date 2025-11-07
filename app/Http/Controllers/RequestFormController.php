@@ -1376,8 +1376,17 @@ class RequestFormController extends Controller
                         $request_form_item->payable?->update([
                             "paid" => true
                         ]);
+                        
                         $request_form_item->payable?->creditVoucher?->update([
-                            "paid" => true
+                            "paid" => true,
+                            "payout_request_id" => $requestForm->id,
+                            "payout_request_form_item" => $request_form_item->id,
+                        ]);
+
+                        $request_form_item->payable?->supplierVoucher?->update([
+                            "paid" => true,
+                            "payout_request_id" => $requestForm->id,
+                            "payout_request_form_item" => $request_form_item->id,
                         ]);
                     }
 
@@ -1418,8 +1427,6 @@ class RequestFormController extends Controller
                     ]);
 
                     $index++;
-
-                    
                 }
 
                 //Update the account balance

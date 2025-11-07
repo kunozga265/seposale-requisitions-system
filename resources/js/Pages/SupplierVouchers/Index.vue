@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      Credit Vouchers
+      Supplier Vouchers
     </template>
 
     <template #breadcrumbs>
@@ -12,7 +12,7 @@
               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
               clip-rule="evenodd"></path>
           </svg>
-          <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">Credit Vouchers</span>
+          <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">Supplier Vouchers</span>
         </div>
       </li>
     </template>
@@ -33,8 +33,8 @@
           </div>
           <div class="page-section-content">
 
-            <div v-if="creditVouchers.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
-              No Credit Vouchers Found
+            <div v-if="supplierVouchers.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
+              No Supplier Vouchers Found
             </div>
             <div v-else>
               <div class="card">
@@ -60,56 +60,41 @@
                         <th scope="col" class="p-2 pb-0 heading-font text-left flex items-center">Details
                         </th>
                          <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
-                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-left">Payable</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Delivery</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Requisition</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Sale</th> -->
-                        <!--                      <th scope="col" class="p-2 pb-0 heading-font text-left">Address</th>-->
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Status</th>
-                        <!--                      <th scope="col" class="p-2 pb-0 heading-font text-left">Actions</th>-->
                       </tr>
 
                     </thead>
                     <tbody class="pt-8">
 
                       <tr class="border-b cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
-                        v-for="(creditVoucher, index) in filteredCreditVouchers" :key="index">
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.code }}</td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ getDate(creditVoucher.date*1000) }}</td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">
-                          <div>{{ creditVoucher.name }}</div>
+                        v-for="(supplierVoucher, index) in filteredSupplierVouchers" :key="index">
+                        <td @click="navigateToSupplierVoucher(supplierVoucher.id)" class="p-2 text-left ">{{ supplierVoucher.code }}</td>
+                        <td @click="navigateToSupplierVoucher(supplierVoucher.id)" class="p-2 text-left ">{{ getDate(supplierVoucher.date*1000) }}</td>
+                        <td @click="navigateToSupplierVoucher(supplierVoucher.id)" class="p-2 text-left ">
+                          <div>{{ supplierVoucher.name }}</div>
                         </td>
                         <td class="p-2 text-center ">
 
-                          <input  id="backdate" type="checkbox" disabled :checked="creditVoucher.transporter != null"
+                          <input  id="backdate" type="checkbox" disabled :checked="supplierVoucher.transporter != null"
                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 
                         </td>
                         <td class="p-2 text-center ">
 
-                          <input  id="backdate" type="checkbox" disabled :checked="creditVoucher.supplier != null"
+                          <input  id="backdate" type="checkbox" disabled :checked="supplierVoucher.supplier != null"
                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 
                         </td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.details }}</td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-right ">{{ numberWithCommas(creditVoucher.amount) }}</td>
-                        <!-- <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.payable?.code }}
-                        </td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.delivery?.code }}</td>
-                        
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.requestForm?.code }}</td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.sale?.code }}</td> -->
-                        <td class="p-2 text-left ">{{ creditVoucher.paid ? "Paid" : "Unpaid" }}</td>
-                        <!--                      <td   @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">-->
-                        <!--                          -->
-                        <!--                      </td>-->
+                        <td @click="navigateToSupplierVoucher(supplierVoucher.id)" class="p-2 text-left ">{{ supplierVoucher.details }}</td>
+                        <td @click="navigateToSupplierVoucher(supplierVoucher.id)" class="p-2 text-right ">{{ numberWithCommas(supplierVoucher.amount) }}</td>
+                        <td class="p-2 text-left ">{{ supplierVoucher.paid ? "Paid" : "Unpaid" }}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
               </div>
-                           <pagination :object="creditVouchers"/>
+                           <pagination :object="supplierVouchers"/>
             </div>
           </div>
         </div>
@@ -133,7 +118,7 @@ import JetInput from "@/Jetstream/Input.vue";
 
 export default {
   props: [
-    'creditVouchers',
+    'supplierVouchers',
   ],
   components: {
     JetInput, DeliveryStatus, SaleStatus,
@@ -151,13 +136,13 @@ export default {
     }
   },
   computed: {
-    filteredCreditVouchers() {
-      let filtered = this.creditVouchers.data
+    filteredSupplierVouchers() {
+      let filtered = this.supplierVouchers.data
 
-      /* Filter Sales By CreditVoucher*/
+      /* Filter Sales By SupplierVoucher*/
       if (this.form.name.length !== 0) {
-        filtered = (filtered).filter((creditVoucher) => {
-          return creditVoucher.name.toLowerCase().includes(this.form.name.toLowerCase())
+        filtered = (filtered).filter((supplierVoucher) => {
+          return supplierVoucher.name.toLowerCase().includes(this.form.name.toLowerCase())
         })
       }
 
@@ -166,8 +151,8 @@ export default {
   
   },
   methods: {
-    navigateToCreditVoucher(id) {
-      this.$inertia.get(this.route('credit-vouchers.show', { 'id': id }))
+    navigateToSupplierVoucher(id) {
+      this.$inertia.get(this.route('supplier-vouchers.show', { 'id': id }))
     },
    
 

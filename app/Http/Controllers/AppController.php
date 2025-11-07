@@ -33,6 +33,7 @@ use App\Models\Statement;
 use App\Models\Summary;
 use App\Models\User;
 use App\Models\CreditVoucher;
+use App\Models\SupplierVoucher;
 use App\Models\Supplier;
 use App\Models\Transporter;
 use App\Models\Vehicle;
@@ -436,6 +437,10 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (CreditVoucher::where('serial', $code)->exists());
+        }elseif ($type == "SUPPLY_VOUCHER") {
+            do {
+                $code = $this->getNewCode();
+            } while (SupplierVoucher::where('serial', $code)->exists());
         }elseif ($type == "PAYABLE") {
             do {
                 $code = $this->getNewCode();
