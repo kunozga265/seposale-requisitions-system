@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class TransporterController extends Controller
 {
-        public function index(Request $request)
+    public function index(Request $request)
     {
         $transporters = Transporter::orderBy("name", "asc")->get();
 
@@ -28,8 +28,7 @@ class TransporterController extends Controller
 
     public function create(Request $request)
     {
-        return Inertia::render('Transporters/Create', [
-        ]);
+        return Inertia::render('Transporters/Create', []);
     }
 
     public function store(Request $request)
@@ -41,6 +40,7 @@ class TransporterController extends Controller
         ]);
 
         $transporter = Transporter::create([
+            "serial" => (new AppController())->generateUniqueCode("TRANSPORTER"),
             "name" => $request->name,
             "phone_number" => (new ClientController())->cleanPhoneNumber($request->phone_number),
             "phone_number_other" => (new ClientController())->cleanPhoneNumber($request->phone_number_other),

@@ -16,6 +16,7 @@ class TransporterResource extends JsonResource
     {
         return [
             "id" => $this->id,
+                'serial' => $this->serial,
             "name" => $this->name,
             "phoneNumber" => $this->phone_number != null ? "+{$this->phone_number}" : "",
             "phoneNumberOther" => $this->phone_number_other != null ? "+{$this->phone_number_other}" : "",

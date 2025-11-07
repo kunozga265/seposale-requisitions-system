@@ -33,6 +33,8 @@ use App\Models\Statement;
 use App\Models\Summary;
 use App\Models\User;
 use App\Models\CreditVoucher;
+use App\Models\Supplier;
+use App\Models\Transporter;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -438,6 +440,14 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (Payable::where('serial', $code)->exists());
+        }elseif ($type == "TRANSPORTER") {
+            do {
+                $code = $this->getNewCode();
+            } while (Transporter::where('serial', $code)->exists());
+        }elseif ($type == "SUPPLIER") {
+            do {
+                $code = $this->getNewCode();
+            } while (Supplier::where('serial', $code)->exists());
         }elseif ($type == "STATEMENT") {
             do {
                 $code = $this->getNewCode();

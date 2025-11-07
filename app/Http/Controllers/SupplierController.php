@@ -39,6 +39,7 @@ class SupplierController extends Controller
         ]);
 
         $supplier = Supplier::create([
+            "serial" => (new AppController())->generateUniqueCode("SUPPLIER"),
             "name" => $request->name,
             "phone_number" => (new ClientController())->cleanPhoneNumber($request->phone_number),
             "phone_number_other" => (new ClientController())->cleanPhoneNumber($request->phone_number_other),

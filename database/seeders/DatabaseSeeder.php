@@ -16,6 +16,8 @@ use App\Models\Expense;
 use App\Models\MaterialsType;
 use App\Models\Payable;
 use App\Models\PaymentMethod;
+use App\Models\Supplier;
+use App\Models\Transporter;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -88,16 +90,27 @@ class DatabaseSeeder extends Seeder
         //     }
         // });
 
-        AccountingAccount::create([
-            'name' => 'WHT Recoverable / Tax Credits',
-            'code' => 1200,
-            'type' => "DEBIT",
-            'special_type' => "WHT",
-            'accounts_group_id' => 1, // Assuming 1 is the ID for Current Assets
-        ]);
+        // AccountingAccount::create([
+        //     'name' => 'WHT Recoverable / Tax Credits',
+        //     'code' => 1200,
+        //     'type' => "DEBIT",
+        //     'special_type' => "WHT",
+        //     'accounts_group_id' => 1, // Assuming 1 is the ID for Current Assets
+        // ]);
 
-          PaymentMethod::create([
-            "name" => "Withholding"
-        ]);
+        //   PaymentMethod::create([
+        //     "name" => "Withholding"
+        // ]);
+
+        Transporter::all()->each(function (Transporter $transporter) {
+            $transporter->update([
+                "serial" => (new AppController())->generateUniqueCode("TRANSPORTER"),
+            ]);
+        });
+        Supplier::all()->each(function (Supplier $supplier) {
+            $supplier->update([
+                "serial" => (new AppController())->generateUniqueCode("SUPPLIER"),
+            ]);
+        });
     }
 }

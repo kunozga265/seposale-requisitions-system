@@ -53,15 +53,17 @@
 
                       <tr>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">#</th>
+                        <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Name</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-center">Supplier</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-center">Transporter</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left flex items-center">Details
                         </th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Payable</th>
+                         <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>
+                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-left">Payable</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Delivery</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Requisition</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Sale</th>
+                        <th scope="col" class="p-2 pb-0 heading-font text-left">Sale</th> -->
                         <!--                      <th scope="col" class="p-2 pb-0 heading-font text-left">Address</th>-->
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Status</th>
                         <!--                      <th scope="col" class="p-2 pb-0 heading-font text-left">Actions</th>-->
@@ -73,6 +75,7 @@
                       <tr class="border-b cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                         v-for="(creditVoucher, index) in filteredCreditVouchers" :key="index">
                         <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.code }}</td>
+                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ getDate(creditVoucher.date*1000) }}</td>
                         <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">
                           <div>{{ creditVoucher.name }}</div>
                         </td>
@@ -89,12 +92,13 @@
 
                         </td>
                         <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.details }}</td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.payable?.code }}
+                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-right ">{{ numberWithCommas(creditVoucher.amount) }}</td>
+                        <!-- <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.payable?.code }}
                         </td>
                         <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.delivery?.code }}</td>
-                        <!--                      <td class="p-2 text-left ">{{ creditVoucher.address }}</td>-->
+                        
                         <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.requestForm?.code }}</td>
-                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.sale?.code }}</td>
+                        <td @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left ">{{ creditVoucher.sale?.code }}</td> -->
                         <td class="p-2 text-left ">{{ creditVoucher.paid ? "Paid" : "Unpaid" }}</td>
                         <!--                      <td   @click="navigateToCreditVoucher(creditVoucher.id)" class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">-->
                         <!--                          -->

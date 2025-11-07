@@ -18,6 +18,14 @@ class CreditVoucher extends Model
             } else {
                 return $this->supplier;
             }
+        } else  if ($name === 'details') {
+            return $this->requestFormItem->product_name;
+        } else  if ($name === 'type') {
+            if ($this->transporter != null) {
+                return "delivery";
+            } else {
+                return "supply";
+            }
         }
 
         // It's important to call the parent __get() method

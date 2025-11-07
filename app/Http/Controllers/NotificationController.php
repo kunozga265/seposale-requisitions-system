@@ -491,7 +491,7 @@ class NotificationController extends Controller
 
             $list = "";
 
-            $payables = $sale->payables()->where('paid',0)->get();
+            $payables = $sale->payables()->where('paid', 0)->get();
             for ($i = 0; $i < $payables->count(); $i++) {
                 $total = number_format($payables[$i]->total, 2);
                 if ($i < ($payables->count() - 1)) {
@@ -502,7 +502,7 @@ class NotificationController extends Controller
             }
 
             // $name = $requestForm->user->firstName . " " . $requestForm->user->lastName;
-            $subject = "Payables under Sales Order #". $sale->formattedCode();
+            $subject = "Payables under Sales Order #" . $sale->formattedCode();
             $message = "The following creditors need to be paid: $list ";
 
             foreach ($accountants as $accountant) {
@@ -527,82 +527,14 @@ class NotificationController extends Controller
         $credit_vouchers = $requestForm->creditVouchers;
 
         foreach ($credit_vouchers as $credit_voucher) {
-            $check = false;
-            $name = "";
-            $type = "";
-            $phone_number = "";
 
+            $this->processWhatsappMessage("credit_voucher", $credit_voucher->serial);
 
-            if ($credit_voucher->transporter != null) {
-                $check = true;
-                $name = ucwords($credit_voucher->transporter->name);
-                $type = "delivery";
-                $phone_number = $credit_voucher->transporter->phone_number;
-            } else if ($credit_voucher->supplier != null) {
-                $check = true;
-                $name = ucwords($credit_voucher->supplier->name);
-                $type = "supply";
-                $phone_number = $credit_voucher->supplier->phone_number;
-            }
+            $message = "{$credit_voucher->contact->name} has been notified of the credit $credit_voucher->type.";
+            $subject = "Credit Voucher Notice";
 
-            if ($check) {
-                $body = [
-                    "messaging_product" => "whatsapp",
-                    "recipient_type" => "individual",
-                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
-                    "type" => "template",
-                    "template" => [
-                        "name" => "credit_voucher",
-                        "language" => [
-                            "code" => "en"
-                        ],
-                        "components" => [
-                            [
-                                "type" => "body",
-                                "parameters" => [
-                                    [
-                                        "type" => "text",
-                                        //Transporter/Supplier Name
-                                        "text" => $name
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //delivery or supply
-                                        "text" => $type
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //product name
-                                        "text" => $credit_voucher->requestFormItem->product_name
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //location
-                                        "text" => ucwords($requestForm->delivery?->summary->sale->location) ?? "Unspecified"
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //Item Total
-                                        "text" => number_format($credit_voucher->amount, 2)
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //requisition code
-                                        "text" => $requestForm->formattedCode()
-                                    ],
-                                ]
-                            ],
-                        ]
-                    ]
-                ];
-                $this->pushWhatsappMessage($body);
-
-                $message = "$name has been notified of the credit $type.";
-                $subject = "Credit Voucher Notice";
-
-                foreach ($accountants as $accountant) {
-                    $this->pushNotification("USER-{$accountant->id}", $subject, $message);
-                }
+            foreach ($accountants as $accountant) {
+                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
             }
         }
 
@@ -1400,6 +1332,16 @@ class NotificationController extends Controller
                         ],
                         "components" => [
                             [
+                                "type" => "header",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Code
+                                        "text" => $credit_voucher->formattedCode()
+                                    ]
+                                ]
+                            ],
+                            [
                                 "type" => "body",
                                 "parameters" => [
                                     [
@@ -1434,6 +1376,17 @@ class NotificationController extends Controller
                                     ],
                                 ]
                             ],
+                            [
+                                "type" => "button",
+                                "sub_type" => "url",
+                                "index" => "0",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        "text" => "{$credit_voucher->contact->serial}/credit-vouchers/{$credit_voucher->serial}"
+                                    ]
+                                ]
+                            ]
                         ]
                     ]
                 ];
