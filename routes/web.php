@@ -994,7 +994,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         ])->name('transporters.edit');
 
         Route::post('/update/{id}', [
-            "uses"  => "App\Http\Controllers\DeliveryController@update",
+            "uses"  => "App\Http\Controllers\TransporterController@update",
             'roles' => ['employee', 'management']
         ])->name('transporters.update');
     });
@@ -1026,10 +1026,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         //     'roles' => ['employee','management']
         // ])->name('suppliers.edit');
 
-        // Route::post('/update/{id}', [
-        //     "uses"  => "App\Http\Controllers\SupplierController@update",
-        //     'roles' => ['employee','management']
-        // ])->name('suppliers.update');
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\SupplierController@update",
+            'roles' => ['employee','management']
+        ])->name('suppliers.update');
 
     });
 

@@ -48,28 +48,28 @@
                                     <jet-label for="phone_number" value="Phone Number"/>
                                     <jet-input id="phone_number" type="text" class="block w-full"
                                                v-model="form.phone_number" placeholder="" required
-                                               autocomplete="seposale-Supplier-description"/>
+                                               autocomplete="seposale-Supplier-phone_number"/>
                                   </div>
 
                                   <div class="p-2 mb-2">
                                     <jet-label for="phone_number_other" value="Phone Number (Other)"/>
                                     <jet-input id="phone_number_other" type="text" class="block w-full"
                                                v-model="form.phone_number_other" placeholder=""
-                                               autocomplete="seposale-Supplier-unit"/>
+                                               autocomplete="seposale-Supplier-phone_number_other"/>
                                   </div>
 
                                   <div class="p-2 mb-2">
                                     <jet-label for="email" value="Email"/>
                                     <jet-input id="email" type="email" class="block w-full"
                                                v-model="form.email"
-                                               autocomplete="seposale-Supplier-quantity"/>
+                                               autocomplete="seposale-Supplier-email"/>
                                   </div>
 
                                   <div class="p-2 mb-2">
                                     <jet-label for="address" value="Address"/>
                                     <jet-input id="address" type="text" class="block w-full"
                                                v-model="form.address"
-                                               autocomplete="seposale-Supplier-cost"/>
+                                               autocomplete="seposale-Supplier-address"/>
                                   </div>
 
                                 </div>
