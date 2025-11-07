@@ -26,6 +26,7 @@ use App\Models\Role;
 use App\Models\Sale;
 use App\Models\CreditVoucher;
 use App\Models\SupplierVoucher;
+use App\Models\RequestFormItem;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -1088,6 +1089,67 @@ class NotificationController extends Controller
                         "whatsapp" => true
                     ]);
                 }
+                break;
+            case "delivery_order":
+                $item = RequestFormItem::find($serial);
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $item->transporter->phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "header",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Code
+                                        "text" => $item->requestForm->delivery->formattedCode()
+                                    ]
+                                ]
+                            ],
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Transporter Name
+                                        "text" => $item->transporter->name
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Product Name
+                                        "text" => $item->requestForm->delivery->summary->fullName()
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Quantity
+                                        "text" => $item->requestForm->delivery->summary->quantityWithUnits
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Location
+                                        "text" => $item->requestForm->delivery->location
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //Due Date
+                                         "text" => Carbon::createFromTimestamp($item->requestForm->delivery->due_date, 'Africa/Lusaka')->format('F j, Y')
+                                    ],
+                                ]
+                            ],
+                          
+                        ]
+                    ]
+                ];
+
+                $check = $this->pushWhatsappMessage($body);
+              
                 break;
 
             case "collection":

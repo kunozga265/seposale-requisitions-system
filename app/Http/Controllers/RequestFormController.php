@@ -715,6 +715,12 @@ class RequestFormController extends Controller
                         (new NotificationController())->notifyApproval($requestForm, $user);
                         (new NotificationController())->notifyFinance($requestForm, "WAITING_INITIATE");
 
+                        if ($requestForm->type == 'OPERATIONS') {
+                            $requestForm->items()->where('transporter_id', '!=', null)->each(function ($item) {
+                                 (new NotificationController())->processWhatsappMessage("delivery_order", $item->id);
+                            });
+                        }
+
                         if ((new AppController())->isApi($request)) {
                             //API Response
                             return response()->json(new RequestFormResource($requestForm));
@@ -1376,7 +1382,7 @@ class RequestFormController extends Controller
                         $request_form_item->payable?->update([
                             "paid" => true
                         ]);
-                        
+
                         $request_form_item->payable?->creditVoucher?->update([
                             "paid" => true,
                             "payout_request_id" => $requestForm->id,

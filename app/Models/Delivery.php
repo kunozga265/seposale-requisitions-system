@@ -11,6 +11,18 @@ class Delivery extends Model
 {
     use HasFactory;
 
+      public function __get($name)
+    {
+        if ($name === 'location') {
+
+            return $this->summary->sale->location;
+        }
+
+        // It's important to call the parent __get() method
+        // to allow other properties to be accessed normally.
+        return parent::__get($name);
+    }
+
     public function deliveredBy()
     {
         return $this->belongsTo(User::class,"delivered_by");

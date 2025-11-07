@@ -12,6 +12,18 @@ class Summary extends Model
     use HasFactory;
     use SoftDeletes;
 
+    public function __get($name)
+    {
+        if ($name === 'quantityWithUnits') {
+
+            return $this->formattedUnits($this->quantity);
+        }
+
+        // It's important to call the parent __get() method
+        // to allow other properties to be accessed normally.
+        return parent::__get($name);
+    }
+
     public function description()
     {
         return $this->description;
@@ -29,7 +41,8 @@ class Summary extends Model
 
     public function fullName()
     {
-        if ($this->variant != null) {
+        $exempt_quarry_products = $this->product->id >= 2 && $this->product->id <= 4;
+        if ($this->variant != null && !$exempt_quarry_products) {
             return $this->product->name . " - " . $this->variant->description;
         } else {
             return $this->product->name;
