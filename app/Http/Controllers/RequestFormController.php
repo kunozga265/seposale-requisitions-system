@@ -420,11 +420,14 @@ class RequestFormController extends Controller
                 $items[] = [
                     "details" => "Transportation for {$summary->description}",
                     "units" => 'Delivery',
-                    "quantity" => $summary->quantity,
+                    "quantity" => $request->expenses["transportation"]["quantity"],
                     "unitCost" => $request->expenses["transportation"]["amount"] / $summary->quantity,
                     "totalCost" => $request->expenses["transportation"]["amount"],
                     "accountId" => $summary->product->inventory_account_id,
                     "transporterId" => $request->expenses["transportation"]["transporterId"],
+                    "meta" => json_encode([
+                        'notify' => $request->expenses["transportation"]["notify"]
+                    ]),
                 ];
                 $total += $request->expenses["transportation"]["amount"];
             }
@@ -432,11 +435,14 @@ class RequestFormController extends Controller
                 $items[] = [
                     "details" => "Product Cost for {$summary->description}",
                     "units" => '',
-                    "quantity" => $summary->quantity,
+                    "quantity" => $request->expenses["product"]["quantity"],
                     "unitCost" => $request->expenses["product"]["amount"] / $summary->quantity,
                     "totalCost" => $request->expenses["product"]["amount"],
                     "accountId" => $summary->product->inventory_account_id,
                     "supplierId" => $request->expenses["product"]["supplierId"],
+                    "meta" => json_encode([
+                        'notify' => $request->expenses["product"]["notify"]
+                    ]),
                 ];
                 $total += $request->expenses["product"]["amount"];
             }
@@ -444,11 +450,14 @@ class RequestFormController extends Controller
                 $items[] = [
                     "details" => $request->expenses["other"]["description"],
                     "units" => '',
-                    "quantity" => 1,
+                    "quantity" => $request->expenses["other"]["quantity"],
                     "unitCost" => $request->expenses["other"]["amount"],
                     "totalCost" => $request->expenses["other"]["amount"],
                     "comments" => $request->expenses["other"]["comments"],
                     "accountId" => AccountingAccount::where("code", 6030)->first()->id, //Direct Expenses Account
+                    "meta" => json_encode([
+                        'notify' => "TEAM"
+                    ]),
 
                 ];
                 $total += $request->expenses["other"]["amount"];
@@ -509,7 +518,8 @@ class RequestFormController extends Controller
                     'transporter_id' => $item['transporterId'] ?? null,
                     'supplier_id' => $item['supplierId'] ?? null,
                     'status' => 0, //Pending,
-                    'request_id' => $requestForm->id
+                    'request_id' => $requestForm->id,
+                    'meta' => $item['meta'],
                 ]);
             }
 
@@ -716,9 +726,10 @@ class RequestFormController extends Controller
                         (new NotificationController())->notifyFinance($requestForm, "WAITING_INITIATE");
 
                         if ($requestForm->type == 'OPERATIONS') {
-                            $requestForm->items()->where('transporter_id', '!=', null)->each(function ($item) {
-                                 (new NotificationController())->processWhatsappMessage("delivery_order", $item->id);
-                            });
+                            (new NotificationController())->notifyDeliveryTeam($requestForm);
+                            // $requestForm->items()->where('transporter_id', '!=', null)->each(function ($item) {
+                            //     (new NotificationController())->processWhatsappMessage("delivery_order", $item->id);
+                            // });
                         }
 
                         if ((new AppController())->isApi($request)) {

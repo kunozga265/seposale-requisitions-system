@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
     {
         //        \App\Models\Client::factory(5)->create();
 
-        // $this->call(RoleTableSeeder::class);
+        $this->call(RoleTableSeeder::class);
         // $this->call(PositionTableSeeder::class);
         // $this->call(ProductTableSeeder::class);
 
@@ -102,15 +102,15 @@ class DatabaseSeeder extends Seeder
         //     "name" => "Withholding"
         // ]);
 
-        Transporter::all()->each(function (Transporter $transporter) {
-            $transporter->update([
-                "serial" => (new AppController())->generateUniqueCode("TRANSPORTER"),
-            ]);
-        });
-        Supplier::all()->each(function (Supplier $supplier) {
-            $supplier->update([
-                "serial" => (new AppController())->generateUniqueCode("SUPPLIER"),
-            ]);
-        });
+        // Transporter::all()->each(function (Transporter $transporter) {
+        //     $transporter->update([
+        //         "serial" => (new AppController())->generateUniqueCode("TRANSPORTER"),
+        //     ]);
+        // });
+        // Supplier::all()->each(function (Supplier $supplier) {
+        //     $supplier->update([
+        //         "serial" => (new AppController())->generateUniqueCode("SUPPLIER"),
+        //     ]);
+        // });
     }
 }

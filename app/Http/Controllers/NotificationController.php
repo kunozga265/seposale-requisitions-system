@@ -539,7 +539,6 @@ class NotificationController extends Controller
                 $this->pushNotification("USER-{$accountant->id}", $subject, $message);
             }
         }
-
     }
 
     public function notifySupplier($requestForm)
@@ -547,7 +546,7 @@ class NotificationController extends Controller
         $role = Role::where('name', 'accountant')->first();
         $accountants = $role->users;
 
-         $supplier_vouchers = $requestForm->supplierVouchers;
+        $supplier_vouchers = $requestForm->supplierVouchers;
 
         foreach ($supplier_vouchers as $supplier_voucher) {
 
@@ -560,7 +559,34 @@ class NotificationController extends Controller
                 $this->pushNotification("USER-{$accountant->id}", $subject, $message);
             }
         }
+    }
 
+    public function notifyDeliveryTeam($requestForm)
+    {
+        $role = Role::where('name', 'delivery')->first();
+        $delivery_team = $role->users;
+
+        foreach ($requestForm->items as $item) {
+
+           if ($item->meta != null) {
+                $meta = json_decode($item->meta, true);
+            } else {
+                $meta = ["notify" => "TEAM"];
+            }
+
+
+            if ($meta['notify'] == 'PROVIDER') {
+                $this->processWhatsappMessage("delivery_order", $item->id, $item->contact->name, 0, $item->contact->phone_number);
+            } else {
+                $message = "We have an order for {$item->product_name} to be delivered at {$requestForm->delivery->location}. Please confirm delivery with the operations team";
+                $subject = "Delivery Order #" . $requestForm->delivery->formattedCode();
+                
+                foreach ($delivery_team as $user) {
+                    $this->pushNotification("USER-{$user->id}", $subject, $message);
+                    // $this->processWhatsappMessage("delivery_order", $item->serial, $user->fullName(), 0, $user->phone_number);
+                }
+            }
+        }
     }
 
     public function requestFormNotifications($requestForm, $type)
@@ -589,7 +615,7 @@ class NotificationController extends Controller
     {
         // error_log($to);
         // $to = "POSITION-2";
-        // $to = "USER-1";
+        $to = "USER-1";
 
 
 
@@ -1095,7 +1121,7 @@ class NotificationController extends Controller
                 $body = [
                     "messaging_product" => "whatsapp",
                     "recipient_type" => "individual",
-                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $item->transporter->phone_number,
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $phone_number,
                     "type" => "template",
                     "template" => [
                         "name" => $template,
@@ -1118,8 +1144,8 @@ class NotificationController extends Controller
                                 "parameters" => [
                                     [
                                         "type" => "text",
-                                        //Transporter Name
-                                        "text" => $item->transporter->name
+                                        //Name
+                                        "text" => $notify
                                     ],
                                     [
                                         "type" => "text",
@@ -1139,17 +1165,17 @@ class NotificationController extends Controller
                                     [
                                         "type" => "text",
                                         //Due Date
-                                         "text" => Carbon::createFromTimestamp($item->requestForm->delivery->due_date, 'Africa/Lusaka')->format('F j, Y')
+                                        "text" => Carbon::createFromTimestamp($item->requestForm->delivery->due_date, 'Africa/Lusaka')->format('F j, Y')
                                     ],
                                 ]
                             ],
-                          
+
                         ]
                     ]
                 ];
 
                 $check = $this->pushWhatsappMessage($body);
-              
+
                 break;
 
             case "collection":

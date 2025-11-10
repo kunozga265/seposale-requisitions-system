@@ -17,6 +17,7 @@ class VacancyResource extends JsonResource
         return [
             "id"                            =>  intval($this->id),
             "title"                         =>  $this->title,
+            "department"                   =>  $this->department,
             "description"                   =>  $this->description,
             "date"                          =>  intval($this->date),
             "slug"                          =>  $this->slug,

@@ -216,7 +216,7 @@
                             Transportation <span class="text-gray-500 text-sm">(To {{ delivery.data.location }})</span>
                         </label>
                     </div>
-                    <div v-show="form.expenses.transportation.check" class="grid grid-cols-2 gap-2 mb-4">
+                    <div v-show="form.expenses.transportation.check" class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
                         <div>
                             <select
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -231,11 +231,37 @@
                             </select>
                         </div>
 
+                        <div>
+                            <jet-input placeholder="Quantity" type="number" step="0.01" class="block w-full"
+                                v-model="form.expenses.transportation.quantity" />
+                        </div>
+
                         <money
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                             v-bind="moneyMaskOptions" v-model="form.expenses.transportation.amount" />
                     </div>
+
+                    <div v-show="form.expenses.transportation.check">
+                        <div class="text-mute text-sm mb-1">
+                            Who to notify
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <input id="default-radio-1" type="radio" value="PROVIDER"
+                                v-model="form.expenses.transportation.notify"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-1"
+                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Service
+                                Prodiver</label>
+
+                            <input checked id="default-radio-2" type="radio" value="TEAM"
+                                v-model="form.expenses.transportation.notify"
+                                class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-2"
+                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Delivery Team</label>
+                        </div>
+                    </div>
                 </div>
+
                 <div>
                     <div class="flex justify-start items-center">
                         <input checked id="backdate" type="checkbox" value="" v-model="form.expenses.product.check"
@@ -243,11 +269,11 @@
                         <label @click="form.expenses.product.check = !form.expenses.product.check" for="amount"
                             class="ml-2 block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             Product <span class="text-gray-500 text-sm">({{ productName(delivery.data.summary)
-                            }})</span>
+                                }})</span>
                         </label>
 
                     </div>
-                    <div v-show="form.expenses.product.check" class="grid grid-cols-2 gap-2 mb-4">
+                    <div v-show="form.expenses.product.check" class="grid  grid-cols-1 md:grid-cols-3 gap-2 mb-4">
                         <div>
                             <select
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
@@ -261,9 +287,34 @@
                             </select>
                         </div>
 
+                        <div>
+                            <jet-input placeholder="Quantity" type="number" step="0.01" class="block w-full"
+                                v-model="form.expenses.product.quantity" />
+                        </div>
+
                         <money
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                             v-bind="moneyMaskOptions" v-model="form.expenses.product.amount" />
+                    </div>
+
+                    <div v-show="form.expenses.product.check">
+                        <div class="text-mute text-sm mb-1">
+                            Who to notify
+                        </div>
+                        <div class="flex items-center mb-4">
+                            <input id="default-radio-1" type="radio" value="PROVIDER"
+                                v-model="form.expenses.product.notify"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-1"
+                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Service
+                                Prodiver</label>
+
+                            <input checked id="default-radio-2" type="radio" value="TEAM"
+                                v-model="form.expenses.product.notify"
+                                class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            <label for="default-radio-2"
+                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Delivery Team</label>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -273,12 +324,17 @@
                         <jet-label @click="form.expenses.other.check = !form.expenses.other.check" for="amount"
                             value="Other Cost" class="ml-2" />
                     </div>
-                    <div v-show="form.expenses.other.check" class="grid grid-cols-2 gap-2 mb-4">
+                    <div v-show="form.expenses.other.check" class="grid  grid-cols-1 md:grid-cols-3 gap-2 mb-4">
 
                         <div class="mb-2">
                             <jet-input type="text" class="block w-full" v-model="form.expenses.other.description"
                                 placeholder="Enter Description" />
 
+                        </div>
+
+                        <div>
+                            <jet-input placeholder="Quantity" type="number" step="0.01" class="block w-full"
+                                v-model="form.expenses.other.quantity" />
                         </div>
 
                         <div class="mb-2">
@@ -288,7 +344,7 @@
 
                         </div>
 
-                        <div class="mb-4 md:col-span-2">
+                        <div class="mb-4 md:col-span-3">
                             <textarea v-model="form.expenses.other.comments" placeholder="Leave a comment (optional)"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
                         </div>
@@ -648,7 +704,7 @@
                                         <div>
                                             <span class="total">{{
                                                 numberWithCommas(delivery.data.quantityDelivered)
-                                            }}/{{ numberWithCommas(delivery.data.summary.quantity) }}</span>
+                                                }}/{{ numberWithCommas(delivery.data.summary.quantity) }}</span>
 
                                         </div>
                                     </div>
@@ -689,76 +745,6 @@
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Due Date</div>
                                     <div>{{ getDate(delivery.data.date * 1000) }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="page-section md:col-span-2" v-if="delivery.data.expense != null">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Expenses
-                            </div>
-                        </div>
-                        <div class="page-section-content">
-                            <div class="card">
-                                <div class="p-2 relative overflow-x-auto">
-                                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                        <thead class=" text-gray-600  bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                            <tr>
-                                                <th scope="col" class="heading-font">
-                                                    Details
-                                                </th>
-                                                <th scope="col" class="heading-font text-right">
-                                                    Cost
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr
-                                                class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                <th scope="row"
-                                                    class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                    Product
-                                                </th>
-                                                <td class="py-2 pr-1 text-right">
-                                                    {{ numberWithCommas(delivery.data.expense.contents.product) }}
-                                                </td>
-                                            </tr>
-                                            <tr
-                                                class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                <th scope="row"
-                                                    class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                    Transportation
-                                                </th>
-                                                <td class="py-2 pr-1 text-right">
-                                                    {{ numberWithCommas(delivery.data.expense.contents.transportation)
-                                                    }}
-                                                </td>
-                                            </tr>
-                                            <tr
-                                                class="cursor-pointer hover:bg-gray-50 border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700">
-                                                <th scope="row"
-                                                    class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                                                    Other
-                                                </th>
-                                                <td class="py-2 pr-1 text-right">
-                                                    {{ numberWithCommas(delivery.data.expense.contents.other) }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th class="pt-4 pr-1 text-base heading-font font-bold text-right"></th>
-                                                <td class="pt-4 pr-1 text-base font-bold text-right">
-                                                    {{ numberWithCommas(delivery.data.expense.total) }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2">
-                                                    {{ delivery.data.expense.contents.comments }}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -938,16 +924,21 @@ export default {
                         check: false,
                         transporterId: 0,
                         amount: 0,
+                        quantity: 1,
+                        notify: "PROVIDER",
                     },
                     product: {
                         check: false,
                         supplierId: 0,
                         amount: 0,
+                        quantity: this.delivery.data.summary.quantity,
+                        notify: "PROVIDER",
                     },
                     other: {
                         check: false,
                         description: "",
                         amount: 0,
+                        quantity: null,
                         comments: "",
                     },
                 },
@@ -1045,6 +1036,9 @@ export default {
                 if (this.form.expenses.transportation.transporterId == 0) {
                     this.error = "Select transporter"
                     return false
+                } else if (this.form.expenses.transportation.quantity <= 0 || this.form.expenses.transportation.quantity == null) {
+                    this.error = "Enter quantity under transportation"
+                    return false
                 } else if (this.form.expenses.transportation.amount <= 0) {
                     this.error = "Enter transportation cost"
                     return false
@@ -1055,6 +1049,9 @@ export default {
                 if (this.form.expenses.product.supplierId == 0) {
                     this.error = "Select supplier"
                     return false
+                } else if (this.form.expenses.product.quantity <= 0 || this.form.expenses.product.quantity == null) {
+                    this.error = "Enter quantity under supplier"
+                    return false
                 } else if (this.form.expenses.product.amount <= 0) {
                     this.error = "Enter supplier cost"
                     return false
@@ -1064,6 +1061,9 @@ export default {
             if (this.form.expenses.other.check) {
                 if (this.form.expenses.other.description.length === 0 || this.form.expenses.other.description == "") {
                     this.error = "Enter description"
+                    return false
+                } else if (this.form.expenses.other.quantity <= 0 || this.form.expenses.other.quantity == null) {
+                    this.error = "Enter quantity under other"
                     return false
                 } else if (this.form.expenses.other.amount <= 0) {
                     this.error = "Enter other cost"

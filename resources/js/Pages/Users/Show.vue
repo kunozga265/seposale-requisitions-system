@@ -237,6 +237,36 @@
                                     @click.native="revokeRolePrompt('administrator')">Revoke Administrator
                                     Role</danger-button>
 
+                                <!--One Stop Shop-->
+                                <primary-button class="m-2"
+                                    v-if="!checkRole(user.data, 'oss') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="giveRolePrompt('oss')">Give One Stop Shop
+                                    Role</primary-button>
+                                <danger-button class="m-2"
+                                    v-if="checkRole(user.data, 'oss') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="revokeRolePrompt('oss')">Revoke One Stop Shop
+                                    Role</danger-button>
+
+                                <!--Operations-->
+                                <primary-button class="m-2"
+                                    v-if="!checkRole(user.data, 'operations') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="giveRolePrompt('operations')">Give Operations
+                                    Role</primary-button>
+                                <danger-button class="m-2"
+                                    v-if="checkRole(user.data, 'operations') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="revokeRolePrompt('operations')">Revoke Operations
+                                    Role</danger-button>
+
+                                <!--Delivery-->
+                                <primary-button class="m-2"
+                                    v-if="!checkRole(user.data, 'delivery') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="giveRolePrompt('delivery')">Give Delivery
+                                    Role</primary-button>
+                                <danger-button class="m-2"
+                                    v-if="checkRole(user.data, 'delivery') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="revokeRolePrompt('delivery')">Revoke Delivery
+                                    Role</danger-button>
+
                             </div>
 
                         </div>

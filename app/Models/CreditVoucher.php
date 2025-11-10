@@ -26,6 +26,20 @@ class CreditVoucher extends Model
             } else {
                 return "supply";
             }
+        } else  if ($name === 'quantity') {
+            return $this->requestFormItem->quantity * ($this->amount / $this->requestFormItem->total_cost);
+        } else  if ($name === 'readable_quantity') {
+            if ($this->transporter != null) {
+                $readable_quantity = $this->quantity . " Trip";
+                $readable_quantity .= $this->quantity == 1 ? '' : 's';
+            } else {
+                $readable_quantity = $this->delivery->summary->formattedUnits($this->quantity);
+            }
+            return "$readable_quantity";
+        } else  if ($name === 'unit_cost') {
+            return $this->amount / $this->quantity;
+        } else  if ($name === 'total_quantity') {
+            return $this->delivery->summary->formattedUnits($this->requestFormItem->quantity);
         }
 
         // It's important to call the parent __get() method

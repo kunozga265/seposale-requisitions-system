@@ -15,18 +15,18 @@ class CreateRequestFormItemsTable extends Migration
     {
         Schema::create('request_form_items', function (Blueprint $table) {
             $table->id();
-        $table->string("details");
-        $table->string("units")->nullable();
-        $table->double("quantity");
-        $table->double("unit_cost");
-        $table->double("total_cost");
-        $table->double("balance");
-        $table->string("status");
-        $table->integer("request_id");
-        $table->string("accounting_account_id")->nullable();
-        $table->string("transporter_id")->nullable();
-        $table->string("supplier_id")->nullable();
-        $table->string("comments")->nullable();
+            $table->string("details");
+            $table->string("units")->nullable();
+            $table->double("quantity");
+            $table->double("unit_cost");
+            $table->double("total_cost");
+            $table->double("balance");
+            $table->string("status");
+            $table->integer("request_id");
+            $table->string("accounting_account_id")->nullable();
+            $table->string("transporter_id")->nullable();
+            $table->string("supplier_id")->nullable();
+            $table->string("comments")->nullable();
             $table->timestamps();
         });
     }

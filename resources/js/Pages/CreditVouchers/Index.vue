@@ -55,8 +55,8 @@
                         <th scope="col" class="p-2 pb-0 heading-font text-left">#</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Date</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Name</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-center">Supplier</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-center">Transporter</th>
+                        <th scope="col" class="p-2 pb-0 heading-font text-center">Supplier</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left flex items-center">Details
                         </th>
                          <th scope="col" class="p-2 pb-0 heading-font text-right">Amount</th>

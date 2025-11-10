@@ -14,6 +14,12 @@ class RequestFormItem extends Model
       if ($name === 'product_name') {
          $split = explode('for', $this->details);
          return trim($split[1]);
+      } else  if ($name === 'contact') {
+         if ($this->transporter != null) {
+            return $this->transporter;
+         } else {
+            return $this->supplier;
+         }
       }
 
       // It's important to call the parent __get() method
@@ -72,5 +78,6 @@ class RequestFormItem extends Model
       "material_id",
       "payable_id",
       "comments",
+      "meta",
    ];
 }

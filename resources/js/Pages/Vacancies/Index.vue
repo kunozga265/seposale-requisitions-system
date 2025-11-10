@@ -20,11 +20,11 @@
     </template>
 
     <template #actions>
-      <!-- <inertia-link :href="route('vacancies.create')">
+      <inertia-link :href="route('vacancies.create')">
         <primary-button>
           New Vacancy
         </primary-button>
-      </inertia-link> -->
+      </inertia-link>
     </template>
 
     <div class="py-6">

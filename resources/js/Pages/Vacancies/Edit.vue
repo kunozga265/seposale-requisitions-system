@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      Edit Client
+      Edit Vacancy
     </template>
 
     <template #breadcrumbs>
@@ -12,18 +12,18 @@
               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
               clip-rule="evenodd"></path>
           </svg>
-          <a :href="route('clients.index')"
+          <a :href="route('vacancies.index')"
             class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-            Clients
+            Vacancies
           </a>
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
               clip-rule="evenodd"></path>
           </svg>
-          <a :href="route('clients.show',{id:client.data.id})"
+          <a :href="route('vacancies.show', { id: vacancy.data.id })"
             class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-             {{ client.data.name }}
+            {{ vacancy.data.title }}
           </a>
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
@@ -31,7 +31,7 @@
               clip-rule="evenodd"></path>
           </svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-           Edit
+            Edit
           </span>
         </div>
       </li>
@@ -43,7 +43,7 @@
           <div class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
-                Details
+                General
               </div>
             </div>
             <div class="page-section-content flex justify-center">
@@ -52,72 +52,100 @@
 
                 <jet-validation-errors class="mb-4" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="p-2 mb-2 md:col-span-2">
+                  <jet-label for="title" value="Title" />
+                  <jet-input id="title" type="text" class="block w-full" v-model="form.title"
+                    autocomplete="seposale-vacancy-title" />
+                </div>
+
+                <div class="p-2 mb-2 md:col-span-2">
+                  <jet-label for="department" value="Department" />
+                  <jet-input id="department" type="text" class="block w-full" v-model="form.department"
+                    autocomplete="seposale-vacancy-department" />
+                </div>
+
+                <div class="p-2 mb-2">
+                  <jet-label for="date" value="Date" />
+                  <vue-date-time-picker color="#1a56db" v-model="date" :min-date="minDate" />
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
+                Description
+              </div>
+            </div>
+            <div class="page-section-content flex justify-center">
+
+              <div class=" w-full sm:max-w-md md:max-w-3xl">
+
+                <vue2-tinymce-editor v-model="form.body"></vue2-tinymce-editor>
+              </div>
+            </div>
+          </div>
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
+                Questions
+              </div>
+            </div>
+            <div class="page-section-content flex justify-center">
+
+              <div class="w-full sm:max-w-md md:max-w-3xl">
+
+
+
+                <div v-for="(field, index) in form.fields" class="card w-full ">
 
                   <div class="p-2 mb-2 md:col-span-2">
-                    <div class="flex justify-between">
-                      <jet-label for="name" value="Name" />
-                      <div class="flex items-center mb-2">
-                        <input checked id="backdate" type="checkbox" value="" v-model="form.organisation"
-                          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label for="backdate"
-                          class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Organisation</label>
-                      </div>
+                    <jet-label for="question" :value="'Question #' + (index + 1)" />
+                    <jet-input id="question" type="text" class="block w-full" v-model="field.label"
+                      autocomplete="seposale-vacancy-question" />
+                  </div>
+
+                  <div class="p-2 mb-2 md:col-span-2">
+                    <jet-label for="hint" value="Hint" />
+                    <jet-input id="hint" type="text" class="block w-full" v-model="field.placeholder"
+                      autocomplete="seposale-vacancy-hint" />
+                  </div>
+
+                  <div>
+                    <div class="text-mute text-sm mb-1">
+                      Who to notify
                     </div>
+                    <div class="flex items-center mb-4">
+                      <input id="default-radio-1" type="radio" value="text" v-model="field.type"
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                      <label for="default-radio-1"
+                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Text
+                        Input</label>
 
-                    <jet-input id="name" type="text" class="block w-full" v-model="form.name"
-                      autocomplete="seposale-customer-name" />
+                      <input checked id="default-radio-2" type="radio" value="file" v-model="field.type"
+                        class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                      <label for="default-radio-2"
+                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Upload
+                        Document</label>
+                    </div>
                   </div>
 
+                  <span @click="removeQuestion(index)"
+                    class="flex items-center text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor">
+                    <i class="mdi mdi-close-circle "></i>
+                    <span class="ml-1 text-sm  text-red-600">Remove Question</span>
+                  </span>
 
-                  <div class="p-2 mb-2" :class="{ 'md:col-span-2': form.clientTypeId != 0 }">
-                    <jet-label for="clientType" value="Select Type" />
-                    <select v-model="form.clientTypeId" id="clientType"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                      required>
-                      <option v-for="(type, index) in clientTypes" :value="type.id" :key="index">
-                        {{ type.name }}
-                      </option>
-                      <option value="0">Other</option>
-                    </select>
+                </div>
+
+                <div @click="addQuestion" class="mt-2 ml-2 flex justify-start items-center cursor w-full">
+                  <div>
+                    <i class="mdi mdi-plus-circle text-blue-600"></i>
                   </div>
-
-                  <div v-show="form.clientTypeId == 0" class="p-2 mb-2">
-                    <jet-label for="other" value="Type (Other)" />
-                    <jet-input id="other" type="text" class="block w-full" v-model="form.clientType"
-                      autocomplete="seposale-customer-type" />
+                  <div class="ml-2 text-blue-600 text-sm">
+                    Add Question
                   </div>
-
-                  <div v-show="form.organisation" class="p-2 mb-2 md:col-span-2">
-                    <jet-label for="alias=name" value="Alias Name" />
-                    <jet-input id="alias-name" type="text" class="block w-full" v-model="form.alias"
-                      autocomplete="seposale-customer-alias-name" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <whatsapp-label title="Phone Number" />
-                    <jet-input id="phoneNumber" type="text" class="block w-full" v-model="form.phoneNumber"
-                      autocomplete="seposale-customer-phone-number" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <jet-label for="phoneNumber" value="Phone Number (Secondary)" />
-                    <jet-input id="phoneNumber" type="text" class="block w-full" v-model="form.phoneNumberOther"
-                      autocomplete="seposale-customer-phone-number-other" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <jet-label for="email" value="Email" />
-                    <jet-input id="email" type="email" class="block w-full" v-model="form.email"
-                      autocomplete="seposale-customer-email" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <jet-label for="address" value="Address" />
-                    <jet-input id="address" type="text" class="block w-full" v-model="form.address"
-                      autocomplete="seposale-customer-address" />
-                  </div>
-
                 </div>
               </div>
             </div>
@@ -140,7 +168,7 @@
             <div v-show="validation">
               <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
                 :disabled="form.processing">
-                Update
+                Edit
               </jet-button>
               <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
             </div>
@@ -148,6 +176,7 @@
         </form>
       </div>
     </div>
+
   </app-layout>
 </template>
 
@@ -161,12 +190,16 @@ import SecondaryButton from '@/Jetstream/SecondaryButton'
 import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import PrimaryButton from "@/Jetstream/Button.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
+import { Money } from "v-money";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
+import { Vue2TinymceEditor } from "vue2-tinymce-editor";
+
 
 export default {
-  props: ["client", "products", "clients", "clientTypes"],
+  props: ["vacancy",],
   components: {
     WhatsappLabel,
+    Money,
     DialogModal, PrimaryButton,
     AppLayout,
     JetInput,
@@ -175,42 +208,42 @@ export default {
     JetValidationErrors,
     SecondaryButton,
     pdf,
+    Vue2TinymceEditor,
   },
   data() {
     return {
+      minDate: new Date(this.vacancy.data.date * 1000).toISOString().substr(0, 10),
+      date: null,
       form: this.$inertia.form({
-        name: this.client.data.name,
-        phoneNumber: this.client.data.phoneNumber,
-        phoneNumberOther: this.client.data.phoneNumberOther,
-        email: this.client.data.email,
-        address: this.client.data.address,
-        organisation: this.client.data.organisation,
-        alias: this.client.data.alias,
-        clientTypeId: this.client.data.type != null ? this.client.data.type.id : null,
-        clientType: '',
+        title: this.vacancy.data.title,
+        department: this.vacancy.data.department,
+        body: this.vacancy.data.body,
+        fields: this.vacancy.data.fields,
       }),
       error: '',
     }
   },
   created() {
 
+
   },
   computed: {
     validation() {
-      if (this.form.name.length === 0) {
-        this.error = "Enter customer name"
-        return false
-      } else if (this.form.clientTypeId === null) {
-        this.error = "Please enter customer type"
-        return false
-      } else if (this.form.clientTypeId == 0 && this.form.clientType.length === 0) {
-        this.error = "Please enter customer (other) type"
-        return false
-      } else if (this.form.phoneNumber.length === 0 && this.form.phoneNumberOther.length === 0) {
-        this.error = "Enter at least one phone number"
-        return false
-      }
+      // if (this.form.name.length === 0) {
+      //     this.error = "Enter customer name"
+      //     return false
+      // } else if (this.form.clientTypeId === null) {
+      //     this.error = "Please enter customer type"
+      //     return false
+      // } else if (this.form.clientTypeId == 0 && this.form.clientType.length === 0) {
+      //     this.error = "Please enter customer (other) type"
+      //     return false
+      // } else if (this.form.phoneNumber.length === 0 && this.form.phoneNumberOther.length === 0) {
+      //     this.error = "Enter at least one phone number"
+      //     return false
+      // }
       return true
+
     },
   },
   watch: {
@@ -221,10 +254,20 @@ export default {
       this.form
         .transform(data => ({
           ...data,
-          client_type_id: this.form.clientTypeId,
-          client_type: this.form.clientType
+          date: this.getTimestampFromDate(this.date)
         }))
-        .post(this.route('clients.update', { id: this.client.data.id }))
+        .post(this.route('vacancies.update', { id: this.vacancy.data.id }))
+    },
+    addQuestion() {
+      this.form.fields.push({
+        label: "",
+        placeholder: "",
+        type: 'text',
+        value: '',
+      });
+    },
+    removeQuestion(index) {
+      this.form.fields.splice(index, 1)
     },
   }
 

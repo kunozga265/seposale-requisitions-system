@@ -1077,6 +1077,21 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['administrator', 'management']
         ])->name('vacancies.create');
 
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\VacancyController@store",
+            'roles' => ['administrator', 'management']
+        ])->name('vacancies.store');
+
+          Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\VacancyController@edit",
+            'roles' => ['administrator', 'management']
+        ])->name('vacancies.edit');
+
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\VacancyController@update",
+            'roles' => ['administrator', 'management']
+        ])->name('vacancies.update');
+
         Route::get('/show/{id}', [
             "uses"  => "App\Http\Controllers\VacancyController@show",
             'roles' => ['administrator', 'management']

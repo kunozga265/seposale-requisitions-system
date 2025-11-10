@@ -10,7 +10,7 @@ class SupplierVoucher extends Model
 {
     use HasFactory;
 
-     public function __get($name)
+    public function __get($name)
     {
         if ($name === 'contact') {
             if ($this->transporter != null) {
@@ -26,7 +26,22 @@ class SupplierVoucher extends Model
             } else {
                 return "supply";
             }
+        } else  if ($name === 'quantity') {
+            return $this->requestFormItem->quantity * ($this->amount / $this->requestFormItem->total_cost);
+        } else  if ($name === 'readable_quantity') {
+            if ($this->transporter != null) {
+                $readable_quantity = $this->quantity . " Trip";
+                $readable_quantity .= $this->quantity == 1 ? '' : 's';
+            } else {
+                $readable_quantity = $this->requestFormItem->inventory->formattedUnits($this->quantity);
+            }
+            return "$readable_quantity";
+        } else  if ($name === 'unit_cost') {
+            return $this->amount / $this->quantity;
+        } else  if ($name === 'total_quantity') {
+            return $this->requestFormItem->inventory->formattedUnits($this->requestFormItem->quantity);
         }
+
 
         // It's important to call the parent __get() method
         // to allow other properties to be accessed normally.

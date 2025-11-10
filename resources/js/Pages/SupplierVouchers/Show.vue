@@ -73,6 +73,10 @@
                   <div class="text-gray-600 font-semibold">Product</div>
                   <div>{{ supplierVoucher.data.details }}</div>
                 </div>
+                   <div class="border-b px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Quantity</div>
+                  <div>{{ supplierVoucher.data.readableQuantity }} </div>
+                </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Amount</div>
                   <div>MK{{ numberWithCommas(supplierVoucher.data.amount) }}</div>

@@ -29,9 +29,9 @@
     </template>
 
     <template #actions>
-      <!-- <a :href="route('vacancys.edit', { 'id': vacancy.data.id })"> -->
-      <!-- <primary-button>Edit</primary-button> -->
-      <!-- </a> -->
+      <a :href="route('vacancies.edit', { 'id': vacancy.data.id })"> 
+      <primary-button>Edit</primary-button>
+      </a>
     </template>
 
     <dialog-modal :show="deleteDialog" @close="deleteDialog = false">
@@ -86,8 +86,8 @@
                   <div>{{ vacancy.data.title }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
-                  <div class="text-gray-600 font-semibold">Description</div>
-                  <div>{{ vacancy.data.description }}</div>
+                  <div class="text-gray-600 font-semibold">Department</div>
+                  <div>{{ vacancy.data.department }}</div>
                 </div>
 
               </div>
