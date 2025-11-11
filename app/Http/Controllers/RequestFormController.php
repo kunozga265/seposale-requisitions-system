@@ -34,6 +34,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 /* Approval Statuses
  * 0 -> Pending
@@ -1352,110 +1354,113 @@ class RequestFormController extends Controller
                 'recipient' => 'required',
             ]);
 
-            $main_account = AccountingAccount::find($request->account_id);
-            $main_account_balance = $main_account->balance;
+            Cache::lock(Auth::id() . ':request-forms:initiate', 10)->get(function () use ($requestForm, $request) {
 
-            $filtered_transactions = [];
+                $main_account = AccountingAccount::find($request->account_id);
+                $main_account_balance = $main_account->balance;
 
-            //create expenses
-            foreach ($request->items as $item) {
-                $sale_id = null;
-                if ($requestForm->delivery_id != null) {
-                    $sale_id = $requestForm->delivery->summary->sale->id;
-                }
+                $filtered_transactions = [];
 
-                if ($item["amount"] > 0) {
-                    $filtered_transactions[] = $item;
-                }
-            }
-
-            $grouped = array_reduce($filtered_transactions, function ($carry, $item) {
-                $carry[$item['accountId']][] = $item;
-                return $carry;
-            }, []);
-
-            $index = 0;
-            foreach ($grouped as $items) {
-                $alternative_account = AccountingAccount::find($items[0]["accountId"]);
-                $alternative_account_balance = $alternative_account->balance;
-
-
-                foreach ($items as $item) {
-                    $request_form_item = RequestFormItem::find($item["id"]);
-                    $request_form_item_balance = $request_form_item->balance - $item["amount"];
-                    $request_form_item->update([
-                        "balance" => $request_form_item_balance,
-                        "status" => $request_form_item_balance == 0 ? 2 : 1 // Mark as paid if balance is zero or less
-                    ]);
-
-                    //update payable here
-                    if ($request_form_item_balance == 0) {
-                        $request_form_item->payable?->update([
-                            "paid" => true
-                        ]);
-
-                        $request_form_item->payable?->creditVoucher?->update([
-                            "paid" => true,
-                            "payout_request_id" => $requestForm->id,
-                            "payout_request_form_item" => $request_form_item->id,
-                        ]);
-
-                        $request_form_item->payable?->supplierVoucher?->update([
-                            "paid" => true,
-                            "payout_request_id" => $requestForm->id,
-                            "payout_request_form_item" => $request_form_item->id,
-                        ]);
+                //create expenses
+                foreach ($request->items as $item) {
+                    $sale_id = null;
+                    if ($requestForm->delivery_id != null) {
+                        $sale_id = $requestForm->delivery->summary->sale->id;
                     }
 
-                    $main_record = AccountingRecord::create([
-                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                        "reference" => strtoupper($request->reference),
-                        "date" => $item["date"] + $index,
-                        "name" => $request->recipient,
-                        "description" => $item["details"],
-                        "amount" => $item["amount"],
-                        "opening_balance" => $main_account_balance,
-                        "closing_balance" => $main_account_balance - $item["amount"],
-                        "type" => "CREDIT", // decreasing the account balance
-                        "accounting_account_id" => $main_account->id,
-                        "request_form_item_id" => $request_form_item->id,
-                        "accounting_record_id" => null, // This will be updated later
-                    ]);
-                    $main_account_balance -= $item["amount"];
+                    if ($item["amount"] > 0 && $item["balance"] > 0) {
+                        $filtered_transactions[] = $item;
+                    }
+                }
 
-                    $alternate_record = AccountingRecord::create([
-                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                        "reference" => strtoupper($request->reference),
-                        "date" => $item["date"] + $index,
-                        "name" => $request->recipient,
-                        "description" => $item["details"],
-                        "amount" => $item["amount"],
-                        "opening_balance" => $alternative_account_balance,
-                        "closing_balance" => $alternative_account_balance + $item["amount"],
-                        "type" => "DEBIT",
-                        "accounting_account_id" => $alternative_account->id,
-                        "accounting_record_id" => $main_record->id,
-                        "request_form_item_id" => $request_form_item->id,
-                    ]);
-                    $alternative_account_balance += $item["amount"];
+                $grouped = array_reduce($filtered_transactions, function ($carry, $item) {
+                    $carry[$item['accountId']][] = $item;
+                    return $carry;
+                }, []);
 
-                    $main_record->update([
-                        "accounting_record_id" => $alternate_record->id
-                    ]);
+                $index = 0;
+                foreach ($grouped as $items) {
+                    $alternative_account = AccountingAccount::find($items[0]["accountId"]);
+                    $alternative_account_balance = $alternative_account->balance;
 
-                    $index++;
+
+                    foreach ($items as $item) {
+                        $request_form_item = RequestFormItem::find($item["id"]);
+                        $request_form_item_balance = $request_form_item->balance - $item["amount"];
+                        $request_form_item->update([
+                            "balance" => $request_form_item_balance,
+                            "status" => $request_form_item_balance == 0 ? 2 : 1 // Mark as paid if balance is zero or less
+                        ]);
+
+                        //update payable here
+                        if ($request_form_item_balance == 0) {
+                            $request_form_item->payable?->update([
+                                "paid" => true
+                            ]);
+
+                            $request_form_item->payable?->creditVoucher?->update([
+                                "paid" => true,
+                                "payout_request_id" => $requestForm->id,
+                                "payout_request_form_item" => $request_form_item->id,
+                            ]);
+
+                            $request_form_item->payable?->supplierVoucher?->update([
+                                "paid" => true,
+                                "payout_request_id" => $requestForm->id,
+                                "payout_request_form_item" => $request_form_item->id,
+                            ]);
+                        }
+
+                        $main_record = AccountingRecord::create([
+                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                            "reference" => strtoupper($request->reference),
+                            "date" => $item["date"] + $index,
+                            "name" => $request->recipient,
+                            "description" => $item["details"],
+                            "amount" => $item["amount"],
+                            "opening_balance" => $main_account_balance,
+                            "closing_balance" => $main_account_balance - $item["amount"],
+                            "type" => "CREDIT", // decreasing the account balance
+                            "accounting_account_id" => $main_account->id,
+                            "request_form_item_id" => $request_form_item->id,
+                            "accounting_record_id" => null, // This will be updated later
+                        ]);
+                        $main_account_balance -= $item["amount"];
+
+                        $alternate_record = AccountingRecord::create([
+                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                            "reference" => strtoupper($request->reference),
+                            "date" => $item["date"] + $index,
+                            "name" => $request->recipient,
+                            "description" => $item["details"],
+                            "amount" => $item["amount"],
+                            "opening_balance" => $alternative_account_balance,
+                            "closing_balance" => $alternative_account_balance + $item["amount"],
+                            "type" => "DEBIT",
+                            "accounting_account_id" => $alternative_account->id,
+                            "accounting_record_id" => $main_record->id,
+                            "request_form_item_id" => $request_form_item->id,
+                        ]);
+                        $alternative_account_balance += $item["amount"];
+
+                        $main_record->update([
+                            "accounting_record_id" => $alternate_record->id
+                        ]);
+
+                        $index++;
+                    }
+
+                    //Update the account balance
+                    $alternative_account->update([
+                        "balance" => $alternative_account_balance
+                    ]);
                 }
 
                 //Update the account balance
-                $alternative_account->update([
-                    "balance" => $alternative_account_balance
+                $main_account->update([
+                    "balance" => $main_account_balance
                 ]);
-            }
-
-            //Update the account balance
-            $main_account->update([
-                "balance" => $main_account_balance
-            ]);
+            });
 
             $requestForm->update([
                 //Should it be set manually?
