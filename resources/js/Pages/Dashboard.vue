@@ -49,6 +49,9 @@
                     <jet-dropdown-link class="text-left" :href="route('sales.create')">
                         Record Sale
                     </jet-dropdown-link>
+                    <jet-dropdown-link class="text-left" :href="route('clients.pricelist')">
+                        Send Pricelist
+                    </jet-dropdown-link>
 
 
                 </template>

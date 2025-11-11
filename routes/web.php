@@ -673,6 +673,16 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\ClientController@update",
             'roles' => ['employee', 'management']
         ])->name('clients.update');
+
+        Route::get('/pricelist', [
+            "uses"  => "App\Http\Controllers\ClientController@pricelist",
+            'roles' => ['employee', 'management']
+        ])->name('clients.pricelist');
+
+        Route::post('/pricelist', [
+            "uses"  => "App\Http\Controllers\ClientController@pricelistSend",
+            'roles' => ['employee', 'management']
+        ])->name('clients.pricelist.send');
     });
 
     Route::group(['prefix' => 'payables'], function () {

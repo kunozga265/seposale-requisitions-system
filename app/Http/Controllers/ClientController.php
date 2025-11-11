@@ -176,7 +176,7 @@ class ClientController extends Controller
         ]);
     }
 
-      public function mergeList(Request $request)
+    public function mergeList(Request $request)
     {
 
         $request->validate([
@@ -229,7 +229,7 @@ class ClientController extends Controller
         Collection::whereIn('client_id', $request->ids)->update([
             'client_id' => $client->id,
         ]);
-            
+
         //delete client objects
         Client::whereIn('id', $request->ids)->delete();
 
@@ -292,6 +292,95 @@ class ClientController extends Controller
         }
     }
 
+    public function pricelist(Request $request)
+    {
+        $clients = Client::orderBy("name", 'asc')->get();
+        $types = ClientType::orderBy("name", "asc")->get();
+        return Inertia::render('Clients/Pricelist', [
+            "clients" => ClientResource::collection($clients),
+            "clientTypes" => $types
+        ]);
+    }
+
+    public function pricelistSend(Request $request)
+    {
+
+        //get client info
+        if (isset($request->client_id)) {
+            $request->validate([
+                'client_id' => ['required'],
+            ]);
+
+            $client = Client::find($request->client_id);
+            if (!is_object($client)) {
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => "Client not found"], 404);
+                } else {
+                    //Web Response
+                    return Redirect::back()->with('error', 'Client not found');
+                }
+            }
+        } else {
+            $request->validate([
+                'name' => ['required'],
+                // 'client_type_id' => ['required'],
+                'phoneNumber' => ['required'],
+            ]);
+
+            $client_type_id = null;
+
+            if (isset($request->client_type_id)) {
+                if ($request->client_type_id == 0) {
+                    $request->validate([
+                        'client_type' => ['required'],
+                    ]);
+                    $client_type_id = ClientType::create([
+                        "name" => ucwords($request->client_type)
+                    ])->id;
+                } else {
+                    $client_type_id = $request->client_type_id;
+                }
+            }
+
+            if (Client::where("phone_number", $request->phoneNumber)->exists()) {
+                $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
+                else {
+                    //Web Response
+                    return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
+                }
+            }
+
+            $client = Client::create([
+                'serial' => (new AppController())->generateUniqueCode("CLIENT"),
+                'name' => ucwords($request->name),
+                'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+                'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
+                'email' => $request->email,
+                'address' => $request->address,
+                'organisation' => $request->organisation,
+                'alias' => $request->alias,
+                'client_type_id' => $client_type_id,
+            ]);
+        }
+
+        //send the pricelist
+        
+
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(new ClientResource($client), 201);
+        else {
+            //Web Response
+            return Redirect::route('clients.index')->with('success', 'Client created!');
+        }
+    }
+
+
     public function cleanPhoneNumber($subject)
     {
         if (isset($subject)) {
@@ -307,6 +396,7 @@ class ClientController extends Controller
             }
 
             return $number;
+
         } else {
             return null;
         }
