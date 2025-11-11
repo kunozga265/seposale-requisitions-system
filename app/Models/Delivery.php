@@ -73,12 +73,9 @@ class Delivery extends Model
 
         foreach($this->requestForms as $requestForm){
             foreach($requestForm->items as $item){
-                $total += $item->total_cost - $item->balance;
-                // foreach($item->records()->where("type","DEBIT")->get() as $record){
-
-                //     dump("Amount:" .$record->amount);
-                //     dump("TXN Id:" .$record->id);
-                // }
+                foreach($item->records()->where("type","DEBIT")->get() as $record){
+                    $total += $record->amount;
+                }
             }
         }
 

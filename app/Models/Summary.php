@@ -148,7 +148,6 @@ class Summary extends Model
         if ($this->siteSaleSummary == null) {
             $paid = $this->amount - $this->balance;
             $profit = $paid - $this->costs();
-            dump($paid, $profit, $this->costs());
             return $profit;
         } else {
             return $this->siteSaleSummary->profit();

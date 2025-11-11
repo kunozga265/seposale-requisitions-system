@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Http\Controllers\AccountingAccountController;
+use App\Http\Controllers\AccountingRecordController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\ExpenseController;
@@ -18,6 +19,7 @@ use App\Models\Payable;
 use App\Models\PaymentMethod;
 use App\Models\Supplier;
 use App\Models\Transporter;
+use App\Models\AccountingRecord;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -31,7 +33,7 @@ class DatabaseSeeder extends Seeder
     {
         //        \App\Models\Client::factory(5)->create();
 
-        $this->call(RoleTableSeeder::class);
+        // $this->call(RoleTableSeeder::class);
         // $this->call(PositionTableSeeder::class);
         // $this->call(ProductTableSeeder::class);
 
@@ -112,5 +114,18 @@ class DatabaseSeeder extends Seeder
         //         "serial" => (new AppController())->generateUniqueCode("SUPPLIER"),
         //     ]);
         // });
+
+        //clean transactions
+        $all_records = AccountingRecord::all();
+        $all_records->each(function ($record) {
+            $records = AccountingRecord::where("amount", $record->amount)
+                ->where("type", $record->type)
+                ->where("date", $record->date)
+                ->get();
+
+                (new AccountingRecordController())->reverseTransactions($records);
+
+                $records->delete();
+        });
     }
 }
