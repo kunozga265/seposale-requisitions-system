@@ -125,7 +125,9 @@ class DatabaseSeeder extends Seeder
 
                 (new AccountingRecordController())->reverseTransactions($records);
 
-                $records->delete();
+                $records->each(function ($_record) {
+                    $_record->delete();
+                });
         });
     }
 }
