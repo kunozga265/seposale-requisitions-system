@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         //Proof of Payments
-        Schedule::call(function () {
+       $schedule->call(function () {
             Log::info("Running Proof of Payments hourly reminder");
 
             PaymentReceipt::where("active", true)
@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
         })->hourly()->between('6:00', '14:00');
 
         //Proof of Payments
-        Schedule::call(function () {
+       $schedule->call(function () {
             Log::info("Running payables reminder");
 
             Sale::where('status', '>', 0)
