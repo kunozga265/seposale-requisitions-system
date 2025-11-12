@@ -42,6 +42,7 @@
                         <jet-validation-errors class="mb-4" />
                         <div class="page-section-content flex justify-center">
 
+
                             <div class="card w-full sm:max-w-md md:max-w-3xl">
 
                                 <jet-validation-errors class="mb-4" />
@@ -132,7 +133,7 @@
                                         <jet-label for="clientType" value="Select Type" />
                                         <select v-model="form.clientTypeId" id="clientType"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                            required>
+                                            >
                                             <option v-for="(type, index) in clientTypes" :value="type.id" :key="index">
                                                 {{ type.name }}
                                             </option>
@@ -177,6 +178,33 @@
                                             autocomplete="seposale-customer-address" />
                                     </div>
 
+
+                                </div>
+
+                                <div class="flex items-center mb-4">
+                                    <input checked id="backdate" type="checkbox" v-model="form.referred"
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="backdate"
+                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Referred</label>
+                                </div>
+
+                                <div v-if="form.referred">
+
+                                    <div class="p-2 mb-2">
+                                        <jet-label for="clientType" value="Select User" />
+                                        <select v-model="form.userId" id="clientType"
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            required>
+                                            <option v-for="(user, index) in users.data" :value="user.id" :key="index">
+                                                {{ user.fullName }}
+                                            </option>
+                                        </select>
+                                    </div>
+
+
+                                </div>
+
+                                <div>
 
                                 </div>
 
@@ -226,7 +254,7 @@ import { Money } from "v-money";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 
 export default {
-    props: ["products", "clients", "clientTypes"],
+    props: ["users", "clients", "clientTypes"],
     components: {
         WhatsappLabel,
         Money,
@@ -245,6 +273,8 @@ export default {
             clientIndex: -1,
 
             form: this.$inertia.form({
+                referred: false,
+                userId: null,
                 name: '',
                 phoneNumber: '',
                 phoneNumberOther: '',
@@ -289,6 +319,12 @@ export default {
                     return false
                 }
             }
+
+            if (this.form.referred && this.form.userId == null) {
+                this.error = "Select referred user"
+                return false
+            }
+
             this.error = ""
             return true
 
@@ -305,7 +341,8 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
-                      client_id: this.client == null ? null : this.client.id,
+                    user_id: this.form.userId,
+                    client_id: this.client == null ? null : this.client.id,
                     client_type_id: this.form.clientTypeId,
                     client_type: this.form.clientType
                 }))

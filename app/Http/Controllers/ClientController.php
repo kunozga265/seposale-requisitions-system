@@ -9,6 +9,7 @@ use App\Http\Resources\QuotationResource;
 use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
+use App\Http\Resources\UserResource;
 use App\Models\Client;
 use App\Models\ClientType;
 use App\Models\Sale;
@@ -17,6 +18,7 @@ use App\Models\Invoice;
 use App\Models\Quotation;
 use App\Models\SiteSale;
 use App\Models\Collection;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -294,11 +296,13 @@ class ClientController extends Controller
 
     public function pricelist(Request $request)
     {
+        $users = User::orderBy("firstName", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
         $types = ClientType::orderBy("name", "asc")->get();
         return Inertia::render('Clients/Pricelist', [
             "clients" => ClientResource::collection($clients),
-            "clientTypes" => $types
+            "clientTypes" => $types,
+            "users" => UserResource::collection($users),
         ]);
     }
 
@@ -309,6 +313,7 @@ class ClientController extends Controller
         if (isset($request->client_id)) {
             $request->validate([
                 'client_id' => ['required'],
+                'referred' => ['required'],
             ]);
 
             $client = Client::find($request->client_id);
@@ -368,7 +373,18 @@ class ClientController extends Controller
         }
 
         //send the pricelist
-        (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, "Quality products and services are guaranteed.");
+        if($request->referred){
+            
+            $request->validate([
+                'user_id' => ['required'],
+            ]);
+            $name = User::findOrFail($request->user_id)->first()->fullName();
+            $message = "You have been referred to us by {$name}.";
+
+        }else{
+            $message = "Quality products and services are guaranteed.";
+        }
+        (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
 
 
         if ((new AppController())->isApi($request))
