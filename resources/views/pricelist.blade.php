@@ -128,12 +128,7 @@
                                 @foreach ($product->variants as $variant)
                                     <tr>
                                         <td>
-
-                                            @if ($product->id == 5)
-                                                <span>{{ $variant->unit }}</span>
-                                            @else
-                                                <span>{{$variant->description}}</span>
-                                            @endif
+                                            <span>{{$variant->description}}</span>
                                         </td>
                                         <td style="text-align:right;">K{{number_format($variant->cost)}}</td>
                                     </tr>
