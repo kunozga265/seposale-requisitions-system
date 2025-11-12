@@ -477,14 +477,14 @@ class NotificationController extends Controller
             $message = "A payment of MK{$amount} has been received from {$sale->client->name}. \nPlease generate a receipt for this order.";
             $subject = "Proof of Payment";
 
-            foreach ($accountants as $accountant) {
-                error_log($accountant->id);
+            foreach ($accountants as $user) {
+                error_log($user->id);
 
                 //Send email to accountants
                 //Mail::to($accountant)->send(new RequestFormWaitingInitiationMail($accountant, $message, $subject));
 
                 //Send a push notification to the app for the accountant
-                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+                $this->pushNotification("USER-{$user->id}", $subject, $message);
             }
 
             // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
@@ -507,14 +507,17 @@ class NotificationController extends Controller
             $subject = "Payables under Sales Order #" . $sale->formattedCode();
             $message = "The following creditors need to be paid: $list ";
 
-            foreach ($accountants as $accountant) {
-                error_log($accountant->id);
+            $managers = Role::where('name', 'management')->first()->users;
+            $all = $managers->merge($accountants);
+
+            foreach ($all as $user) {
+                error_log($user->id);
 
                 //Send email to accountants
                 //Mail::to($accountant)->send(new RequestFormWaitingInitiationMail($accountant, $message, $subject));
 
                 //Send a push notification to the app for the accountant
-                $this->pushNotification("USER-{$accountant->id}", $subject, $message);
+                $this->pushNotification("USER-{$user->id}", $subject, $message);
             }
 
             // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
@@ -1537,7 +1540,7 @@ class NotificationController extends Controller
                                         "type" => "document",
                                         "document" => [
                                             "link" => "https://sis.seposale.com/files/seposale_pricelist.pdf",
-                                            "filename" => "Seposale Pricelist ". date("Y-m-d")
+                                            "filename" => "Seposale Pricelist " . date("Y-m-d")
                                         ]
                                     ]
                                 ]
