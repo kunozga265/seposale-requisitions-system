@@ -92,7 +92,7 @@
         }
 
         tr.group:first-child td.product table {
-            /* padding-top: 0; */
+            padding-top: 5px;
         }
 
 
