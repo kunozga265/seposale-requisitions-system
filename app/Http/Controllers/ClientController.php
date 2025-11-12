@@ -19,7 +19,10 @@ use App\Models\Quotation;
 use App\Models\SiteSale;
 use App\Models\Collection;
 use App\Models\User;
+use Illuminate\Support\Carbon;
+use App\Models\Referral;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -373,15 +376,22 @@ class ClientController extends Controller
         }
 
         //send the pricelist
-        if($request->referred){
-            
+        if ($request->referred) {
+
             $request->validate([
                 'user_id' => ['required'],
             ]);
             $name = User::findOrFail($request->user_id)->first()->fullName();
             $message = "You have been referred to us by {$name}.";
 
-        }else{
+            Referral::create([
+                'date' => Carbon::now()->getTimestamp(),
+                'referred_by_id' => $request->user_id,
+                'client_id' => $client->id,
+                'user_id' => Auth::id(),
+            ]);
+            
+        } else {
             $message = "Quality products and services are guaranteed.";
         }
         (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);

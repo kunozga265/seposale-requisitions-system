@@ -34,6 +34,11 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
+    public function referrals()
+    {
+        return $this->hasMany(Referral::class);
+    }
+
     public function approvedRequests()
     {
         return $this->belongsToMany(RequestForm::class,'requests_user','user_id','request_id');
