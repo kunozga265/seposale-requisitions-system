@@ -1537,7 +1537,7 @@ class NotificationController extends Controller
                                         "type" => "document",
                                         "document" => [
                                             "link" => "https://sis.seposale.com/files/seposale_pricelist.pdf",
-                                            "filename" => "Seposale Pricelist"
+                                            "filename" => "Seposale Pricelist ". date("Y-m-d")
                                         ]
                                     ]
                                 ]
