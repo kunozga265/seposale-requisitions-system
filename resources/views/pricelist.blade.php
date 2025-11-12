@@ -57,7 +57,7 @@
         }
 
         table {
-            border-spacing: 15px;
+            /* border-spacing: 15px; */
             width: 100%;
             border-collapse: collapse;
             font-size: 12px;
@@ -110,10 +110,16 @@
         .font-bold {
             font-weight: bold;
         }
+        .date{
+            font-size: 12px;
+        }
     </style>
 </head>
 
 <body>
+    <div class="" style="position: absolute; bottom: 0; right: 0;">
+        <p class="date">Prices Updated on {{ date('M d, Y') }}</p>
+    </div>
     <div style="position: absolute; left:110px; top: 480px; border: 0px solid yellow; width:480px;">
         <table>
             @foreach ($products as $group)
@@ -128,7 +134,7 @@
                                 @foreach ($product->variants as $variant)
                                     <tr>
                                         <td>
-                                            <span>{{$variant->description}}</span>
+                                            {{$variant->description}}
                                         </td>
                                         <td style="text-align:right;">K{{number_format($variant->cost)}}</td>
                                     </tr>
