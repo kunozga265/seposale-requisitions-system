@@ -368,7 +368,7 @@ class ClientController extends Controller
         }
 
         //send the pricelist
-        
+        (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, "Quality products and services are guaranteed.");
 
 
         if ((new AppController())->isApi($request))
@@ -376,7 +376,7 @@ class ClientController extends Controller
             return response()->json(new ClientResource($client), 201);
         else {
             //Web Response
-            return Redirect::route('clients.index')->with('success', 'Client created!');
+            return Redirect::back()->with('success', 'Pricelist sent!');
         }
     }
 
@@ -396,7 +396,6 @@ class ClientController extends Controller
             }
 
             return $number;
-
         } else {
             return null;
         }

@@ -8,6 +8,8 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -37,11 +39,11 @@ class ProductController extends Controller
                 //API Response
                 return response()->json(new ProductResource($product));
             } else {
-//                $sales = $product->sales()->paginate(100);
+                //                $sales = $product->sales()->paginate(100);
                 //Web Response
                 return Inertia::render('Products/Show', [
                     'product' => new ProductResource($product),
-//                    'sales' => ProductResource::collection($sales),
+                    //                    'sales' => ProductResource::collection($sales),
                 ]);
             }
         } else {
@@ -57,8 +59,7 @@ class ProductController extends Controller
 
     public function create(Request $request)
     {
-        return Inertia::render('Products/Create', [
-        ]);
+        return Inertia::render('Products/Create', []);
     }
 
     public function store(Request $request)
@@ -80,7 +81,7 @@ class ProductController extends Controller
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
-            "product_id"=>$product->id
+            "product_id" => $product->id
         ]);
 
         if ((new AppController())->isApi($request))
@@ -106,8 +107,10 @@ class ProductController extends Controller
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
-            "product_id"=>$request->id
+            "product_id" => $request->id
         ]);
+
+        $this->generatePricelist();
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -131,6 +134,10 @@ class ProductController extends Controller
             "cost" => $request->cost,
         ]);
 
+
+        $this->generatePricelist();
+
+
         if ((new AppController())->isApi($request))
             //API Response
             return response()->json();
@@ -138,5 +145,22 @@ class ProductController extends Controller
             //Web Response
             return Redirect::route('products.index')->with('success', 'Product price udpated!!');
         }
+    }
+
+    private function generatePricelist()
+    {
+
+        $products = Product::where('name', "!=", "Other")
+            ->where('name', "!=", "Services")
+            ->get();
+        $filename = "seposale_pricelist.pdf";
+
+        $pdf = PDF::loadView('pricelist', [
+            'products' => $products->chunk(2),
+        ]);
+
+        $filename = public_path('files') . "/seposale_pricelist.pdf";
+
+        $pdf->save($filename);
     }
 }

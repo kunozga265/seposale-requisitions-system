@@ -568,7 +568,7 @@ class NotificationController extends Controller
 
         foreach ($requestForm->items as $item) {
 
-           if ($item->meta != null) {
+            if ($item->meta != null) {
                 $meta = json_decode($item->meta, true);
             } else {
                 $meta = ["notify" => "TEAM"];
@@ -580,7 +580,7 @@ class NotificationController extends Controller
             } else {
                 $message = "We have an order for {$item->product_name} to be delivered at {$requestForm->delivery->location}. Please confirm delivery with the operations team";
                 $subject = "Delivery Order #" . $requestForm->delivery->formattedCode();
-                
+
                 foreach ($delivery_team as $user) {
                     $this->pushNotification("USER-{$user->id}", $subject, $message);
                     // $this->processWhatsappMessage("delivery_order", $item->serial, $user->fullName(), 0, $user->phone_number);
@@ -697,11 +697,13 @@ class NotificationController extends Controller
 
             if ($response->getStatusCode() == 200) {
                 Log::info($response->getBody());
+                // dd($response);
                 $res = true;
             }
         } catch (\GuzzleHttp\Exception\GuzzleException $e) {
             //Log information
             Log::error($e);
+            $res = false;
         }
 
         return $res;
@@ -1488,6 +1490,58 @@ class NotificationController extends Controller
                             "code" => "en"
                         ],
                         "components" => [
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Transporter/Supplier Name
+                                        "text" => $client->getName()
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //site name
+                                        "text" => Carbon::now()->format('F j, Y')
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //item name
+                                        "text" => $notify
+                                    ],
+                                ]
+                            ],
+                        ]
+                    ]
+                ];
+                $check = $this->pushWhatsappMessage($body);
+
+                break;
+            case "pricelist_referred":
+                $client = \App\Models\Client::where('serial', $serial)->first();
+
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $client->phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "header",
+                                "parameters" => [
+                                    [
+                                        "type" => "document",
+                                        "document" => [
+                                            "link" => "https://sis.seposale.com/files/seposale_pricelist.pdf",
+                                            "filename" => "Seposale Pricelist"
+                                        ]
+                                    ]
+                                ]
+                            ],
                             [
                                 "type" => "body",
                                 "parameters" => [

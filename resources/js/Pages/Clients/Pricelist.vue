@@ -305,6 +305,7 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
+                      client_id: this.client == null ? null : this.client.id,
                     client_type_id: this.form.clientTypeId,
                     client_type: this.form.clientType
                 }))
