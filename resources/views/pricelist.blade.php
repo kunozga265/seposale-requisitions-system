@@ -53,7 +53,7 @@
 
         td {
             color: white;
-            font-size: 14px
+            font-size: 14px;
         }
 
         table {
@@ -93,6 +93,10 @@
 
         tr.group:first-child td.product table {
             padding-top: 5px;
+        }
+
+         tr.group td{
+            vertical-align: top
         }
 
 
