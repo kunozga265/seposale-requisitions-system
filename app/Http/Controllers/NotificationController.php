@@ -618,7 +618,7 @@ class NotificationController extends Controller
     {
         // error_log($to);
         // $to = "POSITION-2";
-        $to = "USER-1";
+        // $to = "USER-1";
 
 
 
