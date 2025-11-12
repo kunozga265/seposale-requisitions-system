@@ -310,6 +310,15 @@
                                         </span>
                                     </div>
                                 </div>
+                                <div class="mb-4">
+                                    <div class="heading-font">Referrals</div>
+                                    <div>
+                                        <span
+                                        class="mr-2 role rounded py-1 px-2 bg-gray-200 text-gray-600 text-sm font-bold uppercase">
+                                        {{ user.data.referrals }} Referral{{ user.data.referrals != 1 ? 's' : '' }}
+                                    </span>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
