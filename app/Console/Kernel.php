@@ -40,19 +40,37 @@ class Kernel extends ConsoleKernel
 
         //Proof of Payments
        $schedule->call(function () {
-            Log::info("Running payables reminder");
+           
 
             Sale::where('status', '>', 0)
                 ->whereHas('payables', function ($query) {
                     $query->where('paid', 0);
                 })
                 ->each(function (Sale $sale) {
+                     Log::info("Running payables reminder for Sales Order #{$sale->formattedCode}");
                     (new NotificationController())->notifyAccounts(
                         $sale,
                         "payables",
                     );
                 });
         })->dailyAt('8:00');
+
+        //Custom Jobs
+       $schedule->call(function () {
+
+            Log::info("Running custom jobs");
+
+            // Sale::where('status', '>', 0)
+            //     ->whereHas('payables', function ($query) {
+            //         $query->where('paid', 0);
+            //     })
+            //     ->each(function (Sale $sale) {
+            //         (new NotificationController())->notifyAccounts(
+            //             $sale,
+            //             "payables",
+            //         );
+            //     });
+        })->everyFifteenMinutes();
     }
 
     /**

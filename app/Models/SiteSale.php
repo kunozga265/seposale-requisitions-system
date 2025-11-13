@@ -47,6 +47,11 @@ class SiteSale extends Model
         return $this->belongsTo(InventorySummary::class);
     }
 
+    public function pops()
+    {
+        return $this->hasMany(PaymentReceipt::class);
+    }
+
     public function formattedCode()
     {
         return (new AppController())->getZeroedNumber($this->code);
