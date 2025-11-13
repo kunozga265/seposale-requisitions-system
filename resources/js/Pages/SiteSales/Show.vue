@@ -619,7 +619,8 @@ export default {
       form: this.$inertia.form({
         amount: 0,
         reference: "",
-        information: []
+        information: [],
+        withholding: false,
 
       }),
       selectedProduct: null,
