@@ -267,6 +267,16 @@
                                     @click.native="revokeRolePrompt('delivery')">Revoke Delivery
                                     Role</danger-button>
 
+                                <!--Sales-->
+                                <primary-button class="m-2"
+                                    v-if="!checkRole(user.data, 'sales') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="giveRolePrompt('sales')">Give Sales
+                                    Role</primary-button>
+                                <danger-button class="m-2"
+                                    v-if="checkRole(user.data, 'sales') && checkRole($page.props.auth.data, 'management') && !checkRole(user.data, 'unverified') && !checkRole(user.data, 'disabled')"
+                                    @click.native="revokeRolePrompt('sales')">Revoke Sales
+                                    Role</danger-button>
+
                             </div>
 
                         </div>
