@@ -227,7 +227,7 @@ Route::group(['prefix' => '1.0.0'], function () {
         Route::group(['prefix' => 'invoices'], function () {
             Route::get('/', [
                 "uses" => "App\Http\Controllers\InvoiceController@index",
-                'roles' => ['employee', 'management']
+                  'roles' => ['sales', 'accountant', 'management']
             ]);
 
             Route::get('/print/{id}', [

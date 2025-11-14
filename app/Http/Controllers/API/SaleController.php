@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\AppController;
 use App\Http\Resources\SaleResource;
 use App\Models\Sale;
 use Illuminate\Http\Request;
