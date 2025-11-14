@@ -101,8 +101,8 @@ class AppController extends Controller
         
 
         return response()->json([
-            'to_approve' => RequestFormResource::collection($toApprove),
-            'active' => RequestFormResource::collection($active),
+            'to_approve' => RequestFormResource::collection($toApprove->take(10)),
+            'active' => RequestFormResource::collection($active->take(10)),
             //counts
             'awaiting_approval_count' => $awaitingApprovalCount,
             'awaiting_initiation_count' => $awaitingInitiationCount,
