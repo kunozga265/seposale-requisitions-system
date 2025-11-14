@@ -96,48 +96,47 @@ class AppController extends Controller
             $awaitingApprovalCount = $toApprove->count();
 
             $dashboardReports = ReportResource::collection($reports);
-
         } else
             if ($user->hasRole('accountant')) {
 
-                $toReconcile = RequestForm::where('approvalStatus', 3)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
-                $toInitiate = RequestForm::where('approvalStatus', 1)->where("dateRequested",">=",env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
-                $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $toReconcile = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
+            $toInitiate = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
 
-                $awaitingApprovalCount = $toApprove->count();
-                $awaitingInitiationCount = $toInitiate->count();
-                $awaitingReconciliationCount = $toReconcile->count();
+            $awaitingApprovalCount = $toApprove->count();
+            $awaitingInitiationCount = $toInitiate->count();
+            $awaitingReconciliationCount = $toReconcile->count();
 
-                //Merge
-                $toApprove = $toApprove->merge($toInitiate);
-                $toApprove = $toApprove->merge($toReconcile);
+            //Merge
+            $toApprove = $toApprove->merge($toInitiate);
+            $toApprove = $toApprove->merge($toReconcile);
 
-                foreach ($reports as $report) {
-                    $dashboardReports['data'][] = [
-                        'id' => $report->id,
-                        'year' => $report->year,
-                        'month' => $report->month,
-                        'requestsCount' => $report->requestForms()->where('user_id', $user->id)->count(),
-                    ];
-                }
-
-                if ((new AppController())->isApi($request))
-                    $dashboardReports = $dashboardReports['data'];
-            } else {
-                $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
-                $awaitingApprovalCount = $toApprove->count();
-
-                foreach ($reports as $report) {
-                    $dashboardReports['data'][] = [
-                        'id' => $report->id,
-                        'year' => $report->year,
-                        'month' => $report->month,
-                        'requestsCount' => $report->requestForms()->where('user_id', $user->id)->count(),
-                    ];
-                }
-                if ((new AppController())->isApi($request))
-                    $dashboardReports = $dashboardReports['data'];
+            foreach ($reports as $report) {
+                $dashboardReports['data'][] = [
+                    'id' => $report->id,
+                    'year' => $report->year,
+                    'month' => $report->month,
+                    'requestsCount' => $report->requestForms()->where('user_id', $user->id)->count(),
+                ];
             }
+
+            if ((new AppController())->isApi($request))
+                $dashboardReports = $dashboardReports['data'];
+        } else {
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $awaitingApprovalCount = $toApprove->count();
+
+            foreach ($reports as $report) {
+                $dashboardReports['data'][] = [
+                    'id' => $report->id,
+                    'year' => $report->year,
+                    'month' => $report->month,
+                    'requestsCount' => $report->requestForms()->where('user_id', $user->id)->count(),
+                ];
+            }
+            if ((new AppController())->isApi($request))
+                $dashboardReports = $dashboardReports['data'];
+        }
 
         $totalCount = $toApprove->count() + $active->count();
 
@@ -245,7 +244,7 @@ class AppController extends Controller
                 'activeCount' => $activeCount,
                 'totalCount' => $totalCount,
                 'unverifiedUsersCount' => $unverifiedUsers->count(),
-                
+
                 'dashboardReports' => $dashboardReports
             ]);
         }
@@ -265,7 +264,6 @@ class AppController extends Controller
         } else {
             return User::find(Auth::id());
         }
-
     }
 
     public function uploadFile(Request $request)
@@ -287,6 +285,8 @@ class AppController extends Controller
         //develop name
         $ext = $this->getExtension($explodedFile);
 
+        // dd($ext);
+
         switch ($type) {
             case 'PROOF_OF_PAYMENT':
                 $filename = "files/proof-of-payments/" . $type . "-" . uniqid() . "." . $ext;
@@ -305,53 +305,53 @@ class AppController extends Controller
             case 'PAYMENT_VOUCHER':
                 $filename = "files/collections/" . $type . "-" . uniqid() . "." . $ext;
                 break;
+            case 'PRICELIST':
+                $filename = "files/list-of-clients/" . $type . "-" . uniqid() . "." . $ext;
+                break;
             default:
                 $filename = "files/other/" . $type . "-" . uniqid() . "." . $ext;
         }
 
-        if ($type == 'VEHICLE') {
-            if ($ext == 'jpg' || $ext == 'png') {
-                try {
-                    Storage::disk('public_uploads')->put(
-                        $filename, file_get_contents($file)
-                    );
-                } catch (\RuntimeException $e) {
-                    return response()->json([
-                        'message' => "Failed to upload",
-                    ], 501);
-                }
-            } else {
+        
+
+        if ($ext == 'jpg' || $ext == 'png' || $ext == 'pdf') {
+            try {
+                //                    // create new manager instance with desired driver
+                //
+                //                    $manager = ImageManager::withDriver(new Driver());
+                //                    $image = $manager
+                //                        ->read(file_get_contents($file))
+                //                        ->scale(height: 200);;
+                ////                    $scaledDown = $image->scaleDown(height: 200);
+                ////                    $encoded = $scaledDown->encodeByExtension();
+                //                    $image->save($filename);
+
+                Storage::disk('public_uploads')->put(
+                    $filename,
+                    file_get_contents($file)
+                );
+            } catch (\RuntimeException $e) {
                 return response()->json([
-                    'message' => "Invalid extension",
-                ], 415);
+                    'message' => "Failed to upload $e",
+                ], 501);
+            }
+        } else if ($ext == 'csv' || $ext == 'xlsx' || $ext == 'xls') {
+            try {
+                Storage::disk('public_uploads')->put(
+                    $filename,
+                    file_get_contents($file)
+                );
+            } catch (\RuntimeException $e) {
+                return response()->json([
+                    'message' => "Failed to upload $e",
+                ], 501);
             }
         } else {
-            if ($ext == 'jpg' || $ext == 'png' || $ext == 'pdf') {
-                try {
-//                    // create new manager instance with desired driver
-//
-//                    $manager = ImageManager::withDriver(new Driver());
-//                    $image = $manager
-//                        ->read(file_get_contents($file))
-//                        ->scale(height: 200);;
-////                    $scaledDown = $image->scaleDown(height: 200);
-////                    $encoded = $scaledDown->encodeByExtension();
-//                    $image->save($filename);
-
-                    Storage::disk('public_uploads')->put(
-                        $filename, file_get_contents($file)
-                    );
-                } catch (\RuntimeException $e) {
-                    return response()->json([
-                        'message' => "Failed to upload $e",
-                    ], 501);
-                }
-            } else {
-                return response()->json([
-                    'message' => "Invalid extension",
-                ], 415);
-            }
+            return response()->json([
+                'message' => "Invalid extension",
+            ], 415);
         }
+
 
         return response()->json([
             'file' => $filename,
@@ -429,31 +429,31 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (DeliveryNote::where('serial', $code)->exists());
-        }elseif ($type == "ACCOUNTING") {
+        } elseif ($type == "ACCOUNTING") {
             do {
                 $code = $this->getNewCode();
             } while (AccountingRecord::where('serial', $code)->exists());
-        }elseif ($type == "CREDIT_VOUCHER") {
+        } elseif ($type == "CREDIT_VOUCHER") {
             do {
                 $code = $this->getNewCode();
             } while (CreditVoucher::where('serial', $code)->exists());
-        }elseif ($type == "SUPPLY_VOUCHER") {
+        } elseif ($type == "SUPPLY_VOUCHER") {
             do {
                 $code = $this->getNewCode();
             } while (SupplierVoucher::where('serial', $code)->exists());
-        }elseif ($type == "PAYABLE") {
+        } elseif ($type == "PAYABLE") {
             do {
                 $code = $this->getNewCode();
             } while (Payable::where('serial', $code)->exists());
-        }elseif ($type == "TRANSPORTER") {
+        } elseif ($type == "TRANSPORTER") {
             do {
                 $code = $this->getNewCode();
             } while (Transporter::where('serial', $code)->exists());
-        }elseif ($type == "SUPPLIER") {
+        } elseif ($type == "SUPPLIER") {
             do {
                 $code = $this->getNewCode();
             } while (Supplier::where('serial', $code)->exists());
-        }elseif ($type == "STATEMENT") {
+        } elseif ($type == "STATEMENT") {
             do {
                 $code = $this->getNewCode();
             } while (Statement::where('serial', $code)->exists());
@@ -504,9 +504,9 @@ class AppController extends Controller
                 $zeroed_number = $number;
         }
 
-//        if($revision > 0){
-//            $zeroed_number = $zeroed_number."REV$revision";
-//        }
+        //        if($revision > 0){
+        //            $zeroed_number = $zeroed_number."REV$revision";
+        //        }
 
         return $zeroed_number;
     }
@@ -570,8 +570,8 @@ class AppController extends Controller
     private function groupSales($sales, $isReceivable)
     {
         $sortSales = [];
-        foreach ($sales as $sale){
-            $sortSales [] = [
+        foreach ($sales as $sale) {
+            $sortSales[] = [
                 "id" => $sale->id,
                 "client" => $sale->sale->client,
                 "product" => $sale->product,
@@ -591,22 +591,22 @@ class AppController extends Controller
         }, []);
 
         $compound_object = [];
-        foreach ($clients as $client){
+        foreach ($clients as $client) {
             $due = 0;
             $principal = 0;
-            foreach ($client as $item){
+            foreach ($client as $item) {
                 $due += $item["due"];
                 $principal += $item["amount"];
             }
 
-            $compound_object [] = [
+            $compound_object[] = [
                 "client" => $client[0]["client"],
                 "due" => $due,
                 "principal" => $principal,
             ];
         }
 
-        if($isReceivable) {
+        if ($isReceivable) {
             usort($compound_object, function ($a, $b) {
                 if ($a['principal'] < $b['principal']) {
                     return 1;
@@ -615,7 +615,7 @@ class AppController extends Controller
                 }
                 return 0;
             });
-        }else{
+        } else {
             usort($compound_object, function ($a, $b) {
                 if ($a['due'] < $b['due']) {
                     return 1;
@@ -627,6 +627,5 @@ class AppController extends Controller
         }
 
         return $compound_object;
-
     }
 }

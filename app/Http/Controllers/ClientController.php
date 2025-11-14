@@ -19,12 +19,17 @@ use App\Models\Quotation;
 use App\Models\SiteSale;
 use App\Models\Collection;
 use App\Models\User;
+use App\Models\CustomJob;
 use Illuminate\Support\Carbon;
 use App\Models\Referral;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ClientsCheckImport;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
@@ -311,98 +316,155 @@ class ClientController extends Controller
 
     public function pricelistSend(Request $request)
     {
+        if ($request->type == 'upload') {
 
-        //get client info
-        if (isset($request->client_id)) {
             $request->validate([
-                'client_id' => ['required'],
-                'referred' => ['required'],
+                'file' => ['required'],
             ]);
 
-            $client = Client::find($request->client_id);
-            if (!is_object($client)) {
-                if ((new AppController())->isApi($request)) {
-                    //API Response
-                    return response()->json(['message' => "Client not found"], 404);
-                } else {
-                    //Web Response
-                    return Redirect::back()->with('error', 'Client not found');
-                }
+            $base64String = $request->file;
+
+            // Remove the "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," part if it exists
+            if (strpos($base64String, ',') !== false) {
+                $base64String = explode(',', $base64String)[1];
+            }
+
+            // Decode base64 to binary
+            $fileData = base64_decode($base64String);
+
+            // Generate a temporary filename
+            $tempFile = 'temp_excel_' . time() . '.xlsx';
+
+            try {
+
+                // Store the file temporarily in storage/app
+                Storage::disk('temp')->put($tempFile, $fileData);
+
+                // Import using Maatwebsite
+                Excel::import(new ClientsCheckImport(), storage_path('app/temp/' . $tempFile));
+
+                // Delete temp file after import
+                Storage::disk('temp')->delete($tempFile);
+
+                //Upload File
+                $filename = 'files/list-of-clients/' . uniqid() . '.xlsx';
+                Storage::disk('public_uploads')->put($filename, $fileData);
+
+                CustomJob::create([
+                    "status" => 0,
+                    "type" => "PRICELIST_SEND",
+                    "content" => json_encode([
+                        'file' => $filename
+                    ]),
+                ]);
+            } catch (\Exception $e) {
+                Storage::disk('temp')->delete($tempFile);
+                // dd($e);
+
+                Log::error($e);
+                return Redirect::back()->with('error', "An error occurred: {$e->getMessage()}");
+            }
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(['message' => 'Clients uploaded and pricelists will be sent.'], 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('success', 'Clients uploaded and pricelists will be sent.');
             }
         } else {
-            $request->validate([
-                'name' => ['required'],
-                // 'client_type_id' => ['required'],
-                'phoneNumber' => ['required'],
-            ]);
 
-            $client_type_id = null;
+            //get client info
+            if (isset($request->client_id)) {
+                $request->validate([
+                    'client_id' => ['required'],
+                    'referred' => ['required'],
+                ]);
 
-            if (isset($request->client_type_id)) {
-                if ($request->client_type_id == 0) {
-                    $request->validate([
-                        'client_type' => ['required'],
-                    ]);
-                    $client_type_id = ClientType::create([
-                        "name" => ucwords($request->client_type)
-                    ])->id;
-                } else {
-                    $client_type_id = $request->client_type_id;
+                $client = Client::find($request->client_id);
+                if (!is_object($client)) {
+                    if ((new AppController())->isApi($request)) {
+                        //API Response
+                        return response()->json(['message' => "Client not found"], 404);
+                    } else {
+                        //Web Response
+                        return Redirect::back()->with('error', 'Client not found');
+                    }
                 }
+            } else {
+                $request->validate([
+                    'name' => ['required'],
+                    // 'client_type_id' => ['required'],
+                    'phoneNumber' => ['required'],
+                ]);
+
+                $client_type_id = 7;
+
+                if (isset($request->client_type_id)) {
+                    if ($request->client_type_id == 0) {
+                        $request->validate([
+                            'client_type' => ['required'],
+                        ]);
+                        $client_type_id = ClientType::create([
+                            "name" => ucwords($request->client_type)
+                        ])->id;
+                    } else {
+                        $client_type_id = $request->client_type_id;
+                    }
+                }
+
+                if (Client::where("phone_number", $request->phoneNumber)->exists()) {
+                    $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
+                    if ((new AppController())->isApi($request))
+                        //API Response
+                        return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
+                    else {
+                        //Web Response
+                        return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
+                    }
+                }
+
+                $client = Client::create([
+                    'serial' => (new AppController())->generateUniqueCode("CLIENT"),
+                    'name' => ucwords($request->name),
+                    'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
+                    'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
+                    'email' => $request->email,
+                    'address' => $request->address,
+                    'organisation' => $request->organisation,
+                    'alias' => $request->alias,
+                    'client_type_id' => $client_type_id,
+                ]);
             }
 
-            if (Client::where("phone_number", $request->phoneNumber)->exists()) {
-                $existing_client = Client::where("phone_number", $request->phoneNumber)->first();
-                if ((new AppController())->isApi($request))
-                    //API Response
-                    return response()->json(["message" => "Client with that phone number exists: {$existing_client->getName()}"], 400);
-                else {
-                    //Web Response
-                    return Redirect::back()->with('error', "Client with that phone number exists: {$existing_client->getName()}");
-                }
+            //send the pricelist
+            if ($request->referred) {
+
+                $request->validate([
+                    'user_id' => ['required'],
+                ]);
+                $name = User::findOrFail($request->user_id)->first()->fullName();
+                $message = "You have been referred to us by {$name}.";
+
+                Referral::create([
+                    'date' => Carbon::now()->getTimestamp(),
+                    'referred_by_id' => $request->user_id,
+                    'client_id' => $client->id,
+                    'user_id' => Auth::id(),
+                ]);
+            } else {
+                $message = "Quality products and services are guaranteed.";
             }
-
-            $client = Client::create([
-                'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                'name' => ucwords($request->name),
-                'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
-                'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
-                'email' => $request->email,
-                'address' => $request->address,
-                'organisation' => $request->organisation,
-                'alias' => $request->alias,
-                'client_type_id' => $client_type_id,
-            ]);
-        }
-
-        //send the pricelist
-        if ($request->referred) {
-
-            $request->validate([
-                'user_id' => ['required'],
-            ]);
-            $name = User::findOrFail($request->user_id)->first()->fullName();
-            $message = "You have been referred to us by {$name}.";
-
-            Referral::create([
-                'date' => Carbon::now()->getTimestamp(),
-                'referred_by_id' => $request->user_id,
-                'client_id' => $client->id,
-                'user_id' => Auth::id(),
-            ]);
-            
-        } else {
-            $message = "Quality products and services are guaranteed.";
-        }
-        (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+            (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
 
 
-        if ((new AppController())->isApi($request))
-            //API Response
-            return response()->json(new ClientResource($client), 201);
-        else {
-            //Web Response
-            return Redirect::back()->with('success', 'Pricelist sent!');
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json(new ClientResource($client), 201);
+            else {
+                //Web Response
+                return Redirect::back()->with('success', 'Pricelist sent!');
+            }
         }
     }
 

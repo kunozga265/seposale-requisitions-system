@@ -3,11 +3,14 @@
 namespace App\Console;
 
 use App\Http\Controllers\NotificationController;
+use App\Imports\ClientsImport;
 use App\Models\Sale;
+use App\Models\CustomJob;
 use App\Models\PaymentReceipt;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Kernel extends ConsoleKernel
 {
@@ -22,7 +25,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         //Proof of Payments
-       $schedule->call(function () {
+        $schedule->call(function () {
             Log::info("Running Proof of Payments hourly reminder");
 
             PaymentReceipt::where("active", true)
@@ -39,15 +42,15 @@ class Kernel extends ConsoleKernel
         })->hourly()->between('6:00', '14:00');
 
         //Proof of Payments
-       $schedule->call(function () {
-           
+        $schedule->call(function () {
+
 
             Sale::where('status', '>', 0)
                 ->whereHas('payables', function ($query) {
                     $query->where('paid', 0);
                 })
                 ->each(function (Sale $sale) {
-                     Log::info("Running payables reminder for Sales Order #{$sale->formattedCode}");
+                    Log::info("Running payables reminder for Sales Order #{$sale->formattedCode()}");
                     (new NotificationController())->notifyAccounts(
                         $sale,
                         "payables",
@@ -56,20 +59,27 @@ class Kernel extends ConsoleKernel
         })->dailyAt('8:00');
 
         //Custom Jobs
-       $schedule->call(function () {
+        $schedule->call(function () {
 
-            Log::info("Running custom jobs");
+            $jobs = CustomJob::where('status', '<', 2)->get();
+            foreach ($jobs as $job) {
+                switch ($job->type) {
+                    case "PRICELIST_SEND":
+                        Log::info("Running Job: Sending Batch Pricelist");
 
-            // Sale::where('status', '>', 0)
-            //     ->whereHas('payables', function ($query) {
-            //         $query->where('paid', 0);
-            //     })
-            //     ->each(function (Sale $sale) {
-            //         (new NotificationController())->notifyAccounts(
-            //             $sale,
-            //             "payables",
-            //         );
-            //     });
+                        $content = json_decode($job->content, true);
+                        $file = $content["file"];
+
+                        Excel::import(new ClientsImport, public_path($file));
+
+                        $job->update([
+                            'status' => 2
+                        ]);
+
+                        break;
+                    default:
+                }
+            }
         })->everyFifteenMinutes();
     }
 

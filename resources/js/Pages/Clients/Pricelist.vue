@@ -57,6 +57,13 @@
                                         class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                     <label for="default-radio-2"
                                         class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">New</label>
+
+                                    <input checked id="default-radio-2" type="radio" value="upload"
+                                        v-model="checkClient"
+                                        class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="default-radio-2"
+                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Upload
+                                        File</label>
                                 </div>
                                 <div v-if="checkClient === 'existing'">
 
@@ -111,7 +118,7 @@
                                     </div>
 
                                 </div>
-                                <div v-else class="grid grid-cols-1 md:grid-cols-2">
+                                <div v-else-if="checkClient === 'new'" class="grid grid-cols-1 md:grid-cols-2">
 
                                     <div class="p-2 mb-2 md:col-span-2">
                                         <div class="flex justify-between">
@@ -132,8 +139,7 @@
                                     <div class="p-2 mb-2" :class="{ 'md:col-span-2': form.clientTypeId != 0 }">
                                         <jet-label for="clientType" value="Select Type" />
                                         <select v-model="form.clientTypeId" id="clientType"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                            >
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                                             <option v-for="(type, index) in clientTypes" :value="type.id" :key="index">
                                                 {{ type.name }}
                                             </option>
@@ -177,6 +183,25 @@
                                         <jet-input id="address" type="text" class="block w-full" v-model="form.address"
                                             autocomplete="seposale-customer-address" />
                                     </div>
+
+
+                                </div>
+                                <div v-else-if="checkClient === 'upload'" class="">
+                                    <div class="mb-4 md:col-span-2">
+                                        <div class="text-mute text-sm mb-1">
+                                            Upload List of Clients
+                                        </div>
+                                        <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                            class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
+                                        <div class="text-red-500 text-xs" v-if="form.errors.file">Required
+                                        </div>
+                                    </div>
+
+                                    <div class="my-4 text-xs">
+                                        Ensure you have the following columns; <b>Name</b> & <b>Phone Number</b>. <br/>"Phone Number Other" and "Email" are optional.
+                                    </div>
+
 
 
                                 </div>
@@ -284,6 +309,7 @@ export default {
                 alias: '',
                 clientTypeId: null,
                 clientType: '',
+                file: null,
             }),
             error: '',
         }
@@ -313,11 +339,17 @@ export default {
                     this.error = "Enter at least one phone number"
                     return false
                 }
-            } else {
+            } else if (this.checkClient === "existing") {
                 if (parseInt(this.clientIndex) < 0 || this.client == null) {
                     this.error = "Select client"
                     return false
                 }
+            }else{
+                  if (this.form.file?.length === 0 || this.form.file == null) {
+                    this.error = "Select file"
+                    return false
+                } 
+
             }
 
             if (this.form.referred && this.form.userId == null) {
@@ -341,12 +373,32 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
+                    type: this.checkClient,
                     user_id: this.form.userId,
                     client_id: this.client == null ? null : this.client.id,
                     client_type_id: this.form.clientTypeId,
                     client_type: this.form.clientType
                 }))
                 .post(this.route('clients.pricelist.send'))
+        },
+        photoUpload(file) {
+            const reader = new FileReader();
+            if (file) {
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+
+                    this.form.file = e.target.result
+                    // axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+                    //     type: "PRICELIST",
+                    //     file: e.target.result
+                    // }).then(res => {
+                    //     this.form.file = res.data.file
+
+                    // }).catch(function (res) {
+                    //     this.form.errors.push(res.data.message)
+                    // })
+                };
+            }
         },
     }
 
