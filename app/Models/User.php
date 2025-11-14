@@ -29,6 +29,21 @@ class User extends Authenticatable
         return $this->hasMany(RequestForm::class);
     }
 
+    public function quotations()
+    {
+        return $this->hasMany(Quotation::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
     public function userNotifications()
     {
         return $this->hasMany(Notification::class);

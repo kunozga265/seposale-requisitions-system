@@ -20,7 +20,17 @@ class InvoiceController extends Controller
 {
     public function index(Request $request)
     {
-        $invoices = Invoice::latest()->paginate((new AppController())->paginate);
+         $user = (new AppController())->getAuthUser($request);
+         
+          if (
+            $user->hasRole('management') ||
+            $user->hasRole('accountant')  ||
+            $user->hasRole('sales')
+        ) {
+            $invoices = Invoice::latest()->paginate((new AppController())->paginate);
+        } else {
+            $invoices = $user->invoices()->paginate((new AppController())->paginate);
+        }
 
 
         if ((new AppController())->isApi($request))

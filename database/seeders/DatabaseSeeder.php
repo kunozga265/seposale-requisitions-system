@@ -21,6 +21,7 @@ use App\Models\Supplier;
 use App\Models\Transporter;
 use App\Models\AccountingRecord;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 
 class DatabaseSeeder extends Seeder
 {
@@ -116,22 +117,33 @@ class DatabaseSeeder extends Seeder
         // });
 
         //clean transactions
-        $all_records = AccountingRecord::all();
-        foreach ($all_records as $subject) {
-            $record = AccountingRecord::find($subject->id);
+        // $all_records = AccountingRecord::all();
+        // foreach ($all_records as $subject) {
+        //     $record = AccountingRecord::find($subject->id);
 
-            if (is_object($record)) {
-                $records = AccountingRecord::where("amount", $record->amount)
-                    ->where("type", $record->type)
-                    ->where("date", $record->date)
-                    ->get();
+        //     if (is_object($record)) {
+        //         if ($record->request_form_item_id != null) {
+        //             $records = AccountingRecord::where("amount", $record->amount)
+        //                 ->where('id', '!=', $record->id)
+        //                 ->where("type", $record->type)
+        //                 ->where("name", $record->name)
+        //                 // ->where("reference", $record->reference)
+        //                 ->where("description", $record->description)
+        //                 ->where("request_form_item_id", $record->request_form_item_id)
+        //                 ->get();
 
-                (new AccountingRecordController())->reverseTransactions($records);
+        //             foreach ($records as $r) {
+        //                 $r->delete();
+        //                 Log::info("Deleted Id: {$r->id}");
+        //                 // Log::info("Subject Id: {$subject->id} RQ Item Id: {$subject->request_form_item_id}-- " . "Record Id: {$r->id}, // Name: {$r->name}, Description: {$r->description}");
+        //             }
+        //         }
 
-                foreach($records as $r){
-                    $r->delete();
-                }
-            }
-        }
+
+        //         // (new AccountingRecordController())->reverseTransactions($records);
+
+
+        //     }
+        // }
     }
 }

@@ -3,7 +3,9 @@
 namespace App\Http\Resources\API;
 
 use App\Http\Resources\InventoryResource;
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 
 class SiteResource extends JsonResource
 {
@@ -15,13 +17,20 @@ class SiteResource extends JsonResource
      */
     public function toArray($request)
     {
-          return [
+        $user = User::find(Auth::id());
+
+        $pending = [];
+        if ($user->hasRole('management') || $user->hasRole('oss')) {
+            $pending = $this->pendingCollections();
+        }
+
+        return [
             "id" => $this->id,
             "name" => $this->name,
             "code" => $this->code,
             "location" => $this->location,
             "inventories" => InventoryResource::collection($this->inventories),
-            "pendingCollections" => $this->pendingCollections(),
+            "pendingCollections" => $pending,
             // "accounts" => $this->accounts,
         ];
     }

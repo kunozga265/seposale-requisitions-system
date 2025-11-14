@@ -30,7 +30,17 @@ class QuotationController extends Controller
         //            $projects = Project::orderBy('name', 'asc')->where('verified', 1)->where('status', 1)->paginate((new AppController())->paginate);
         //        }
 
-        $quotations = Quotation::latest()->paginate((new AppController())->paginate);
+        $user = (new AppController())->getAuthUser($request);
+
+        if (
+            $user->hasRole('management') ||
+            $user->hasRole('accountant')  ||
+            $user->hasRole('sales')
+        ) {
+            $quotations = Quotation::latest()->paginate((new AppController())->paginate);
+        } else {
+            $quotations = $user->quotations()->paginate((new AppController())->paginate);
+        }
 
 
         if ((new AppController())->isApi($request))
@@ -124,7 +134,7 @@ class QuotationController extends Controller
 
             $client = Client::create([
                 'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-               'name' => ucwords($request->name),
+                'name' => ucwords($request->name),
                 'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                 'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
                 'email' => $request->email,
@@ -280,7 +290,7 @@ class QuotationController extends Controller
 
                 $client = Client::create([
                     'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                   'name' => ucwords($request->name),
+                    'name' => ucwords($request->name),
                     'phone_number' => (new ClientController())->cleanPhoneNumber($request->phoneNumber),
                     'phone_number_other' => (new ClientController())->cleanPhoneNumber($request->phoneNumberOther),
                     'email' => $request->email,

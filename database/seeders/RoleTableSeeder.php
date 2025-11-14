@@ -52,5 +52,8 @@ class RoleTableSeeder extends Seeder
         Role::updateOrCreate([
             "name"=>"production"
         ]);
+        Role::updateOrCreate([
+            "name"=>"sales"
+        ]);
     }
 }
