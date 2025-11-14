@@ -58,6 +58,10 @@ class Sale extends Model
     {
         return $this->hasOne(Quotation::class);
     }
+    public function notes()
+    {
+        return $this->hasOne(Quotation::class);
+    }
 
     public function formattedCode()
     {
@@ -77,6 +81,34 @@ class Sale extends Model
     {
         return $this->belongsToMany(Receipt::class, 'receipt_sale', 'sale_id', 'receipt_id');
     }
+
+    public function deliveries()
+{
+    return $this->hasManyThrough(
+        Delivery::class,
+        Summary::class,
+        'sale_id',
+        'summary_id',
+        'id',
+        'id'
+    );
+}
+
+// public function deliveryNotes()
+// {
+//     return DeliveryNote::whereHas('delivery', function ($q) {
+//         $q->whereIn('id', $this->deliveries()->pluck('id'));
+//     });
+// }
+
+public function deliveryNotes()
+{
+    return DeliveryNote::query()
+        ->whereHas('delivery.summary', function ($q) {
+            $q->where('sale_id', $this->id);
+        });
+}
+
 
     protected $fillable = [
         "code",

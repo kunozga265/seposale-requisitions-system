@@ -117,17 +117,21 @@ class DatabaseSeeder extends Seeder
 
         //clean transactions
         $all_records = AccountingRecord::all();
-        $all_records->each(function ($record) {
-            $records = AccountingRecord::where("amount", $record->amount)
-                ->where("type", $record->type)
-                ->where("date", $record->date)
-                ->get();
+        foreach ($all_records as $subject) {
+            $record = AccountingRecord::find($subject->id);
+
+            if (is_object($subject)) {
+                $records = AccountingRecord::where("amount", $record->amount)
+                    ->where("type", $record->type)
+                    ->where("date", $record->date)
+                    ->get();
 
                 (new AccountingRecordController())->reverseTransactions($records);
 
-                $records->each(function ($_record) {
-                    $_record->delete();
-                });
-        });
+                foreach($records as $r){
+                    $r->delete();
+                }
+            }
+        }
     }
 }
