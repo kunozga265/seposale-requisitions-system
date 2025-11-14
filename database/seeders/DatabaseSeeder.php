@@ -120,7 +120,7 @@ class DatabaseSeeder extends Seeder
         foreach ($all_records as $subject) {
             $record = AccountingRecord::find($subject->id);
 
-            if (is_object($subject)) {
+            if (is_object($record)) {
                 $records = AccountingRecord::where("amount", $record->amount)
                     ->where("type", $record->type)
                     ->where("date", $record->date)
