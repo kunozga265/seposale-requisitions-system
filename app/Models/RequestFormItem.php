@@ -20,6 +20,8 @@ class RequestFormItem extends Model
          } else {
             return $this->supplier;
          }
+      } else  if ($name === 'paid') {
+         return $this->total_cost - $this->balance;
       }
 
       // It's important to call the parent __get() method

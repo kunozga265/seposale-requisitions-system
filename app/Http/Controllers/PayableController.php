@@ -251,8 +251,6 @@ class PayableController extends Controller
         $all = [];
         $total = 0;
 
-          dump($groupedTransporters);
-
         foreach ($groupedTransporters as $groupedTransporter) {
             $sum = 0;
             $name = $groupedTransporter[0]["payee"];
@@ -295,8 +293,6 @@ class PayableController extends Controller
             }
             return 0;
         });
-
-         dump($groupedTransporters);
 
         return [
             "transporters" => $groupedTransporters,

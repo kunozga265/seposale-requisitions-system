@@ -24,6 +24,7 @@ use App\Models\SiteSaleSummary;
 use App\Models\Summary;
 use App\Models\Transporter;
 use App\Models\Supplier;
+use App\Models\Payable;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -103,27 +104,41 @@ class AppController extends Controller
 
         $sites = Site::orderBy("name", "asc")->get();
 
-        $unpaid_sales_count = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))->where('balance', '>', 0)->count();
-        $unpaid_sales_total = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))->where('balance', '>', 0)->sum('balance');
-        $unpaid_site_sales_count = SiteSaleSummary::whereHas('sale', function ($query) {
+        //receivables
+        // $receivables_count = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))
+        //     ->whereHas('delivery', function ($query) {
+        //         $query->where('status', 2)->orWhere('status', 4);
+        //     })
+        //     ->where('balance', '>', 0)->count();
+
+        $receivables_total = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))
+            ->whereHas('delivery', function ($query) {
+                $query->where('status', 2)->orWhere('status', 4);
+            })
+            ->where('balance', '>', 0)->sum('balance');
+
+
+        // $unpaid_site_sales_count = SiteSaleSummary::whereHas('sale', function ($query) {
+        //     $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
+        // })->where('balance', '>', 0)->count();
+        $site_receivables_total = SiteSaleSummary::whereHas('sale', function ($query) {
             $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
-        })->where('balance', '>', 0)->count();
-        $unpaid_site_sales_total = SiteSaleSummary::whereHas('sale', function ($query) {
-            $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
-        })->where('balance', '>', 0)->sum('balance');
+        })->where('collected', '>', 0)->sum('balance');
 
         $pending_deliveries_count = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))
             ->whereHas('delivery', function ($query) {
                 $query->where('status', 1);
             })->count();
 
-        $collections_count = SiteSaleSummary::whereHas('sale', function ($query) {
-            $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
-        })->whereColumn(first: 'quantity', operator: '!=', second: 'collected')
-            ->count();
+        $collections_count = SiteSaleSummary::whereColumn(first: 'quantity', operator: '!=', second: 'collected')->count();
 
-        $payables_total = RequestFormItem::whereHas('requestForm.payables', fn($q) => $q->where('paid', 0))
-            ->sum('balance');
+        $payables_total = Payable::where('paid', 0)->sum('total')
+            - RequestFormItem::whereHas('requestForm.payables', fn($q) => $q->where('paid', 0))
+            ->get()
+            ->sum(fn($item) => $item->paid);
+
+
+
 
 
 
@@ -145,10 +160,10 @@ class AppController extends Controller
                 'awaiting_reconciliation_count' => intval($awaitingReconciliationCount),
                 'active_count' => intval($activeCount),
                 'total_count' => intval($totalCount),
-                'unpaid_sales_count' => intval($unpaid_sales_count),
-                'unpaid_sales_total' => floatval($unpaid_sales_total),
-                'unpaid_site_sales_count' => intval($unpaid_site_sales_count),
-                'unpaid_site_sales_total' => floatval($unpaid_site_sales_total),
+                // 'receivables_count' => intval($receivables_count),
+                'receivables_total' => floatval($receivables_total),
+                // 'unpaid_site_sales_count' => intval($unpaid_site_sales_count),
+                'site_receivables_total' => floatval($site_receivables_total),
                 'pending_deliveries_count' => intval($pending_deliveries_count),
                 'collections_count' => intval($collections_count),
                 'payables_total' => floatval($payables_total),
