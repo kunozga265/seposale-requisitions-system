@@ -11,6 +11,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
 
 class Kernel extends ConsoleKernel
 {
@@ -75,6 +76,8 @@ class Kernel extends ConsoleKernel
                         $job->update([
                             'status' => 2
                         ]);
+
+                        Storage::disk('public_uploads')->delete($file);
 
                         break;
                     default:
