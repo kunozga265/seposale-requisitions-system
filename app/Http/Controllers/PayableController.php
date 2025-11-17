@@ -232,6 +232,8 @@ class PayableController extends Controller
             }
         }
 
+      
+
         //        $suppliers = $this->convertToArray($suppliers);
         //        $transporters = $this->convertToArray($transporters);
 
@@ -248,6 +250,8 @@ class PayableController extends Controller
 
         $all = [];
         $total = 0;
+
+          dump($groupedTransporters);
 
         foreach ($groupedTransporters as $groupedTransporter) {
             $sum = 0;
@@ -291,6 +295,8 @@ class PayableController extends Controller
             }
             return 0;
         });
+
+         dump($groupedTransporters);
 
         return [
             "transporters" => $groupedTransporters,

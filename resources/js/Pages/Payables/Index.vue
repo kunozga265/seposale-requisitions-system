@@ -41,7 +41,7 @@
 
                             <payable
                                 v-for="(payable,index) in suppliers"
-                                :key="index"
+                                :key="'supplier-' + index"
                                 :payable="payable"
                             />
                         </div>
@@ -60,7 +60,7 @@
 
                             <payable
                                 v-for="(payable,index) in transporters"
-                                :key="index"
+                                 :key="'transporter-' + index"
                                 :payable="payable"
                             />
                         </div>

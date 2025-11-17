@@ -18,6 +18,7 @@ use App\Models\Product;
 use App\Models\PaymentMethod;
 use App\Models\ProductVariant;
 use App\Models\RequestForm;
+use App\Models\RequestFormItem;
 use App\Models\SiteSale;
 use App\Models\SiteSaleSummary;
 use App\Models\Summary;
@@ -121,6 +122,12 @@ class AppController extends Controller
         })->whereColumn(first: 'quantity', operator: '!=', second: 'collected')
             ->count();
 
+        $payables_total = RequestFormItem::whereHas('requestForm.payables', fn($q) => $q->where('paid', 0))
+            ->sum('balance');
+
+        
+
+
 
 
         return response()->json([
@@ -128,17 +135,18 @@ class AppController extends Controller
             'active' => RequestFormResource::collection($active->take(10)),
             //counts
             'counts' => [
-                'awaiting_approval_count' => $awaitingApprovalCount,
-                'awaiting_initiation_count' => $awaitingInitiationCount,
-                'awaiting_reconciliation_count' => $awaitingReconciliationCount,
-                'active_count' => $activeCount,
-                'total_count' => $totalCount,
-                'unpaid_sales_count' => $unpaid_sales_count,
-                'unpaid_sales_total' => $unpaid_sales_total,
-                'unpaid_site_sales_count' => $unpaid_site_sales_count,
-                'unpaid_site_sales_total' => $unpaid_site_sales_total,
-                'pending_deliveries_count' => $pending_deliveries_count,
-                'collections_count' => $collections_count,
+                'awaiting_approval_count' => intval($awaitingApprovalCount),
+                'awaiting_initiation_count' => intval($awaitingInitiationCount),
+                'awaiting_reconciliation_count' => intval($awaitingReconciliationCount),
+                'active_count' => intval($activeCount),
+                'total_count' => intval($totalCount),
+                'unpaid_sales_count' =>intval( $unpaid_sales_count),
+                'unpaid_sales_total' => floatval($unpaid_sales_total),
+                'unpaid_site_sales_count' => intval($unpaid_site_sales_count),
+                'unpaid_site_sales_total' => floatval($unpaid_site_sales_total),
+                'pending_deliveries_count' => intval($pending_deliveries_count),
+                'collections_count' => intval($collections_count),
+                'payables_total' => floatval($payables_total),
             ],
             'products' => ProductResource::collection($products),
             'clients' => ClientResource::collection($clients),
