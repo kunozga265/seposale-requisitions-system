@@ -43,7 +43,7 @@ class VacancyController extends Controller
                 //Web Response
                 return Inertia::render('Vacancies/Show', [
                     'vacancy' => new VacancyResource($vacancy),
-                    'applications' => ApplicationResource::collection($vacancy->applications),
+                    'applications' => ApplicationResource::collection($vacancy->applications()->where('date_of_birth','>=',883605600)->get()),
                 ]);
             }
         } else {
