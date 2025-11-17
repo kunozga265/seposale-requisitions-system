@@ -13,10 +13,14 @@ use App\Models\AccountingAccount;
 use App\Models\Client;
 use App\Models\ClientType;
 use App\Models\Site;
+use App\Models\Sale;
 use App\Models\Product;
 use App\Models\PaymentMethod;
 use App\Models\ProductVariant;
 use App\Models\RequestForm;
+use App\Models\SiteSale;
+use App\Models\SiteSaleSummary;
+use App\Models\Summary;
 use App\Models\Transporter;
 use App\Models\Supplier;
 use App\Models\User;
@@ -51,23 +55,24 @@ class AppController extends Controller
         else if ($user->hasRole('management')) {
             $toApprove = RequestForm::where('approvalStatus', 0)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->get();
             $awaitingApprovalCount = $toApprove->count();
-        } else
+        } else {
             if ($user->hasRole('accountant')) {
 
-            $toReconcile = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
-            $toInitiate = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
-            $toApprove = RequestForm::where('approvalStatus', 0)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+                $toReconcile = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
+                $toInitiate = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
+                $toApprove = RequestForm::where('approvalStatus', 0)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
 
-            $awaitingApprovalCount = $toApprove->count();
-            $awaitingInitiationCount = $toInitiate->count();
-            $awaitingReconciliationCount = $toReconcile->count();
+                $awaitingApprovalCount = $toApprove->count();
+                $awaitingInitiationCount = $toInitiate->count();
+                $awaitingReconciliationCount = $toReconcile->count();
 
-            //Merge
-            $toApprove = $toApprove->merge($toInitiate);
-            $toApprove = $toApprove->merge($toReconcile);
-        } else {
-            $toApprove = RequestForm::where('approvalStatus', 0)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
-            $awaitingApprovalCount = $toApprove->count();
+                //Merge
+                $toApprove = $toApprove->merge($toInitiate);
+                $toApprove = $toApprove->merge($toReconcile);
+            } else {
+                $toApprove = RequestForm::where('approvalStatus', 0)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+                $awaitingApprovalCount = $toApprove->count();
+            }
         }
 
         $totalCount = $toApprove->count() + $active->count();
@@ -88,30 +93,56 @@ class AppController extends Controller
             $accounts = AccountingAccount::where("updated_at", ">=", $date)->get();
             $transporters = Transporter::where("updated_at", ">=", $date)->get();
             $suppliers = Supplier::where("updated_at", ">=", $date)->get();
-            
-            $clients = Client::where("updated_at", ">=", $date)->get();
-            if(ProductVariant::where("updated_at", ">=", $date)->exists()){
-            //    $products = Product::all();
-            }
 
+            $clients = Client::where("updated_at", ">=", $date)->get();
+            if (ProductVariant::where("updated_at", ">=", $date)->exists()) {
+                //    $products = Product::all();
+            }
         }
 
-        $sites = Site::orderBy("name","asc")->get();
+        $sites = Site::orderBy("name", "asc")->get();
 
-        
+        $unpaid_sales_count = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))->where('balance', '>', 0)->count();
+        $unpaid_sales_total = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))->where('balance', '>', 0)->sum('balance');
+        $unpaid_site_sales_count = SiteSaleSummary::whereHas('sale', function ($query) {
+            $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
+        })->where('balance', '>', 0)->count();
+        $unpaid_site_sales_total = SiteSaleSummary::whereHas('sale', function ($query) {
+            $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
+        })->where('balance', '>', 0)->sum('balance');
+
+        $pending_deliveries_count = Summary::where('date', '>=', env('TIMESTAMP_CUTOFF'))
+            ->whereHas('delivery', function ($query) {
+                $query->where('status', 1);
+            })->count();
+
+        $collections_count = SiteSaleSummary::whereHas('sale', function ($query) {
+            $query->where("date", ">=", env('TIMESTAMP_CUTOFF'));
+        })->whereColumn(first: 'quantity', operator: '!=', second: 'collected')
+            ->count();
+
+
 
         return response()->json([
             'to_approve' => RequestFormResource::collection($toApprove->take(10)),
             'active' => RequestFormResource::collection($active->take(10)),
             //counts
-            'awaiting_approval_count' => $awaitingApprovalCount,
-            'awaiting_initiation_count' => $awaitingInitiationCount,
-            'awaiting_reconciliation_count' => $awaitingReconciliationCount,
-            'active_count' => $activeCount,
-            'total_count' => $totalCount,
+            'counts' => [
+                'awaiting_approval_count' => $awaitingApprovalCount,
+                'awaiting_initiation_count' => $awaitingInitiationCount,
+                'awaiting_reconciliation_count' => $awaitingReconciliationCount,
+                'active_count' => $activeCount,
+                'total_count' => $totalCount,
+                'unpaid_sales_count' => $unpaid_sales_count,
+                'unpaid_sales_total' => $unpaid_sales_total,
+                'unpaid_site_sales_count' => $unpaid_site_sales_count,
+                'unpaid_site_sales_total' => $unpaid_site_sales_total,
+                'pending_deliveries_count' => $pending_deliveries_count,
+                'collections_count' => $collections_count,
+            ],
             'products' => ProductResource::collection($products),
             'clients' => ClientResource::collection($clients),
-            'trashed_clients' => ClientResource::collection($clients),
+            'trashed_clients' => ClientResource::collection($trashed_clients),
             'accounts' => AccountingAccountResource::collection($accounts),
             'sites' => SiteResource::collection($sites),
             'transporters' => $transporters,
