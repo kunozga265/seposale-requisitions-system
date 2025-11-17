@@ -125,7 +125,7 @@ class AppController extends Controller
         $payables_total = RequestFormItem::whereHas('requestForm.payables', fn($q) => $q->where('paid', 0))
             ->sum('balance');
 
-        
+
 
 
 
@@ -134,13 +134,18 @@ class AppController extends Controller
             'to_approve' => RequestFormResource::collection($toApprove->take(10)),
             'active' => RequestFormResource::collection($active->take(10)),
             //counts
+            'awaiting_approval_count' => $awaitingApprovalCount,
+            'awaiting_initiation_count' => $awaitingInitiationCount,
+            'awaiting_reconciliation_count' => $awaitingReconciliationCount,
+            'active_count' => $activeCount,
+            'total_count' => $totalCount,
             'counts' => [
                 'awaiting_approval_count' => intval($awaitingApprovalCount),
                 'awaiting_initiation_count' => intval($awaitingInitiationCount),
                 'awaiting_reconciliation_count' => intval($awaitingReconciliationCount),
                 'active_count' => intval($activeCount),
                 'total_count' => intval($totalCount),
-                'unpaid_sales_count' =>intval( $unpaid_sales_count),
+                'unpaid_sales_count' => intval($unpaid_sales_count),
                 'unpaid_sales_total' => floatval($unpaid_sales_total),
                 'unpaid_site_sales_count' => intval($unpaid_site_sales_count),
                 'unpaid_site_sales_total' => floatval($unpaid_site_sales_total),
