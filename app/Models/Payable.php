@@ -10,6 +10,13 @@ class Payable extends Model
 {
     use HasFactory;
 
+    public function __get($name)
+   {
+      // It's important to call the parent __get() method
+      // to allow other properties to be accessed normally.
+      return parent::__get($name);
+   }
+
     public function expenseType()
     {
         return $this->belongsTo(ExpenseType::class);

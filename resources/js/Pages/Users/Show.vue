@@ -444,7 +444,7 @@
                         </div>
                     </div>
                 </div>
-                <div v-if="!checkRole(user.data, 'unverified')" class="page-section">
+                <!-- <div v-if="!checkRole(user.data, 'unverified')" class="page-section">
                     <div class="page-section-header">
                         <div class="page-section-title">
                             Closed Requests
@@ -459,7 +459,7 @@
                     </div>
                     <div v-else>
                         <div class="flex flex-col items-center">
-                            <!-- Help text -->
+                          
                             <span class="text-sm text-gray-700 dark:text-gray-400">
                                 Showing <span class="font-semibold text-gray-900 dark:text-white">{{
                                     closedRequests.meta.from
@@ -470,7 +470,7 @@
                                 Requests
                             </span>
                             <div class="inline-flex mt-2 xs:mt-0">
-                                <!-- Previous Button -->
+                            
                                 <a :href="closedRequests.links.prev"
                                     class="inline-flex items-center px-4 py-2 mr-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
                                     <svg aria-hidden="true" class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"
@@ -494,7 +494,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!--                <div class="mt-4 flex flex-col items-center justify-start">
                     &lt;!&ndash; Help text &ndash;&gt;
                     <span class="text-sm text-gray-700 dark:text-gray-400">
