@@ -120,6 +120,7 @@ class AppController extends Controller
         $site_receivables_total = 0;
         $payables = [];
         $payables_total = 0;
+        $pending_deliveries = [];
         $pending_deliveries_count = 0;
         $collections_count = 0;
 
