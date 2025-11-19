@@ -8,9 +8,23 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\NotificationController;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use App\Models\User;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Referral;
 
 class ClientsImport implements ToCollection, WithHeadingRow
 {
+    public $user_id;
+    public $referred_by_id;
+
+    public function __construct($user_id, $referred_by_id)
+    {
+        $this->user_id = $user_id;
+        $this->referred_by_id = $referred_by_id;
+    }
+
+
     /**
      * @param array $row
      *
@@ -46,7 +60,22 @@ class ClientsImport implements ToCollection, WithHeadingRow
                     ]);
                 }
 
-                $message = "Quality products and services are guaranteed.";
+                //send the pricelist
+                if ($this->user_id != null) {
+
+                    $name = User::findOrFail($this->user_id)->first()->fullName();
+                    $message = "You have been referred to us by {$name}.";
+
+                    Referral::create([
+                        'date' => Carbon::now()->getTimestamp(),
+                        'referred_by_id' => $this->referred_by_id,
+                        'client_id' => $client->id,
+                        'user_id' => $this->user_id,
+                    ]);
+                } else {
+                    $message = "Quality products and services are guaranteed.";
+                }
+
                 (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
             }
         }

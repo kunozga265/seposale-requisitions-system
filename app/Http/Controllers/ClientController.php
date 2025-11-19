@@ -354,7 +354,9 @@ class ClientController extends Controller
                     "status" => 0,
                     "type" => "PRICELIST_SEND",
                     "content" => json_encode([
-                        'file' => $filename
+                        'file' => $filename,
+                        'referred_by_id' => $request->user_id,
+                        'user_id' => Auth::id(),
                     ]),
                 ]);
             } catch (\Exception $e) {

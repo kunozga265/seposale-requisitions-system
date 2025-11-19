@@ -6,12 +6,15 @@ use App\Http\Controllers\NotificationController;
 use App\Imports\ClientsImport;
 use App\Models\Sale;
 use App\Models\CustomJob;
+use App\Models\User;
+use App\Models\Referral;
 use App\Models\PaymentReceipt;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -70,8 +73,10 @@ class Kernel extends ConsoleKernel
 
                         $content = json_decode($job->content, true);
                         $file = $content["file"];
+                        $user_id = $content["user_id"];
+                        $referred_by_id = $content["referred_by_id"];
 
-                        Excel::import(new ClientsImport, public_path($file));
+                        Excel::import(new ClientsImport($user_id, $referred_by_id), public_path($file));
 
                         $job->update([
                             'status' => 2
