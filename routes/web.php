@@ -1115,7 +1115,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
     Route::group(['prefix' => 'whatsapp'], function () {
 
         Route::get('/', [
-            "uses"  => "App\Http\Controllers\WhatsappController@index",
+            "uses"  => "App\Http\Controllers\WhatsappMessageController@index",
             'roles' => ['administrator', 'management']
         ])->name('whatsapp.index');
     });
