@@ -45,7 +45,7 @@ Route::group(['prefix' => '1.0.0'], function () {
     ]);
 
     Route::post('/whatsapp/callback', [
-        "uses" => "App\Http\Controllers\WhatsappController@callback",
+        "uses" => "App\Http\Controllers\WhatsappMessageController@callback",
     ]);
 
     //Authenticated Routes
