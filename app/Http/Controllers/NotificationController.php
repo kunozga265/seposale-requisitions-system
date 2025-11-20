@@ -15,6 +15,7 @@ use App\Mail\UserDisabledMail;
 use App\Mail\UserNewMail;
 use App\Mail\UserVerifiedMail;
 use App\Mail\VehicleNewMail;
+use App\Models\WhatsappMessage;
 use App\Models\Collection;
 use App\Models\Delivery;
 use App\Models\Invoice;
@@ -700,6 +701,20 @@ class NotificationController extends Controller
 
             if ($response->getStatusCode() == 200) {
                 Log::info($response->getBody());
+
+                $res_body = json_decode($response->getBody(),true);
+
+                WhatsappMessage::create([
+                    "type" => 0, //system
+                    "status" => $res_body['messages'][0]['message_status'],
+                    "phone_number" => $res_body['contacts'][0]['input'],
+                    "message_type" => $body['template']['name'],
+                    "whatsapp_message_id" => $res_body['messages'][0]['id'],
+
+                ]);
+
+
+
                 // dd($response);
                 $res = true;
             }

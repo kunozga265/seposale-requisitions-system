@@ -44,6 +44,10 @@ Route::group(['prefix' => '1.0.0'], function () {
         'roles' => ['employee', 'administrator']
     ]);
 
+    Route::post('/whatsapp/callback', [
+        "uses" => "App\Http\Controllers\WhatsappController@callback",
+    ]);
+
     //Authenticated Routes
     Route::group(["middleware" => ["auth:sanctum", "roles"]], function () {
 
@@ -227,7 +231,7 @@ Route::group(['prefix' => '1.0.0'], function () {
         Route::group(['prefix' => 'invoices'], function () {
             Route::get('/', [
                 "uses" => "App\Http\Controllers\InvoiceController@index",
-                  'roles' => ['sales', 'accountant', 'management']
+                'roles' => ['sales', 'accountant', 'management']
             ]);
 
             Route::get('/print/{id}', [
@@ -315,6 +319,8 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['sales', 'operations', 'delivery', 'accountant', 'management']
             ]);
         });
+
+
 
         Route::group(['prefix' => 'operations'], function () {
             Route::post('/transporters/store', [
