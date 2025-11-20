@@ -1117,6 +1117,6 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         Route::get('/', [
             "uses"  => "App\Http\Controllers\WhatsappController@index",
             'roles' => ['administrator', 'management']
-        ])->name('vacancies.index');
+        ])->name('whatsapp.index');
     });
 });
