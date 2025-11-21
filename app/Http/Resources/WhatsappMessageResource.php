@@ -18,7 +18,7 @@ class WhatsappMessageResource extends JsonResource
             "id" => intval($this->id),
             "name" => $this->name,
             "phoneNumber" => $this->phone_number,
-            "type" => $this->type,
+            "type" => $this->type == 1, //client
             "messageType" => $this->message_type,
             "message" => $this->message,
             "wamid" => $this->wamid,
@@ -35,7 +35,7 @@ class WhatsappMessageResource extends JsonResource
             "requestFormItem" => $this->requestFormItem,
             "user" => $this->user,
             "status" => $this->status,
-            "statuses" => $this->statuses,
+            "statuses" => WhatsappMessageStatusResource::collection($this->statuses),
             "date" => $this->created_at->getTimestamp(),
         ];
     }

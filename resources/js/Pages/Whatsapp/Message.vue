@@ -21,11 +21,43 @@
         <dialog-modal :show="showDialog" @close="showDialog = false">
 
             <template #title>
-
+                <div v-if="message.type">
+                    Message Content
+                </div>
+                <div v-else>
+                    Message Status Updates
+                </div>
 
             </template>
 
             <template #content>
+                <!-- client message -->
+                <div v-if="message.type">
+                    <div v-if="message.messageType == 'text'" class="">
+                        {{ message.payload.messages[0].text.body }}
+                    </div>
+                    <div v-else>
+                        {{ message.payload.messages[0] }}
+                    </div>
+                </div>
+                <div v-else>
+                    <div class=" p-2  border-b" v-for="(item, index) in message.statuses">
+                        <div class="flex items-center justify-between">
+
+                            <div class="">
+                                <div class="text-xs"> {{ getDate(item.date * 1000, true) }}</div>
+                                <div class="text-xs text-gray-500" v-if="item.status == 'Failed'">
+                                    {{ item.payload.statuses[0].errors[0].message }}
+                                </div>
+                            </div>
+                            <div class="ml-2 text-xs w-32 text-center" :class="getItemStatusClass(item.status)">{{
+                                item.status }}</div>
+                        </div>
+
+
+                    </div>
+                </div>
+
 
             </template>
 
@@ -72,6 +104,31 @@ export default {
             let statusClass = "";
 
             switch (this.message.status) {
+                case 'Failed':
+                    statusClass = "denied";
+                    break;
+                case 'Accepted':
+                    statusClass = "approval-pending";
+                    break;
+                case 'Sent':
+                case 'Read':
+                case 'Delivered':
+                    statusClass = "approved";
+                    break;
+                case 'Received':
+                    statusClass = "info";
+                    break;
+                default:
+                    statusClass = "closed";
+                    break;
+            }
+
+            return statusClass
+        },
+        getItemStatusClass(status) {
+            let statusClass = "";
+
+            switch (status) {
                 case 'Failed':
                     statusClass = "denied";
                     break;

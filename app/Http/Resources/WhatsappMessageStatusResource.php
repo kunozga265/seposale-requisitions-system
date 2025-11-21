@@ -14,6 +14,11 @@ class WhatsappMessageStatusResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            "id" => intval($this->id),
+            "status" => ucfirst($this->status),
+            "payload" => json_decode($this->payload),
+            "date" => $this->created_at->getTimestamp(),
+        ];
     }
 }
