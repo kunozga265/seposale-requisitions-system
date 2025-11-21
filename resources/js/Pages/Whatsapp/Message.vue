@@ -79,8 +79,12 @@ export default {
                     statusClass = "approval-pending";
                     break;
                 case 'Sent':
+                case 'Read':
                 case 'Delivered':
                     statusClass = "approved";
+                    break;
+                case 'Received':
+                    statusClass = "info";
                     break;
                 default:
                     statusClass = "closed";
