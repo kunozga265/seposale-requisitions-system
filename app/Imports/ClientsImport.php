@@ -51,7 +51,7 @@ class ClientsImport implements ToCollection, WithHeadingRow
                 //send the pricelist
                 if ($this->user_id != null) {
 
-                    $name = User::findOrFail($this->user_id)->first()->fullName();
+                    $name = User::find($this->referred_by_id)->fullName();
                     $message = "You have been referred to us by {$name}.";
 
                     Referral::create([
@@ -60,6 +60,7 @@ class ClientsImport implements ToCollection, WithHeadingRow
                         'client_id' => $client->id,
                         'user_id' => $this->user_id,
                     ]);
+                    
                 } else {
                     $message = "Quality products and services are guaranteed.";
                 }

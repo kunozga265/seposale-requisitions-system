@@ -464,7 +464,7 @@ class ClientController extends Controller
                 $request->validate([
                     'user_id' => ['required'],
                 ]);
-                $name = User::findOrFail($request->user_id)->first()->fullName();
+                $name = User::find($request->user_id)->fullName();
                 $message = "You have been referred to us by {$name}.";
 
                 Referral::create([
@@ -476,6 +476,7 @@ class ClientController extends Controller
             } else {
                 $message = "Quality products and services are guaranteed.";
             }
+
             (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
 
 
