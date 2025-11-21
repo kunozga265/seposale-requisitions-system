@@ -149,6 +149,25 @@ class ClientController extends Controller
         }
     }
 
+    public function getOrCreate($name, $phone_number, $phone_number_other = null, $email = null)
+    {
+        $client = Client::where('phone_number', $phone_number)->first();
+
+        if (!is_object($client)) {
+            $client = Client::create([
+                'serial' => (new AppController())->generateUniqueCode("CLIENT"),
+                'name' => ucwords($name),
+                'phone_number' => (new ClientController())->cleanPhoneNumber($phone_number),
+                'phone_number_other' => (new ClientController())->cleanPhoneNumber($phone_number_other),
+                'email' => $email,
+                'organisation' => false,
+                'client_type_id' => 7,
+            ]);
+        }
+
+        return $client;
+    }
+
     public function edit(Request $request, $id)
     {
         $client = Client::find($id);

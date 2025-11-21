@@ -46,19 +46,7 @@ class ClientsImport implements ToCollection, WithHeadingRow
                     $email = $row['email'];
                 }
 
-                $client = Client::where('phone_number', $phone_number)->first();
-
-                if (!is_object($client)) {
-                    $client = Client::create([
-                        'serial' => (new AppController())->generateUniqueCode("CLIENT"),
-                        'name' => ucwords($row['name']),
-                        'phone_number' => (new ClientController())->cleanPhoneNumber($phone_number),
-                        'phone_number_other' => (new ClientController())->cleanPhoneNumber($phone_number_other),
-                        'email' => $email,
-                        'organisation' => false,
-                        'client_type_id' => 7,
-                    ]);
-                }
+                $client = (new ClientController())->getOrCreate($row['name'], $phone_number, $phone_number_other, $email);
 
                 //send the pricelist
                 if ($this->user_id != null) {

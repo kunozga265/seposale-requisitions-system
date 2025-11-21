@@ -1112,7 +1112,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['administrator', 'management']
         ])->name('vacancies.application');
     });
-    Route::group(['prefix' => 'whatsapp'], function () {
+    Route::group(['prefix' => 'whatsapp-messages'], function () {
 
         Route::get('/', [
             "uses"  => "App\Http\Controllers\WhatsappMessageController@index",

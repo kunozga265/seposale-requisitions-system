@@ -16,6 +16,7 @@ use App\Mail\UserNewMail;
 use App\Mail\UserVerifiedMail;
 use App\Mail\VehicleNewMail;
 use App\Models\WhatsappMessage;
+use App\Models\WhatsappMessageStatus;
 use App\Models\Collection;
 use App\Models\Delivery;
 use App\Models\Invoice;
@@ -32,6 +33,7 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -592,6 +594,29 @@ class NotificationController extends Controller
             }
         }
     }
+    public function notifyWhatsappMessage(WhatsappMessage $whatsapp_message, $message, $status_update = false)
+    {
+
+        // $subject = "Forwaded Response - " . $whatsapp_message->name;
+        $subject = "Forwarded Response";
+
+        if ($status_update) {
+            if ($whatsapp_message->user != null) {
+                Log::info($subject);
+                Log::info($message);
+                $this->pushNotification("USER-{$whatsapp_message->user->id}", $subject, $message);
+            }
+        } else {
+            $role = Role::where('name', 'sales')->first();
+            $sales_reps = $role->users;
+
+            foreach ($sales_reps as $rep) {
+                Log::info($subject);
+                Log::info($message);
+                $this->pushNotification("USER-{$rep->id}", $subject, $message);
+            }
+        }
+    }
 
     public function requestFormNotifications($requestForm, $type)
     {
@@ -619,7 +644,7 @@ class NotificationController extends Controller
     {
         // error_log($to);
         // $to = "POSITION-2";
-        // $to = "USER-1";
+        $to = "USER-1";
 
 
 
@@ -685,7 +710,7 @@ class NotificationController extends Controller
     }
 
 
-    private function pushWhatsappMessage($body)
+    private function pushWhatsappMessage($body, $data)
     {
         $res = false;
         //push notification
@@ -702,17 +727,40 @@ class NotificationController extends Controller
             if ($response->getStatusCode() == 200) {
                 Log::info($response->getBody());
 
-                $res_body = json_decode($response->getBody(),true);
+                $res_body = json_decode($response->getBody(), true);
 
-                // WhatsappMessage::create([
-                //     "type" => 0, //system
-                //     "status" => $res_body['messages'][0]['message_status'],
-                //     "phone_number" => $res_body['contacts'][0]['input'],
-                //     "message_type" => $body['template']['name'],
-                //     "whatsapp_message_id" => $res_body['messages'][0]['id'],
+                $client = \App\Models\Client::where('phone_number', $res_body['contacts'][0]['input'])
+                    ->orWhere('phone_number_other', $res_body['contacts'][0]['input'])
+                    ->first();
 
-                // ]);
+                $whatsapp_message = WhatsappMessage::create([
+                    //ESSENTIALS
+                    "type" => 0, //system
+                    "phone_number" => $res_body['contacts'][0]['input'],
+                    "message_type" => $body['template']['name'],
+                    "wamid" => $res_body['messages'][0]['id'],
+                    "user_id" => Auth::id(),
 
+                    //OPTIONAL
+                    'client_id' => $client?->id,
+                    'sale_id' => isset($data['sale_id']) ? $data['sale_id'] : null,
+                    'quotation_id' => isset($data['quotation_id']) ? $data['quotation_id'] : null,
+                    'invoice_id' => isset($data['invoice_id']) ? $data['invoice_id'] : null,
+                    'receipt_id' => isset($data['receipt_id']) ? $data['receipt_id'] : null,
+                    'delivery_id' => isset($data['delivery_id']) ? $data['delivery_id'] : null,
+                    'collection_id' => isset($data['collection_id']) ? $data['collection_id'] : null,
+                    'credit_voucher_id' => isset($data['credit_voucher_id']) ? $data['credit_voucher_id'] : null,
+                    'supplier_voucher_id' => isset($data['supplier_voucher_id']) ? $data['supplier_voucher_id'] : null,
+                    'request_form_item_id' => isset($data['request_form_item_id']) ? $data['request_form_item_id'] : null,
+                ]);
+
+
+                WhatsappMessageStatus::create([
+                    "status" => $res_body['messages'][0]['message_status'],
+                    "payload" => $response->getBody(),
+                    "wamid" => $res_body['messages'][0]['id'],
+                    "whatsapp_message_id" => $whatsapp_message->id,
+                ]);
 
 
                 // dd($response);
@@ -797,7 +845,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['sale_id'] = $sale->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $sale->update([
                         "whatsapp" => true
@@ -857,7 +906,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['sale_id'] = $sale->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $sale->update([
                         "whatsapp" => true
@@ -912,7 +962,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['quotation_id'] = $quotation->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $quotation->update([
                         "whatsapp" => true
@@ -983,7 +1034,8 @@ class NotificationController extends Controller
                     ]
                 ];
 
-                $check = $this->pushWhatsappMessage($body);
+                $data['invoice_id'] = $invoice->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $invoice->update([
                         "whatsapp" => true
@@ -1058,7 +1110,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['receipt_id'] = $receipt->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $receipt->update([
                         "whatsapp" => true
@@ -1129,7 +1182,8 @@ class NotificationController extends Controller
                     ]
                 ];
 
-                $check = $this->pushWhatsappMessage($body);
+                $data['delivery_id'] = $delivery->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $delivery->update([
                         "whatsapp" => true
@@ -1194,7 +1248,8 @@ class NotificationController extends Controller
                     ]
                 ];
 
-                $check = $this->pushWhatsappMessage($body);
+                $data['request_form_item_id'] = $item->id;
+                $check = $this->pushWhatsappMessage($body, $data);
 
                 break;
 
@@ -1277,7 +1332,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['collection_id'] = $collection->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $collection->update([
                         "whatsapp" => true
@@ -1338,7 +1394,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['collection_id'] = $collection->id;
+                $check = $this->pushWhatsappMessage($body, $data);
                 if ($check) {
                     $collection->update([
                         "whatsapp" => true
@@ -1418,7 +1475,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['credit_voucher_id'] = $credit_voucher->id;
+                $check = $this->pushWhatsappMessage($body, $data);
 
                 break;
             case "supplier_voucher":
@@ -1491,7 +1549,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data['supplier_voucher_id'] = $supplier_voucher->id;
+                $check = $this->pushWhatsappMessage($body, $data);
 
                 break;
             case "pricelist":
@@ -1531,7 +1590,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data = [];
+                $check = $this->pushWhatsappMessage($body, $data);
 
                 break;
             case "pricelist_referred":
@@ -1583,7 +1643,8 @@ class NotificationController extends Controller
                         ]
                     ]
                 ];
-                $check = $this->pushWhatsappMessage($body);
+                $data = [];
+                $check = $this->pushWhatsappMessage($body, $data);
 
                 break;
 

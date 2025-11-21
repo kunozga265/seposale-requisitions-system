@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
     {
         //        \App\Models\Client::factory(5)->create();
 
-        // $this->call(RoleTableSeeder::class);
+        $this->call(RoleTableSeeder::class);
         // $this->call(PositionTableSeeder::class);
         // $this->call(ProductTableSeeder::class);
 
