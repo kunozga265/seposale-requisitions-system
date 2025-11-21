@@ -644,7 +644,10 @@ class NotificationController extends Controller
     {
         // error_log($to);
         // $to = "POSITION-2";
-        $to = "USER-1";
+
+        if (env('WHATSAPP_DEBUG')) {
+            $to = "USER-1";
+        }
 
 
 
