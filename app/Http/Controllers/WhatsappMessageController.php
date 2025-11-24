@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\WhatsappMessageResource;
 use Inertia\Inertia;
+use Illuminate\Support\Carbon;
 
 class WhatsappMessageController extends Controller
 {
@@ -40,6 +41,9 @@ class WhatsappMessageController extends Controller
             $wamid =  $data['statuses'][0]['id'];
             $status = $data['statuses'][0]['status'];
             $timestamp = $data['statuses'][0]['timestamp'];
+            $date = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('M d, Y');
+            $time = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('H:i');
+
             $whatsapp_message = WhatsappMessage::where('wamid', $wamid)->first();
 
             if (!is_object($whatsapp_message)) {
@@ -61,8 +65,8 @@ class WhatsappMessageController extends Controller
             }
 
             $status = ucfirst($status);
-            $message = "Whatsapp message sent to {$whatsapp_message->name} status update: $status at " . date('H:i', $timestamp) . " on " . date('M d, Y', $timestamp) . $suffix;
-            $log = "Whatsapp Message [$wamid]: Name: {$whatsapp_message->name}, Status: $status at " . date('H:i', $timestamp) . " on " . date('M d, Y', $timestamp) . $suffix;
+            $message = "Whatsapp message sent to {$whatsapp_message->name} status update: $status at $time on $date. $suffix";
+            $log = "Whatsapp Message [$wamid]: Name: {$whatsapp_message->name}, Status: $status at $time on $date. $suffix";
             Log::info($log);
             (new NotificationController())->notifyWhatsappMessage($whatsapp_message, $message, true);
             return response()->json(['message' => $log], 200);
@@ -76,7 +80,14 @@ class WhatsappMessageController extends Controller
             $type = $message['type'];
             $timestamp = $message['timestamp'];
 
+            $date = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('M d, Y');
+            $time = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('H:i');
+
             $client = (new ClientController())->getOrCreate($name, $phone_number);
+
+            if ($type == 'unsupported') {
+                return response()->json(['message' => "Whatsapp Message [$wamid]: 400 - Unsupported Type."], 400);
+            }
 
             $whatsapp_message = WhatsappMessage::create([
                 //ESSENTIALS
@@ -92,7 +103,7 @@ class WhatsappMessageController extends Controller
             ]);
 
             $prefix = $type == 'image' || $type == 'audio' ? 'an' : 'a';
-            $message = "Received $prefix $type message from $name at " . date('H:i', $timestamp) . " on " . date('M d, Y', $timestamp);
+            $message = "Received $prefix $type message from $name at $time on $date";
             $log = "Whatsapp Message [$wamid]: $message";
 
             Log::info($log);
