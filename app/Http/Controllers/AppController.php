@@ -75,7 +75,7 @@ class AppController extends Controller
                     $active=[];
                 }else
                     $active = RequestForm::where('user_id',$user->id)->where('approvalStatus','<',4)->orderBy('dateRequested','desc')->get();*/
-        $active = RequestForm::where('user_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
+        $active = RequestForm::where('user_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         $activeCount = $active->count();
 
         $awaitingInitiationCount = 0;
@@ -83,8 +83,8 @@ class AppController extends Controller
 
         //Contracts Manager
         if ($user->hasRole('management') && $user->hasRole('employee')) {
-            $toApproveAsManager = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->get();
-            $toApproveAsEmployee = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $toApproveAsManager = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
+            $toApproveAsEmployee = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
             $toApprove = $toApproveAsManager->merge($toApproveAsEmployee);
 
             $awaitingApprovalCount = $toApprove->count();
@@ -92,16 +92,16 @@ class AppController extends Controller
             $dashboardReports = ReportResource::collection($reports);
         } //Normal Manager
         else if ($user->hasRole('management')) {
-            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->get();
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
             $awaitingApprovalCount = $toApprove->count();
 
             $dashboardReports = ReportResource::collection($reports);
         } else
             if ($user->hasRole('accountant')) {
 
-            $toReconcile = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
-            $toInitiate = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->get();
-            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $toReconcile = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
+            $toInitiate = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
 
             $awaitingApprovalCount = $toApprove->count();
             $awaitingInitiationCount = $toInitiate->count();
@@ -123,7 +123,7 @@ class AppController extends Controller
             if ((new AppController())->isApi($request))
                 $dashboardReports = $dashboardReports['data'];
         } else {
-            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
             $awaitingApprovalCount = $toApprove->count();
 
             foreach ($reports as $report) {
