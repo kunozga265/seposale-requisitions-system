@@ -131,9 +131,9 @@ class RequestFormController extends Controller
         $vehicleMaintenanceRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'VEHICLE_MAINTENANCE')->count();
         $fuelRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'FUEL')->count();
 
-        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->paginate((new AppController())->paginate);
-        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->paginate((new AppController())->paginate);
-        $reconciled = RequestForm::where('approvalStatus', 4)->paginate((new AppController())->paginate);
+        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
+        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
+        $reconciled = RequestForm::where('approvalStatus', 4)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
 
         $awaitingInitiationCount = $awaitingInitiation->count();
         $awaitingReconciliationCount = $awaitingReconciliation->count();
