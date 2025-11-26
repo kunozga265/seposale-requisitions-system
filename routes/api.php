@@ -392,5 +392,14 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['sales', 'oss', 'accountant', 'management']
             ]);
         });
+
+        Route::group(['prefix' => 'whatsapp'], function () {
+
+            Route::get('/', [
+                "uses"  => "App\Http\Controllers\WhatsappMessageController@index",
+                'roles' => ['administrator', 'management']
+            ]);
+            
+        });
     });
 });

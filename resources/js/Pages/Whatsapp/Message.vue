@@ -60,7 +60,8 @@
                         </div>
                         <div v-else class="">
                             <!-- IMAGES -->
-                            <img v-if="message.messageType === 'image'" :src="mediaUrl" class="w-64 mx-auto rounded shadow" />
+                            <img v-if="message.messageType === 'image'" :src="mediaUrl"
+                                class="w-64 mx-auto rounded shadow" />
 
                             <!-- VIDEO -->
                             <video v-else-if="message.messageType === 'video'" :src="mediaUrl" controls
@@ -109,6 +110,12 @@
                     close
                 </secondary-button>
 
+                <a :href="'https://wa.me/' + message.phoneNumber" target="_blank">
+                    <primary-button>
+                        Reply
+                    </primary-button>
+                </a>
+
             </template>
         </dialog-modal>
     </tr>
@@ -147,19 +154,25 @@ export default {
 
     },
     watch: {
-        showDialog(){
-            if (this.mediaUrl == null && this.showDialog == true) {
+        showDialog() {
+            if (this.mediaUrl == null &&
+                this.showDialog == true &&
+                this.message.messageType != 'text' &&
+                this.message.messageType != 'location' &&
+                this.message.messageType != 'contacts' &&
+                this.message.messageType != 'reaction' &&
+                this.message.messageType != 'unsupported') {
                 this.loadMedia()
-               
             }
         }
     },
     methods: {
-        async loadMedia(){
-             this.mediaUrl = await this.getWhatsappMediaUrl()
+        async loadMedia() {
+            this.loading = true;
+            this.mediaUrl = await this.getWhatsappMediaUrl()
+            this.loading = false;
         },
         async getWhatsappMediaUrl() {
-            this.loading = true;
 
             let mediaId = "";
 
@@ -187,12 +200,12 @@ export default {
 
             const blob = await res.blob();
 
-            this.loading = false;
-            
+
+
             const url = URL.createObjectURL(blob);
 
             console.log(url)
-            return  url
+            return url
         },
 
         getStatusClass() {
