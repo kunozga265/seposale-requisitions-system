@@ -16,7 +16,7 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class,'user_role','user_id','role_id');
+        return $this->belongsToMany(Role::class, 'user_role', 'user_id', 'role_id');
     }
 
     public function position()
@@ -53,22 +53,26 @@ class User extends Authenticatable
     {
         return $this->hasMany(Referral::class);
     }
+    public function whatsappMessages()
+    {
+        return $this->hasMany(WhatsappMessage::class);
+    }
 
     public function approvedRequests()
     {
-        return $this->belongsToMany(RequestForm::class,'requests_user','user_id','request_id');
+        return $this->belongsToMany(RequestForm::class, 'requests_user', 'user_id', 'request_id');
     }
 
     public function hasAnyRole($roles)
     {
-        if(is_array($roles)){
-            foreach ($roles as $role){
-                if($this->hasRole($role)){
+        if (is_array($roles)) {
+            foreach ($roles as $role) {
+                if ($this->hasRole($role)) {
                     return true;
                 }
             }
-        }else{
-            if($this->hasRole($roles)){
+        } else {
+            if ($this->hasRole($roles)) {
                 return true;
             }
         }
@@ -77,7 +81,7 @@ class User extends Authenticatable
 
     public function hasRole($role)
     {
-        if($this->roles()->where('name',$role)->first()){
+        if ($this->roles()->where('name', $role)->first()) {
             return true;
         }
         return false;

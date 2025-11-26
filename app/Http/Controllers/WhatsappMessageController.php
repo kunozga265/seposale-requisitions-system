@@ -9,12 +9,20 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Resources\WhatsappMessageResource;
 use Inertia\Inertia;
 use Illuminate\Support\Carbon;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class WhatsappMessageController extends Controller
 {
     public function index(Request $request)
     {
-        $messages = WhatsappMessage::latest()->paginate((new AppController())->paginate);
+        $user = User::find(Auth::id());
+
+        if ($user->hasRole('management') || $user->hasRole('administrator') || $user->hasRole('sales')) {
+            $messages = WhatsappMessage::latest()->paginate((new AppController())->paginate);
+        } else {
+            $messages = $user->whatsappMessages()->latest()->paginate((new AppController())->paginate);
+        }
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -41,8 +49,8 @@ class WhatsappMessageController extends Controller
             $wamid =  $data['statuses'][0]['id'];
             $status = $data['statuses'][0]['status'];
             $timestamp = $data['statuses'][0]['timestamp'];
-            $date = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('M d, Y');
-            $time = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('H:i');
+            $date = Carbon::createFromTimestamp($timestamp, 'Africa/Lusaka')->format('M d, Y');
+            $time = Carbon::createFromTimestamp($timestamp, 'Africa/Lusaka')->format('H:i');
 
             $whatsapp_message = WhatsappMessage::where('wamid', $wamid)->first();
 
@@ -80,8 +88,8 @@ class WhatsappMessageController extends Controller
             $type = $message['type'];
             $timestamp = $message['timestamp'];
 
-            $date = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('M d, Y');
-            $time = Carbon::createFromTimestamp($timestamp,'Africa/Lusaka')->format('H:i');
+            $date = Carbon::createFromTimestamp($timestamp, 'Africa/Lusaka')->format('M d, Y');
+            $time = Carbon::createFromTimestamp($timestamp, 'Africa/Lusaka')->format('H:i');
 
             $client = (new ClientController())->getOrCreate($name, $phone_number);
 
