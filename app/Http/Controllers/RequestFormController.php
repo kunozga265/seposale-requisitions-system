@@ -73,7 +73,7 @@ class RequestFormController extends Controller
             $closedRequestsCount = RequestForm::where('approval_by_id', $user->id)->where('approvalStatus', '>', 3)->count();
 
             //Requests section
-            $activeRequests = RequestForm::where('approval_by_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
+            $activeRequests = RequestForm::where('approval_by_id', $user->id)->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
             $closedRequests = RequestForm::where('approval_by_id', $user->id)->where('approvalStatus', '>', 3)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         } else {
             $totalRequests = $user->approvedRequests->count();
@@ -91,7 +91,7 @@ class RequestFormController extends Controller
             $closedRequestsCount = $user->approvedRequests()->where('approvalStatus', '>', 3)->count();
 
             //Requests section
-            $activeRequests = $user->approvedRequests()->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
+            $activeRequests = $user->approvedRequests()->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
             $closedRequests = $user->approvedRequests()->where('approvalStatus', '>', 3)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         }
         $response = [
@@ -131,8 +131,8 @@ class RequestFormController extends Controller
         $vehicleMaintenanceRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'VEHICLE_MAINTENANCE')->count();
         $fuelRequestsCount = RequestForm::where('approvalStatus', '>', 0)->where('approvalStatus', '<', 4)->where('approvalStatus', '!=', 2)->where('type', 'FUEL')->count();
 
-        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->get();
-        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->get();
+        $awaitingInitiation = RequestForm::where('approvalStatus', 1)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->paginate((new AppController())->paginate);
+        $awaitingReconciliation = RequestForm::where('approvalStatus', 3)->where("dateRequested", ">=", env('TIMESTAMP_CUTOFF'))->paginate((new AppController())->paginate);
         $reconciled = RequestForm::where('approvalStatus', 4)->paginate((new AppController())->paginate);
 
         $awaitingInitiationCount = $awaitingInitiation->count();
@@ -175,13 +175,13 @@ class RequestFormController extends Controller
         $toReconcile = [];
 
         if ($user->hasRole('management')) {
-            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->get();
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalStatus', 1)->where('user_id', '!=', $user->id)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         } elseif ($user->hasRole('accountant')) {
-            $toReconcile = RequestForm::where('approvalStatus', 3)->orderBy('dateRequested', 'desc')->get();
-            $toInitiate = RequestForm::where('approvalStatus', 1)->orderBy('dateRequested', 'desc')->get();
-            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $toReconcile = RequestForm::where('approvalStatus', 3)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
+            $toInitiate = RequestForm::where('approvalStatus', 1)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         } else {
-            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->get();
+            $toApprove = RequestForm::where('approvalStatus', 0)->where('stagesApprovalPosition', $user->position->id)->where('stagesApprovalStatus', 0)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         }
 
         return response()->json([
@@ -215,7 +215,7 @@ class RequestFormController extends Controller
             $closedRequestsCount = RequestForm::where('approvalStatus', '>', 3)->count();
 
             //Requests section
-            $activeRequests = RequestForm::where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
+            $activeRequests = RequestForm::where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
             $closedRequests = RequestForm::where('approvalStatus', '>', 3)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         } else {
             $totalRequests = $user->requestForms->count();
@@ -233,7 +233,7 @@ class RequestFormController extends Controller
             $closedRequestsCount = $user->requestForms()->where('approvalStatus', '>', 3)->count();
 
             //Requests section
-            $activeRequests = $user->requestForms()->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->get();
+            $activeRequests = $user->requestForms()->where('approvalStatus', '<', 4)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
             $closedRequests = $user->requestForms()->where('approvalStatus', '>', 3)->orderBy('dateRequested', 'desc')->paginate((new AppController())->paginate);
         }
 

@@ -134,6 +134,7 @@
                             <div v-if="awaitingInitiation.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
                                 No Requests Awaiting Initiation
                             </div>
+                            <pagination :object="awaitingInitiation" />
 
                         </div>
                     </div>
@@ -154,6 +155,7 @@
                             <div v-if="awaitingReconciliation.data.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
                                 No Requests Awaiting Reconciliation
                             </div>
+                            <pagination :object="awaitingReconciliation" />
                         </div>
                     </div>
                 </div>
@@ -204,6 +206,10 @@
     import DoughnutChart from "@/Components/Charts/DoughnutChart";
     import PieChart from "@/Components/Charts/PieChart";
     import Request from "@/Components/Request";
+    
+
+import Pagination from "@/Components/Pagination.vue";
+
 
     export default {
         props:[
@@ -223,6 +229,7 @@
             AppLayout,
             DoughnutChart,
             PieChart,
+            Pagination,
             Request
         },
         data(){
