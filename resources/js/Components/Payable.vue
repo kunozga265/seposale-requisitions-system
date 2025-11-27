@@ -214,14 +214,14 @@ export default {
         getTotal() {
             let sum = 0;
             for (let x in this.payable) {
-                sum += this.payable[x].total
+                sum += this.numberWithCommas(this.payable[x].total)
             }
             return sum
         },
         getItemsTotal() {
             let sum = 0;
             for (let x in this.form.payables) {
-                sum += this.form.payables[x].total
+                sum += this.numberWithCommas(this.form.payables[x].total)
             }
             return sum
         }
