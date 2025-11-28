@@ -623,7 +623,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
 
         Route::delete('/destroy/{id}', [
             "uses"  => "App\Http\Controllers\ReceiptController@destroy",
-            'roles' => ['accountant', 'management']
+            'roles' => ['management']
         ])->name('receipts.destroy');
 
         Route::get('/print/{id}', [
