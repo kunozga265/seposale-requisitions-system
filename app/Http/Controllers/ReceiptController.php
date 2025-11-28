@@ -89,8 +89,6 @@ class ReceiptController extends Controller
 
             $receipt = Cache::lock($user->id . ':receipt:store', 10)->get(function () use ($user, $request, $sale) {
 
-
-
                 //Checking
                 $total = 0;
                 $filteredProducts = [];
@@ -119,7 +117,7 @@ class ReceiptController extends Controller
 
                 if ($request->withholding) {
                     $account_id = (new AccountingAccountController())->getAccount(1200)->id;
-                    $payment_method_id = PaymentMethod::where('name','Withholding')->first()->id;
+                    $payment_method_id = PaymentMethod::where('name', 'Withholding')->first()->id;
                 } else {
                     $request->validate([
                         'account_id' => ['required'],
@@ -725,6 +723,65 @@ class ReceiptController extends Controller
             return Redirect::back()->with('error', 'Sale not found');
         }
     }
+
+    public function destroy(Request $request, $id)
+    {
+        //find out if the request is valid
+        $receipt = Receipt::find($id);
+
+        if (is_object($receipt)) {
+
+            //reverse each summary balance
+            foreach ($receipt->summaries as $receipt_summary) {
+                if ($receipt_summary->summary != null) {
+                    $receipt_summary->summary->update([
+                        'balance' => $receipt_summary->summary->balance + $receipt_summary->amount,
+
+                    ]);
+                } else if ($receipt_summary->siteSaleSummary != null) {
+                    $receipt_summary->siteSaleSummary->update([
+                        'balance' => $receipt_summary->siteSaleSummary->balance + $receipt_summary->amount,
+
+                    ]);
+                }
+                //delete 
+                $receipt_summary->delete();
+            }
+
+            //reverse sale balance
+            $sale = $receipt->sale  ?? $receipt->siteSale;
+            $new_balance = $sale->balance + $receipt->amount;
+
+            $sale->update([
+                "balance" => $new_balance,
+                "editable" => false,
+                "status" => $new_balance == 0 ? 2 : 1
+            ]);
+
+            //reverse accounting transactions
+            (new AccountingRecordController())->reverseTransactions($receipt->records, null, null);
+
+            //delete receipt
+            $receipt->delete();
+
+            if ((new AppController())->isApi($request))
+                //API Response
+                return response()->json($receipt, 200);
+            else {
+                //Web Response
+                return Redirect::route('receipts.index')->with('success', 'Receipt successfully deleted!');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Receipt not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('dashboard')->with('error', 'Receipt not found');
+            }
+        }
+    }
+
 
     public function print(Request $request, $id)
     {

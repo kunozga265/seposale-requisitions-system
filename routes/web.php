@@ -613,13 +613,18 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
 
         Route::post('/sale/{id}', [
             "uses"  => "App\Http\Controllers\ReceiptController@store",
-            'roles' => ['employee', 'management']
+            'roles' => ['accountant', 'management']
         ])->name('receipts.store');
 
         Route::post('/sale/attach/{id}', [
             "uses"  => "App\Http\Controllers\ReceiptController@attachReceipt",
-            'roles' => ['employee', 'management']
+            'roles' => ['accountant', 'management']
         ])->name('receipts.attach');
+
+        Route::delete('/destroy/{id}', [
+            "uses"  => "App\Http\Controllers\ReceiptController@destroy",
+            'roles' => ['accountant', 'management']
+        ])->name('receipts.destroy');
 
         Route::get('/print/{id}', [
             "uses"  => "App\Http\Controllers\ReceiptController@print",
