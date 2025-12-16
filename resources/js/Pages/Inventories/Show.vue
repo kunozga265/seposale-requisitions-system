@@ -134,7 +134,7 @@
                                 <div class="mr-4">
                                     <jet-label class="mb-0" for="batch-item" :value="getDate(batch.date * 1000)" />
                                     <div class="text-xs text-gray-500">MK{{ numberWithCommas(batch.price.toFixed(2))
-                                    }}/{{
+                                        }}/{{
                                             batch.inventory.units }}
                                     </div>
                                 </div>
@@ -360,7 +360,7 @@
                                         class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
                                         <div>{{ pendingCollections.length }} Collection{{
                                             pendingCollections.length != 1 ? "s" : ''
-                                        }}
+                                            }}
                                         </div>
                                     </div>
                                 </div>
@@ -384,8 +384,7 @@
                                         <collection
                                             class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                             :client="productCompound.sale.client" :product="productCompound"
-                                            :is-solo="true"
-                                            @navigate="navigateToCollection" />
+                                            :is-solo="true" @navigate="navigateToCollection" />
 
                                     </div>
                                     <!--                                        <div class="heading-font text-xs text-gray-500">-->
@@ -402,7 +401,7 @@
                                         class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
                                         <div>{{ pendingBatches.data.length }} Batch{{
                                             pendingBatches.data.length != 1 ? "es" : ''
-                                        }}
+                                            }}
                                         </div>
                                     </div>
                                 </div>
@@ -538,11 +537,11 @@
                                             <!--                                            <td class="p-2 text-left ">{{ sale.product.inventory.name }}</td>-->
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.amount.toFixed(2))
-                                                }}
+                                            }}
                                             </td>
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.balance.toFixed(2))
-                                                }}
+                                            }}
                                             </td>
                                             <td class="p-2 text-right">
                                                 <Profit :value="sale.product.profit" />
@@ -558,11 +557,11 @@
                                             </td>
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.quantity.toFixed(2))
-                                                }}
+                                            }}
                                             </td>
                                             <td class="p-2 text-right">{{
                                                 numberWithCommas(sale.product.collected.toFixed(2))
-                                                }}
+                                            }}
                                             </td>
 
                                             <td class="">
@@ -617,7 +616,7 @@
                                                 item.siteSaleSummary.sale.code }}</td>
                                         <td @click="navigateToClient(item.client.id)" class="p-2 text-left ">{{
                                             item.client.name
-                                            }}</td>
+                                        }}</td>
                                         <!--                                        <td class="p-2 text-left ">{{-->
                                         <!--                                                item.collectedBy-->
                                         <!--                                            }}-->
@@ -628,6 +627,10 @@
                                         </td> -->
                                         <td class="p-2 text-left ">
                                             {{ numberWithCommas(item.quantity) }}
+                                        </td>
+                                        <td class="p-2 text-left ">
+                                            {{
+                                                numberWithCommas(item.siteSaleSummary.unitCost) }}
                                         </td>
                                         <td class="p-2 text-left ">
                                             {{ numberWithCommas(item.balance) }}
@@ -691,11 +694,11 @@
                                         </td>
                                         <td class="p-2 text-left ">{{
                                             item.comments
-                                            }}
+                                        }}
                                         </td>
                                         <td class="p-2 text-left ">{{
                                             item.user.fullName
-                                            }}
+                                        }}
                                         </td>
                                     </tr>
 
