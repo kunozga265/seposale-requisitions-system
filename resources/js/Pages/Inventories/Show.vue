@@ -636,11 +636,11 @@
                                         </td>
                                           <td class="p-2 text-left ">
                                             {{
-                                                numberWithCommas(item.siteSaleSummary.unitCost) }}
+                                                numberWithCommas(item.siteSaleSummary.unitCost.toFixed(2)) }}
                                         </td>
                                           <td class="p-2 text-left ">
                                             {{
-                                                numberWithCommas(item.cost) }}
+                                                numberWithCommas(item.cost.toFixed(2)) }}
                                         </td>
                                     </tr>
 
