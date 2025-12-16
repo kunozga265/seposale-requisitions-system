@@ -600,6 +600,8 @@
                                         <!-- <th scope="col" class="p-2 pb-0 heading-font text-left">Product</th> -->
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Quantity</th>
                                         <th scope="col" class="p-2 pb-0 heading-font text-left">Balance</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Unit Cost</th>
+                                        <th scope="col" class="p-2 pb-0 heading-font text-left">Purchase Cost</th>
                                     </tr>
                                 </thead>
                                 <tbody class="pt-8">
@@ -628,12 +630,17 @@
                                         <td class="p-2 text-left ">
                                             {{ numberWithCommas(item.quantity) }}
                                         </td>
+                                      
                                         <td class="p-2 text-left ">
+                                            {{ numberWithCommas(item.balance) }}
+                                        </td>
+                                          <td class="p-2 text-left ">
                                             {{
                                                 numberWithCommas(item.siteSaleSummary.unitCost) }}
                                         </td>
-                                        <td class="p-2 text-left ">
-                                            {{ numberWithCommas(item.balance) }}
+                                          <td class="p-2 text-left ">
+                                            {{
+                                                numberWithCommas(item.cost) }}
                                         </td>
                                     </tr>
 
