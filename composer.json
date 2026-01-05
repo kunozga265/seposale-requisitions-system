@@ -19,6 +19,7 @@
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
+        "pragmarx/google2fa-laravel": "^2.3",
         "rmunate/spell-number": "^4.2",
         "tightenco/ziggy": "^1.0"
     },

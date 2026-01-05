@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ClientController as WebClientController;
 use App\Http\Resources\API\ReceiptResource;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\SaleResource;
@@ -17,6 +19,8 @@ use App\Models\DeliveryNote;
 use App\Models\SiteSaleSummary;
 use App\Models\Summary;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
@@ -153,6 +157,134 @@ class ClientController extends Controller
             }
         } else {
             return response()->json(['message' => "Client not found"], 404);
+        }
+    }
+
+    public function portalLogin(Request $request)
+    {
+        $request->validate([
+            'phone_number' => 'required',
+            'password' => 'required',
+        ]);
+
+        $phone_number = (new ClientController())->cleanPhoneNumber($request->phone_number);
+
+        $client = Client::where('phone_number', $phone_number)
+            ->orWhere('phone_number_other', $phone_number)
+            ->first();
+
+
+        if (!is_object($client)) {
+            return response()->json(['message' => 'Client not found'], 404);
+        } else {
+            if (Hash::check($request->password, $client->password)) {
+                return response()->json(['message' => 'Successfully logged in'], 200);
+            } else {
+                return response()->json(['message' => 'Passwords do not match'], 400);
+            }
+        }
+    }
+    public function portalSignUp(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'phone_number' => 'required',
+            'password' => ['required', 'confirmed'],
+        ]);
+
+        $client = (new WebClientController())->getOrCreate($request->name, $request->phone_number);
+
+        return response()->json(['client' => $client], 200);
+    }
+
+    public function portalAttempt(Request $request)
+    {
+        $request->validate([
+            'phone_number' => 'required'
+        ]);
+
+        $phone_number = (new ClientController())->cleanPhoneNumber($request->phone_number);
+        $client = Client::where('phone_number', $phone_number)
+            ->orWhere('phone_number_other', $phone_number)
+            ->first();
+
+
+        if (is_object($client)) {
+            //client is verified and confirmed
+            if ($client->password != null) {
+                //they need to confirm login with password
+                return response()->json(['client' => $client], 200);
+            } else {
+                //client is unverified
+
+                //send otp
+                $this->sendOtp($client);
+
+                return response()->json(['client' => $client], 400);
+            }
+        }
+    }
+
+    private function sendOtp($client)
+    {
+        $client = Client::findOrFail($client->id);
+
+        $otp = $client->generateOtp(10); // expires in 5 minutes
+        Log::info($otp);
+
+        // Send via SMS / Email / WhatsApp
+        // Example:
+        // SmsService::send($client->phone, "Your OTP is {$otp}");
+        (new NotificationController())->processWhatsappMessage('otp', $client->serial, $otp);
+
+        // return response()->json([
+        //     'message' => 'OTP sent successfully'
+        // ]);
+    }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'serial' => 'required|string',
+            'otp' => 'required|string',
+        ]);
+
+        $client = Client::where('serial', $request->serial)->first();
+
+        if (!is_object($client)) {
+            return response()->json([
+                'message' => 'Client not found'
+            ], 404);
+        }
+
+        if (!$client->verifyOtp($request->otp)) {
+            return response()->json([
+                'message' => 'Invalid or expired OTP'
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'OTP verified successfully'
+        ]);
+    }
+
+    public function cleanPhoneNumber($subject)
+    {
+        if (isset($subject)) {
+            //remove every space
+            $number = trim(str_replace(" ", "", $subject));
+            //remove plus sign
+            $number = trim(str_replace("+", "", $number));
+            //if local number, replace with the right code
+            if ($number[0] === "0") {
+                $number[0] = "-";
+                $number = str_replace("-", "", $number);
+                $number = "265{$number}";
+            }
+
+            return $number;
+        } else {
+            return null;
         }
     }
 }

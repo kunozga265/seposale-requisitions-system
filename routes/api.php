@@ -28,9 +28,20 @@ Route::group(['prefix' => '1.0.0'], function () {
         ProjectController::class,
         'create'
     ]);
+
     Route::post('reports/generate', [
         "uses" => "App\Http\Controllers\ReportController@generate",
         'roles' => ['accountant', 'management', 'administrator']
+    ]);
+
+    Route::post('/portal/attempt', [
+        "uses" => "App\Http\Controllers\API\ClientController@portalAttempt",
+    ]);
+    Route::post('/portal/login', [
+        "uses" => "App\Http\Controllers\API\ClientController@portalLogin",
+    ]);
+    Route::post('/verify-otp', [
+        "uses" => "App\Http\Controllers\API\ClientController@verifyOtp",
     ]);
 
 
@@ -399,7 +410,6 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses"  => "App\Http\Controllers\WhatsappMessageController@index",
                 'roles' => ['administrator', 'management']
             ]);
-            
         });
     });
 });

@@ -1650,6 +1650,48 @@ class NotificationController extends Controller
                 $check = $this->pushWhatsappMessage($body, $data);
 
                 break;
+            case "otp":
+                $client = \App\Models\Client::where('serial', $serial)->first();
+
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $client->phone_number ?? $client->phone_number_other,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //otp
+                                        "text" => $notify
+                                    ]
+                                ]
+                            ],
+                               [
+                                "type" => "button",
+                                "sub_type" => "url",
+                                "index" => "0",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        "text" => $notify
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+                $data['client_id'] = $client->id;
+                $this->pushWhatsappMessage($body, $data);
+              
+                break;
 
             default:
         }

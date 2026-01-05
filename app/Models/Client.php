@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Client extends Model
@@ -84,4 +86,50 @@ class Client extends Model
         "created_at",
         "updated_at",
     ];
+
+
+    /**
+     * Generate and store OTP for this client
+     */
+    public function generateOtp(int $minutes = 5): string
+    {
+        $otp = (string) random_int(100000, 999999);
+
+        Cache::put(
+            $this->otpCacheKey(),
+            $otp,
+            now()->addMinutes($minutes)
+        );
+
+        return $otp;
+    }
+
+    /**
+     * Verify OTP
+     */
+    public function verifyOtp(string $otp): bool
+    {
+        $cacheKey = $this->otpCacheKey();
+
+        if (! Cache::has($cacheKey)) {
+            return false;
+        }
+
+        if (Cache::get($cacheKey) !== $otp) {
+            return false;
+        }
+
+        // OTP is single-use
+        Cache::forget($cacheKey);
+
+        return true;
+    }
+
+    /**
+     * OTP cache key
+     */
+    protected function otpCacheKey(): string
+    {
+        return 'client_otp_' . $this->id;
+    }
 }
