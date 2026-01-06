@@ -160,26 +160,40 @@ class ClientController extends Controller
         }
     }
 
-    public function portalLogin(Request $request)
-    {
-        $request->validate([
-            'serial' => 'required',
-            'password' => 'required',
-        ]);
-        
-        $client = Client::where('serial', $request->serial)->first();
+   public function portalLogin(Request $request)
+{
+    $request->validate([
+        'serial' => 'required',
+        'password' => 'required',
+    ]);
+    
+    // Find the client
+    $client = Client::where('serial', $request->serial)->first();
 
-
-        if (!is_object($client)) {
-            return response()->json(['message' => 'Client not found'], 404);
-        } else {
-            if (Hash::check($request->password, $client->password)) {
-                return response()->json(['message' => 'Successfully logged in'], 200);
-            } else {
-                return response()->json(['message' => 'Passwords do not match'], 400);
-            }
-        }
+    // 1. Check if client exists
+    if (!$client) {
+        return response()->json(['message' => 'Client not found'], 404);
     }
+
+    // 2. Check Password
+    if (!Hash::check($request->password, $client->password)) {
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
+
+    // 3. Create Token (The Sanctum Magic)
+    // We delete old tokens so the database doesn't get clogged (optional)
+    $client->tokens()->delete();
+    
+    // Generate the new token
+    $token = $client->createToken('portal-access')->plainTextToken;
+
+    // 4. Return Response
+    return response()->json([
+        'message' => 'Successfully logged in',
+        'token'   => $token,  // <--- The Nuxt app needs this
+        'client'  => $client
+    ], 200);
+}
 
     public function setPassword(Request $request)
     {
@@ -212,7 +226,7 @@ class ClientController extends Controller
             'password' => ['required', 'confirmed'],
         ]);
 
-        $client = (new WebClientController())->getOrCreate(name: $request->name, phone_number: $request->phone_number);
+        $client = (new WebClientController())->getOrCreate(name: $request->name, phone_number: $request->phone_number, password: $request->password);
 
         return response()->json(['client' => $client], 200);
     }
