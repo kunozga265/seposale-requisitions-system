@@ -129,8 +129,6 @@ class Inventory extends Model
             }
         }
 
-
-
         return $value;
     }
 

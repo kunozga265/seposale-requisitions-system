@@ -339,7 +339,7 @@
                 
                 </ul>
               </li>
-              <li v-if=" checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+              <li >
                 <div @click="more = !more"
                   class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
@@ -351,14 +351,14 @@
                   </div>
                 </div>
                 <ul v-show="more">
-                  <li>
+                  <li v-if=" checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
                     <a :href="route('vacancies.index')"
                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Vacancies
                     </a>
                   </li>
                   
-                  <li>
+                  <li v-if=" checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')  || checkRole($page.props.auth.data, 'sales')">
                     <a :href="route('whatsapp.index')"
                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Whatsapp Messages
