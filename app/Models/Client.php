@@ -73,6 +73,7 @@ class Client extends Model
     protected $fillable = [
         'serial',
         'name',
+        'password',
         'phone_number',
         'phone_number_other',
         'email',
