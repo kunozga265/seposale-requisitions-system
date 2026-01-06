@@ -40,10 +40,12 @@ Route::group(['prefix' => '1.0.0'], function () {
     Route::post('/portal/login', [
         "uses" => "App\Http\Controllers\API\ClientController@portalLogin",
     ]);
+    Route::post('/portal/signup', [
+        "uses" => "App\Http\Controllers\API\ClientController@portalSignUp",
+    ]);
     Route::post('/verify-otp', [
         "uses" => "App\Http\Controllers\API\ClientController@verifyOtp",
     ]);
-
 
     Route::group(['prefix' => 'products'], function () {
         Route::get("/", [
