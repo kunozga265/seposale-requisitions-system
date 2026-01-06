@@ -163,15 +163,11 @@ class ClientController extends Controller
     public function portalLogin(Request $request)
     {
         $request->validate([
-            'phone_number' => 'required',
+            'serial' => 'required',
             'password' => 'required',
         ]);
-
-        $phone_number = (new ClientController())->cleanPhoneNumber($request->phone_number);
-
-        $client = Client::where('phone_number', $phone_number)
-            ->orWhere('phone_number_other', $phone_number)
-            ->first();
+        
+        $client = Client::where('serial', $request->serial)->first();
 
 
         if (!is_object($client)) {
