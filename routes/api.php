@@ -45,6 +45,16 @@ Route::group(['prefix' => '1.0.0'], function () {
     ]);
 
 
+    Route::group(['prefix' => 'products'], function () {
+        Route::get("/", [
+            "uses" => "App\Http\Controllers\APP\ProductController@index"
+        ]);
+        Route::get("/trending", [
+            "uses" => "App\Http\Controllers\APP\ProductController@trending"
+        ]);
+    });
+
+
     Route::post("/upload", [
         "uses" => "App\Http\Controllers\AppController@uploadFile",
         'roles' => ['employee', 'administrator']
