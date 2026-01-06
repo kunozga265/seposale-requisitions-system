@@ -30,6 +30,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ClientsCheckImport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
@@ -149,7 +150,7 @@ class ClientController extends Controller
         }
     }
 
-    public function getOrCreate($name, $phone_number, $phone_number_other = null, $email = null)
+    public function getOrCreate($name, $phone_number, $phone_number_other = null, $email = null, $password = null)
     {
         $client = Client::where('phone_number', $phone_number)->first();
 
@@ -162,6 +163,7 @@ class ClientController extends Controller
                 'email' => $email,
                 'organisation' => false,
                 'client_type_id' => 7,
+                'password' => $password != null ? Hash::make($password) : null,
             ]);
         }
 

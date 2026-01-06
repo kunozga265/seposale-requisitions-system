@@ -192,7 +192,7 @@ class ClientController extends Controller
             'password' => ['required', 'confirmed'],
         ]);
 
-        $client = (new WebClientController())->getOrCreate($request->name, $request->phone_number);
+        $client = (new WebClientController())->getOrCreate(name: $request->name, phone_number: $request->phone_number);
 
         return response()->json(['client' => $client], 200);
     }
