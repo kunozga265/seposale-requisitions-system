@@ -184,6 +184,30 @@ class ClientController extends Controller
             }
         }
     }
+
+    public function setPassword(Request $request)
+    {
+        $request->validate([
+            'serial' => 'required',
+            'password' => ['required', 'confirmed'],
+        ]);
+
+        $client = Client::where('serial', $request->serial)->first();
+
+
+        if (!is_object($client)) {
+            return response()->json(['message' => 'Client not found'], 404);
+        } else {
+
+            $client->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+            return response()->json(['message' => 'Successfully logged in'], 200);
+            
+        }
+    }
+
     public function portalSignUp(Request $request)
     {
         $request->validate([
@@ -207,7 +231,6 @@ class ClientController extends Controller
         $client = Client::where('phone_number', $phone_number)
             ->orWhere('phone_number_other', $phone_number)
             ->first();
-
 
         if (is_object($client)) {
             //client is verified and confirmed
@@ -263,9 +286,15 @@ class ClientController extends Controller
             ], 422);
         }
 
+        if ($client->password != null) {
+            $status = 200;
+        } else {
+            $status = 201;
+        }
+
         return response()->json([
             'message' => 'OTP verified successfully'
-        ]);
+        ], $status);
     }
 
     public function cleanPhoneNumber($subject)

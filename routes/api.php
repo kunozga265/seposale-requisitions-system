@@ -43,6 +43,9 @@ Route::group(['prefix' => '1.0.0'], function () {
     Route::post('/portal/signup', [
         "uses" => "App\Http\Controllers\API\ClientController@portalSignUp",
     ]);
+    Route::post('/portal/set-password', [
+        "uses" => "App\Http\Controllers\API\ClientController@setPassword",
+    ]);
     Route::post('/verify-otp', [
         "uses" => "App\Http\Controllers\API\ClientController@verifyOtp",
     ]);
