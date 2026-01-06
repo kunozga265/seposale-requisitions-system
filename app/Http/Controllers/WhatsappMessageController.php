@@ -13,8 +13,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class WhatsappMessageController extends Controller
-{
-    public function index(Request $request)
+{     public function index(Request $request)
     {
         $user = User::find(Auth::id());
 

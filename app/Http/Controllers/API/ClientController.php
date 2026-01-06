@@ -241,6 +241,10 @@ class ClientController extends Controller
 
                 return response()->json(['client' => $client], 400);
             }
+        }else{
+              return response()->json([
+                'message' => 'Client not found'
+            ], 404);
         }
     }
 
