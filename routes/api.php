@@ -371,9 +371,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 "uses" => "App\Http\Controllers\API\ClientController@show",
                 'roles' => ['sales', 'operations', 'delivery', 'accountant', 'management']
             ]);
-            Route::get('/portal/{serial}', [
-                "uses" => "App\Http\Controllers\API\ClientController@portalInfo",
-            ]);
+
             Route::get('/details/{id}', [
                 "uses" => "App\Http\Controllers\API\ClientController@getDetails",
                 'roles' => ['sales', 'operations', 'delivery', 'accountant', 'management']
@@ -429,5 +427,12 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['administrator', 'management']
             ]);
         });
+    });
+
+
+    Route::group(["middleware" => ["auth:sanctum"]], function () {
+        Route::get('/clients/portal/{serial}', [
+            "uses" => "App\Http\Controllers\API\ClientController@portalInfo",
+        ]);
     });
 });
