@@ -372,7 +372,7 @@ Route::group(['prefix' => '1.0.0'], function () {
                 'roles' => ['sales', 'operations', 'delivery', 'accountant', 'management']
             ]);
             Route::get('/portal/{serial}', [
-                "uses" => "App\Http\Controllers\APP\ClientController@portalInfo",
+                "uses" => "App\Http\Controllers\API\ClientController@portalInfo",
             ]);
             Route::get('/details/{id}', [
                 "uses" => "App\Http\Controllers\API\ClientController@getDetails",
