@@ -40,6 +40,7 @@ class SummaryResource extends JsonResource
                 "status" => intval($this->delivery->status),
                 "code" => (new AppController())->getZeroedNumber($this->delivery->code),
                 "costs" => floatval($this->delivery->costs()),
+                "location" => $this->delivery->location,
             ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
             "status" => intval($this->status),
