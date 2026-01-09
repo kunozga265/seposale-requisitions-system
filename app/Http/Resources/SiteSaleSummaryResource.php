@@ -30,6 +30,7 @@ class SiteSaleSummaryResource extends JsonResource
             "collections" => (new SiteSaleSummaryController())->getCollections($this->collections),
             "site" => $this->sale->site,
             "trashed" => $this->deleted_at != null,
+            'date' => intval($this->sale->date),
             "sale" => [
                 "id" => $this->sale->id,
                 "code" => (new AppController())->getZeroedNumber($this->sale->code),
