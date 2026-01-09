@@ -342,8 +342,8 @@ class ClientController extends Controller
                 ],
                 "total_payments" => $total_payments,
 
-                'active_sales ' => SummaryResource::collection($active_sales),
-                'active_site_sales ' => SiteSaleSummaryResource::collection($active_site_sales),
+                'active_sales' => SummaryResource::collection($active_sales),
+                'active_site_sales' => SiteSaleSummaryResource::collection($active_site_sales),
                 'sales' => SaleResource::collection($sales->take((new AppController())->paginate)),
                 'receipts' => ReceiptResource::collection($receipts->take((new AppController())->paginate)),
                 'invoices' => InvoiceResource::collection($invoices->take((new AppController())->paginate)),
