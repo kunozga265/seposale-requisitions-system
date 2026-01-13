@@ -110,6 +110,7 @@
 
     </style>
 </head>
+
 <body>
 {{--<p style="text-align: right; font-size: 12px">Generated on {{$date}} at {{$time}}</p>--}}
 <img style="width: 100%" src="{{storage_path()."/images/banner.png"}}" alt="">
@@ -269,8 +270,8 @@
 
 </div>
 
-<div style="page-break-after: always"></div>
-<img style="width: 100%" src="{{storage_path()."/images/our-products.jpg"}}" alt="">
+{{-- <div style="page-break-after: always"></div>
+<img style="width: 100%" src="{{storage_path()."/images/our-products.jpg"}}" alt=""> --}}
 
 {{--<div style="padding:0 20px; position: absolute; bottom: 0">--}}
 {{--    <img style="width: 100%;" src="{{storage_path()."/images/cover.jpg"}}" alt="">--}}

@@ -60,50 +60,54 @@
 
                                     <div class="p-2 mb-2">
                                         <jet-label for="clientIndex" value="Client" />
-                                        <select v-model="clientIndex" id="clientIndex"
+                                        <v-select  label="name" :options="clients.data" placeholder="Select Client" v-model="selectedClient" 
+                                         />
+
+
+                                        <!-- <select v-model="clientIndex" id="clientIndex"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                             required>
                                             <option value="-1">Select Client</option>
                                             <option v-for="(client, index) in clients.data" :value="index" :key="index">
-                                                {{ client.name }}
+                                                {{ selectedClient.name }}
                                             </option>
-                                        </select>
+                                        </select> -->
                                     </div>
-                                    <div v-if="client != null" class="grid grid-cols-1 md:grid-cols-2">
-                                        <div class="p-2 mb-2 md:col-span-2" v-show="client.organisation">
+                                    <div v-if="selectedClient != null" class="grid grid-cols-1 md:grid-cols-2">
+                                        <div class="p-2 mb-2 md:col-span-2" v-show="selectedClient.organisation">
                                             <jet-label for="alias-name" value="Alias Name" />
                                             <jet-input id="alias-name" type="text" class="block w-full"
-                                                v-model="client.alias" autocomplete="seposale-customer-alias-name"
+                                                v-model="selectedClient.alias" autocomplete="seposale-customer-alias-name"
                                                 disabled />
                                         </div>
-                                        <div v-if="client.type != null" class="p-2 mb-2">
+                                        <div v-if="selectedClient.type != null" class="p-2 mb-2">
                                             <jet-label for="type" value="Type" />
                                             <jet-input id="type" type="text" class="block w-full"
-                                                v-model="client.type.name" autocomplete="seposale-customer-type"
+                                                v-model="selectedClient.type.name" autocomplete="seposale-customer-type"
                                                 disabled />
                                         </div>
                                         <div class="p-2 mb-2">
                                             <whatsapp-label title="Phone Number" />
                                             <jet-input id="phoneNumber" type="text" class="block w-full"
-                                                v-model="client.phoneNumber"
+                                                v-model="selectedClient.phoneNumber"
                                                 autocomplete="seposale-customer-phone-number" disabled />
                                         </div>
                                         <div class="p-2 mb-2">
                                             <jet-label for="phoneNumber" value="Phone Number (Secondary)" />
                                             <jet-input id="phoneNumber" type="text" class="block w-full"
-                                                v-model="client.phoneNumberOther"
+                                                v-model="selectedClient.phoneNumberOther"
                                                 autocomplete="seposale-customer-phone-number" disabled />
                                         </div>
                                         <div class="p-2 mb-2">
                                             <jet-label for="email" value="Email" />
                                             <jet-input id="email" type="email" class="block w-full"
-                                                v-model="client.email" autocomplete="seposale-customer-email"
+                                                v-model="selectedClient.email" autocomplete="seposale-customer-email"
                                                 disabled />
                                         </div>
                                         <div class="p-2 mb-2">
                                             <jet-label for="address" value="Address" />
                                             <jet-input id="address" type="text" class="block w-full"
-                                                v-model="client.address" autocomplete="seposale-customer-address"
+                                                v-model="selectedClient.address" autocomplete="seposale-customer-address"
                                                 disabled />
                                         </div>
                                     </div>
@@ -550,6 +554,8 @@ import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import PrimaryButton from "@/Jetstream/Button.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
+import vSelect from "vue-select"
+import "vue-select/dist/vue-select.css"
 
 export default {
     props: ["products", "clients", "clientTypes"],
@@ -563,6 +569,7 @@ export default {
         JetValidationErrors,
         SecondaryButton,
         pdf,
+        vSelect,
     },
     data() {
         return {
@@ -581,6 +588,7 @@ export default {
 
             productIndex: -1,
             clientIndex: -1,
+            selectedClient: null,
 
             backdateCheck: false,
             date: null,
@@ -706,7 +714,7 @@ export default {
                     return false
                 }
             } else {
-                if (parseInt(this.clientIndex) < 0 || this.client == null) {
+                if (this.selectedClient == null) {
                     this.error = "Select client"
                     return false
                 }
@@ -718,7 +726,7 @@ export default {
                     return false
                 }
             }
-            
+
             if (this.form.location.length === 0) {
                 this.error = "Enter site location"
                 return false
@@ -767,7 +775,7 @@ export default {
                     quotes: this.quoteFiles,
                     products: this.form.information,
                     date: this.saleDate,
-                    client_id: this.client == null ? null : this.client.id,
+                    client_id: this.selectedClient == null ? null : this.selectedClient.id,
                     recipient_name: this.form.recipientName,
                     recipient_profession: this.form.recipientProfession,
                     recipient_phone_number: this.form.recipientPhoneNumber,

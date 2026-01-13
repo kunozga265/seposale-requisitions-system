@@ -30,7 +30,7 @@ class SaleController extends Controller
     public function show(Request $request, $id)
     {
         //find out if the request is valid
-        $sale = sale::withTrashed()->find($id);
+        $sale = sale::withTrashed()->where('id',$id)->orWhere('serial',$id)->first();
         // $payment_methods = PaymentMethod::orderBy("name", "asc")->get();
         // $accounts = Account::all();
         // $accounts = AccountingAccount::where('special_type', 'WALLET')
