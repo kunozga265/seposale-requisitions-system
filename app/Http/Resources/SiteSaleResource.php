@@ -19,7 +19,7 @@ class SiteSaleResource extends JsonResource
         return [
             'id' => intval($this->id),
              "type" => 'OSS',
-            'code' => (new AppController())->getZeroedNumber($this->code),
+            'code' => "SS".(new AppController())->getZeroedNumber($this->code),
             'status' => intval($this->status),
             'client' => $this->client->toRawResource(),
             'total' => floatval($this->total),
