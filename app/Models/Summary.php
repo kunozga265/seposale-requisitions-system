@@ -31,7 +31,11 @@ class Summary extends Model
             $message = null;
             if ($this->delivery != null) {
 
-                $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location;
+                if($this->delivery->quantity_delivered == $this->quantity){
+                    $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location;
+                }else{
+                    $message =   "Delivered";
+                }
 
                 if ($this->getPaymentStatus() != 2) {
                     $message .= ". Payment is due.";
