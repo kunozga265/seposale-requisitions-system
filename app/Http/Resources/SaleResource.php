@@ -30,6 +30,7 @@ class SaleResource extends JsonResource
                 'code' => (new AppController())->getZeroedNumber($this->invoice->code, $this->invoice->revision),
             ] : null,
             // "expense" => new ExpenseResource($this->expense),
+            'collections' => $this->collections()->orderBy('date','asc')->get(),
             'total' => floatval($this->total),
             'balance' => floatval($this->balance),
             'date' => intval($this->date),

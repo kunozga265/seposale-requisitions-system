@@ -109,6 +109,19 @@ public function deliveryNotes()
         });
 }
 
+ /**
+     * Get all collections related to this sale
+     */
+    public function collections()
+    {
+        return \App\Models\Collection::whereIn(
+            'site_sale_summary_id',
+            $this->summaries()
+                ->whereNotNull('site_sale_summary_id')
+                ->pluck('site_sale_summary_id')
+        );
+    }
+
 
     protected $fillable = [
         "code",
