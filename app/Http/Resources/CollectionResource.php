@@ -22,7 +22,7 @@ class CollectionResource extends JsonResource
             "code" => (new AppController())->getZeroedNumber($this->code),
             "client" => $this->client,
             "photo" => $this->photo,
-            "collectedBy" => $this->collected_by,
+            "collectedBy" => ucwords($this->collected_by),
             "collectedByPhoneNumber" => $this->collected_by_phone_number,
             "inventory" => $this->inventory,
             "inventorySummary" => $this->inventorySummary,
@@ -33,7 +33,7 @@ class CollectionResource extends JsonResource
             "user" => $this->user,
             "date" => intval($this->date),
             "cost" => floatval($this->cost),
-            "message" => "Collected {$this->quantity} by " . isset($this->collected_by) ? $this->collected_by : " self",
+            "message" => "Collected {$this->quantity} by " . isset($this->collected_by) ? ucwords($this->collected_by) : " self",
             'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false,
         ];
     }

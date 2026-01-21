@@ -160,40 +160,40 @@ class ClientController extends Controller
         }
     }
 
-   public function portalLogin(Request $request)
-{
-    $request->validate([
-        'serial' => 'required',
-        'password' => 'required',
-    ]);
-    
-    // Find the client
-    $client = Client::where('serial', $request->serial)->first();
+    public function portalLogin(Request $request)
+    {
+        $request->validate([
+            'serial' => 'required',
+            'password' => 'required',
+        ]);
 
-    // 1. Check if client exists
-    if (!$client) {
-        return response()->json(['message' => 'Client not found'], 404);
+        // Find the client
+        $client = Client::where('serial', $request->serial)->first();
+
+        // 1. Check if client exists
+        if (!$client) {
+            return response()->json(['message' => 'Client not found'], 404);
+        }
+
+        // 2. Check Password
+        if (!Hash::check($request->password, $client->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        // 3. Create Token (The Sanctum Magic)
+        // We delete old tokens so the database doesn't get clogged (optional)
+        $client->tokens()->delete();
+
+        // Generate the new token
+        $token = $client->createToken('portal-access')->plainTextToken;
+
+        // 4. Return Response
+        return response()->json([
+            'message' => 'Successfully logged in',
+            'token'   => $token,  // <--- The Nuxt app needs this
+            'client'  => $client
+        ], 200);
     }
-
-    // 2. Check Password
-    if (!Hash::check($request->password, $client->password)) {
-        return response()->json(['message' => 'Invalid credentials'], 401);
-    }
-
-    // 3. Create Token (The Sanctum Magic)
-    // We delete old tokens so the database doesn't get clogged (optional)
-    $client->tokens()->delete();
-    
-    // Generate the new token
-    $token = $client->createToken('portal-access')->plainTextToken;
-
-    // 4. Return Response
-    return response()->json([
-        'message' => 'Successfully logged in',
-        'token'   => $token,  // <--- The Nuxt app needs this
-        'client'  => $client
-    ], 200);
-}
 
     public function setPassword(Request $request)
     {
@@ -214,7 +214,6 @@ class ClientController extends Controller
             ]);
 
             return response()->json(['message' => 'Successfully logged in'], 200);
-            
         }
     }
 
@@ -255,17 +254,17 @@ class ClientController extends Controller
 
                 return response()->json(['client' => $client], 400);
             }
-        }else{
-              return response()->json([
+        } else {
+            return response()->json([
                 'message' => 'Client not found'
             ], 404);
         }
     }
 
-     public function portalInfo(Request $request, $serial)
+    public function portalInfo(Request $request, $serial)
     {
         //find out if the request is valid
-        $client = Client::where('serial',$serial)->first();
+        $client = Client::where('serial', $serial)->first();
 
         if (is_object($client)) {
             //check unpaid sales and deliveries
@@ -326,6 +325,23 @@ class ClientController extends Controller
                 }
             }
 
+            $all = [];
+
+            foreach ($sales as $sale) {
+                $all[] = new SaleResource($sale);
+            }
+            foreach ($siteSales as $sale) {
+                $all[] = new SiteSaleResource($sale);
+            }
+
+            usort($all, function ($a, $b) {
+                if ($a['date'] < $b['date']) {
+                    return 1;
+                } elseif ($a['date'] > $b['date']) {
+                    return -1;
+                }
+                return 0;
+            });
 
             //Response
             return response()->json([
@@ -344,7 +360,7 @@ class ClientController extends Controller
 
                 'active_sales' => SummaryResource::collection($active_sales),
                 'active_site_sales' => SiteSaleSummaryResource::collection($active_site_sales),
-                'sales' => SaleResource::collection($sales->take((new AppController())->paginate)),
+                'sales' => $all,
                 'receipts' => ReceiptResource::collection($receipts->take((new AppController())->paginate)),
                 'invoices' => InvoiceResource::collection($invoices->take((new AppController())->paginate)),
                 'quotations' => QuotationResource::collection($quotations->take((new AppController())->paginate)),

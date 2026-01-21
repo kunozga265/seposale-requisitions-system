@@ -10,7 +10,7 @@ class SiteSaleSummaryController extends Controller
     {
         $array = [];
         foreach ($collections as $collection){
-            $by = $collection->collected_by != null ? $collection->collected_by : " self";
+            $by = $collection->collected_by != null ? ucwords($collection->collected_by) : " self";
             $phone_number = $collection->collected_by_phone_number != null ? "({$collection->collected_by_phone_number})" : "";
             $array[] = [
                 "date" => intval($collection->date),
