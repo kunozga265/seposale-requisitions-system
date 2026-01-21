@@ -22,6 +22,7 @@ class SaleResource extends JsonResource
         return [
             'id' => intval($this->id),
             'serial' => $this->serial,
+             "type" => 'HQ',
             'code' => "LL" . (new AppController())->getZeroedNumber($this->code_alt),
             'status' => intval($this->status),
             'client' => $this->client->toRawResource(),

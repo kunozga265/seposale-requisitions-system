@@ -36,7 +36,7 @@ class SiteSaleSummary extends Model
                 }
             } else if ($this->collected != $this->quantity) {
 
-                $message = "Awaiting collection of " . $this->formattedUnits($this->quantity - $this->collected) . " at " . $this->site->name . ".";
+                $message = "Awaiting collection of " . $this->formattedUnits($this->quantity - $this->collected) . " at " . $this->inventory->site->name . ".";
 
                 if ($this->getPaymentStatus() != 2) {
                     $message .= " Payment is due.";
