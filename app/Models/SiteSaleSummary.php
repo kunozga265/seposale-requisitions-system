@@ -31,14 +31,14 @@ class SiteSaleSummary extends Model
 
                 $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location . ".";
 
-                if ($this->getPaymentStatus != 2) {
+                if ($this->getPaymentStatus() != 2) {
                     $message .= " Payment is due.";
                 }
             } else if ($this->collected != $this->quantity) {
 
                 $message = "Awaiting collection of " . $this->formattedUnits($this->quantity - $this->collected) . " at " . $this->site->name . ".";
 
-                if ($this->getPaymentStatus != 2) {
+                if ($this->getPaymentStatus() != 2) {
                     $message .= " Payment is due.";
                 }
             } else {

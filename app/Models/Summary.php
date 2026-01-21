@@ -33,7 +33,7 @@ class Summary extends Model
 
                 $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location;
 
-                if ($this->getPaymentStatus != 2) {
+                if ($this->getPaymentStatus() != 2) {
                     $message .= ". Payment is due.";
                 }
             }
