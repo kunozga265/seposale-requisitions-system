@@ -51,9 +51,9 @@ class Client extends Model
 
     public function getName()
     {
-        if($this->organisation != null && $this->alias != null){
+        if ($this->organisation != null && $this->alias != null) {
             return "{$this->alias} ({$this->name})";
-        }else{
+        } else {
             return $this->name;
         }
     }
@@ -70,6 +70,11 @@ class Client extends Model
             "organisation" => $this->organisation,
             "alias" => $this->alias
         ];
+    }
+
+    public function hasAnyRole($roles)
+    {
+        return true;
     }
 
     protected $fillable = [
