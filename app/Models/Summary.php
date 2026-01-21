@@ -36,6 +36,8 @@ class Summary extends Model
                 if ($this->getPaymentStatus() != 2) {
                     $message .= ". Payment is due.";
                 }
+            } else if ($this->siteSaleSummary != null) {
+                $message = $this->siteSaleSummary->statusMessage;
             }
             return $message;
         }
