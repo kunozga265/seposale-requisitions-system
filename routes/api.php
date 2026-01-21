@@ -424,15 +424,68 @@ Route::group(['prefix' => '1.0.0'], function () {
 
             Route::get('/', [
                 "uses"  => "App\Http\Controllers\WhatsappMessageController@index",
-                'roles' => ['administrator', 'management','employee']
+                'roles' => ['administrator', 'management', 'employee']
             ]);
         });
     });
 
 
     Route::group(["middleware" => ["auth:sanctum"]], function () {
-        Route::get('/clients/portal/{serial}', [
-            "uses" => "App\Http\Controllers\API\ClientController@portalInfo",
-        ]);
+        Route::group(['prefix' => 'portal'], function () {
+
+            Route::get('/dashboard/{serial}', [
+                "uses" => "App\Http\Controllers\API\ClientController@portalInfo",
+            ]);
+
+            // Sales
+            Route::get('/{client_serial}/sales', [
+                "uses" => "App\Http\Controllers\API\PortalController@sales",
+            ]);
+            Route::get('/{client_serial}/sales/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@getSale",
+            ]);
+
+            // Receipts
+            Route::get('/{client_serial}/receipts', [
+                "uses" => "App\Http\Controllers\API\PortalController@receipts",
+            ]);
+            Route::get('/{client_serial}/receipts/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@getReceipt",
+            ]);
+
+            // Quotations
+            Route::get('/{client_serial}/quotations/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@quotations",
+            ]);
+            Route::get('/{client_serial}/quotations/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@getQuotation",
+            ]);
+
+            // Invoices
+            Route::get('/{client_serial}/invoices/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@invoices",
+            ]);
+            Route::get('/{client_serial}/invoices/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@getInvoice",
+            ]);
+
+            // Collections
+            Route::get('/{client_serial}/collections/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@collections",
+            ]);
+            Route::get('/{client_serial}/collections/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@getCollection",
+            ]);
+
+            // Delivery Notes
+            Route::get('/{client_serial}/delivery-notes/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@deliveryNotes",
+            ]);
+            Route::get('/{client_serial}/delivery-notes/{serial}', [
+                "uses" => "App\Http\Controllers\API\PortalController@getDeliveryNote",
+            ]);
+
+
+        });
     });
 });
