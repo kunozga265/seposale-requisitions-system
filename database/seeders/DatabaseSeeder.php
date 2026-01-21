@@ -145,5 +145,10 @@ class DatabaseSeeder extends Seeder
 
         //     }
         // }
+
+        // $deliveries = Delivery::where('status',0)->where('due_date',null)->get();
+        // foreach($deliveries as $d){
+        //     $d->delete();
+        // }
     }
 }
