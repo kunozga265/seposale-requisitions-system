@@ -37,7 +37,8 @@ class SiteSaleSummaryResource extends JsonResource
             "trashed" => $this->deleted_at != null,
             'date' => intval($this->sale->date),
             "sale" => [
-                "id" => $this->sale->id,
+                "id" => intval($this->sale->id),
+                "serial" => $this->sale->serial,
                 "code" => (new AppController())->getZeroedNumber($this->sale->code),
                 'client' => $this->sale->client,
                 'date' => intval($this->sale->date),
