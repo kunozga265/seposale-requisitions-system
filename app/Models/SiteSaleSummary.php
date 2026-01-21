@@ -30,9 +30,9 @@ class SiteSaleSummary extends Model
             if ($this->delivery != null) {
 
                 if ($this->delivery->quantity_delivered == $this->quantity) {
-                    $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location . ".";
-                } else {
                     $message =   "Delivered.";
+                } else {
+                    $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location . ".";
                 }
 
                 if ($this->getPaymentStatus() != 2) {
