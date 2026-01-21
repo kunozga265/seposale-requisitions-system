@@ -427,15 +427,15 @@ class SaleController extends Controller
                         "units" => $product->units,
                     ]);
 
-                    if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
-                        Delivery::create([
-                            'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
-                            "status" => 0,
-                            "quantity_delivered" => 0,
-                            "summary_id" => $summary->id,
-                            "tracking_number" => uniqid()
-                        ]);
-                    }
+                    // if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
+                    //     Delivery::create([
+                    //         'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
+                    //         "status" => 0,
+                    //         "quantity_delivered" => 0,
+                    //         "summary_id" => $summary->id,
+                    //         "tracking_number" => uniqid()
+                    //     ]);
+                    // }
                 }
 
                 $quotation->update([
