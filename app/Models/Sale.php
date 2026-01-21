@@ -116,7 +116,7 @@ public function deliveryNotes()
     {
         return \App\Models\Collection::whereIn(
             'site_sale_summary_id',
-            $this->summaries()
+            $this->products()
                 ->whereNotNull('site_sale_summary_id')
                 ->pluck('site_sale_summary_id')
         );
