@@ -92,11 +92,15 @@ class PortalController extends Controller
         if ($client instanceof JsonResponse) return $client;
 
         if ($client->sales()->where('serial', $serial)->exists()) {
+
             $sale = $client->sales()->where('serial', $serial)->first();
             return response()->json(new SaleResource($sale));
+
         } else if ($client->siteSales()->where('serial', $serial)->exists()) {
-            $sale = $client->sales()->where('serial', $serial)->first();
+            
+            $sale = $client->siteSales()->where('serial', $serial)->first();
             return response()->json(new SiteSaleResource($sale));
+            
         } else {
             return response()->json(['message' => 'Sale not found'], 404);
         }
