@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\AppController;
 use App\Http\Resources\{
     SaleResource,
+    SiteSaleResource,
     QuotationResource,
     InvoiceResource,
     ReceiptResource,
@@ -39,8 +40,8 @@ class PortalController extends Controller
             ],
             $key => $resource::collection(
                 $query->orderBy('date', 'desc')
-                      ->take((new AppController())->paginate)
-                      ->get()
+                    ->take((new AppController())->paginate)
+                    ->get()
             ),
         ]);
     }
@@ -64,11 +65,25 @@ class PortalController extends Controller
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
 
-        return $this->listResponse(
-            $client->sales(),
-            SaleResource::class,
-            'sales'
-        );
+        $all = [];
+
+        foreach ($client->sales as $sale) {
+            $all[] = new SaleResource($sale);
+        }
+        foreach ($client->siteSales as $sale) {
+            $all[] = new SiteSaleResource($sale);
+        }
+
+        usort($all, function ($a, $b) {
+            if ($a['date'] < $b['date']) {
+                return 1;
+            } elseif ($a['date'] > $b['date']) {
+                return -1;
+            }
+            return 0;
+        });
+
+        return response()->json($all);
     }
 
     public function getSale($client_serial, $serial)

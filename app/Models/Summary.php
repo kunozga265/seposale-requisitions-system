@@ -18,6 +18,27 @@ class Summary extends Model
 
             return $this->formattedUnits($this->quantity);
         }
+        if ($name === 'name') {
+
+            return $this->description;
+        }
+        if ($name === 'quantified') {
+
+            return $this->formattedUnits($this->quantity);
+        }
+        if ($name === 'statusMessage') {
+
+            $message = null;
+            if ($this->delivery != null) {
+
+                $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location;
+
+                if ($this->getPaymentStatus != 2) {
+                    $message .= ". Payment is due.";
+                }
+            }
+            return $message;
+        }
 
         // It's important to call the parent __get() method
         // to allow other properties to be accessed normally.

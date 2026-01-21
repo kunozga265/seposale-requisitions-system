@@ -11,6 +11,48 @@ class SiteSaleSummary extends Model
     use HasFactory;
     use SoftDeletes;
 
+
+    public function __get($name)
+    {
+
+        if ($name === 'name') {
+
+            return $this->inventory->name;
+        }
+        if ($name === 'quantified') {
+
+            return $this->formattedUnits($this->quantity);
+        }
+
+        if ($name === 'statusMessage') {
+
+            $message = null;
+            if ($this->delivery != null) {
+
+                $message =   "Awaiting to deliver " . $this->formattedUnits($this->quantity - $this->delivery->quantity_delivered) . " at " . $this->delivery->location . ".";
+
+                if ($this->getPaymentStatus != 2) {
+                    $message .= " Payment is due.";
+                }
+            } else if ($this->collected != $this->quantity) {
+
+                $message = "Awaiting collection of " . $this->formattedUnits($this->quantity - $this->collected) . " at " . $this->site->name . ".";
+
+                if ($this->getPaymentStatus != 2) {
+                    $message .= " Payment is due.";
+                }
+            } else {
+                $message = "Payment is due.";
+            }
+            return $message;
+        }
+
+
+
+
+        return parent::__get($name);
+    }
+
     public function inventory()
     {
         return $this->belongsTo(Inventory::class);
