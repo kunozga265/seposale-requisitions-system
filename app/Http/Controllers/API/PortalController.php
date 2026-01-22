@@ -64,6 +64,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+        $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         $all = [];
 
@@ -95,6 +96,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+        $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         if ($client->sales()->where('serial', $serial)->exists()) {
 
@@ -116,6 +118,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->listResponse(
             $client->quotations(),
@@ -128,6 +131,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->singleResponse(
             $client->quotations()->where('serial', $serial),
@@ -143,6 +147,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->listResponse(
             $client->invoices(),
@@ -155,6 +160,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->singleResponse(
             $client->invoices()->where('serial', $serial),
@@ -170,6 +176,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->listResponse(
             $client->receipts(),
@@ -182,6 +189,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->singleResponse(
             $client->receipts()->where('serial', $serial),
@@ -197,6 +205,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->listResponse(
             $client->collections(),
@@ -209,6 +218,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->singleResponse(
             $client->collections()->where('serial', $serial),
@@ -224,6 +234,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->listResponse(
             $client->deliveryNotes(),
@@ -236,6 +247,7 @@ class PortalController extends Controller
     {
         $client = $this->clientOrFail($client_serial);
         if ($client instanceof JsonResponse) return $client;
+          $client = Client::where('serial','U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->singleResponse(
             $client->deliveryNotes()->where('serial', $serial),
