@@ -40,7 +40,7 @@ class PortalController extends Controller
             ],
             $key => $resource::collection(
                 $query->orderBy('date', 'desc')
-                    ->take((new AppController())->paginate)
+                    // ->take((new AppController())->paginate)
                     ->get()
             ),
         ]);
@@ -100,7 +100,7 @@ class PortalController extends Controller
             
             $sale = $client->siteSales()->where('serial', $serial)->first();
             return response()->json(new SiteSaleResource($sale));
-            
+
         } else {
             return response()->json(['message' => 'Sale not found'], 404);
         }
