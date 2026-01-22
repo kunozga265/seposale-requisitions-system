@@ -38,7 +38,7 @@ class PortalController extends Controller
             'stats' => [
                 'count' => $query->count(),
             ],
-            $key => $resource::collection(
+            'data' => $resource::collection(
                 $query->orderBy('date', 'desc')
                     // ->take((new AppController())->paginate)
                     ->get()
@@ -83,7 +83,12 @@ class PortalController extends Controller
             return 0;
         });
 
-        return response()->json($all);
+        return response()->json([
+            'stats' => [
+                'count' => count($all)
+            ],
+            'data' => $all
+        ]);
     }
 
     public function getSale($client_serial, $serial)
@@ -95,12 +100,10 @@ class PortalController extends Controller
 
             $sale = $client->sales()->where('serial', $serial)->first();
             return response()->json(new SaleResource($sale));
-
         } else if ($client->siteSales()->where('serial', $serial)->exists()) {
-            
+
             $sale = $client->siteSales()->where('serial', $serial)->first();
             return response()->json(new SiteSaleResource($sale));
-
         } else {
             return response()->json(['message' => 'Sale not found'], 404);
         }
