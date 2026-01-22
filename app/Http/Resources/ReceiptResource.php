@@ -24,6 +24,7 @@ class ReceiptResource extends JsonResource
             "amount"                => floatval($this->amount),
             "client"                => $this->client,
             "reference"             => $this->reference,
+            "listOfProducts"        => $this->listOfProducts(),
             // "information"           => $this->information(),
             "summaries"             => ReceiptSummaryResource::collection($this->summaries), 
             'generatedBy'           => new UserResource($this->user),
