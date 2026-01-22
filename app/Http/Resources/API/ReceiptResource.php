@@ -24,16 +24,18 @@ class ReceiptResource extends JsonResource
             "amount"                => floatval($this->amount),
             "client"                => $this->client,
             "reference"             => $this->reference,
+            "listOfProducts"        => $this->listOfProducts(),
             // "information"           => $this->information(),
-            "summaries"             => ReceiptSummaryResource::collection($this->summaries), 
+            "summaries"             => ReceiptSummaryResource::collection($this->summaries),
             'generatedBy'           => new UserResource($this->user),
             'sale'                  => $this->sale != null ? [
                 "id" => $this->sale->id,
+                "serial" => $this->sale->serial,
                 "code" => (new AppController())->getZeroedNumber($this->sale->code_alt),
             ] : null,
-           'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) == 1 : false ,
-            'transaction'           => $this->transaction != null ? true : false ,
-            'record'           => $this->record != null ? true : false ,
+            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) == 1 : false,
+            'transaction'           => $this->transaction != null ? true : false,
+            'record'           => $this->record != null ? true : false,
         ];
     }
 }
