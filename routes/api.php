@@ -454,7 +454,7 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
 
             // Quotations
-            Route::get('/{client_serial}/quotations/{serial}', [
+            Route::get('/{client_serial}/quotations', [
                 "uses" => "App\Http\Controllers\API\PortalController@quotations",
             ]);
             Route::get('/{client_serial}/quotations/{serial}', [
@@ -462,7 +462,7 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
 
             // Invoices
-            Route::get('/{client_serial}/invoices/{serial}', [
+            Route::get('/{client_serial}/invoices', [
                 "uses" => "App\Http\Controllers\API\PortalController@invoices",
             ]);
             Route::get('/{client_serial}/invoices/{serial}', [
@@ -470,7 +470,7 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
 
             // Collections
-            Route::get('/{client_serial}/collections/{serial}', [
+            Route::get('/{client_serial}/collections', [
                 "uses" => "App\Http\Controllers\API\PortalController@collections",
             ]);
             Route::get('/{client_serial}/collections/{serial}', [
@@ -478,7 +478,7 @@ Route::group(['prefix' => '1.0.0'], function () {
             ]);
 
             // Delivery Notes
-            Route::get('/{client_serial}/delivery-notes/{serial}', [
+            Route::get('/{client_serial}/delivery-notes', [
                 "uses" => "App\Http\Controllers\API\PortalController@deliveryNotes",
             ]);
             Route::get('/{client_serial}/delivery-notes/{serial}', [
