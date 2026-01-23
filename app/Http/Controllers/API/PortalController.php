@@ -9,10 +9,11 @@ use App\Http\Resources\{
     SiteSaleResource,
     QuotationResource,
     InvoiceResource,
-    ReceiptResource,
+    // ReceiptResource,
     CollectionResource,
     DeliveryNoteResource
 };
+use App\Http\Resources\API\ReceiptResource;
 use App\Models\Client;
 use Illuminate\Http\JsonResponse;
 
