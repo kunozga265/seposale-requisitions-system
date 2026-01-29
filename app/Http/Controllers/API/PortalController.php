@@ -15,6 +15,7 @@ use App\Http\Resources\{
 };
 use App\Http\Resources\API\ReceiptResource;
 use App\Models\Client;
+use App\Models\DeliveryNote;
 use Illuminate\Http\JsonResponse;
 
 class PortalController extends Controller
@@ -252,7 +253,9 @@ class PortalController extends Controller
         $client = Client::where('serial', 'U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->listResponse(
-            $client->deliveryNotes(),
+             DeliveryNote::whereHas('delivery.summary.sale', function ($query) use ($client) {
+                $query->where('client_id', $client->id);
+            }),
             DeliveryNoteResource::class,
             'delivery_notes'
         );
@@ -265,7 +268,10 @@ class PortalController extends Controller
         $client = Client::where('serial', 'U5AELFBCZBO0BSMFEHAE')->first();
 
         return $this->singleResponse(
-            $client->deliveryNotes()->where('serial', $serial),
+             DeliveryNote::whereHas('delivery.summary.sale', function ($query) use ($client) {
+                $query->where('client_id', $client->id);
+            })->where('id', operator: $serial),
+            // $client->deliveryNotes()->where('serial', $serial),
             DeliveryNoteResource::class,
             'Delivery note not found'
         );
