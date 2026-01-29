@@ -121,11 +121,18 @@ class PortalController extends Controller
         if ($client instanceof JsonResponse) return $client;
         $client = Client::where('serial', 'U5AELFBCZBO0BSMFEHAE')->first();
 
-        return $this->listResponse(
-            $client->quotations(),
-            QuotationResource::class,
-            'quotations'
-        );
+
+        return response()->json([
+            'stats' => [
+                'count' => $client->quotations()->count(),
+            ],
+            'data' => QuotationResource::collection(
+                $client->quotations()
+                    ->latest()
+                    // ->take((new AppController())->paginate)
+                    ->get()
+            ),
+        ]);
     }
 
     public function getQuotation($client_serial, $serial)
