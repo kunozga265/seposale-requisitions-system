@@ -527,8 +527,13 @@ class SaleController extends Controller
         ]);
 
 
-        //Web Response
-        return Redirect::back()->with("success", "Sale has been transferred to {$inventory->site->name} Branch!");
+         if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale successfully transferred to {$inventory->site->name} Branch"], 200);
+            } else {
+                //Web Response
+                return Redirect::back()->with("success", "Sale has been transferred to {$inventory->site->name} Branch!");
+            }
     }
 
 
