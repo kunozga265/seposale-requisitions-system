@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
+use App\Models\Delivery;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
@@ -40,10 +41,98 @@ class ProductController extends Controller
                 return response()->json(new ProductResource($product));
             } else {
                 //                $sales = $product->sales()->paginate(100);
+
+                $unsorted = Delivery::whereHas('summary.product', function ($query) use ($product) {
+                    $query->where('id', $product->id);
+                })
+                    ->orderBy("due_date", "asc")->get();
+
+                $sorted = [];
+
+                if (!$unsorted->isEmpty()) {
+                    $currentMonth = date('F', $unsorted[0]->due_date);
+                    $currentYear = date('Y', $unsorted[0]->due_date);
+
+                    $item = 0;
+                    $index = 0;
+                    foreach ($unsorted as $object) {
+
+                        if ($item == 0) {
+                            $total = $object->summary->paid();
+                            $count = 1;
+                            $quantity = $object->quantity_delivered;
+
+
+                            $sorted[0] = [
+                                'month' => $currentMonth,
+                                'year' => $currentYear,
+                                'total' => $total,
+                                'count' => $count,
+                                'quantity' => $quantity
+                            ];
+                        } else {
+                            $month = date('F', $unsorted[$item]->due_date);
+                            $year = date('Y', $unsorted[$item]->due_date);
+
+                            if ($currentMonth === $month && $currentYear === $year) {
+
+                                $sorted[$index]['total'] += $object->summary->paid();
+                                $sorted[$index]['count'] += 1;
+                                $sorted[$index]['quantity'] += $object->quantity_delivered;;
+                            } else {
+                                $index += 1;
+                                $currentMonth = date('F', $unsorted[$item]->due_date);
+                                $currentYear = date('Y', $unsorted[$item]->due_date);
+                                $total = $object->summary->paid();
+                                $count = 1;
+                                $quantity = $object->quantity_delivered;
+
+                                $sorted[$index] = [
+                                    'month' => $currentMonth,
+                                    'year' => $currentYear,
+                                    'total' => $total,
+                                    'count' => $count,
+                                    'quantity' => $quantity
+                                ];
+                            }
+                        }
+                        $item += 1;
+                    }
+                }
+
+
+
+                $chartData = [];
+                $currentYear = "";
+                $index = -1;
+                foreach ($sorted as $object) {
+                    $year = $object["year"];
+                    if ($currentYear != $year) {
+                        $index++;
+                        $currentYear = $year;
+                        $chartData[$index] = [
+                            "year" => $currentYear,
+                            "data" => [$object]
+                        ];
+                    } else {
+                        $chartData[$index]["data"][] = $object;
+                    }
+                }
+
+                for ($i = 0; $i < count($chartData); $i++) {
+                    $chartData[$i]["data"] = array_reverse($chartData[$i]["data"]);
+                }
+
+
+
+                
+
                 //Web Response
                 return Inertia::render('Products/Show', [
                     'product' => new ProductResource($product),
                     //                    'sales' => ProductResource::collection($sales),
+                    'chartData' => $chartData,
+                    'data' => $sorted,
                 ]);
             }
         } else {

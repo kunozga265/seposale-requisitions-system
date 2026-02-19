@@ -324,7 +324,7 @@ export default {
   },
   methods: {
     navigateToProduct(id) {
-      // this.$inertia.get(this.route('products.show', {'id': id}))
+      this.$inertia.get(this.route('products.show', {'id': id}))
     },
 
     addVariant() {

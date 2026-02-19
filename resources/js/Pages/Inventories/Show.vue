@@ -839,7 +839,7 @@ export default {
                 availableStock: this.inventory.data.availableStock,
                 uncollectedStock: this.inventory.data.uncollectedStock,
                 producible: this.inventory.data.producible,
-                productId: this.inventory.data.product.id,
+                productId: this.inventory.data.product?.id,
                 batches: []
             }),
             chartOptionsApex: {
