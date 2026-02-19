@@ -59,7 +59,7 @@ class ProductController extends Controller
 
                         if ($item == 0) {
                             $total = $object->summary->paid();
-                            $count = 1;
+                            $count = $object->deliveryNotes->count() > 0 ? $object->deliveryNotes->count() : 1;
                             $quantity = $object->quantity_delivered;
 
 
@@ -77,7 +77,7 @@ class ProductController extends Controller
                             if ($currentMonth === $month && $currentYear === $year) {
 
                                 $sorted[$index]['total'] += $object->summary->paid();
-                                $sorted[$index]['count'] += 1;
+                                $sorted[$index]['count'] += $object->deliveryNotes->count() > 0 ? $object->deliveryNotes->count() : 1;
                                 $sorted[$index]['quantity'] += $object->quantity_delivered;;
                             } else {
                                 $index += 1;
