@@ -34,6 +34,11 @@ Route::group(['prefix' => '1.0.0'], function () {
         'roles' => ['accountant', 'management', 'administrator']
     ]);
 
+    Route::post('reports/generate/sales', [
+        "uses" => "App\Http\Controllers\ReportController@generateSalesReport",
+        'roles' => ['accountant', 'management', 'administrator']
+    ]);
+
     Route::post('/portal/attempt', [
         "uses" => "App\Http\Controllers\API\ClientController@portalAttempt",
     ]);

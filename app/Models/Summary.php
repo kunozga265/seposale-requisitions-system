@@ -194,5 +194,6 @@ class Summary extends Model
         "units",
         "status",
         "site_sale_summary_id",
+        "meta",
     ];
 }

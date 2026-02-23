@@ -83,33 +83,33 @@ class Sale extends Model
     }
 
     public function deliveries()
-{
-    return $this->hasManyThrough(
-        Delivery::class,
-        Summary::class,
-        'sale_id',
-        'summary_id',
-        'id',
-        'id'
-    );
-}
+    {
+        return $this->hasManyThrough(
+            Delivery::class,
+            Summary::class,
+            'sale_id',
+            'summary_id',
+            'id',
+            'id'
+        );
+    }
 
-// public function deliveryNotes()
-// {
-//     return DeliveryNote::whereHas('delivery', function ($q) {
-//         $q->whereIn('id', $this->deliveries()->pluck('id'));
-//     });
-// }
+    // public function deliveryNotes()
+    // {
+    //     return DeliveryNote::whereHas('delivery', function ($q) {
+    //         $q->whereIn('id', $this->deliveries()->pluck('id'));
+    //     });
+    // }
 
-public function deliveryNotes()
-{
-    return DeliveryNote::query()
-        ->whereHas('delivery.summary', function ($q) {
-            $q->where('sale_id', $this->id);
-        });
-}
+    public function deliveryNotes()
+    {
+        return DeliveryNote::query()
+            ->whereHas('delivery.summary', function ($q) {
+                $q->where('sale_id', $this->id);
+            });
+    }
 
- /**
+    /**
      * Get all collections related to this sale
      */
     public function collections()
@@ -141,5 +141,12 @@ public function deliveryNotes()
         "user_id",
         "whatsapp",
         "local_purchase_order",
+
+        'zone_id',
+        'client_generated',
+        'confirmed',
+        'confirmed_date',
+        'location_id',
+        'meta',
     ];
 }

@@ -20,6 +20,7 @@ class ProductVariantResource extends JsonResource
             "unit" => $this->unit,
             "quantity" => floatval($this->quantity),
             "cost" => floatval($this->cost),
+            "costOriginal" => floatval($this->cost_original),
         ];
     }
 }

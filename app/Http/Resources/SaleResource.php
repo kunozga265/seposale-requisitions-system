@@ -51,6 +51,11 @@ class SaleResource extends JsonResource
             'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) : false,
             'profit' => $this->profit(),
             "notes" => DeliveryNoteResource::collection($this->deliveryNotes()->get()),
+            'clientGenerated' => boolval($this->client_generated),
+            'confirmed' => boolval($this->confirmed),
+            'confirmedDate' => floatval($this->confirmed_date),
+            'meta' => json_decode($this->meta),
+            'zone' => new ZoneResource($this->zone),
 
         ];
     }

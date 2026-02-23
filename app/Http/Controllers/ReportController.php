@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exports\RequestsExport;
+use App\Exports\SalesExport;
 use App\Http\Resources\ProjectResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\VehicleResource;
 use App\Models\Project;
 use App\Models\Report;
+use App\Models\Sale;
 use App\Models\RequestForm;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -22,21 +24,21 @@ class ReportController extends Controller
     {
         $projects = Project::orderBy('name', 'asc')->where('verified', 1)->get();
         $vehicles = Vehicle::orderBy('vehicleRegistrationNumber', 'asc')->where('verified', 1)->get();
-        $users=User::orderBy('firstName','asc')->get();
-        return Inertia::render('Reports/Requisitions',[
+        $users = User::orderBy('firstName', 'asc')->get();
+        return Inertia::render('Reports/Requisitions', [
             'users'         =>  UserResource::collection($users),
-            'projects'=> ProjectResource::collection($projects),
-            'vehicles'=> VehicleResource::collection($vehicles),
+            'projects' => ProjectResource::collection($projects),
+            'vehicles' => VehicleResource::collection($vehicles),
         ]);
     }
 
     public function getCurrentReport()
     {
-        $month=date('F');
-        $year=date('Y');
+        $month = date('F');
+        $year = date('Y');
 
-        if(Report::where('year',$year)->where('month',$month)->exists())
-            return Report::where('year',$year)->where('month',$month)->first();
+        if (Report::where('year', $year)->where('month', $month)->exists())
+            return Report::where('year', $year)->where('month', $month)->first();
         else
             return Report::create(['year'  =>  $year, 'month' =>  $month,]);
     }
@@ -50,97 +52,90 @@ class ReportController extends Controller
              'startDate'         =>  ['required'],
              'endDate'           =>  ['required'],
          ]);*/
-/*
+        /*
         $type=$request->query("type");
         $requestType=$request->query("requestType");
         $requestStatus=$request->query("requestStatus");
         $startDate=$request->query("startDate");
         $endDate=$request->query("endDate");
         */
-        $type=$request->type;
-        $requestType=$request->requestType;
-        $requestStatus=$request->requestStatus;
-        $startDate=$request->startDate;
-        $endDate=$request->endDate;
+        $type = $request->type;
+        $requestType = $request->requestType;
+        $requestStatus = $request->requestStatus;
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
 
-        if($type == "PROJECT"){
+        if ($type == "PROJECT") {
             $project = Project::find($request->projectId);
-            if(is_object($project)){
+            if (is_object($project)) {
                 $requestForms = $project->requestForms()
-                    ->whereIn('type',$requestType)
-                    ->whereIn('approvalStatus',$requestStatus)
-//                    ->where('dateRequested','>=',$startDate)
-//                    ->where('dateRequested','<=',$endDate)
-                    ->where('approvedDate','>=',$startDate)
-                    ->where('approvedDate','<=',$endDate)
+                    ->whereIn('type', $requestType)
+                    ->whereIn('approvalStatus', $requestStatus)
+                    //                    ->where('dateRequested','>=',$startDate)
+                    //                    ->where('dateRequested','<=',$endDate)
+                    ->where('approvedDate', '>=', $startDate)
+                    ->where('approvedDate', '<=', $endDate)
                     ->get();
-
-            }else {
+            } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
                     return response()->json(['message' => "Project not found"], 404);
-                }else{
+                } else {
                     //Web Response
-                    return Redirect::back()->with('error','Project not found');
+                    return Redirect::back()->with('error', 'Project not found');
                 }
             }
-
-        }else if($type == "VEHICLE"){
+        } else if ($type == "VEHICLE") {
             $vehicle = Vehicle::find($request->vehicleId);
-            if(is_object($vehicle)){
+            if (is_object($vehicle)) {
                 $requestForms = $vehicle->requestForms()
-                    ->whereIn('type',$requestType)
-                    ->whereIn('approvalStatus',$requestStatus)
-//                    ->where('dateRequested','>=',$startDate)
-//                    ->where('dateRequested','<=',$endDate)
-                    ->where('approvedDate','>=',$startDate)
-                    ->where('approvedDate','<=',$endDate)
+                    ->whereIn('type', $requestType)
+                    ->whereIn('approvalStatus', $requestStatus)
+                    //                    ->where('dateRequested','>=',$startDate)
+                    //                    ->where('dateRequested','<=',$endDate)
+                    ->where('approvedDate', '>=', $startDate)
+                    ->where('approvedDate', '<=', $endDate)
                     ->get();
-
-            }else {
+            } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
                     return response()->json(['message' => "Vehicle not found"], 404);
-                }else{
+                } else {
                     //Web Response
-                    return Redirect::back()->with('error','Vehicle not found');
+                    return Redirect::back()->with('error', 'Vehicle not found');
                 }
             }
-
-        }else if($type == "USER"){
+        } else if ($type == "USER") {
             $user = User::find($request->userId);
-            if(is_object($user)){
+            if (is_object($user)) {
                 $requestForms = $user->requestForms()
-                    ->whereIn('type',$requestType)
-                    ->whereIn('approvalStatus',$requestStatus)
-//                    ->where('dateRequested','>=',$startDate)
-//                    ->where('dateRequested','<=',$endDate)
-                    ->where('approvedDate','>=',$startDate)
-                    ->where('approvedDate','<=',$endDate)
+                    ->whereIn('type', $requestType)
+                    ->whereIn('approvalStatus', $requestStatus)
+                    //                    ->where('dateRequested','>=',$startDate)
+                    //                    ->where('dateRequested','<=',$endDate)
+                    ->where('approvedDate', '>=', $startDate)
+                    ->where('approvedDate', '<=', $endDate)
                     ->get();
-
-            }else {
+            } else {
                 if ((new AppController())->isApi($request)) {
                     //API Response
                     return response()->json(['message' => "User not found"], 404);
-                }else{
+                } else {
                     //Web Response
-                    return Redirect::back()->with('error','User not found');
+                    return Redirect::back()->with('error', 'User not found');
                 }
             }
-
-        }else{
-            dump("Here");
-            $requestForms = RequestForm::whereIn('type',$requestType)
-                ->whereIn('approvalStatus',$requestStatus)
-                    ->where('dateRequested','>=',$startDate)
-                    ->where('dateRequested','<=',$endDate)
-//                ->where('approvedDate','>=',$startDate)
-//                ->where('approvedDate','<=',$endDate)
+        } else {
+            $requestForms = RequestForm::whereIn('type', $requestType)
+                ->whereIn('approvalStatus', $requestStatus)
+                ->where('dateRequested', '>=', $startDate)
+                ->where('dateRequested', '<=', $endDate)
+                //                ->where('approvedDate','>=',$startDate)
+                //                ->where('approvedDate','<=',$endDate)
                 ->get();
         }
 
-        $data=[];
+        $data = [];
         foreach ($requestForms as $requestForm) {
             if ($requestForm->type == "FUEL")
                 $amount = $requestForm->fuelRequestedMoney;
@@ -149,25 +144,72 @@ class ReportController extends Controller
 
             $data[] = [
                 'Code'              => $requestForm->code,
-                'Approved Date'     => date("j/m/Y",$requestForm->approvedDate),
+                'Approved Date'     => date("j/m/Y", $requestForm->approvedDate),
                 'Description'       => $requestForm->type,
                 'Amount'            => $amount,
-                'Project'           => $requestForm->project != null? $requestForm->project->name: "",
-                'Vehicle'           => $requestForm->vehicle != null? $requestForm->vehicle->vehicleRegistrationNumber: "",
+                'Project'           => $requestForm->project != null ? $requestForm->project->name : "",
+                'Vehicle'           => $requestForm->vehicle != null ? $requestForm->vehicle->vehicleRegistrationNumber : "",
                 'Status'            => $this->getApprovalStatus($requestForm->approvalStatus),
-                'Requested Date'    => date("j/m/Y",$requestForm->dateRequested),
-                'Requested By'      => $requestForm->user->firstName." ".$requestForm->user->middleName." ".$requestForm->user->lastName,
+                'Requested Date'    => date("j/m/Y", $requestForm->dateRequested),
+                'Requested By'      => $requestForm->user->firstName . " " . $requestForm->user->middleName . " " . $requestForm->user->lastName,
             ];
         }
-        $filename = "Requests-Export-".date("d-m-Y-H-i").".xlsx";
+        $filename = "Requests-Export-" . date("d-m-Y-H-i") . ".xlsx";
 
-        dd($type, $requestType, $requestStatus, $startDate, $endDate, $data, $requestForms);
+        // dd($type, $requestType, $requestStatus, $startDate, $endDate, $data, $requestForms);
 
-        return Excel::download(new RequestsExport($data),$filename);
-
+        return Excel::download(new RequestsExport($data), $filename);
     }
-    private function getApprovalStatus($status){
-        switch ($status){
+
+    public function generateSales()
+    {
+        $users = User::orderBy('firstName', 'asc')->get();
+        return Inertia::render('Reports/Sales', [
+            'users' =>  UserResource::collection($users),
+        ]);
+    }
+
+    public function generateSalesReport(Request $request)
+    {
+
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+
+
+        $sales = Sale::where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate)
+            ->get();
+
+        $data = [];
+        foreach ($sales as $sale) {
+            foreach ($sale->products as $summary) {
+
+
+                $data[] = [
+                    'Date'     => date("j/m/Y", $sale->date),
+                    'Code'              => $sale->formattedCode(),
+                    'Client Name'       => $sale->client->name,
+                    'Client Phone Number'       => strval($sale->client->phone_number),
+                    'Product'            => $summary->description,
+                    'Quantity'            => $summary->formattedUnits($summary->quantity),
+                    'Location'            => $sale->location,
+                    'Amount'            => $summary->amount,
+                    'Balance'            => $summary->balance,
+                    'Costs'            => $summary->costs(),
+                    'Profit'            => $summary->profit(),
+                    'Status'            => $summary->statusMessage,
+                ];
+            }
+        }
+        $filename = "Sales-Export-" . date("d-m-Y-H-i") . ".xlsx";
+
+        // dd($type, $requestType, $requestStatus, $startDate, $endDate, $data, $requestForms);
+
+        return Excel::download(new SalesExport($data), $filename);
+    }
+    private function getApprovalStatus($status)
+    {
+        switch ($status) {
             case 0:
                 return "Pending";
             case 2:

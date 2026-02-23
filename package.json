@@ -31,6 +31,7 @@
         "apexcharts": "^4.3.0",
         "chart.js": "^3.8.0",
         "flowbite": "^1.4.7",
+        "leaflet": "^1.9.4",
         "pdfvuer": "^2.0.1",
         "v-money": "^0.8.1",
         "vue-apexcharts": "^1.7.0",

@@ -15,10 +15,19 @@ class ProductVariant extends Model
     }
 
     protected $fillable = [
+        "name",
+        "slug",
         "product_id",
         "unit",
         "quantity",
         "cost",
+        "cost_original",
         "description",
+        'description_full',
+        'featured',
+        'transport_inclusive',
+        'specifications',
+        'product_information',
+        'about',
     ];
 }

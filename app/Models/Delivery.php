@@ -38,6 +38,11 @@ class Delivery extends Model
         return $this->belongsTo(Summary::class);
     }
 
+    public function siteSummary()
+    {
+        return $this->belongsTo(SiteSaleSummary::class);
+    }
+
     public function logs()
     {
         return $this->hasMany(SystemLog::class);

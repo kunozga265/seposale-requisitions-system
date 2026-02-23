@@ -916,6 +916,12 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['accountant', 'administrator', 'management']
             //            'roles' => ['accountant', 'management', 'administrator']
         ])->name('reports.generate');
+
+        Route::get('/generate/sales', [
+            "uses" => "App\Http\Controllers\ReportController@generateSales",
+            'roles' => ['accountant', 'administrator', 'management']
+            //            'roles' => ['accountant', 'management', 'administrator']
+        ])->name('reports.sales');
     });
 
     Route::group(['prefix' => 'statements'], function () {
@@ -1047,6 +1053,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         ])->name('suppliers.update');
 
     });
+   
 
     Route::group(['prefix' => 'settings'], function () {
 
@@ -1123,5 +1130,44 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\WhatsappMessageController@index",
             'roles' => ['administrator', 'management','sales']
         ])->name('whatsapp.index');
+    });
+
+     Route::group(['prefix' => 'zones'], function () {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\ZoneController@index",
+            'roles' => ['employee', 'management']
+        ])->name('zones.index');
+
+        Route::get('/view/{id}', [
+            "uses" => "App\Http\Controllers\ZoneController@show",
+            'roles' => ['employee', 'management']
+        ])->name('zones.show');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\ZoneController@create",
+            'roles' => ['employee', 'management']
+        ])->name('zones.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ZoneController@store",
+            'roles' => ['employee', 'management']
+        ])->name('zones.store');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\ZoneController@edit",
+            'roles' => ['employee','management']
+        ])->name('zones.edit');
+
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\ZoneController@update",
+            'roles' => ['employee','management']
+        ])->name('zones.update');
+
+        Route::post('/destroy/{id}', [
+            "uses"  => "App\Http\Controllers\ZoneController@destroy",
+            'roles' => ['employee','management']
+        ])->name('zones.delete');
+
     });
 });

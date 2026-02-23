@@ -36,7 +36,7 @@
             <!--        <primary-button>Print Invoice</primary-button>-->
             <!--      </a>-->
             <!--      </span>-->
-            <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
+            <div v-if="sale.data.confirmed" class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
                 <whatsapp template="sales_order" :serial="sale.data.serial" :sent="sale.data.whatsapp" />
 
                 <a :href="route('sales.print', { 'id': sale.data.id })" target="_blank">
@@ -52,9 +52,13 @@
 
                 <primary-button @click.native="attachPurchaseOrderDialog = true" class="ml-3">Attach LPO
                 </primary-button>
-
-
             </div>
+
+            <a v-else :href="route('sales.edit', { 'id': sale.data.id })">
+                <primary-button>Confirm</primary-button>
+            </a>
+
+
 
         </template>
 
@@ -183,7 +187,7 @@
                                     <div>{{ sale.data.code }}</div>
                                 </div>
 
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                <div v-if="sale.data.confirmed" class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Invoice Number</div>
 
                                     <div v-if="sale.data.invoice != null">
@@ -231,7 +235,12 @@
                         </div>
                         <div class="page-section-content">
 
-                            <div class="card p-0">
+                            <div class="card ">
+
+                                <div v-if="sale.data.meta?.locationData != null">
+                                    <LocationViewer class="mb-4" :locationData="sale.data.meta?.locationData" />
+                                </div>
+
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Location</div>
                                     <div>{{ sale.data.location }}</div>
@@ -244,7 +253,7 @@
                                     <div class="text-gray-600 font-semibold">Recipient Profession</div>
                                     <div>{{ sale.data.recipientProfession }}</div>
                                 </div>
-                                <div class="border-b px-4 py-3 flex justify-between text-sm">
+                                <div class=" px-4 py-3 flex justify-between text-sm">
                                     <div class="text-gray-600 font-semibold">Recipient Phone Number</div>
                                     <div>{{ sale.data.recipientPhoneNumber }}</div>
                                 </div>
@@ -252,166 +261,7 @@
                         </div>
                     </div>
 
-                    <dialog-modal v-if="selectedProduct != null" :show="updateDeliveryDialog"
-                        @close="closeUpdateDeliveryDialog">
-                        <template #title>
-                            Process Sale
-                        </template>
 
-                        <template #content>
-                            <jet-validation-errors class="mb-4" />
-                            <div v-if="selectedProduct.paymentStatus == 0 && (checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management'))"
-                                class="flex items-center mb-4">
-                                <input checked id="backdate" type="checkbox" v-model="form.waiver"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label for="backdate"
-                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Waiver</label>
-                            </div>
-
-                            <div v-if="selectedProduct.paymentStatus == 0 && !form.waiver">
-
-                                <div class="mb-4">
-                                    Product has not been paid for. Please contact the accounts department to update
-                                    payment status.
-                                </div>
-                            </div>
-
-
-                            <div v-else class="mb-4">
-                                <div class="flex items-center mb-4">
-                                    <input checked id="backdate" type="checkbox" v-model="outsource"
-                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="backdate"
-                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Outsource
-                                        Products?</label>
-                                </div>
-
-                                <div v-if="outsource">
-                                    <div class="mb-2">
-                                        Give the operations department a go ahead to deliver <span class="font-bold">{{
-                                            selectedProduct.description }}</span>?
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <label
-                                            class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300">Delivery
-                                            Date</label>
-                                        <vue-date-time-picker color="#1a56db" v-model="deliveryDate"
-                                            :min-date="minDate" />
-                                    </div>
-                                </div>
-
-                                <div v-else>
-                                    <div class="mb-2">
-                                        Select item under respective <span class="font-bold">One Stop Shop</span>
-                                    </div>
-
-                                    <table class="w-full mb-4">
-                                        <th class="text-left"></th>
-                                        <th class="text-left">Product</th>
-                                        <th class="text-left">Quantity Available</th>
-                                        <th class="text-left">Site Name</th>
-                                        <tbody>
-                                            <tr @click="form.inventoryId = inventory.id"
-                                                class="border-t-1 cursor-pointer hover:bg-gray-50"
-                                                v-for="(inventory, index) in selectedProduct.product.inventories"
-                                                :key="index">
-                                                <td class="text-left">
-
-                                                    <!-- <i v-show="form.inventoryId == inventory.id"
-                                                        class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></i> -->
-                                                    <!-- <span v-show="form.inventoryId == inventory.id"    class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">Check!</span> -->
-                                                    <input id="default-radio-1"
-                                                        :checked="form.inventoryId == inventory.id" type="checkbox"
-                                                        disabled value="deliver"
-                                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                                </td>
-
-                                                <td class="text-left">
-                                                    {{ inventory.name }}
-                                                </td>
-                                                <td class="text-left">
-                                                    {{ inventory.readyStock }}
-                                                </td>
-                                                <td class="text-left">
-                                                    {{ inventory.site.name }}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-
-                                    <div class="mb-4">
-                                        <div class="flex justify-between">
-                                            <jet-label for="amount" value="Amount" />
-                                            <div class="flex items-center mb-2 text-xs text-gray-500">
-                                                {{
-                                                    numberWithCommas((selectedProductAmount /
-                                                        selectedProduct.unitCost).toFixed(2))
-                                                }} {{ selectedProduct.units }}(s)
-                                            </div>
-                                        </div>
-                                        <money
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                            v-bind="moneyMaskOptions" v-model="selectedProductAmount" />
-
-                                    </div>
-
-                                    <div class="mb-2 md:col-span-2 text-gray-500 text-xs font-bold">Delivery Method?
-                                    </div>
-
-                                    <div class="flex items-center mb-2">
-                                        <input id="default-radio-1" type="radio" value="delivery"
-                                            v-model="form.deliveryMethod"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="default-radio-1"
-                                            class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">To
-                                            Deliver</label>
-
-                                        <input checked id="default-radio-2" type="radio" value="collection"
-                                            v-model="form.deliveryMethod"
-                                            class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="default-radio-2"
-                                            class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">Self
-                                            Collection</label>
-                                    </div>
-                                    <div v-show="form.deliveryMethod == 'delivery'" class="mb-4">
-                                        <label
-                                            class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300">Delivery
-                                            Date</label>
-                                        <vue-date-time-picker color="#1a56db" v-model="deliveryDate"
-                                            :min-date="minDate" />
-                                    </div>
-
-
-
-                                </div>
-
-                            </div>
-
-
-                        </template>
-
-                        <template #footer>
-                            <secondary-button @click.native="closeUpdateDeliveryDialog">
-                                Cancel
-                            </secondary-button>
-
-                            <primary-button v-if="selectedProduct.paymentStatus != 0 || form.waiver" class="ml-2"
-                                @click.native="updateDelivery">
-                                <svg v-show="form.processing" role="status"
-                                    class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                        fill="#E5E7EB" />
-                                    <path
-                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                        fill="currentColor" />
-                                </svg>
-                                Proceed
-                            </primary-button>
-                        </template>
-                    </dialog-modal>
 
                     <!--                        </div>-->
 
@@ -609,8 +459,178 @@
                         </div>
                     </div>
 
+                    <dialog-modal v-if="selectedProduct != null" :show="updateDeliveryDialog"
+                        @close="closeUpdateDeliveryDialog">
+                        <template #title>
+                            Process Sale
+                        </template>
 
-                    <div class="page-section md:col-span-2">
+                        <template #content>
+                            <jet-validation-errors class="mb-4" />
+                            <div v-if="selectedProduct.paymentStatus == 0 && (checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management'))"
+                                class="flex items-center mb-4">
+                                <input checked id="backdate" type="checkbox" v-model="form.waiver"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="backdate"
+                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Waiver</label>
+                            </div>
+
+                            <div v-if="selectedProduct.paymentStatus == 0 && !form.waiver">
+
+                                <div class="mb-4">
+                                    Product has not been paid for. Please contact the accounts department to update
+                                    payment status.
+                                </div>
+                            </div>
+
+
+                            <div v-else class="mb-4">
+                                <div v-if="selectedProduct.meta != null " class="py-4">
+                                    <div v-if="selectedProduct.meta?.method  == 'DELIVERY'" class="flex justify-start items-center approved">
+                                        Product is to be delivered
+                                    </div>
+                                    <div v-else-if="selectedProduct.meta?.method  == 'COLLECTION'" class="flex justify-start items-center approved">
+                                        Product is to be self collected
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center mb-4">
+                                    <input checked id="backdate" type="checkbox" v-model="outsource"
+                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="backdate"
+                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Outsource
+                                        Products?</label>
+                                </div>
+
+                                <div v-if="outsource">
+                                    <div class="mb-2">
+                                        Give the operations department a go ahead to deliver <span class="font-bold">{{
+                                            selectedProduct.description }}</span>?
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label
+                                            class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300">Delivery
+                                            Date</label>
+                                        <vue-date-time-picker color="#1a56db" v-model="deliveryDate"
+                                            :min-date="minDate" />
+                                    </div>
+                                </div>
+
+                                <div v-else>
+                                    <div class="mb-2">
+                                        Select item under respective <span class="font-bold">One Stop Shop</span>
+                                    </div>
+
+                                    <table class="w-full mb-4">
+                                        <th class="text-left"></th>
+                                        <th class="text-left">Product</th>
+                                        <th class="text-left">Quantity Available</th>
+                                        <th class="text-left">Site Name</th>
+                                        <tbody>
+                                            <tr @click="form.inventoryId = inventory.id"
+                                                class="border-t-1 cursor-pointer hover:bg-gray-50"
+                                                v-for="(inventory, index) in selectedProduct.product.inventories"
+                                                :key="index">
+                                                <td class="text-left">
+
+                                                    <!-- <i v-show="form.inventoryId == inventory.id"
+                                                        class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></i> -->
+                                                    <!-- <span v-show="form.inventoryId == inventory.id"    class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">Check!</span> -->
+                                                    <input id="default-radio-1"
+                                                        :checked="form.inventoryId == inventory.id" type="checkbox"
+                                                        disabled value="deliver"
+                                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                </td>
+
+                                                <td class="text-left">
+                                                    {{ inventory.name }}
+                                                </td>
+                                                <td class="text-left">
+                                                    {{ inventory.readyStock }}
+                                                </td>
+                                                <td class="text-left">
+                                                    {{ inventory.site.name }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div class="mb-4">
+                                        <div class="flex justify-between">
+                                            <jet-label for="amount" value="Amount" />
+                                            <div class="flex items-center mb-2 text-xs text-gray-500">
+                                                {{
+                                                    numberWithCommas((selectedProductAmount /
+                                                        selectedProduct.unitCost).toFixed(2))
+                                                }} {{ selectedProduct.units }}(s)
+                                            </div>
+                                        </div>
+                                        <money
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            v-bind="moneyMaskOptions" v-model="selectedProductAmount" />
+
+                                    </div>
+
+                                    <div class="mb-2 md:col-span-2 text-gray-500 text-xs font-bold">Delivery Method?
+                                    </div>
+
+                                    <div class="flex items-center mb-2">
+                                        <input id="default-radio-1" type="radio" value="delivery"
+                                            v-model="form.deliveryMethod"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="default-radio-1"
+                                            class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">To
+                                            Deliver</label>
+
+                                        <input checked id="default-radio-2" type="radio" value="collection"
+                                            v-model="form.deliveryMethod"
+                                            class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="default-radio-2"
+                                            class="ml-1 text-xs font-medium text-gray-900 dark:text-gray-300">Self
+                                            Collection</label>
+                                    </div>
+                                    <div v-show="form.deliveryMethod == 'delivery'" class="mb-4">
+                                        <label
+                                            class="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300">Delivery
+                                            Date</label>
+                                        <vue-date-time-picker color="#1a56db" v-model="deliveryDate"
+                                            :min-date="minDate" />
+                                    </div>
+
+
+
+                                </div>
+
+                            </div>
+
+
+                        </template>
+
+                        <template #footer>
+                            <secondary-button @click.native="closeUpdateDeliveryDialog">
+                                Cancel
+                            </secondary-button>
+
+                            <primary-button v-if="selectedProduct.paymentStatus != 0 || form.waiver" class="ml-2"
+                                @click.native="updateDelivery">
+                                <svg v-show="form.processing" role="status"
+                                    class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="#E5E7EB" />
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentColor" />
+                                </svg>
+                                Proceed
+                            </primary-button>
+                        </template>
+                    </dialog-modal>
+
+
+                    <div v-if="sale.data.confirmed" class="page-section md:col-span-2">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Receipts
@@ -670,20 +690,21 @@
                                     <div class="mb-4">
                                         <!--                                    <jet-label for="lastRefillDate" value="Backdate" />-->
                                         <div class="flex justify-between mb-2">
-                                        <div class="flex items-center mb-2">
-                                            <input checked id="backdate" type="checkbox" value=""
-                                                v-model="backdateCheck"
-                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                            <label for="backdate"
-                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
-                                        </div>
-                                        <div class="flex items-center mb-2">
-                                            <input checked id="withholding" type="checkbox" value=""
-                                                v-model="form.withholding"
-                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                            <label for="withholding"
-                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Withholding Tax</label>
-                                        </div>
+                                            <div class="flex items-center mb-2">
+                                                <input checked id="backdate" type="checkbox" value=""
+                                                    v-model="backdateCheck"
+                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                <label for="backdate"
+                                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
+                                            </div>
+                                            <div class="flex items-center mb-2">
+                                                <input checked id="withholding" type="checkbox" value=""
+                                                    v-model="form.withholding"
+                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                <label for="withholding"
+                                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Withholding
+                                                    Tax</label>
+                                            </div>
                                         </div>
                                         <vue-date-time-picker v-if="backdateCheck" color="#1a56db" v-model="date"
                                             :max-date="maxDate" />
@@ -872,7 +893,7 @@
                         </div>
                     </div>
 
-                    <div class="page-section md:col-span-2">
+                    <div v-if="sale.data.confirmed" class="page-section md:col-span-2">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Proof of Payments
@@ -1081,7 +1102,7 @@
                         </div>
                     </div>
 
-                    <div class="page-section">
+                    <div class="page-section" v-if="sale.data.generatedBy != null">
                         <div class="page-section-content">
                             <div class="card p-0">
                                 <div
@@ -1131,6 +1152,7 @@ import DeliveryStatus from "@/Components/DeliveryStatus.vue";
 import { red } from "tailwindcss/colors";
 import Whatsapp from "@/Components/Whatsapp.vue";
 import Collection from "@/Components/Collection.vue";
+import LocationViewer from '../../Components/LocationViewer.vue'
 
 
 export default {
@@ -1153,6 +1175,7 @@ export default {
         JetInput,
         Money,
         Collection,
+        LocationViewer
     },
     data() {
         return {

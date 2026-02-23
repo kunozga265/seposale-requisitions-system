@@ -1,7 +1,10 @@
 <template>
   <app-layout>
     <template #header>
-      Edit Sales Record
+      <span v-if="sale.data.confirmed">Edit Sales Order</span>
+      <span v-else>Confirm Sales Order</span>
+
+
     </template>
 
     <template #breadcrumbs>
@@ -197,7 +200,13 @@
             </div>
             <div class="page-section-content flex justify-center">
 
+
+
               <div class="card w-full sm:max-w-md md:max-w-3xl">
+                <div v-if="sale.data.meta?.locationData != null">
+                  <LocationViewer class="mb-4" :locationData="sale.data.meta?.locationData" />
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2">
                   <div class="p-2 mb-2">
                     <jet-label for="location" value="Location" />
@@ -288,6 +297,14 @@
                       </tr>
                     </tbody>
                   </table>
+
+                  <div v-if="sale.data.meta?.hasDelivery" class="py-4">
+                    <div class="flex justify-start items-center denied">
+                      Please confirm transportation cost against location
+                    </div>
+                  </div>
+
+
                   <div class="mt-2 ml-2 flex justify-start items-center">
                     <div @click="addRecord" class="flex justify-start items-center cursor">
                       <div>
@@ -359,7 +376,8 @@
             <div v-show="validation">
               <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
                 :disabled="form.processing">
-                Update
+                <span v-if="sale.data.confirmed">Update</span>
+                <span v-else>Confirm</span>
               </jet-button>
               <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
             </div>
@@ -442,6 +460,7 @@ import DialogModal from "@/Jetstream/DialogModal.vue";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 import vSelect from "vue-select"
 import "vue-select/dist/vue-select.css"
+import LocationViewer from '../../Components/LocationViewer.vue'
 
 export default {
   props: ["sale", "products", "clients", "clientTypes"],
@@ -456,6 +475,7 @@ export default {
     SecondaryButton,
     pdf,
     vSelect,
+    LocationViewer
   },
   data() {
     return {
@@ -502,6 +522,7 @@ export default {
       let productCompound = this.sale.data.products[y]
       // let name = productCompound.variant.description == null || productCompound.variant.description === "" ? productCompound.product.name : productCompound.product.name + " - " + productCompound.variant.description
       this.form.information.push({
+        "summary_id": productCompound.id,
         "id": productCompound.variantId,
         "details": productCompound.description,
         "units": productCompound.units,
@@ -593,10 +614,11 @@ export default {
                     return false
                 }
                 else*/
-      if (this.form.location.length === 0) {
+      if (!this.sale.clientGenerated && this.form.location?.length === 0) {
         this.error = "Enter site location"
         return false
       }
+
       else if (isNaN(this.totalCost)) {
         this.error = "Enter valid product and services details"
         return false

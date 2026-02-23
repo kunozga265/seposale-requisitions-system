@@ -62,7 +62,8 @@ class SaleController extends Controller
             $headline = "all";
         }
 
-        $allSales = Sale::orderBy("date", "desc")->paginate($this->paginate);
+        $allSales = Sale::where('confirmed', true)->orderBy("date", "desc")->paginate($this->paginate);
+        $awaiting_confirmation = Sale::where('client_generated', true)->where('confirmed', false)->orderBy("date", "desc")->paginate($this->paginate);
 
         $unsorted = Sale::orderBy("date", "desc")->get();
         $sorted = [];
@@ -170,6 +171,7 @@ class SaleController extends Controller
             //Web Response
             return Inertia::render('Sales/Index', [
                 'sales' => SaleResource::collection($section == "block" ? $sales : $allSales),
+                'awaitingConfirmation' => SaleResource::collection($awaiting_confirmation),
                 'headline' => $headline,
                 'section' => $section,
                 'chartData' => $chartData
@@ -527,13 +529,13 @@ class SaleController extends Controller
         ]);
 
 
-         if ((new AppController())->isApi($request)) {
-                //API Response
-                return response()->json(['message' => "Sale successfully transferred to {$inventory->site->name} Branch"], 200);
-            } else {
-                //Web Response
-                return Redirect::back()->with("success", "Sale has been transferred to {$inventory->site->name} Branch!");
-            }
+        if ((new AppController())->isApi($request)) {
+            //API Response
+            return response()->json(['message' => "Sale successfully transferred to {$inventory->site->name} Branch"], 200);
+        } else {
+            //Web Response
+            return Redirect::back()->with("success", "Sale has been transferred to {$inventory->site->name} Branch!");
+        }
     }
 
 
@@ -590,7 +592,7 @@ class SaleController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
 
         $user = (new AppController())->getAuthUser($request);
@@ -662,7 +664,6 @@ class SaleController extends Controller
             }
             Cache::lock($user->id . ':sales:update', 10)->get(function () use ($client, $request, $sale) {
 
-
                 $sale->update([
                     'client_id' => $client->id,
                     'total' => $request->total,
@@ -682,45 +683,59 @@ class SaleController extends Controller
                     "sale_id" => $sale->id,
                 ]);
 
-                //detach products
-                foreach ($sale->products as $product) {
-                    if (isset($product->delivery)) {
-                        $product->delivery->delete();
-                    }
-                    $product->delete();
-                }
-                //attach products
-                foreach ($request->products as $product) {
-                    $product_variant = ProductVariant::find($product["id"]);
-                    //                if (!is_object($product_variant)) {
-                    //                    $product_model = Product::create([
-                    //                        "name" => $product["details"],
-                    //                    ]);
-                    //
-                    //                    $product_variant = ProductVariant::create([
-                    //                        "unit" => $product["units"],
-                    //                        "quantity" => 1,
-                    //                        "cost" => $product["unitCost"],
-                    //                        "product_id" => $product_model->id
-                    //                    ]);
-                    //
-                    //                    //Logging
-                    //                    SystemLog::create([
-                    //                        "user_id" => Auth::id(),
-                    //                        "message" => "New Product ({$product_model->name}) automatically added into the system.",
-                    //                    ]);
-                    //                }
+                // 1. Get all incoming summary_ids to determine which items to keep/update
+                $incomingSummaryIds = collect($request->products)
+                    ->pluck('summary_id')
+                    ->filter()
+                    ->toArray();
 
+                // 2. Remove products that exist on the sale but are not in the incoming request
+                foreach ($sale->products as $product) {
+                    if (!in_array($product->id, $incomingSummaryIds)) {
+                        if (isset($product->delivery)) {
+                            $product->delivery->delete();
+                        }
+                        $product->delete();
+                    }
+                }
+
+                // 3. Process products (Update existing or Create new)
+                foreach ($request->products as $productData) {
+                    $product_variant = ProductVariant::find($productData["id"] ?? null);
+                    $productId = is_object($product_variant) ? $product_variant->product->id : 7;
+                    $productVariantId = is_object($product_variant) ? $product_variant->id : 0;
+
+                    // If summary_id is provided, try to update the existing record
+                    if (!empty($productData["summary_id"])) {
+                        $summary = Summary::where('id', $productData["summary_id"])
+                            ->where('sale_id', $sale->id)
+                            ->first();
+
+                        if ($summary) {
+                            $summary->update([
+                                "product_id" => $productId,
+                                "product_variant_id" => $productVariantId,
+                                "amount" => $productData["totalCost"],
+                                "balance" => $productData["totalCost"],
+                                "quantity" => $productData["quantity"],
+                                "description" => $productData["details"],
+                                "units" => $productData["units"],
+                            ]);
+                            continue; // Move to the next product in the loop
+                        }
+                    }
+
+                    // If no valid summary_id was passed, or the summary wasn't found, create a new one
                     $summary = Summary::create([
-                        "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
-                        "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
+                        "product_id" => $productId,
+                        "product_variant_id" => $productVariantId,
                         "sale_id" => $sale->id,
                         "date" => $sale->date,
-                        "amount" => $product["totalCost"],
-                        "balance" => $product["totalCost"],
-                        "quantity" => $product["quantity"],
-                        "description" => $product["details"],
-                        "units" => $product["units"],
+                        "amount" => $productData["totalCost"],
+                        "balance" => $productData["totalCost"],
+                        "quantity" => $productData["quantity"],
+                        "description" => $productData["details"],
+                        "units" => $productData["units"],
                     ]);
 
                     // if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
@@ -732,13 +747,22 @@ class SaleController extends Controller
                     //         "tracking_number" => uniqid()
                     //     ]);
                     // }
-
                 }
 
                 //Update Invoice
                 if ($sale->invoice) {
                     (new InvoiceController())->updateFromSale($sale);
                 }
+
+
+                //if client generated, confirm it
+                if ($sale->client_generated && !$sale->confirmed) {
+                    $sale->update([
+                        'confirmed' => true,
+                        'confirmed_date' => Carbon::now()->getTimestamp(),
+                    ]);
+                }
+
                 return true;
             });
 

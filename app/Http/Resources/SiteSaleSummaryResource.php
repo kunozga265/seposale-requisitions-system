@@ -32,14 +32,14 @@ class SiteSaleSummaryResource extends JsonResource
             'collected' => floatval($this->collected),
             'collectionStatus' => $this->getCollectionStatus(),
             'quantity' => floatval($this->quantity),
-            "collections" => (new SiteSaleSummaryController())->getCollections($this->collections),
+            "collections" => $this->getCollections($this->collections),
             "site" => $this->sale->site,
             "trashed" => $this->deleted_at != null,
             'date' => intval($this->sale->date),
             "sale" => [
                 "id" => intval($this->sale->id),
                 "serial" => $this->sale->serial,
-                "code" => "OSS".(new AppController())->getZeroedNumber($this->sale->code),
+                "code" => "OSS" . (new AppController())->getZeroedNumber($this->sale->code),
                 'client' => $this->sale->client,
                 'date' => intval($this->sale->date),
             ],
@@ -48,12 +48,30 @@ class SiteSaleSummaryResource extends JsonResource
                 "id" => intval($this->delivery->id),
                 "status" => intval($this->delivery->status),
                 "code" => (new AppController())->getZeroedNumber($this->delivery->code),
-                 "costs" => floatval($this->delivery->costs()),
+                "costs" => floatval($this->delivery->costs()),
             ] : null,
             "overdue" => $this->delivery != null ? $this->delivery->overdue() : false,
             'profit' => floatval($this->profit()),
             "unitCost" => floatval($this->cost()),
             'pendingPayments' => floatval($this->paidBalance() < 0 ? abs($this->paidBalance()) : 0),
         ];
+    }
+
+
+    public function getCollections($collections)
+    {
+        $array = [];
+        foreach ($collections as $collection) {
+            $by = $collection->collected_by != null ? ucwords($collection->collected_by) : " self";
+            $phone_number = $collection->collected_by_phone_number != null ? "({$collection->collected_by_phone_number})" : "";
+            $array[] = [
+                "date" => intval($collection->date),
+                "code" => $collection->code,
+                "message" => "{$collection->quantity} collected by $by $phone_number",
+                "photo" => $collection->photo,
+            ];
+        }
+
+        return $array;
     }
 }

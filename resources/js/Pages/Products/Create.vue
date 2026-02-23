@@ -45,10 +45,16 @@
                                   </div>
 
                                   <div class="p-2 mb-2">
-                                    <jet-label for="description" value="Varint Name"/>
+                                    <jet-label for="description" value="Variant Name"/>
                                     <jet-input id="description" type="text" class="block w-full"
                                                v-model="form.description" placeholder="e.g. 25 Tonnes"
                                                autocomplete="seposale-product-description"/>
+                                  </div>
+                                  <div class="p-2 mb-2">
+                                    <jet-label for="variant-name" value="Full Site Name"/>
+                                    <jet-input id="variant-name" type="text" class="block w-full"
+                                               v-model="form.variantName" placeholder="e.g. Quarry Stone 25 Tonnes Aggregate 19/20mm Premium Quality"
+                                               autocomplete="seposale-product-variant-name"/>
                                   </div>
 
                                   <div class="p-2 mb-2">
@@ -138,6 +144,7 @@ export default {
         return {
             form: this.$inertia.form({
                 name: '',
+                variantName: '',
                 description: '',
                 unit: '',
                 quantity: 1,
@@ -158,6 +165,9 @@ export default {
             }else if (this.form.description.length === 0) {
                 this.error = "Enter variant name"
                 return false
+            }else if (this.form.variantName.length === 0) {
+                this.error = "Enter full variant name"
+                return false
             }else if (this.form.cost === 0) {
                 this.error = "Enter cost "
                 return false
@@ -174,6 +184,7 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
+                    variant_name : this.form.variantName
                 }))
                 .post(this.route('products.store'))
         },

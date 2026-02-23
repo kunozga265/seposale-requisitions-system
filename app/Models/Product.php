@@ -38,6 +38,9 @@ class Product extends Model
 
     protected $fillable = [
         "name",
+        "slug",
+        "description",
+        "description_full",
         "cogs_account_id",
         "inventory_account_id",
         "revenue_account_id",

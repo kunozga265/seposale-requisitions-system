@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -125,7 +126,7 @@ class ProductController extends Controller
 
 
 
-                
+
 
                 //Web Response
                 return Inertia::render('Products/Show', [
@@ -156,6 +157,7 @@ class ProductController extends Controller
 
         $request->validate([
             'name' => ['required'],
+            'variant_name' => ['required'],
             'description' => ['required'],
             'cost' => ['required'],
         ]);
@@ -167,9 +169,12 @@ class ProductController extends Controller
 
         ProductVariant::create([
             "description" => $request->description,
+            "name" => $request->variant_name,
+            "slug" => Str::slug($request->description),
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
+            "cost_original" => $request->cost,
             "product_id" => $product->id
         ]);
 
@@ -187,15 +192,20 @@ class ProductController extends Controller
 
         $request->validate([
             'id' => ['required'],
+            'variant_name' => ['required'],
             'description' => ['required'],
             'cost' => ['required'],
+            'cost_original' => ['required'],
         ]);
 
         ProductVariant::create([
+            "name" => $request->variant_name,
             "description" => $request->description,
+            "slug" => Str::slug($request->description),
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
+            "cost_original" => $request->cost_original,
             "product_id" => $request->id
         ]);
 
@@ -216,11 +226,13 @@ class ProductController extends Controller
         $request->validate([
             'id' => ['required'],
             'cost' => ['required'],
+            'cost_original' => ['required'],
         ]);
 
         $productVariant = ProductVariant::find($request->id);
         $productVariant->update([
             "cost" => $request->cost,
+            "cost_original" => $request->cost_original,
         ]);
 
 

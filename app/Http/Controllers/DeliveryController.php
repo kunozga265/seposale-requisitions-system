@@ -18,6 +18,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -194,7 +195,7 @@ class DeliveryController extends Controller
                         return Redirect::back()->with("error", "Please enter quantity delivered");
                     }
                 } else if ($balance < $request->quantity) {
-                     if ((new AppController())->isApi($request))
+                    if ((new AppController())->isApi($request))
                         //API Response
                         return response()->json(['message' => 'Quantity is more than what is required'], 201);
                     else {
@@ -280,77 +281,47 @@ class DeliveryController extends Controller
                 ]);
 
 
-                $revenue_account = $summary->product->revenueAccount; // revenue account
-                $revenue_account_balance =  $revenue_account->balance;
-                $unearned_revenue = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
-                $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
-
-                //update accounts
-                $amount = ($request->quantity / $summary->quantity) * $summary->amount; // calculate the amount to be moved
-                $remainder = $summary->paidBalance() - $amount;
-
-
-                if ($remainder >= 0) {
-                    //Paid enough to cover the amount delivered
-                    $unearned_revenue_record = AccountingRecord::create([
-                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                        "reference" => strtoupper(""),
-                        "date" => Carbon::now()->getTimestamp(),
-                        "name" => $summary->sale->client->name,
-                        "description" => $summary->description . "({$summary->formattedUnits($request->quantity)})",
-                        "amount" => $amount,
-                        "opening_balance" => $unearned_revenue->balance,
-                        "closing_balance" => $unearned_revenue->balance - $amount,
-                        "type" => "DEBIT", // decrementing the account balance
-                        "accounting_account_id" => $unearned_revenue->id,
-                        "summary_id" => $summary->id
-                    ]);
-
-                    $unearned_revenue->update([
-                        "balance" => $unearned_revenue->balance - $amount
-                    ]);
-
-                    $revenue_account_record = AccountingRecord::create([
-                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                        "reference" => strtoupper(""),
-                        "date" => Carbon::now()->getTimestamp(),
-                        "name" => $summary->sale->client->name,
-                        "description" => $summary->description . "({$summary->formattedUnits($request->quantity)})",
-                        "amount" => $amount,
-                        "opening_balance" => $revenue_account->balance,
-                        "closing_balance" => $revenue_account->balance + $amount,
-                        "type" => "CREDIT", // incrementing the account balance
-                        "accounting_account_id" => $revenue_account->id,
-                        "accounting_record_id" => $unearned_revenue_record->id,
-                        "summary_id" => $summary->id
-                    ]);
-
-                    $revenue_account_balance += $amount;
-
-                    $unearned_revenue_record->update([
-                        "accounting_record_id" => $revenue_account_record->id,
-                    ]);
+                //record collection if exists
+                if ($summary->siteSummary != null) {
+                    Log::info("Recording collection for summary: " . $summary->siteSummary->id);
+                    (new CollectionController())->recordCollection(
+                        $request,
+                        $summary->siteSummary,
+                        $request->quantity,
+                        $request->photo,
+                        $request->recipient_name,
+                        $request->recipient_phone_number,
+                    );
                 } else {
-                    $partial_payment = $summary->paidBalance();
-                    $sale_balance = $amount - $partial_payment;
-                    if ($partial_payment > 0) {
-                        //there's some amount partially paid
+                    Log::info("No site summary found for summary: " . $summary->id);
+                    $revenue_account = $summary->product->revenueAccount; // revenue account
+                    $revenue_account_balance =  $revenue_account->balance;
+                    $unearned_revenue = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
+                    $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
+
+                    //update accounts
+                    $amount = ($request->quantity / $summary->quantity) * $summary->amount; // calculate the amount to be moved
+                    $remainder = $summary->paidBalance() - $amount;
+
+
+                    if ($remainder >= 0) {
+                        //Paid enough to cover the amount delivered
                         $unearned_revenue_record = AccountingRecord::create([
                             "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                             "reference" => strtoupper(""),
                             "date" => Carbon::now()->getTimestamp(),
                             "name" => $summary->sale->client->name,
-                            "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
-                            "amount" => $partial_payment,
+                            "description" => $summary->description . "({$summary->formattedUnits($request->quantity)})",
+                            "amount" => $amount,
                             "opening_balance" => $unearned_revenue->balance,
-                            "closing_balance" => $unearned_revenue->balance - $partial_payment,
+                            "closing_balance" => $unearned_revenue->balance - $amount,
                             "type" => "DEBIT", // decrementing the account balance
                             "accounting_account_id" => $unearned_revenue->id,
                             "summary_id" => $summary->id
                         ]);
 
                         $unearned_revenue->update([
-                            "balance" => $unearned_revenue->balance - $partial_payment
+                            "balance" => $unearned_revenue->balance - $amount
                         ]);
 
                         $revenue_account_record = AccountingRecord::create([
@@ -358,71 +329,115 @@ class DeliveryController extends Controller
                             "reference" => strtoupper(""),
                             "date" => Carbon::now()->getTimestamp(),
                             "name" => $summary->sale->client->name,
-                            "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
-                            "amount" => $partial_payment,
+                            "description" => $summary->description . "({$summary->formattedUnits($request->quantity)})",
+                            "amount" => $amount,
                             "opening_balance" => $revenue_account->balance,
-                            "closing_balance" => $revenue_account->balance + $partial_payment,
+                            "closing_balance" => $revenue_account->balance + $amount,
                             "type" => "CREDIT", // incrementing the account balance
                             "accounting_account_id" => $revenue_account->id,
                             "accounting_record_id" => $unearned_revenue_record->id,
                             "summary_id" => $summary->id
                         ]);
 
-                        $revenue_account_balance += $partial_payment;
-
-
+                        $revenue_account_balance += $amount;
 
                         $unearned_revenue_record->update([
                             "accounting_record_id" => $revenue_account_record->id,
                         ]);
+                    } else {
+                        $partial_payment = $summary->paidBalance();
+                        $sale_balance = $amount - $partial_payment;
+                        if ($partial_payment > 0) {
+                            //there's some amount partially paid
+                            $unearned_revenue_record = AccountingRecord::create([
+                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                "reference" => strtoupper(""),
+                                "date" => Carbon::now()->getTimestamp(),
+                                "name" => $summary->sale->client->name,
+                                "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
+                                "amount" => $partial_payment,
+                                "opening_balance" => $unearned_revenue->balance,
+                                "closing_balance" => $unearned_revenue->balance - $partial_payment,
+                                "type" => "DEBIT", // decrementing the account balance
+                                "accounting_account_id" => $unearned_revenue->id,
+                                "summary_id" => $summary->id
+                            ]);
+
+                            $unearned_revenue->update([
+                                "balance" => $unearned_revenue->balance - $partial_payment
+                            ]);
+
+                            $revenue_account_record = AccountingRecord::create([
+                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                "reference" => strtoupper(""),
+                                "date" => Carbon::now()->getTimestamp(),
+                                "name" => $summary->sale->client->name,
+                                "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
+                                "amount" => $partial_payment,
+                                "opening_balance" => $revenue_account->balance,
+                                "closing_balance" => $revenue_account->balance + $partial_payment,
+                                "type" => "CREDIT", // incrementing the account balance
+                                "accounting_account_id" => $revenue_account->id,
+                                "accounting_record_id" => $unearned_revenue_record->id,
+                                "summary_id" => $summary->id
+                            ]);
+
+                            $revenue_account_balance += $partial_payment;
+
+
+
+                            $unearned_revenue_record->update([
+                                "accounting_record_id" => $revenue_account_record->id,
+                            ]);
+                        }
+
+                        if ($sale_balance > 0) {
+                            //record receivables
+                            $receivables_record = AccountingRecord::create([
+                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                "reference" => strtoupper(""),
+                                "date" => Carbon::now()->getTimestamp(),
+                                "name" => $summary->sale->client->name,
+                                "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($sale_balance / ($summary->amount /$summary->quantity))})",
+                                "amount" => $sale_balance,
+                                "opening_balance" => $receivables_account->balance,
+                                "closing_balance" => $receivables_account->balance + $sale_balance,
+                                "type" => "DEBIT", // incrementing the account balance
+                                "accounting_account_id" => $receivables_account->id,
+                                "summary_id" => $summary->id
+                            ]);
+
+                            $receivables_account->update([
+                                "balance" => $receivables_account->balance + $sale_balance
+                            ]);
+
+                            $revenue_account_record = AccountingRecord::create([
+                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                "reference" => strtoupper(""),
+                                "date" => Carbon::now()->getTimestamp(),
+                                "name" => $summary->sale->client->name,
+                                "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($sale_balance / ($summary->amount /$summary->quantity))})",
+                                "amount" => $sale_balance,
+                                "opening_balance" => $revenue_account->balance,
+                                "closing_balance" => $revenue_account->balance + $sale_balance,
+                                "type" => "CREDIT", // incrementing the account balance
+                                "accounting_account_id" => $revenue_account->id,
+                                "accounting_record_id" => $receivables_record->id,
+                                "summary_id" => $summary->id
+                            ]);
+
+                            $revenue_account_balance += $sale_balance;
+
+                            $receivables_record->update([
+                                "accounting_record_id" => $revenue_account_record->id,
+                            ]);
+                        }
                     }
 
-                    if ($sale_balance > 0) {
-                        //record receivables
-                        $receivables_record = AccountingRecord::create([
-                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                            "reference" => strtoupper(""),
-                            "date" => Carbon::now()->getTimestamp(),
-                            "name" => $summary->sale->client->name,
-                            "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($sale_balance / ($summary->amount /$summary->quantity))})",
-                            "amount" => $sale_balance,
-                            "opening_balance" => $receivables_account->balance,
-                            "closing_balance" => $receivables_account->balance + $sale_balance,
-                            "type" => "DEBIT", // incrementing the account balance
-                            "accounting_account_id" => $receivables_account->id,
-                            "summary_id" => $summary->id
-                        ]);
-
-                        $receivables_account->update([
-                            "balance" => $receivables_account->balance + $sale_balance
-                        ]);
-
-                        $revenue_account_record = AccountingRecord::create([
-                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                            "reference" => strtoupper(""),
-                            "date" => Carbon::now()->getTimestamp(),
-                            "name" => $summary->sale->client->name,
-                            "description" => $summary->description . " - Partial Payment ({$summary->formattedUnits($sale_balance / ($summary->amount /$summary->quantity))})",
-                            "amount" => $sale_balance,
-                            "opening_balance" => $revenue_account->balance,
-                            "closing_balance" => $revenue_account->balance + $sale_balance,
-                            "type" => "CREDIT", // incrementing the account balance
-                            "accounting_account_id" => $revenue_account->id,
-                            "accounting_record_id" => $receivables_record->id,
-                            "summary_id" => $summary->id
-                        ]);
-
-                        $revenue_account_balance += $sale_balance;
-
-                        $receivables_record->update([
-                            "accounting_record_id" => $revenue_account_record->id,
-                        ]);
-                    }
+                    $revenue_account->update([
+                        "balance" => $revenue_account_balance
+                    ]);
                 }
-
-                $revenue_account->update([
-                    "balance" => $revenue_account_balance
-                ]);
 
                 $summary->delivery->update([
                     "status" => $balance == 0 ? 2 : 1,
@@ -458,7 +473,7 @@ class DeliveryController extends Controller
                 return Redirect::back()->with('success', 'Delivery initiated!');
             }
         } else {
-              if ((new AppController())->isApi($request))
+            if ((new AppController())->isApi($request))
                 //API Response
                 return response()->json(['message' => 'Delivery not found'], 201);
             else {
@@ -481,6 +496,11 @@ class DeliveryController extends Controller
                 $delivery->update([
                     "status" => 3
                 ]);
+
+                // //if has collection, cancel collection
+                // if ($delivery->siteSummary != null) {
+                //     (new CollectionController())->processCancellation($delivery->siteSummary);
+                // }
 
                 //Logging
                 SystemLog::create([
@@ -599,7 +619,7 @@ class DeliveryController extends Controller
         }
     }
 
-     public function getNoteCodeNumber(Delivery $delivery)
+    public function getNoteCodeNumber(Delivery $delivery)
     {
         $last = $delivery->deliveryNotes()->orderBy("code", "desc")->first();
         if (is_object($last)) {

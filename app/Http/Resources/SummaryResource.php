@@ -34,7 +34,7 @@ class SummaryResource extends JsonResource
             "date" => intval($this->date),
             'amount' => floatval($this->amount),
             'balance' => floatval($this->balance),
-            "paymentStatus" => intval((new DeliveryController)->getPaymentStatus($this->amount, $this->balance)),
+            "paymentStatus" => intval($this->getPaymentStatus($this->amount, $this->balance)),
             "quantity" => floatval($this->quantity),
             "description" => $this->description,
             "unitCost" => floatval($this->cost()),
@@ -58,6 +58,22 @@ class SummaryResource extends JsonResource
                 'date' => intval($this->sale->date),
             ],
             'profit' => floatval($this->profit()),
+            'meta' => json_decode($this->meta),
         ];
+    }
+
+    public function getPaymentStatus($amount, $balance): int
+    {
+        //        dump($balance);
+        if (isset($balance)) {
+            if ($balance == $amount) {
+                return 0;
+            } elseif ($balance > 0 && $balance < $amount) {
+                return 1;
+            } elseif ($balance == 0) {
+                return 2;
+            }
+        }
+        return 3;
     }
 }

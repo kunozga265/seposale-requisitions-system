@@ -59,6 +59,12 @@
                        v-model="form.description" placeholder="e.g. 25 Tonnes"
                        autocomplete="seposale-product-description"/>
           </div>
+          <div class="p-2 mb-2">
+            <jet-label for="variant_name" value="Full Site Name"/>
+            <jet-input id="variant_name" type="text" class="block w-full"
+                       v-model="form.variantName" placeholder="e.g. 25 Tonnes"
+                       autocomplete="seposale-product-variant_name"/>
+          </div>
 
           <div class="p-2 mb-2">
             <jet-label for="unit" value="Unit"/>
@@ -78,6 +84,12 @@
             <jet-label for="cost" value="Cost"/>
             <jet-input id="cost" type="number" step="0.01" class="block w-full"
                        v-model="form.cost"
+                       autocomplete="seposale-product-cost"/>
+          </div>
+          <div class="p-2 mb-2">
+            <jet-label for="cost" value="Original Cost"/>
+            <jet-input id="cost" type="number" step="0.01" class="block w-full"
+                       v-model="form.costOriginal"
                        autocomplete="seposale-product-cost"/>
           </div>
 
@@ -137,6 +149,14 @@
                      autocomplete="seposale-product-cost"/>
         </div>
 
+        <div class="p-2 mb-2">
+            <jet-label for="cost" value="Original Cost"/>
+            <jet-input id="cost" type="number" step="0.01" class="block w-full"
+                       v-model="variantCostOriginal"
+                       autocomplete="seposale-product-cost"/>
+          </div>
+
+
 
       </template>
 
@@ -187,7 +207,8 @@
                       <th scope="col" class="p-2 pb-0 heading-font text-left">Variant</th>
                       <th scope="col" class="p-2 pb-0 heading-font text-left">Unit</th>
                       <th scope="col" class="p-2 pb-0 heading-font text-right">Rate</th>
-                      <th scope="col" class="p-2 pb-0 heading-font text-right">Price</th>
+                      <th scope="col" class="p-2 pb-0 heading-font text-right">Discounted Price</th>
+                      <th scope="col" class="p-2 pb-0 heading-font text-right">Original Price</th>
 
 
                     </tr>
@@ -204,6 +225,7 @@
                       <td class="p-2 text-left ">{{ product.unit }}</td>
                       <td class="p-2 text-right ">{{ numberWithCommas(product.cost / product.quantity) }}</td>
                       <td class="p-2 text-right ">{{ numberWithCommas(product.cost) }}</td>
+                      <td class="p-2 text-right ">{{ numberWithCommas(product.costOriginal) }}</td>
 
                     </tr>
                     </tbody>
@@ -257,12 +279,14 @@ export default {
       priceError: "",
       variantIndex: -1,
       variantCost: 0,
+      variantCostOriginal: 0,
       form: this.$inertia.form({
         id: 0,
         description: '',
         unit: '',
         quantity: 1,
         cost: 0,
+        costOriginal: 0,
 
       }),
 
@@ -277,10 +301,12 @@ export default {
             "id": this.products.data[x].id,
             "name": this.products.data[x].name,
             "variant_id": this.products.data[x].variants[y].id,
+            "variant_name": this.products.data[x].variants[y].name,
             "description": this.products.data[x].variants[y].description,
             "unit": this.products.data[x].variants[y].unit,
             "quantity": this.products.data[x].variants[y].quantity,
             "cost": this.products.data[x].variants[y].cost,
+            "costOriginal": this.products.data[x].variants[y].costOriginal,
           })
         }
       }
@@ -293,6 +319,9 @@ export default {
         return false
       } else if (this.form.description.length === 0) {
         this.error = "Enter variant name"
+        return false
+      } else if (this.form.variantName.length === 0) {
+        this.error = "Enter full variant name"
         return false
       } else if (this.form.cost === 0) {
         this.error = "Enter cost "
@@ -317,8 +346,10 @@ export default {
     variantIndex() {
       if (this.variantIndex < 0) {
         this.variantCost = 0
+        this.variantCostOriginal = 0
       } else {
         this.variantCost = this.filteredProducts[this.variantIndex].cost
+        this.variantCostOriginal = this.filteredProducts[this.variantIndex].costOriginal
       }
     }
   },
@@ -331,6 +362,8 @@ export default {
       this.form
           .transform(data => ({
             ...data,
+            variant_name: this.form.variantName,
+            cost_original: this.form.costOriginal,
           }))
           .post(this.route('products.add-variant'), {
             onSuccess: () => this.addVariantDialog = false,
@@ -342,6 +375,7 @@ export default {
             ...data,
             id: this.filteredProducts[this.variantIndex].variant_id,
             cost: this.variantCost,
+            cost_original: this.variantCostOriginal,
           }))
           .post(this.route('products.edit-price'), {
             onSuccess: () => {

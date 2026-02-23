@@ -19,6 +19,7 @@ use App\Models\Payable;
 use App\Models\PaymentMethod;
 use App\Models\Supplier;
 use App\Models\Transporter;
+use App\Models\RequestForm;
 use App\Models\AccountingRecord;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Log;
@@ -35,11 +36,14 @@ class DatabaseSeeder extends Seeder
         //        \App\Models\Client::factory(5)->create();
 
         $this->call(RoleTableSeeder::class);
+        $this->call(ProductAppendTableSeeder::class);
+        $this->call(ProductVariantAppendTableSeeder::class);
+
         // $this->call(PositionTableSeeder::class);
         // $this->call(ProductTableSeeder::class);
 
         // $this->call(UserTableSeeder::class);
-        // $this->call(PaymentMethodTableSeeder::class);
+        $this->call(PaymentMethodTableSeeder::class);
 
         // $this->call(SummaryTableSeeder::class);
         // $this->call(RequestFormTableSeeder::class);
@@ -149,6 +153,15 @@ class DatabaseSeeder extends Seeder
         // $deliveries = Delivery::where('status',0)->where('due_date',null)->get();
         // foreach($deliveries as $d){
         //     $d->delete();
+        // }
+
+        // $request_forms = RequestForm::where('type', 'OPERATIONS')->get();
+        // foreach ($request_forms as $form) {
+        //     foreach ($form->items as $item) {
+        //         $item->update([
+        //             'unit_cost' => $item->total_cost / $item->quantity
+        //         ]);
+        //     }
         // }
     }
 }
