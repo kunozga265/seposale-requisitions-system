@@ -32,6 +32,7 @@ class RequestFormItemResource extends JsonResource
             "inventoryCode"     => $this->inventory?->inventoryAccount->code,
             "comments"          => $this->comments,
             "account"           => new AccountingAccountResource($this->account),
-        ];
+            "records"           => AccountingRecordResource::collection($this->records),
+        ]; 
     }
 }

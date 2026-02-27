@@ -37,7 +37,7 @@ class RequestFormItem extends Model
 
    public function records()
    {
-      return $this->hasMany(AccountingRecord::class);
+      return $this->hasMany(AccountingRecord::class)->withTrashed();
    }
 
    public function transporter()

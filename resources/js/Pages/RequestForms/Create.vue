@@ -105,10 +105,10 @@
                                         <tbody>
                                             <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
                                                 v-for="(info, index) in form.items" :key="index">
-                                                <th scope="row" class="px-2">
+                                                <td scope="row" class="px-2">
                                                     <i @click="removeRecord(index)"
                                                         class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor"></i>
-                                                </th>
+                                                </td>
                                                 <td scope="row"
                                                     class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                                     <jet-input type="text" class="block w-full"

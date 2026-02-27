@@ -12,7 +12,7 @@ class AccountingRecord extends Model
 
     public function alternateRecord()
     {
-        return $this->belongsTo(AccountingRecord::class, 'accounting_record_id');
+        return $this->belongsTo(AccountingRecord::class, 'accounting_record_id')->withTrashed();
     }
 
     public function accountingAccount()
@@ -52,6 +52,12 @@ class AccountingRecord extends Model
     {
         return $this->belongsTo(SiteSaleSummary::class, 'site_sale_summary_id');
     }
+
+    public function records()
+    {
+        return $this->hasMany(AccountingRecord::class);
+    }
+
 
     protected $fillable = [
         'serial',

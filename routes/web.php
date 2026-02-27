@@ -867,6 +867,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\AccountingController@updateBalance",
             'roles' => ['accountant', 'management']
         ])->name('accounts.update-balance');
+
+        Route::delete('/reverse', [
+            "uses"  => "App\Http\Controllers\AccountingRecordController@reverse",
+            'roles' => ['accountant', 'management']
+        ])->name('accounts.reverse-record');
     });
 
 

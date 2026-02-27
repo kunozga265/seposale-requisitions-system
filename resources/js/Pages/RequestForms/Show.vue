@@ -576,6 +576,9 @@
               </div>
             </div>
           </div>
+
+          <transfers v-if="records.length > 0" class="md:col-span-2" :records="records" />
+
           <div v-if="request.data.type !== 'FUEL' && request.data.quotes" class="page-section md:col-span-2">
             <div v-show="request.data.quotes.length > 0" class="page-section-header">
               <div class="page-section-title">
@@ -797,13 +800,14 @@ import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import JetLabel from "@/Jetstream/Label";
 import JetInput from "@/Jetstream/Input";
 import { Money } from "v-money";
+import Transfers from './Partials/Transfers.vue';
 
 export default {
-  props: ['request', 'expenseTypes', 
-  'accounts',
-  'transporters',
-  'suppliers',
-],
+  props: ['request', 'expenseTypes',
+    'accounts',
+    'transporters',
+    'suppliers',
+  ],
   components: {
     Money,
     AppLayout,
@@ -818,6 +822,7 @@ export default {
     JetValidationErrors,
     JetLabel,
     JetInput,
+    Transfers,
   },
   data() {
     return {
@@ -832,6 +837,7 @@ export default {
       attachmentDialog: false,
       attachmentIndex: null,
       attachmentType: '',
+      records: [],
 
       accountIndex: -1,
       denyDialog: false,
@@ -880,7 +886,20 @@ export default {
           date: null
         })
       }
+
+      for (let y in this.request.data.items[x].records) {
+        if (this.request.data.items[x].records[y].type == "CREDIT") {
+          this.records.push(this.request.data.items[x].records[y])
+        }
+      }
     }
+
+    this.records.sort((a, b) => {
+      return b.createdDate - a.createdDate
+    })
+
+
+
   },
   computed: {
     account() {
@@ -1015,7 +1034,8 @@ export default {
       }
 
       return true
-    }
+    },
+   
   },
   methods: {
     formatInformation() {
@@ -1154,6 +1174,7 @@ export default {
       else
         return "Other Cost"
     },
+    
   }
 }
 </script>

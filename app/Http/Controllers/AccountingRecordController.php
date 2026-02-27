@@ -125,4 +125,58 @@ class AccountingRecordController extends Controller
             ]);
         }
     }
+
+    public function reverse(Request $request)
+    {
+
+
+        //Validate all the important attributes
+        $request->validate([
+            'serial' => ['required'],
+
+        ]);
+
+        $record = AccountingRecord::where('serial', $request->serial)->first();
+
+        if (is_object($record)) {
+
+
+            $records = [$record, $record->alternateRecord];
+
+            $this->reverseTransactions($records, null, null);
+
+            //reverse initiation
+            if ($record->requestFormItem != null) {
+                $request_form_item = $record->requestFormItem;
+                $request_form_item_balance = $request_form_item->balance + $record->amount;
+                $request_form_item->update([
+                    "balance" => $request_form_item_balance,
+                    "status" => $request_form_item_balance == 0 ? 2 : 1 // Mark as paid if balance is zero or less
+                ]);
+
+                //update payable here
+                if ($request_form_item_balance != 0) {
+                    $request_form_item->payable?->update([
+                        "paid" => false
+                    ]);
+
+                    $request_form_item->payable?->creditVoucher?->update([
+                        "paid" => false,
+                    ]);
+
+                    $request_form_item->payable?->supplierVoucher?->update([
+                        "paid" => false,
+
+                    ]);
+                }
+            }
+
+            $record->alternateRecord->delete();
+            $record->delete();
+
+            return Redirect::back()->with('success', 'Record reversed!');
+        } else {
+            return Redirect::back()->with('error', 'Transaction not found');
+        }
+    }
 }
