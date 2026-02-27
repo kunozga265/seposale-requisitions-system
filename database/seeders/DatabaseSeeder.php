@@ -36,14 +36,15 @@ class DatabaseSeeder extends Seeder
         //        \App\Models\Client::factory(5)->create();
 
         $this->call(RoleTableSeeder::class);
-        $this->call(ProductAppendTableSeeder::class);
-        $this->call(ProductVariantAppendTableSeeder::class);
+        $this->call(SyncCollections::class);
+        // $this->call(ProductAppendTableSeeder::class);
+        // $this->call(ProductVariantAppendTableSeeder::class);
 
         // $this->call(PositionTableSeeder::class);
         // $this->call(ProductTableSeeder::class);
 
         // $this->call(UserTableSeeder::class);
-        $this->call(PaymentMethodTableSeeder::class);
+        // $this->call(PaymentMethodTableSeeder::class);
 
         // $this->call(SummaryTableSeeder::class);
         // $this->call(RequestFormTableSeeder::class);

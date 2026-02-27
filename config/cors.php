@@ -19,7 +19,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'http://seposale-pub.test', // Explicitly allow your Vue frontend
+        'https://seposale.com', 
+    ],
 
     'allowed_origins_patterns' => [],
 

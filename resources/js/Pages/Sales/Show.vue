@@ -926,10 +926,11 @@
                                         <div>
                                             <div class="name font-normal ml-3 flex justify-between">
                                                 <div>{{ pop.paymentMethod.name }}</div>
-                                                <div>Recorded By {{ pop.user.firstName }}
+                                                <div v-if="pop.user != null">Recorded By {{ pop.user.firstName }}
                                                     {{ pop.user.middleName }}
                                                     {{ pop.user.lastName }}
                                                 </div>
+                                                <div v-else>Uploaded By Client</div>
 
                                             </div>
                                         </div>

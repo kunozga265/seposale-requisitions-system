@@ -208,7 +208,7 @@ class CollectionController extends Controller
             "quantity" => $quantity,
             "balance" => $balance,
             "cost" => 0,
-            "user_id" => Auth::id(),
+            "user_id" => Auth::id() ?? $summary->sale->user->id,
             "date"  => Carbon::now()->getTimestamp(),
         ]);
 
@@ -470,7 +470,7 @@ class CollectionController extends Controller
 
         //Logging
         SystemLog::create([
-            "user_id" => Auth::id(),
+            "user_id" => Auth::id() ?? $summary->sale->user->id,
             "message" => $message,
             "collection_id" => $collection->id,
         ]);

@@ -112,6 +112,8 @@ class DeliveryController extends Controller
 
         if (is_object($summary)) {
 
+            
+
             if ($summary->delivery == null) {
                 //Validate all the important attributes
                 $request->validate([
@@ -282,11 +284,11 @@ class DeliveryController extends Controller
 
 
                 //record collection if exists
-                if ($summary->siteSummary != null) {
-                    Log::info("Recording collection for summary: " . $summary->siteSummary->id);
+                if ($summary->siteSaleSummary != null) {
+                    Log::info("Recording collection for summary: " . $summary->siteSaleSummary->id);
                     (new CollectionController())->recordCollection(
                         $request,
-                        $summary->siteSummary,
+                        $summary->siteSaleSummary,
                         $request->quantity,
                         $request->photo,
                         $request->recipient_name,
@@ -498,8 +500,8 @@ class DeliveryController extends Controller
                 ]);
 
                 // //if has collection, cancel collection
-                // if ($delivery->siteSummary != null) {
-                //     (new CollectionController())->processCancellation($delivery->siteSummary);
+                // if ($delivery->siteSaleSummary != null) {
+                //     (new CollectionController())->processCancellation($delivery->siteSaleSummary);
                 // }
 
                 //Logging

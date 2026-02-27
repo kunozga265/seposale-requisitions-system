@@ -38,7 +38,7 @@ class Delivery extends Model
         return $this->belongsTo(Summary::class);
     }
 
-    public function siteSummary()
+    public function siteSaleSummary()
     {
         return $this->belongsTo(SiteSaleSummary::class);
     }
