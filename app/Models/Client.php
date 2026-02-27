@@ -15,6 +15,10 @@ class Client extends Model
     use SoftDeletes;
     use HasApiTokens;
 
+    public function totalPayments()
+    {
+       return $this->receipts()->sum('amount');
+    }
     public function sales()
     {
         return $this->hasMany(Sale::class);

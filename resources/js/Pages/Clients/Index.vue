@@ -46,14 +46,41 @@
             <div v-else>
               <div class="card">
                 <div class="p-2 mb-2 relative ">
-                  <div class="p-2 pb-4 heading-font text-left relative">
-                    <button v-show="form.name.length > 0" @click="form.name = ''"
-                      class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
-                      <i class="mdi mdi-close"></i>
-                    </button>
-                    <jet-input id="code" type="text" class="block w-full" placeholder="Search Name..."
-                      v-model="form.name" autocomplete="seposale-filter-code" />
+                  <div class="flex">
 
+                    <div class="w-full">
+                      <!-- <jet-label for="clientType" value="Search" /> -->
+
+                      <div class="w-full p-2 pb-4 heading-font text-left relative">
+                        <button v-show="form.name.length > 0" @click="form.name = ''"
+                          class="absolute top-5 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
+                          <i class="mdi mdi-close"></i>
+                        </button>
+                        <jet-input id="code" type="text" class="block w-full" placeholder="Search Name..."
+                          v-model="form.name" autocomplete="seposale-filter-code" />
+
+                      </div>
+                    </div>
+
+                    <div style="max-width: 130px;" class="w-full p-2 pb-4 heading-font text-left relative">
+                     
+                      <select v-model="filter"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                        <!-- <option value="NONE">None</option> -->
+                        <option value="NAME">Name</option>
+                        <option value="PAYMENTS">Payments</option>
+                      </select>
+
+                    </div>
+                    <div style="max-width: 130px;" class="w-full p-2 pb-4 heading-font text-left relative">
+
+                      <select v-model="order"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                        <option value="ASC">ASC</option>
+                        <option value="DESC">DESC</option>
+                      </select>
+
+                    </div>
                   </div>
                   <table class="w-full  text-left text-gray-500 dark:text-gray-400">
                     <thead class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -84,7 +111,7 @@
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Email</th>
                         <!--                      <th scope="col" class="p-2 pb-0 heading-font text-left">Address</th>-->
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Alias</th>
-                        <!--                      <th scope="col" class="p-2 pb-0 heading-font text-left">Actions</th>-->
+                        <th scope="col" class="p-2 pb-0 heading-font text-left">Total Payments</th>
                       </tr>
 
                     </thead>
@@ -114,6 +141,8 @@
                         <td @click="navigateToClient(client.id)" class="p-2 text-left ">{{ client.email }}</td>
                         <!--                      <td class="p-2 text-left ">{{ client.address }}</td>-->
                         <td @click="navigateToClient(client.id)" class="p-2 text-left ">{{ client.alias }}</td>
+                        <td @click="navigateToClient(client.id)" class="p-2 text-left ">{{
+                          numberWithCommas(client.totalPayments) }}</td>
                         <!--                      <td   @click="navigateToClient(client.id)" class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200">-->
                         <!--                          -->
                         <!--                      </td>-->
@@ -144,6 +173,8 @@ import Pagination from "@/Components/Pagination.vue";
 import SaleStatus from "@/Components/SaleStatus.vue";
 import DeliveryStatus from "@/Components/DeliveryStatus.vue";
 import JetInput from "@/Jetstream/Input.vue";
+import JetLabel from '@/Jetstream/Label'
+
 
 export default {
   props: [
@@ -156,9 +187,12 @@ export default {
     AppLayout,
     PrimaryButton,
     SecondaryButton,
+    JetLabel,
   },
   data() {
     return {
+      filter: 'NAME',
+      order: 'ASC',
       form: this.$inertia.form({
         name: ""
       }),
@@ -179,6 +213,29 @@ export default {
           }
         })
       }
+
+      // SORT BY NAME
+      switch (this.filter) {
+        case 'PAYMENTS':
+          filtered.sort((a, b) => {
+            if (this.order == 'ASC') {
+              return a.totalPayments - b.totalPayments
+            } else {
+              return b.totalPayments - a.totalPayments
+            }
+          })
+          break
+        case 'NAME':
+          filtered.sort((a, b) => {
+            if (this.order == 'ASC') {
+              return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+            } else {
+              return b.name.localeCompare(a.name, undefined, { sensitivity: 'base' })
+            }
+          })
+          break
+      }
+
 
       return filtered
     },
@@ -205,7 +262,7 @@ export default {
       }
     },
     merge() {
-        this.$inertia.get(this.route('clients.merge', { 'ids': this.listOfClients, }))
+      this.$inertia.get(this.route('clients.merge', { 'ids': this.listOfClients, }))
       // this.form
       //   .transform(data => ({
       //     ...data,
@@ -214,12 +271,12 @@ export default {
       //   .get(this.route('clients.merge'))
     },
 
-    findMatch(val){
-      const client =  this.clients.data.find(c => c.id != val.id && c.phoneNumber === val.phoneNumber);
-      if(client){
+    findMatch(val) {
+      const client = this.clients.data.find(c => c.id != val.id && c.phoneNumber === val.phoneNumber);
+      if (client) {
         //find index of client
         const index = this.clients.data.indexOf(client);
-        return "Merge with " + client.name + " (Position: " + (index+1) + ")";
+        return "Merge with " + client.name + " (Position: " + (index + 1) + ")";
         // return "Merge with "client;
       }
       return "";
