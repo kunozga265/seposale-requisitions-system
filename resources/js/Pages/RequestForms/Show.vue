@@ -577,7 +577,7 @@
             </div>
           </div>
 
-          <transfers v-if="records.length > 0" class="md:col-span-2" :records="records" />
+          <transfers  v-if="records.length > 0 && (checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management'))" class="md:col-span-2" :records="records" />
 
           <div v-if="request.data.type !== 'FUEL' && request.data.quotes" class="page-section md:col-span-2">
             <div v-show="request.data.quotes.length > 0" class="page-section-header">
