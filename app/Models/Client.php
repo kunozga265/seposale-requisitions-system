@@ -17,7 +17,7 @@ class Client extends Model
 
     public function totalPayments()
     {
-       return $this->receipts()->sum('amount');
+        return $this->receipts()->sum('amount');
     }
     public function sales()
     {
@@ -97,6 +97,11 @@ class Client extends Model
     protected $hidden = [
         "created_at",
         "updated_at",
+        "password",
+    ];
+
+    protected $casts = [
+        'organisation' => 'boolean',
     ];
 
 
