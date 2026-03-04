@@ -17,12 +17,13 @@ class AccountingAccountResource extends JsonResource
         return [
             "id" => intval($this->id),
             "name" => $this->name,
-            "code" => $this->code,
+            "code" => strval($this->code),
             "type" => $this->type,
             "special_type" => $this->special_type,
             "balance" => floatval($this->balance),
-            "records" => AccountingRecordResource::collection($this->whenLoaded('records',$this->records()->latest()->orderBy("date","desc")->get())),
-            "group" => new AccountsGroupLiteResource($this->whenLoaded('accountsGroup',$this->accountsGroup)),
+            "records" => AccountingRecordResource::collection($this->whenLoaded('records', $this->records()->latest()->orderBy("date", "desc")->get())),
+            "group" => new AccountsGroupLiteResource($this->whenLoaded('accountsGroup', $this->accountsGroup)),
+            "inventories" => InventoryResource::collection($this->inventories),
 
         ];
     }
