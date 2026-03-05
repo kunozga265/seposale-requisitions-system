@@ -14,7 +14,7 @@
                             clip-rule="evenodd"></path>
                     </svg>
                     <a :href="route('sales.index', { section: 'tabular' })"
-                        class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                        class="link heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                         Sales
                     </a>
                     <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"

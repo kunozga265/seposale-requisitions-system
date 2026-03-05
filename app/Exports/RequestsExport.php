@@ -44,11 +44,12 @@ class RequestsExport implements FromCollection, WithHeadings, ShouldAutoSize, Wi
         // TODO: Implement headings() method.
         return[
             'Code',
+            'Type',
             'Approved Date',
             'Description',
             'Amount',
-            'Project',
-            'Vehicle',
+            // 'Project',
+            // 'Vehicle',
             'Status',
             'Requested Date',
             'Requested By',

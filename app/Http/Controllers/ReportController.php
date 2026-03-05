@@ -143,12 +143,13 @@ class ReportController extends Controller
                 $amount = $requestForm->total;
 
             $data[] = [
-                'Code'              => $requestForm->code,
+                'Code'              => $requestForm->code_alt,
+                'Type'              => $requestForm->type,
                 'Approved Date'     => date("j/m/Y", $requestForm->approvedDate),
-                'Description'       => $requestForm->type,
+                'Description'       => $requestForm->purpose,
                 'Amount'            => $amount,
-                'Project'           => $requestForm->project != null ? $requestForm->project->name : "",
-                'Vehicle'           => $requestForm->vehicle != null ? $requestForm->vehicle->vehicleRegistrationNumber : "",
+                // 'Project'           => $requestForm->project != null ? $requestForm->project->name : "",
+                // 'Vehicles'           => $requestForm->vehicle != null ? $requestForm->vehicle->vehicleRegistrationNumber : "",
                 'Status'            => $this->getApprovalStatus($requestForm->approvalStatus),
                 'Requested Date'    => date("j/m/Y", $requestForm->dateRequested),
                 'Requested By'      => $requestForm->user->firstName . " " . $requestForm->user->middleName . " " . $requestForm->user->lastName,
