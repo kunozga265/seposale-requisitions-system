@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProductsTable extends Migration
+class AddPhotoColumnToProductVariantsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class CreateProductsTable extends Migration
      */
     public function up()
     {
-        Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string("name");
-            $table->string("photo")->nullable();
-            $table->timestamps();
-            $table->timestamp('deleted_at')->nullable();
+        Schema::table('product_variants', function (Blueprint $table) {
+            $table->string('photo')->nullable();
         });
     }
 
@@ -29,6 +25,8 @@ class CreateProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::table('product_variants', function (Blueprint $table) {
+            $table->dropColumn('photo');
+        });
     }
 }

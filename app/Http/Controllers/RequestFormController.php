@@ -1639,7 +1639,7 @@ class RequestFormController extends Controller
     public function findRequestForm(Request $request, $code)
     {
         //find out if the request is valid
-        $requestForm = RequestForm::where('code', $code)->first();
+        $requestForm = RequestForm::where('code_alt', intval($code))->first();
 
         if (is_object($requestForm)) {
             if ((new AppController())->isApi($request)) {

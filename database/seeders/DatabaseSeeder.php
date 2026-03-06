@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         //        \App\Models\Client::factory(5)->create();
 
         $this->call(RoleTableSeeder::class);
-        $this->call(SyncCollections::class);
+        // $this->call(SyncCollections::class);
         // $this->call(ProductAppendTableSeeder::class);
         // $this->call(ProductVariantAppendTableSeeder::class);
 
