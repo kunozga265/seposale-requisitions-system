@@ -17,6 +17,10 @@ class CreateSavedAddressesTable extends Migration
             $table->id();
             $table->integer("client_id");
             $table->integer("zone_id")->nullable();
+            $table->string("name");
+            $table->string("recipient_name");
+            $table->string("recipient_profession");
+            $table->string("recipient_phone_number");
             $table->json("meta");
             $table->timestamps();
         });
