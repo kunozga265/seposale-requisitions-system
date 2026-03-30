@@ -896,6 +896,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\DeliveryController@cancel",
             'roles' => ['employee', 'management']
         ])->name('deliveries.cancel');
+        Route::delete('/delete/{id}', [
+            "uses"  => "App\Http\Controllers\DeliveryController@destroy",
+            'roles' => ['employee', 'management']
+        ])->name('deliveries.destroy');
 
         Route::post('/complete/{id}', [
             "uses"  => "App\Http\Controllers\DeliveryController@complete",

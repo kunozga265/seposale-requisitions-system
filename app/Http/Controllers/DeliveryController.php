@@ -524,6 +524,45 @@ class DeliveryController extends Controller
         }
     }
 
+    public function destroy(Request $request, $id)
+    {
+        $delivery = Delivery::find($id);
+
+        if (is_object($delivery)) {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                //                return response()->json(new SaleResource($delivery));
+            } else {
+
+                $sale_id = $delivery->summary->sale->id;
+
+                $transactions = AccountingRecord::where("summary_id", $delivery->summary->id)->get();
+
+                 //reverse transactions
+                (new AccountingRecordController())->reverseTransactions($transactions);
+
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "Delivery has been deleted",
+                    "delivery_id" => $delivery->id,
+                ]);
+                
+                $delivery->delete();
+
+                return Redirect::route('sales.show',['id'=>$sale_id])->with('success', 'Delivery deleted successfully');
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Delivery not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Delivery not found');
+            }
+        }
+    }
+
     public function complete(Request $request, $id)
     {
         $delivery = Delivery::find($id);
