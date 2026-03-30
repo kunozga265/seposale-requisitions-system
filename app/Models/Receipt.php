@@ -122,7 +122,6 @@ class Receipt extends Model
         return $this->belongsTo(AccountingAccount::class,"account_id","id");
     }
 
-
     protected $fillable=[
         "serial",
         "client_id",

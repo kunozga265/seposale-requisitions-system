@@ -16,6 +16,7 @@ use App\Models\Site;
 use App\Models\SiteSale;
 use App\Models\SiteSaleSummary;
 use App\Models\Summary;
+use App\Models\AccountingRecord;
 use App\Models\SystemLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -435,8 +436,26 @@ class SiteSaleController extends Controller
 
         if (is_object($sale)) {
 
+            $site_code = $sale->site->code;
+
+            //detach receipts
+            foreach ($sale->receipts as $receipt) {
+                if ($receipt->sale != null) {
+                    $receipt->update([
+                        'site_sale_id' => null
+                    ]);
+                } else {
+                    (new ReceiptController())->deleteReceipt($receipt);
+                }
+            }
+
             //detach products
             foreach ($sale->products as $product) {
+
+                foreach ($product->collections as $collection) {
+                    (new CollectionController())->deleteCollection($collection);
+                }
+
                 $product->delete();
             }
 
@@ -454,7 +473,7 @@ class SiteSaleController extends Controller
                 return response()->json(['message' => 'Sale has been deleted']);
             } else {
                 //Web Response
-                return Redirect::route('sites.inventories.show', ['code' => $sale->site->code, "id" => $sale->inventorySummary->id])->with('success', 'Sale has been deleted');
+                return Redirect::route('sites.overview', ['code' => $site_code])->with('success', 'Sale has been deleted');
             }
         } else {
             if ((new AppController())->isApi($request)) {

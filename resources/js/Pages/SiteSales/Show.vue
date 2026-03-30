@@ -55,7 +55,7 @@
         <primary-button>Edit</primary-button>
       </a>
       <danger-button v-if="sale.data.status == 1" @click.native="closeDialog = true">Close</danger-button>
-      <danger-button v-if="sale.data.editable" @click.native="deleteDialog = true">Delete</danger-button>
+      <danger-button v-if="sale.data.editable || checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'administrator')" @click.native="deleteDialog = true">Delete</danger-button>
 
     </template>
 

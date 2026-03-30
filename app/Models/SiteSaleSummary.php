@@ -74,7 +74,7 @@ class SiteSaleSummary extends Model
 
     public function sale()
     {
-        return $this->belongsTo(SiteSale::class, "site_sale_id", "id");
+        return $this->belongsTo(SiteSale::class, "site_sale_id", "id")->withTrashed();
     }
 
     public function collections()

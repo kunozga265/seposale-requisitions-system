@@ -483,6 +483,41 @@ class CollectionController extends Controller
         return $collection;
     }
 
+    public function deleteCollection($collection)
+    {
+        $quantity = $collection->quantity;
+
+        //undo batch update
+        Batch::create([
+            "date" => $collection->date,
+            "ready_date" => $collection->date,
+            "price" =>  $collection->cost / $quantity,
+            "quantity" => $quantity,
+            "accounting_balance" => $quantity,
+            "balance" =>  0,
+            "photo" => $collection->photo,
+            "comments" => $collection->comments,
+            "inventory_id" => $collection->inventory->id,
+            "user_id" => Auth::id(),
+        ]);
+
+        //summary undo
+        $collected =  $collection->siteSaleSummary->collected - $quantity;
+        $collection->siteSaleSummary->update([
+            "collected" =>   $collected
+        ]);
+
+        //inventory undo
+        $collection->inventory->update([
+            'uncollected_stock' => $collection->inventory->uncollected_stock + $quantity,
+        ]);
+
+        //reverse transactions
+        (new AccountingRecordController())->reverseTransactions($collection->records, null, $collection->id);
+
+        $collection->delete();
+    }
+
     public function trash(Request $request, $code)
     {
         $collection = Collection::where("code", $code)->first();
@@ -493,43 +528,18 @@ class CollectionController extends Controller
                 //                return response()->json(new SaleResource($summary));
             } else {
 
-                $quantity = $collection->quantity;
+                $sale_id = $collection->siteSaleSummary->sale->id;
+                $site_code = $collection->site->code;
 
-                //undo batch update
-                Batch::create([
-                    "date" => $collection->date,
-                    "ready_date" => $collection->date,
-                    "price" =>  $collection->cost / $quantity,
-                    "quantity" => $quantity,
-                    "accounting_balance" => $quantity,
-                    "balance" =>  0,
-                    "photo" => $collection->photo,
-                    "comments" => $collection->comments,
-                    "inventory_id" => $collection->inventory->id,
-                    "user_id" => Auth::id(),
-                ]);
+                $collected =  $collection->siteSaleSummary->collected - $collection->quantity;
 
-                //summary undo
-                $collected =  $collection->siteSaleSummary->collected - $quantity;
-                $collection->siteSaleSummary->update([
-                    "collected" =>   $collected
-                ]);
+                $this->deleteCollection($collection);
 
-                //inventory undo
-                $collection->inventory->update([
-                    'uncollected_stock' => $collection->inventory->uncollected_stock + $quantity,
-                ]);
 
-                //reverse transactions
-                (new AccountingRecordController())->reverseTransactions($collection->records, null, $collection->id);
 
                 //send whatsapp notification
                 $balance =  $collection->siteSaleSummary->quantity - $collected;
                 (new NotificationController())->processWhatsappMessage("collection_reversal", $collection->serial, balance: $balance);
-
-                $sale_id = $collection->siteSaleSummary->sale->id;
-                $site_code = $collection->site->code;
-                $collection->delete();
 
                 //Logging
                 SystemLog::create([

@@ -724,6 +724,42 @@ class ReceiptController extends Controller
         }
     }
 
+    public function deleteReceipt($receipt)
+    {
+        //reverse each summary balance
+        foreach ($receipt->summaries as $receipt_summary) {
+            if ($receipt_summary->summary != null) {
+                $receipt_summary->summary->update([
+                    'balance' => $receipt_summary->summary->balance + $receipt_summary->amount,
+
+                ]);
+            } else if ($receipt_summary->siteSaleSummary != null) {
+                $receipt_summary->siteSaleSummary->update([
+                    'balance' => $receipt_summary->siteSaleSummary->balance + $receipt_summary->amount,
+
+                ]);
+            }
+            //delete 
+            $receipt_summary->delete();
+        }
+
+        //reverse sale balance
+        $sale = $receipt->sale  ?? $receipt->siteSale;
+        $new_balance = $sale->balance + $receipt->amount;
+
+        $sale->update([
+            "balance" => $new_balance,
+            "editable" => false,
+            "status" => $new_balance == 0 ? 2 : 1
+        ]);
+
+        //reverse accounting transactions
+        (new AccountingRecordController())->reverseTransactions($receipt->records, null, null);
+
+        //delete receipt
+        $receipt->delete();
+    }
+
     public function destroy(Request $request, $id)
     {
         //find out if the request is valid
@@ -731,38 +767,7 @@ class ReceiptController extends Controller
 
         if (is_object($receipt)) {
 
-            //reverse each summary balance
-            foreach ($receipt->summaries as $receipt_summary) {
-                if ($receipt_summary->summary != null) {
-                    $receipt_summary->summary->update([
-                        'balance' => $receipt_summary->summary->balance + $receipt_summary->amount,
-
-                    ]);
-                } else if ($receipt_summary->siteSaleSummary != null) {
-                    $receipt_summary->siteSaleSummary->update([
-                        'balance' => $receipt_summary->siteSaleSummary->balance + $receipt_summary->amount,
-
-                    ]);
-                }
-                //delete 
-                $receipt_summary->delete();
-            }
-
-            //reverse sale balance
-            $sale = $receipt->sale  ?? $receipt->siteSale;
-            $new_balance = $sale->balance + $receipt->amount;
-
-            $sale->update([
-                "balance" => $new_balance,
-                "editable" => false,
-                "status" => $new_balance == 0 ? 2 : 1
-            ]);
-
-            //reverse accounting transactions
-            (new AccountingRecordController())->reverseTransactions($receipt->records, null, null);
-
-            //delete receipt
-            $receipt->delete();
+            $this->deleteReceipt($receipt);
 
             if ((new AppController())->isApi($request))
                 //API Response
