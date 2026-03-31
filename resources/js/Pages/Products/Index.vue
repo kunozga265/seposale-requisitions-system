@@ -1,4 +1,4 @@
-<template>
+word<template>
   <app-layout>
     <template #header>
       Products

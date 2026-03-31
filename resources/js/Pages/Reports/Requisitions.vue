@@ -154,6 +154,14 @@
                                             <input v-model="checkboxRequisition" id="REQUISITION" type="checkbox" class="text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 w-4 h-4"/>
                                             <label for="REQUISITION" class="mb-0 ml-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Requisition</label>
                                         </div>
+                                        <div class="flex items-center">
+                                            <input v-model="checkboxOperations" id="OPERATIONS" type="checkbox" class="text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 w-4 h-4"/>
+                                            <label for="OPERATIONS" class="mb-0 ml-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Operations</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input v-model="checkboxOneStop" id="INVENTORY" type="checkbox" class="text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 w-4 h-4"/>
+                                            <label for="INVENTORY" class="mb-0 ml-2 block text-sm font-medium text-gray-900 dark:text-gray-300">One Stop</label>
+                                        </div>
 <!--                                        <div class="flex items-center">-->
 <!--                                            <input v-model="checkboxVehicle" id="VEHICLE_MAINTENANCE" type="checkbox" class="text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 w-4 h-4"/>-->
 <!--                                            <label for="VEHICLE_MAINTENANCE" class="mb-0 ml-2 block text-sm font-medium text-gray-900 dark:text-gray-300">Vehicle Maintenance</label>-->
@@ -248,6 +256,8 @@
               ],
               checkboxPettyCash:true,
               checkboxRequisition:true,
+              checkboxOperations:true,
+              checkboxOneStop:true,
               checkboxVehicle:true,
               checkboxFuel:true,
               checkboxApproved:true,
@@ -261,6 +271,14 @@
                   {
                       'name': 'Petty Cash Form',
                       'value': 'PETTY_CASH'
+                  },
+                  {
+                      'name': 'Operations Request Form',
+                      'value': 'OPERATIONS'
+                  },
+                  {
+                      'name': 'One Stop Request Form',
+                      'value': 'INVENTORY'
                   },
               ],
               statusTypes:[
@@ -314,10 +332,10 @@
                     types.push("PETTY_CASH")
                 if (this.checkboxRequisition)
                     types.push("REQUISITION")
-                // if (this.checkboxVehicle)
-                //     types.push("VEHICLE_MAINTENANCE")
-                // if (this.checkboxFuel)
-                //     types.push("FUEL")
+                if (this.checkboxOperations)
+                    types.push("OPERATIONS")
+                if (this.checkboxOneStop)
+                    types.push("INVENTORY")
 
                 return types
             },
