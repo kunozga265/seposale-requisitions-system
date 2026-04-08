@@ -404,6 +404,11 @@
                 <div>Collections</div>
 
             </inertia-link>
+            <inertia-link :href="route('sites.sales', { code: site.data.code, section: 'tabular' })"
+                class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold ">
+                <div>Sales</div>
+
+            </inertia-link>
             <!-- 
             <div @click="section = 'collections'"
                 class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
@@ -616,7 +621,8 @@
                                     </thead>
                                     <tbody>
                                         <tr class="border-b dark:bg-gray-800 dark:border-gray-700 odd:bg-white even:bg-gray-50 odd:dark:bg-gray-800 even:dark:bg-gray-700"
-                                            v-for="(productCompound, index) in collectionsCompound.production" :key="index">
+                                            v-for="(productCompound, index) in collectionsCompound.production"
+                                            :key="index">
                                             <td class="">
                                                 <collection
                                                     class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"

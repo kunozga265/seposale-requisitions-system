@@ -27,6 +27,168 @@ use Inertia\Inertia;
 
 class SiteSaleController extends Controller
 {
+    private $paginate = 50;
+
+    public function index(Request $request, $code, $section)
+    {
+
+        $site = Site::where("code", $code)->first();
+        if (!is_object($site)) {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Site not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::route('dashboard')->with('error', 'Site not found');
+            }
+        }
+
+        $filter = strtolower($request->query("filter"));
+        if ($filter == "unpaid") {
+            $sales = SiteSale::where("status", 0)->orderBy("date", "desc")->paginate($this->paginate);
+            $headline = "unpaid";
+        } else if ($filter == "partially-paid") {
+            $sales = SiteSale::where("status", 1)->orderBy("date", "desc")->paginate($this->paginate);
+            $headline = "partially-paid";
+        } else if ($filter == "fully-paid") {
+            $sales = SiteSale::where("status", 2)->orderBy("date", "desc")->paginate($this->paginate);
+            $headline = "fully-paid";
+        } else if ($filter == "closed") {
+            $sales = SiteSale::where("status", 3)->orderBy("date", "desc")->paginate($this->paginate);
+            $headline = "closed";
+        } else if ($filter == "discarded") {
+            $sales = SiteSale::onlyTrashed()->paginate($this->paginate);
+            $headline = "discarded";
+        } else {
+            $sales = SiteSale::orderBy("date", "desc")->paginate($this->paginate);
+            $headline = "all";
+        }
+
+        $allSales = SiteSale::orderBy("date", "desc")->paginate($this->paginate);
+
+        $unsorted = SiteSale::orderBy("date", "desc")->get();
+        $sorted = [];
+
+        if (!$unsorted->isEmpty()) {
+            $currentMonth = date('F', $unsorted[0]->date);
+            $currentYear = date('Y', $unsorted[0]->date);
+
+            $item = 0;
+            $index = 0;
+            foreach ($unsorted as $sale) {
+
+                if ($item == 0) {
+                    $sum = 0;
+                    $unpaid = 0;
+                    $profit = 0;
+                    $costs = 0;
+                    foreach ($sale->products as $summary) {
+                        if ($summary->getCollectionStatus() > 0 || $summary->getPaymentStatus() > 0) {
+                            $sum += $summary->paid();
+                            $unpaid += $summary->pendingPayments();
+                            $profit += $summary->profit() > 0 ? $summary->profit() : 0;
+                            $costs += $summary->collectionCosts();
+                        }
+                    }
+                    $sorted[0] = [
+                        'month' => $currentMonth,
+                        'year' => $currentYear,
+                        'total' => $sum,
+                        'unpaid' => $unpaid,
+                        'profit' => $profit,
+                        'costs' => $costs
+                    ];
+                } else {
+                    $month = date('F', $unsorted[$item]->date);
+                    $year = date('Y', $unsorted[$item]->date);
+
+                    if ($currentMonth === $month && $currentYear === $year) {
+                        $sum = $sorted[$index]['total'];
+                        $profit = $sorted[$index]['profit'];
+                        $unpaid = $sorted[$index]['unpaid'];
+                        $costs = $sorted[$index]['costs'];
+                        foreach ($sale->products as $summary) {
+                            if ($summary->getCollectionStatus() > 0 || $summary->getPaymentStatus() > 0) {
+                                $sum += $summary->amount;
+                                $profit += $summary->profit() > 0 ? $summary->profit() : 0;
+                                $unpaid += $summary->pendingPayments();
+                                $costs += $summary->collectionCosts();
+                            }
+                        }
+                        $sorted[$index]['total'] = $sum;
+                        $sorted[$index]['unpaid'] = $unpaid;
+                        $sorted[$index]['profit'] = $profit;
+                        $sorted[$index]['costs'] = $costs;
+                    } else {
+                        $index += 1;
+                        $currentMonth = date('F', $unsorted[$item]->date);
+                        $currentYear = date('Y', $unsorted[$item]->date);
+
+                        $sum = 0;
+                        $unpaid = 0;
+                        $profit = 0;
+                        $costs = 0;
+
+                        foreach ($sale->products as $summary) {
+                            if ($summary->getCollectionStatus() > 0 || $summary->getPaymentStatus() > 0) {
+                                $sum += $summary->paid();
+                                $unpaid += $summary->pendingPayments();
+                                $profit += $summary->profit() > 0 ? $summary->profit() : 0;
+                                $costs += $summary->collectionCosts();
+                            }
+                        }
+
+                        $sorted[$index] = [
+                            'month' => $currentMonth,
+                            'year' => $currentYear,
+                            'total' => $sum,
+                            'unpaid' => $unpaid,
+                            'profit' => $profit,
+                            'costs' => $costs
+                        ];
+                    }
+                }
+                $item += 1;
+            }
+        }
+
+        $chartData = [];
+        $currentYear = "";
+        $index = -1;
+        foreach ($sorted as $item) {
+            $year = $item["year"];
+            if ($currentYear != $year) {
+                $index++;
+                $currentYear = $year;
+                $chartData[$index] = [
+                    "year" => $currentYear,
+                    "data" => [$item]
+                ];
+            } else {
+                $chartData[$index]["data"][] = $item;
+            }
+        }
+
+        for ($i = 0; $i < count($chartData); $i++) {
+            $chartData[$i]["data"] = array_reverse($chartData[$i]["data"]);
+        }
+
+        // dd($chartData);
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(SiteSaleResource::collection($sales));
+        else {
+            //Web Response
+            return Inertia::render('SiteSales/Index', [
+                'sales' => SiteSaleResource::collection($section == "block" ? $sales : $allSales),
+                'headline' => $headline,
+                'section' => $section,
+                'chartData' => $chartData,
+                "site" => $site,
+            ]);
+        }
+    }
 
     public function show(Request $request, $code, $id)
     {

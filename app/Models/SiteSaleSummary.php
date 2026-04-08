@@ -173,6 +173,11 @@ class SiteSaleSummary extends Model
         return $this->amount - $this->balance - $total;
     }
 
+    public function pendingPayments()
+    {
+        return floatval($this->paidBalance() < 0 ? abs($this->paidBalance()) : 0);
+    }
+
     public function collectionCosts()
     {
         $sum = 0;

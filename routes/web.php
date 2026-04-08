@@ -455,6 +455,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['employee', 'management']
         ])->name('sites.sales.create');
 
+
         Route::get('/{code}/inventories/{id}', [
             "uses"  => "App\Http\Controllers\InventoryController@show",
             'roles' => ['employee', 'management']
@@ -479,6 +480,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\InventorySummaryController@print",
             'roles' => ['employee', 'management']
         ])->name('sites.summaries.print');
+
+        Route::get('/{code}/sales/{section}', [
+            "uses"  => "App\Http\Controllers\SiteSaleController@index",
+            'roles' => ['employee', 'management']
+        ])->name('sites.sales');
 
         Route::post('/{code}/sales/store', [
             "uses"  => "App\Http\Controllers\SiteSaleController@store",
@@ -736,7 +742,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['employee', 'management']
         ])->name('credit-vouchers.show');
 
-         Route::get('/print/{id}', [
+        Route::get('/print/{id}', [
             "uses"  => "App\Http\Controllers\CreditVoucherController@print",
             'roles' => ['employee', 'management']
         ])->name('credit-vouchers.print');
@@ -754,7 +760,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['employee', 'management']
         ])->name('supplier-vouchers.show');
 
-         Route::get('/print/{id}', [
+        Route::get('/print/{id}', [
             "uses"  => "App\Http\Controllers\SupplierVoucherController@print",
             'roles' => ['employee', 'management']
         ])->name('supplier-vouchers.print');
@@ -1058,11 +1064,10 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
 
         Route::post('/update/{id}', [
             "uses"  => "App\Http\Controllers\SupplierController@update",
-            'roles' => ['employee','management']
+            'roles' => ['employee', 'management']
         ])->name('suppliers.update');
-
     });
-   
+
 
     Route::group(['prefix' => 'settings'], function () {
 
@@ -1113,7 +1118,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['administrator', 'management']
         ])->name('vacancies.store');
 
-          Route::get('/edit/{id}', [
+        Route::get('/edit/{id}', [
             "uses"  => "App\Http\Controllers\VacancyController@edit",
             'roles' => ['administrator', 'management']
         ])->name('vacancies.edit');
@@ -1137,11 +1142,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
 
         Route::get('/', [
             "uses"  => "App\Http\Controllers\WhatsappMessageController@index",
-            'roles' => ['administrator', 'management','sales']
+            'roles' => ['administrator', 'management', 'sales']
         ])->name('whatsapp.index');
     });
 
-     Route::group(['prefix' => 'zones'], function () {
+    Route::group(['prefix' => 'zones'], function () {
 
         Route::get('/', [
             "uses"  => "App\Http\Controllers\ZoneController@index",
@@ -1165,18 +1170,17 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
 
         Route::get('/edit/{id}', [
             "uses"  => "App\Http\Controllers\ZoneController@edit",
-            'roles' => ['employee','management']
+            'roles' => ['employee', 'management']
         ])->name('zones.edit');
 
         Route::post('/update/{id}', [
             "uses"  => "App\Http\Controllers\ZoneController@update",
-            'roles' => ['employee','management']
+            'roles' => ['employee', 'management']
         ])->name('zones.update');
 
         Route::post('/destroy/{id}', [
             "uses"  => "App\Http\Controllers\ZoneController@destroy",
-            'roles' => ['employee','management']
+            'roles' => ['employee', 'management']
         ])->name('zones.delete');
-
     });
 });
