@@ -66,6 +66,33 @@ class RequestForm extends Model
         return $this->hasOne(Expense::class, "request_id", "id");
     }
 
+    public function recipient()
+    {
+
+        if ($this->type != "OPERATIONS") {
+            return $this->personCollectingAdvance;
+        } else {
+            $list = "";
+
+            // $products = json_decode($this->information);
+            $items = $this->items;
+            for ($i = 0; $i < $items->count(); $i++) {
+                if ($i < ($items->count() - 1)) {
+                    if ($items[$i]->contact != null) {
+                        $list .= $items[$i]->contact->name . ", ";
+                    }
+                    continue;
+                } else {
+                    if ($items[$i]->contact != null) {
+                        $list .= $items[$i]->contact->name;
+                    }
+                }
+            }
+
+            return $list;
+        }
+    }
+
 
     public function items()
     {
@@ -112,7 +139,8 @@ class RequestForm extends Model
         return "$type #$code";
     }
 
-    public function formattedCode(){
+    public function formattedCode()
+    {
         return (new AppController())->getZeroedNumber($this->code_alt);
     }
 

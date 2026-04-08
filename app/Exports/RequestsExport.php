@@ -47,6 +47,7 @@ class RequestsExport implements FromCollection, WithHeadings, ShouldAutoSize, Wi
             'Type',
             'Approved Date',
             'Description',
+            'Recipient',
             'Amount',
             // 'Project',
             // 'Vehicle',
