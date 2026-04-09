@@ -1149,6 +1149,36 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\WhatsappMessageController@index",
             'roles' => ['administrator', 'management', 'sales']
         ])->name('whatsapp.index');
+
+        Route::get('/templates', [
+            "uses" => "App\Http\Controllers\WhatsappMessageTemplateController@index",
+            'roles' => ['employee', 'management']
+        ])->name('whatsapp.templates.index');
+
+        Route::post('/templates', [
+            "uses" => "App\Http\Controllers\WhatsappMessageTemplateController@store",
+            'roles' => ['employee', 'management']
+        ])->name('whatsapp.templates.store');
+
+        Route::get('/templates/send', [
+            "uses" => "App\Http\Controllers\WhatsappMessageTemplateController@send",
+            'roles' => ['employee', 'management']
+        ])->name('whatsapp.templates.send');
+
+        Route::post('/templates/send', [
+            "uses" => "App\Http\Controllers\WhatsappMessageTemplateController@sendMessages",
+            'roles' => ['employee', 'management']
+        ])->name('whatsapp.templates.send-message');
+
+        Route::post('/templates/{id}', [
+            "uses" => "App\Http\Controllers\WhatsappMessageTemplateController@update",
+            'roles' => ['employee', 'management']
+        ])->name('whatsapp.templates.update');
+
+        Route::delete('/templates/{id}', [
+            "uses" => "App\Http\Controllers\WhatsappMessageTemplateController@destroy",
+            'roles' => ['employee', 'management']
+        ])->name('whatsapp.templates.destroy');
     });
 
     Route::group(['prefix' => 'zones'], function () {

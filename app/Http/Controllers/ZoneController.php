@@ -162,7 +162,7 @@ class ZoneController extends Controller
                 return Redirect::route('zones.index')->with('success', 'Zone updated!');
             }
         } else {
-            return Redirect::back()->with('error', 'Quotation not found');
+            return Redirect::back()->with('error', 'Zone not found');
         }
     }
     public function destroy(Request $request, $id)
@@ -180,10 +180,10 @@ class ZoneController extends Controller
                 return response()->json(new ZoneResource($zone), 201);
             else {
                 //Web Response
-                return Redirect::route('zones.index')->with('success', 'Zone updated!');
+                return Redirect::route('zones.index')->with('success', 'Zone deleted!');
             }
         } else {
-            return Redirect::back()->with('error', 'Quotation not found');
+            return Redirect::back()->with('error', 'Zone not found');
         }
     }
 

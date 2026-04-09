@@ -15,13 +15,19 @@ use App\Models\Referral;
 
 class ClientsImport implements ToCollection, WithHeadingRow
 {
+    public $type;
     public $user_id;
     public $referred_by_id;
+    public $template;
+    public $template_file;
 
-    public function __construct($user_id, $referred_by_id)
+    public function __construct($type, $content)
     {
-        $this->user_id = $user_id;
-        $this->referred_by_id = $referred_by_id;
+        $this->type = $content["type"];
+        $this->user_id = $content["user_id"];
+        $this->referred_by_id = $content["referred_by_id"];
+        $this->template = $content["template"];
+        $this->template_file = $content["template_file"];
     }
 
 
@@ -60,12 +66,15 @@ class ClientsImport implements ToCollection, WithHeadingRow
                         'client_id' => $client->id,
                         'user_id' => $this->user_id,
                     ]);
-                    
                 } else {
                     $message = "Quality products and services are guaranteed.";
                 }
 
-                (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+                if ($this->type == "PRICELIST_SEND") {
+                    (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+                } else if ($this->type == "BATCH_SEND") {
+                    (new NotificationController())->processWhatsappTemplateMessage($this->template, $client->serial, $message, $this->template_file);
+                }
             }
         }
     }

@@ -21,6 +21,11 @@
         </template>
 
         <template #actions>
+             <inertia-link :href="route('whatsapp.templates.index')">
+                <primary-button>
+                    Templates
+                </primary-button>
+            </inertia-link>
 
 
         </template>

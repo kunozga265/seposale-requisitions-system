@@ -571,7 +571,7 @@ export default {
           return false
         }
       } else {
-       if (this.selectedClient == null) {
+        if (this.selectedClient == null) {
           this.error = "Select client"
           return false
         }
@@ -627,7 +627,7 @@ export default {
           ...data,
           total: this.totalCost,
           quotes: this.quoteFiles,
-           client_id: this.selectedClient == null ? null : this.selectedClient.id,
+          client_id: this.selectedClient == null ? null : this.selectedClient.id,
           recipient_name: this.form.recipientName,
           recipient_profession: this.form.recipientProfession,
           recipient_phone_number: this.form.recipientPhoneNumber,

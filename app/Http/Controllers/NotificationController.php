@@ -29,6 +29,7 @@ use App\Models\Sale;
 use App\Models\CreditVoucher;
 use App\Models\SupplierVoucher;
 use App\Models\RequestFormItem;
+use App\Models\WhatsappMessageTemplate;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -1719,6 +1720,77 @@ class NotificationController extends Controller
                 $data['client_id'] = $client->id;
                 $this->pushWhatsappMessage($body, $data);
 
+                break;
+
+            default:
+        }
+        return $check;
+    }
+
+    /**
+     * @param WhatsappMessageTemplate $template
+     * @param string $serial
+     * @param string $file
+     * @param string $message
+     * @return bool
+     */
+    public function processWhatsappTemplateMessage(WhatsappMessageTemplate $template, string $serial, string $message = "", $file = null): bool
+    {
+        $check = false;
+
+        switch ($template->code) {
+
+            case "introductory_01":
+                $client = \App\Models\Client::where('serial', $serial)->first();
+
+                $body = [
+                    "messaging_product" => "whatsapp",
+                    "recipient_type" => "individual",
+                    "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $client->phone_number,
+                    "type" => "template",
+                    "template" => [
+                        "name" => $template,
+                        "language" => [
+                            "code" => "en"
+                        ],
+                        "components" => [
+                            [
+                                "type" => "header",
+                                "parameters" => [
+                                    [
+                                        "type" => "document",
+                                        "document" => [
+                                            "link" => env('APP_URL') . $file,
+                                            "filename" => $template->name . date(" Y-m-d")
+                                        ]
+                                    ]
+                                ]
+                            ],
+                            [
+                                "type" => "body",
+                                "parameters" => [
+                                    [
+                                        "type" => "text",
+                                        //Transporter/Supplier Name
+                                        "text" => $client->getName()
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //site name
+                                        "text" => Carbon::now()->format('F j, Y')
+                                    ],
+                                    [
+                                        "type" => "text",
+                                        //item name
+                                        "text" => $message
+                                    ],
+                                ]
+                            ],
+                        ]
+                    ]
+                ];
+                $data = [];
+                $check = $this->pushWhatsappMessage($body, $data);
                 break;
 
             default:

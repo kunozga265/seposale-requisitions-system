@@ -373,7 +373,7 @@ class AppController extends Controller
         }
     }
 
-    private function getExtension($explodedImage)
+    public function getExtension($explodedImage)
     {
         $imageExtensionDecode = explode('/', $explodedImage[0]);
         $imageExtension = explode(';', $imageExtensionDecode[1]);

@@ -85,6 +85,22 @@ class Kernel extends ConsoleKernel
                         Storage::disk('public_uploads')->delete($file);
 
                         break;
+                    case "BATCH_SEND":
+                        Log::info("Running Job: Sending Batch Template Message");
+
+                        $content = json_decode($job->content, true);
+                        $file = $content["file"];
+
+
+                        Excel::import(new ClientsImport($job->type, $content), public_path($file));
+
+                        $job->update([
+                            'status' => 2
+                        ]);
+
+                        Storage::disk('public_uploads')->delete($file);
+
+                        break;
                     default:
                 }
             }
