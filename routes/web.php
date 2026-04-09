@@ -438,6 +438,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['employee', 'management']
         ])->name('sales.add-pop');
 
+        Route::post('/waiver/{id}', [
+            "uses"  => "App\Http\Controllers\SaleController@waiver",
+            'roles' => ['accountant', 'management']
+        ])->name('sales.waiver');
+
         Route::post('/attach-purchase-order/{id}', [
             "uses"  => "App\Http\Controllers\SaleController@attachPurchaseOrder",
             'roles' => ['employee', 'management']

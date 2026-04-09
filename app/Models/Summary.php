@@ -195,5 +195,6 @@ class Summary extends Model
         "status",
         "site_sale_summary_id",
         "meta",
+        "waiver",
     ];
 }

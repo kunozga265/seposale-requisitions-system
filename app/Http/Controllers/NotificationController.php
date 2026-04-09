@@ -527,6 +527,34 @@ class NotificationController extends Controller
         }
     }
 
+    public function notifySales($object, $type)
+    {
+        $role = Role::where('name', 'sales')->first();
+        $users = $role->users;
+
+
+        if ($type == "waiver") {
+            $summary = $object;
+
+
+            // $name = $requestForm->user->firstName . " " . $requestForm->user->lastName;
+            $message = "{$summary->name} under Sales Order #{$summary->sale->formattedCode()} has been waivered. \nPlease proceed to process the sale.";
+            $subject = "Waiver Alert";
+
+            foreach ($users as $user) {
+                error_log($user->id);
+
+                //Send email to accountants
+                //Mail::to($accountant)->send(new RequestFormWaitingInitiationMail($accountant, $message, $subject));
+
+                //Send a push notification to the app for the accountant
+                $this->pushNotification("USER-{$user->id}", $subject, $message);
+            }
+
+            // $this->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number: "265992478402", amount: $amount);
+        }
+    }
+
     public function notifyCreditors($requestForm)
     {
         $role = Role::where('name', 'accountant')->first();
@@ -1674,7 +1702,7 @@ class NotificationController extends Controller
                                     ]
                                 ]
                             ],
-                               [
+                            [
                                 "type" => "button",
                                 "sub_type" => "url",
                                 "index" => "0",
@@ -1690,7 +1718,7 @@ class NotificationController extends Controller
                 ];
                 $data['client_id'] = $client->id;
                 $this->pushWhatsappMessage($body, $data);
-              
+
                 break;
 
             default:

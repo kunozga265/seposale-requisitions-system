@@ -48,8 +48,8 @@
                 </a>
                 <danger-button v-if="sale.data.status == 1" @click.native="closeDialog = true">Close</danger-button>
                 <danger-button v-if="sale.data.editable" @click.native="deleteDialog = true">Delete</danger-button>
-                <primary-button v-if="checkRole($page.props.auth.data, 'management')"
-                    @click.native="updateAccounts">UpdateAccounts</primary-button>
+                <!-- <primary-button v-if="checkRole($page.props.auth.data, 'management')"
+                    @click.native="updateAccounts">UpdateAccounts</primary-button> -->
 
                 <primary-button @click.native="attachPurchaseOrderDialog = true" class="ml-3">Attach LPO
                 </primary-button>
@@ -469,15 +469,8 @@
 
                         <template #content>
                             <jet-validation-errors class="mb-4" />
-                            <div v-if="selectedProduct.paymentStatus == 0 && (checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'management'))"
-                                class="flex items-center mb-4">
-                                <input checked id="backdate" type="checkbox" v-model="form.waiver"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label for="backdate"
-                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Waiver</label>
-                            </div>
 
-                            <div v-if="selectedProduct.paymentStatus == 0 && !form.waiver">
+                            <div v-if="selectedProduct.paymentStatus == 0 && !selectedProduct.waiver">
 
                                 <div class="mb-4">
                                     Product has not been paid for. Please contact the accounts department to update
@@ -489,13 +482,19 @@
                             <div v-else class="mb-4">
                                 <div v-if="selectedProduct.meta != null" class="py-4">
                                     <div v-if="selectedProduct.meta?.method == 'DELIVERY'"
-                                        class="flex justify-start items-center approved">
+                                        class="flex justify-start items-center approved text-sm">
                                         Product is to be delivered
                                     </div>
                                     <div v-else-if="selectedProduct.meta?.method == 'COLLECTION'"
-                                        class="flex justify-start items-center approved">
+                                        class="flex justify-start items-center approved text-sm">
                                         Product is to be self collected
                                     </div>
+                                </div>
+
+                                <div v-show="!validateInitiation"
+                                    class="flex items-center w-full text-red md:col-span-2 mb-4">
+                                    <div class="text-sm text-red"><i class="mdi mdi-alert-circle text-red"></i> {{
+                                        initiationMessage }}</div>
                                 </div>
 
                                 <div class="flex items-center mb-4">
@@ -616,7 +615,9 @@
                                 Cancel
                             </secondary-button>
 
-                            <primary-button v-if="selectedProduct.paymentStatus != 0 || form.waiver" class="ml-2"
+                            <primary-button :class="{ 'opacity-25': form.processing || !validateInitiation }"
+                                :disabled="form.processing || !validateInitiation"
+                                v-if="selectedProduct.paymentStatus != 0 || selectedProduct.waiver" class="ml-2"
                                 @click.native="updateDelivery">
                                 <svg v-show="form.processing" role="status"
                                     class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101"
@@ -629,6 +630,20 @@
                                         fill="currentColor" />
                                 </svg>
                                 Proceed
+                            </primary-button>
+                            <primary-button v-else-if="checkRole($page.props.auth.data, 'accountant')" class="ml-2"
+                                @click.native="waiver(selectedProduct.id)">
+                                <svg v-show="form.processing" role="status"
+                                    class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101"
+                                    fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="#E5E7EB" />
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentColor" />
+                                </svg>
+                                Waiver
                             </primary-button>
                         </template>
                     </dialog-modal>
@@ -1206,6 +1221,7 @@ export default {
             selectedPop: null,
             popDate: null,
             popMessage: "",
+            initiationMessage: "",
 
             backdateDeliveryCheck: false,
             deliveryDate: null,
@@ -1326,6 +1342,36 @@ export default {
         //     }
         //     return data
         // },
+        validateInitiation() {
+            if (this.outsource) {
+                if (this.deliveryDate == null) {
+                    this.initiationMessage = "Enter Date"
+                    return false
+                }
+
+            } else {
+                if (this.form.inventoryId == 0) {
+                    this.initiationMessage = "Select inventory item "
+                    return false
+                }
+                else if (this.selectedProductAmount == null || this.selectedProductAmount <= 0) {
+                    this.initiationMessage = "Enter amount/quantity being transferred "
+                    return false
+                }
+                else if (this.form.deliveryMethod == null) {
+                    this.initiationMessage = "Select delivery method "
+                    return false
+                } else if (this.form.deliveryMethod == 'delivery' && this.deliveryDate == null) {
+                    this.initiationMessage = "Enter Date"
+                    return false
+                }
+
+            }
+
+            this.initiationMessage = ""
+            return true
+
+        },
         popValidation() {
             if (this.popDate == null) {
                 this.popMessage = "Enter Date"
@@ -1412,6 +1458,16 @@ export default {
                 .post(this.route('receipts.attach', { 'id': this.sale.data.id }), {
                     preserveScroll: true,
                     onSuccess: () => this.attachReceiptDialog = false,
+                })
+        },
+        waiver(id) {
+            this.form
+                .transform(data => ({
+                    ...data,
+                }))
+                .post(this.route('sales.waiver', { 'id': id }), {
+                    preserveScroll: true,
+                    onSuccess: () => this.updateDeliveryDialog = false,
                 })
         },
         addPoP() {

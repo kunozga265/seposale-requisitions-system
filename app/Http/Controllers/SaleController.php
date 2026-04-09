@@ -941,6 +941,43 @@ class SaleController extends Controller
         }
     }
 
+    public function waiver(Request $request, $id)
+    {
+        //find out if the request is valid
+        $summary = Summary::find($id);
+
+        if (is_object($summary)) {
+
+            $summary->update([
+                'waiver' => true
+            ]);
+
+            (new NotificationController())->notifySales(
+                $summary,
+                "waiver",
+            );
+
+            //send whatsapp notification
+            // (new NotificationController())->processWhatsappMessage("proof_of_payment", $sale->serial, phone_number:"265997748584", amount: $request->amount);
+
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "{$summary->name} has been waivered!"]);
+            } else {
+                //Web Response
+                return Redirect::route('sales.index', ['section' => 'tabular'])->with('success', "{$summary->name} has been waivered!");
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Sale item not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Sale item not found');
+            }
+        }
+    }
+
     public function attachPurchaseOrder(Request $request, $id)
     {
         $request->validate([

@@ -51,7 +51,7 @@ use Intervention\Image\Drivers\Imagick\Driver;
 
 class AppController extends Controller
 {
-    public $paginate = 20;
+    public $paginate = 50;
     public $OTHER_PRODUCT_ID = 7;
     public $SERVICES_PRODUCT_ID = 8;
 
@@ -312,7 +312,7 @@ class AppController extends Controller
                 $filename = "files/other/" . $type . "-" . uniqid() . "." . $ext;
         }
 
-        
+
 
         if ($ext == 'jpg' || $ext == 'png' || $ext == 'pdf') {
             try {
