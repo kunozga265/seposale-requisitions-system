@@ -92,7 +92,7 @@ class SiteSaleSummary extends Model
         return $this->hasOne(Delivery::class);
     }
 
-    public function summary()
+public function summary()
     {
         return $this->hasOne(Summary::class,  "site_sale_summary_id", "id");
     }

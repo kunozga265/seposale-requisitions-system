@@ -24,8 +24,17 @@
               d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
               clip-rule="evenodd"></path>
           </svg>
-          <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
+          <a :href="route('sales.show', { id: sale.data.id })"
+            class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
             {{ sale.data.code }}
+          </a>
+          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
+          </svg>
+          <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
+            Edit
           </span>
         </div>
       </li>
@@ -251,6 +260,9 @@
 
                         </th>
                         <th scope="col" class="heading-font">
+                          Product Link
+                        </th>
+                        <th scope="col" class="heading-font">
                           Details
                         </th>
                         <th scope="col" class="heading-font">
@@ -275,6 +287,18 @@
                           <i @click="removeRecord(index)"
                             class="mdi mdi-close-circle text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor"></i>
                         </th>
+                        <td scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+
+                          <select v-model="info.id" id="product"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                            required>
+
+                            <option v-for="(product, p_index) in allProducts" :value="product.id" :key="p_index">
+                              {{ product.name }} {{ product.description }}
+                            </option>
+                          </select>
+
+                        </td>
                         <td scope="row" class="py-2 pr-1 font-medium text-gray-900 dark:text-white whitespace-nowrap">
                           <jet-input type="text" class="block w-full" v-model="info.details" />
                         </td>

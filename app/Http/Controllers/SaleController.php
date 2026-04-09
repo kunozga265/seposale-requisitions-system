@@ -581,18 +581,25 @@ class SaleController extends Controller
             $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
             $types = ClientType::orderBy("name", "asc")->get();
-            return Inertia::render('Sales/Edit', [
-                'sale' => new SaleResource($sale),
-                "products" => ProductResource::collection($products),
-                "clients" => ClientResource::collection($clients),
-                "clientTypes" => $types
-            ]);
+
+            //get user
+            $user = (new AppController())->getAuthUser($request);
+
+            if ($sale->editable || $user->hasRole('management') ||  $user->hasRole('administrator')) {
+                return Inertia::render('Sales/Edit', [
+                    'sale' => new SaleResource($sale),
+                    "products" => ProductResource::collection($products),
+                    "clients" => ClientResource::collection($clients),
+                    "clientTypes" => $types
+                ]);
+            }
+            return Redirect::back()->with('error', 'Sale not editable');
         } else {
             return Redirect::back()->with('error', 'Sale not found');
         }
     }
 
-   public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
 
         $user = (new AppController())->getAuthUser($request);
@@ -692,12 +699,15 @@ class SaleController extends Controller
                 // 2. Remove products that exist on the sale but are not in the incoming request
                 foreach ($sale->products as $product) {
                     if (!in_array($product->id, $incomingSummaryIds)) {
-                        if (isset($product->delivery)) {
-                            $product->delivery->delete();
+                        if (isset($product->delivery) || $product->getPaymentStatus() > 0) {
+                            continue;
+                            // $product->delivery->delete();
                         }
                         $product->delete();
                     }
                 }
+
+                // dd($sale->products, $request->products);
 
                 // 3. Process products (Update existing or Create new)
                 foreach ($request->products as $productData) {
@@ -716,7 +726,7 @@ class SaleController extends Controller
                                 "product_id" => $productId,
                                 "product_variant_id" => $productVariantId,
                                 "amount" => $productData["totalCost"],
-                                "balance" => $productData["totalCost"],
+                                "balance" => $productData["totalCost"] - ($summary->amount - $summary->balance),
                                 "quantity" => $productData["quantity"],
                                 "description" => $productData["details"],
                                 "units" => $productData["units"],

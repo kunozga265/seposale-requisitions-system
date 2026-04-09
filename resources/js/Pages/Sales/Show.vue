@@ -42,7 +42,8 @@
                 <a :href="route('sales.print', { 'id': sale.data.id })" target="_blank">
                     <primary-button>Print</primary-button>
                 </a>
-                <a v-if="sale.data.editable" :href="route('sales.edit', { 'id': sale.data.id })">
+                <a v-if="sale.data.editable || checkRole($page.props.auth?.data, 'management')"
+                    :href="route('sales.edit', { 'id': sale.data.id })">
                     <primary-button>Edit</primary-button>
                 </a>
                 <danger-button v-if="sale.data.status == 1" @click.native="closeDialog = true">Close</danger-button>
@@ -431,7 +432,8 @@
 
 
                                                 <td class="px-2">
-                                                    <collection v-if="productCompound.status == 2"
+                                                    <collection
+                                                        v-if="productCompound.status == 2 && productCompound.siteSaleSummary != null"
                                                         class="p-2 text-left cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                                                         :client="sale.data.client"
                                                         :product="productCompound.siteSaleSummary" :is-solo="true"
@@ -485,11 +487,13 @@
 
 
                             <div v-else class="mb-4">
-                                <div v-if="selectedProduct.meta != null " class="py-4">
-                                    <div v-if="selectedProduct.meta?.method  == 'DELIVERY'" class="flex justify-start items-center approved">
+                                <div v-if="selectedProduct.meta != null" class="py-4">
+                                    <div v-if="selectedProduct.meta?.method == 'DELIVERY'"
+                                        class="flex justify-start items-center approved">
                                         Product is to be delivered
                                     </div>
-                                    <div v-else-if="selectedProduct.meta?.method  == 'COLLECTION'" class="flex justify-start items-center approved">
+                                    <div v-else-if="selectedProduct.meta?.method == 'COLLECTION'"
+                                        class="flex justify-start items-center approved">
                                         Product is to be self collected
                                     </div>
                                 </div>

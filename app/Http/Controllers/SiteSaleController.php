@@ -618,6 +618,13 @@ class SiteSaleController extends Controller
                     (new CollectionController())->deleteCollection($collection);
                 }
 
+                if ($product->summary != null) {
+                    $product->summary->update([
+                        "status" => 0,
+                        "site_sale_summary_id" => null
+                    ]);
+                }
+
                 $product->delete();
             }
 
