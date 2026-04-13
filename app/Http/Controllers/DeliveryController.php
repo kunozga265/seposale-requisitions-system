@@ -121,7 +121,7 @@ class DeliveryController extends Controller
                     'waiver' => ['required'],
                 ]);
 
-                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0 && !$request->waiver) {
+               if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0 && !$summary->waiver) {
                     return Redirect::back()->with("error", "Product has not been paid for. Please update payment status first.");
                 }
 
