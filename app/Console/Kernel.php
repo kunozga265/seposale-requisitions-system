@@ -70,39 +70,26 @@ class Kernel extends ConsoleKernel
                 switch ($job->type) {
                     case "PRICELIST_SEND":
                         Log::info("Running Job: Sending Batch Pricelist");
-
-                        $content = json_decode($job->content, true);
-                        $file = $content["file"];
-                        $user_id = $content["user_id"];
-                        $referred_by_id = $content["referred_by_id"];
-
-                        Excel::import(new ClientsImport($user_id, $referred_by_id), public_path($file));
-
-                        $job->update([
-                            'status' => 2
-                        ]);
-
-                        Storage::disk('public_uploads')->delete($file);
-
                         break;
+
                     case "BATCH_SEND":
                         Log::info("Running Job: Sending Batch Template Message");
-
-                        $content = json_decode($job->content, true);
-                        $file = $content["file"];
-
-
-                        Excel::import(new ClientsImport($job->type, $content), public_path($file));
-
-                        $job->update([
-                            'status' => 2
-                        ]);
-
-                        Storage::disk('public_uploads')->delete($file);
-
                         break;
+                        
                     default:
+                        Log::info("Running Job: Unknown Type {$job->type}");
                 }
+
+                $content = json_decode($job->content, true);
+                $file = $content["file"];
+
+                Excel::import(new ClientsImport($job->type, $content), public_path($file));
+
+                $job->update([
+                    'status' => 2
+                ]);
+
+                Storage::disk('public_uploads')->delete($file);
             }
         })->everyFifteenMinutes();
     }
