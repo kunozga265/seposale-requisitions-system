@@ -23,7 +23,7 @@ class ClientsImport implements ToCollection, WithHeadingRow
 
     public function __construct($type, $content)
     {
-        $this->type = $content["type"];
+        $this->type = $type;
         $this->user_id = $content["user_id"];
         $this->referred_by_id = $content["referred_by_id"];
         $this->template = $content["template"];
@@ -64,7 +64,7 @@ class ClientsImport implements ToCollection, WithHeadingRow
                 if (isset($row['address'])) {
                     $address = $row['address'];
                 }
-                
+
                 $client_type = null;
                 if (isset($row['type'])) {
                     $client_type = $row['type'];
