@@ -150,19 +150,30 @@ class ClientController extends Controller
         }
     }
 
-    public function getOrCreate($name, $phone_number, $phone_number_other = null, $email = null, $password = null)
+    public function getOrCreate($name, $phone_number, $phone_number_other = null, $email = null, $password = null, $address = null, $client_type = null, $organisation = false, $alias = null)
     {
         $client = Client::where('phone_number', $phone_number)->first();
 
         if (!is_object($client)) {
+
+            $client_type_id = 7;
+
+            if ($client_type != null) {
+                $client_type_id = ClientType::updateOrCreate([
+                    "name" => ucwords(trim($client_type))
+                ])->id;
+            }
+
             $client = Client::create([
                 'serial' => (new AppController())->generateUniqueCode("CLIENT"),
                 'name' => ucwords($name),
                 'phone_number' => (new ClientController())->cleanPhoneNumber($phone_number),
                 'phone_number_other' => (new ClientController())->cleanPhoneNumber($phone_number_other),
                 'email' => $email,
-                'organisation' => false,
-                'client_type_id' => 7,
+                'alias' => $alias,
+                'organisation' => $organisation,
+                'address' => $address,
+                'client_type_id' => $client_type_id,
                 'password' => $password != null ? Hash::make($password) : null,
             ]);
         }

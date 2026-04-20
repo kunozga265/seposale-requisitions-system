@@ -51,8 +51,36 @@ class ClientsImport implements ToCollection, WithHeadingRow
                 if (isset($row['email'])) {
                     $email = $row['email'];
                 }
+                $alias = null;
+                if (isset($row['alias'])) {
+                    $alias = $row['alias'];
+                }
+                $organisation = false;
+                if (isset($row['organisation'])) {
+                    $organisation = $row['organisation'] == 1 || $row['organisation'] == '1' || $row['organisation'] == true || strtolower($row['organisation']) == 'true';
+                }
 
-                $client = (new ClientController())->getOrCreate($row['name'], $phone_number, $phone_number_other, $email);
+                $address = null;
+                if (isset($row['address'])) {
+                    $address = $row['address'];
+                }
+                
+                $client_type = null;
+                if (isset($row['type'])) {
+                    $client_type = $row['type'];
+                }
+
+                $client = (new ClientController())->getOrCreate(
+                    name: $row['name'],
+                    phone_number: $phone_number,
+                    phone_number_other: $phone_number_other,
+                    email: $email,
+                    alias: $alias,
+                    address: $address,
+                    organisation: $organisation,
+                    client_type: $client_type,
+                );
+
 
                 //send the pricelist
                 if ($this->user_id != null) {
