@@ -28,9 +28,15 @@ class ClientsImport implements ToCollection, WithHeadingRow
         $this->type = $type;
         $this->user_id = $content["user_id"];
         $this->referred_by_id = $content["referred_by_id"];
-        $this->template = $content["template"];
-        $this->template_file = $content["template_file"];
-        $this->force_send = $content["force_send"];
+        if (array_key_exists('template', $content)) {
+            $this->template = $content["template"];
+        }
+        if (array_key_exists('template_file', $content)) {
+            $this->template_file = $content["template_file"];
+        }
+        if (array_key_exists('force_send', $content)) {
+            $this->force_send = $content["force_send"];
+        }
     }
 
 
