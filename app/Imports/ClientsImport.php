@@ -91,23 +91,25 @@ class ClientsImport implements ToCollection, WithHeadingRow
                 );
 
 
-                //send the pricelist
-                if ($this->user_id != null) {
 
-                    $name = User::find($this->referred_by_id)->fullName();
-                    $message = "You have been referred to us by {$name}.";
-
-                    Referral::create([
-                        'date' => Carbon::now()->getTimestamp(),
-                        'referred_by_id' => $this->referred_by_id,
-                        'client_id' => $client->id,
-                        'user_id' => $this->user_id,
-                    ]);
-                } else {
-                    $message = "Quality products and services are guaranteed.";
-                }
 
                 if ($this->type == "PRICELIST_SEND") {
+                    //send the pricelist
+                    if ($this->user_id != null) {
+
+                        $name = User::find($this->referred_by_id)->fullName();
+                        $message = "You have been referred to us by {$name}.";
+
+                        Referral::create([
+                            'date' => Carbon::now()->getTimestamp(),
+                            'referred_by_id' => $this->referred_by_id,
+                            'client_id' => $client->id,
+                            'user_id' => $this->user_id,
+                        ]);
+                    } else {
+                        $message = "Quality products and services are guaranteed.";
+                    }
+
                     if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', 'pricelist_referred')->exists() || $this->force_send == true) {
                         (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
                     }
