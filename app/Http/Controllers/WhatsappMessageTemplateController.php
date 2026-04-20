@@ -123,8 +123,8 @@ class WhatsappMessageTemplateController extends Controller
                     Storage::disk('temp')->delete($tempFile);
 
                     //Upload File
-                    // $filename = 'files/list-of-clients/' . uniqid() . '.xlsx';
-                    $filename = 'files/list-of-clients/' . uniqid() . $fileData['ext'];
+                    $filename = 'files/list-of-clients/' . uniqid() . '.xlsx';
+                    // $filename = 'files/list-of-clients/' . uniqid() . $fileData['ext'];
                     Storage::disk('public_uploads')->put($filename, $fileData['data']);
 
                     CustomJob::create([
