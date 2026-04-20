@@ -110,8 +110,8 @@ class WhatsappMessageTemplateController extends Controller
                     $fileData = $this->getFileData($request->file);
 
                     // Generate a temporary filename
-                    // $tempFile = 'temp_excel_' . time() .  '.xlsx';
-                    $tempFile = 'temp_excel_' . time() .  $fileData['ext'];
+                    $tempFile = 'temp_excel_' . time() .  '.xlsx';
+                    // $tempFile = 'temp_excel_' . time() .  $fileData['ext'];
 
                     // Store the file temporarily in storage/app
                     Storage::disk('temp')->put($tempFile, $fileData['data']);
