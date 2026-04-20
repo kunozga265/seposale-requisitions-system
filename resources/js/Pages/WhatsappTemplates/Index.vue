@@ -71,8 +71,9 @@ word<template>
         </div>
         <div class="p-2 mb-2">
           <jet-label for="description" value=" Description" />
-          <jet-input id="description" type="text" class="block w-full" v-model="form.description" placeholder=""
-            autocomplete="seposale-template-description" />
+          <vue2-tinymce-editor v-model="form.description"></vue2-tinymce-editor>
+          <!-- <jet-input id="description" type="text" class="block w-full" v-model="form.description" placeholder=""
+            autocomplete="seposale-template-description" /> -->
         </div>
 
 
@@ -142,9 +143,11 @@ word<template>
           </div>
           <div class="p-2 mb-2">
             <jet-label for="description" value=" Description" />
-            <jet-input id="description" type="text" class="block w-full" v-model="form.description" placeholder=""
-              autocomplete="seposale-template-description" />
+            <vue2-tinymce-editor v-model="form.description"></vue2-tinymce-editor>
+            <!-- <jet-input id="description" type="text" class="block w-full" v-model="form.description" placeholder=""
+            autocomplete="seposale-template-description" /> -->
           </div>
+
 
           <div class="flex items-center mb-2 md:col-span-2">
             <input checked id="hasFile" type="checkbox" value="" v-model="form.hasFile"
@@ -215,7 +218,7 @@ word<template>
                         v-for="(template, index) in templates" :key="index">
                         <td class="p-2 text-left ">{{ index + 1 }}. {{ template.name }}</td>
                         <td class="p-2 text-left ">{{ template.code }}</td>
-                        <td class="p-2 text-left ">{{ template.description }}</td>
+                        <td class="p-2 text-left " v-html="template.description"></td>
                         <td class="p-2 text-left ">{{ template.has_file ? 'Yes' : 'No' }}</td>
 
                       </tr>
@@ -248,6 +251,7 @@ import SecondaryButton from "@/Jetstream/SecondaryButton.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
 import JetLabel from "@/Jetstream/Label.vue";
 import JetValidationErrors from "@/Jetstream/ValidationErrors.vue";
+import { Vue2TinymceEditor } from "vue2-tinymce-editor";
 
 export default {
   props: [
@@ -261,7 +265,8 @@ export default {
     Pagination,
     RequestStatus,
     AppLayout,
-    PrimaryButton
+    PrimaryButton,
+    Vue2TinymceEditor,
   },
   data() {
     return {

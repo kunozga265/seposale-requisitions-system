@@ -78,6 +78,7 @@ class WhatsappMessageTemplateController extends Controller
     {
         $template = WhatsappMessageTemplate::find($id);
 
+
         if (is_object($template)) {
 
 
@@ -88,11 +89,13 @@ class WhatsappMessageTemplateController extends Controller
                     'template_file' => ['required'],
                 ]);
 
-                $template_file_data = $this->getFileData($request->template_file);
+                $template_filename = $request->template_file;
 
-                //Upload File
-                $template_filename = "files/template-messages/{$template->code}/" . uniqid() . $template_file_data['ext'];
-                Storage::disk('public_uploads')->put($template_filename, $template_file_data['data']);
+                // $template_file_data = $this->getFileData($request->template_file);
+
+                // //Upload File
+                // $template_filename = "files/template-messages/{$template->code}/" . uniqid() . $template_file_data['ext'];
+                // Storage::disk('public_uploads')->put($template_filename, $template_file_data['data']);
             } else {
                 $template_filename = null;
             }
@@ -234,7 +237,7 @@ class WhatsappMessageTemplateController extends Controller
                     $message = "Quality products and services are guaranteed.";
                 }
 
-                (new NotificationController())->processWhatsappMessage($template->code, $client->serial, $message);
+                $res = (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, $message, $template_filename);
 
 
                 if ((new AppController())->isApi($request))
@@ -242,7 +245,10 @@ class WhatsappMessageTemplateController extends Controller
                     return response()->json(new ClientResource($client), 201);
                 else {
                     //Web Response
-                    return Redirect::back()->with('success', 'Pricelist sent!');
+                    if($res){
+                        return Redirect::back()->with('success', 'Successfully sent!');
+                        }else
+                        return Redirect::back()->with('error', 'Could not send. An error occurred.!');
                 }
             }
         } else {

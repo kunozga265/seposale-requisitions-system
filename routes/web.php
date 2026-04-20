@@ -1165,7 +1165,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['employee', 'management']
         ])->name('whatsapp.templates.send');
 
-        Route::post('/templates/send', [
+        Route::post('/templates/send/{id}', [
             "uses" => "App\Http\Controllers\WhatsappMessageTemplateController@sendMessages",
             'roles' => ['employee', 'management']
         ])->name('whatsapp.templates.send-message');

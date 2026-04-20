@@ -119,7 +119,7 @@
                                         </div>
                                         <div v-if="selectedClient.type != null" class="p-2 mb-2">
                                             <jet-label for="type" value="Type" />
-                                            <jet-input id="type" type="text" class="block w-full"
+                                            <jet-input id="type" type=" text" class="block w-full"
                                                 v-model="selectedClient.type.name" autocomplete="seposale-customer-type"
                                                 disabled />
                                         </div>
@@ -288,7 +288,7 @@
                         <div v-show="validation">
                             <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
                                 :disabled="form.processing">
-                                Send 
+                                Send
                             </jet-button>
                         </div>
                     </div>
@@ -369,7 +369,7 @@ export default {
             const template = this.templates.find(t => t.id == this.form.templateId)
 
             if (template) {
-                return template.has_file != null
+                return template.has_file != null && template.has_file != 0 && template.has_file != false
             }
 
             return false
@@ -401,6 +401,11 @@ export default {
 
             }
 
+            if (this.hasFile && (this.form.templateFile == null || this.form.templateFile?.length == 0)) {
+                this.error = "Select template file"
+                return false
+            }
+
             if (this.form.referred && this.form.userId == null) {
                 this.error = "Select referred user"
                 return false
@@ -424,11 +429,13 @@ export default {
                     ...data,
                     type: this.checkClient,
                     user_id: this.form.userId,
-                    client_id: this.client == null ? null : this.client.id,
+                    template_id: this.form.templateId,
+                    template_file: this.form.templateFile,
+                    client_id: this.selectedClient == null ? null : this.selectedClient.id,
                     client_type_id: this.form.clientTypeId,
                     client_type: this.form.clientType
                 }))
-                .post(this.route('clients.pricelist.send'))
+                .post(this.route('whatsapp.templates.send-message', { id: this.form.templateId }))
         },
         templateFileUpload(file) {
             const reader = new FileReader();
@@ -436,16 +443,17 @@ export default {
                 reader.readAsDataURL(file);
                 reader.onload = (e) => {
 
-                    this.form.templateFile = e.target.result
-                    // axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
-                    //     type: "PRICELIST",
-                    //     file: e.target.result
-                    // }).then(res => {
-                    //     this.form.file = res.data.file
+                    // this.form.templateFile = e.target.result
+                    axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+                        type: "TEMPLATES",
+                        file: e.target.result
+                    }).then(res => {
+                        this.form.templateFile = res.data.file
+                        console.log(res.data.file)
 
-                    // }).catch(function (res) {
-                    //     this.form.errors.push(res.data.message)
-                    // })
+                    }).catch(function (res) {
+                        this.form.errors.push(res.data.message)
+                    })
                 };
             }
         },

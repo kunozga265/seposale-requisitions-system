@@ -1749,7 +1749,7 @@ class NotificationController extends Controller
                     "to" => env('WHATSAPP_DEBUG') ? env('WHATSAPP_TEST_NUMBER') : $client->phone_number,
                     "type" => "template",
                     "template" => [
-                        "name" => $template,
+                        "name" => $template->code,
                         "language" => [
                             "code" => "en"
                         ],
@@ -1774,21 +1774,24 @@ class NotificationController extends Controller
                                         //Transporter/Supplier Name
                                         "text" => $client->getName()
                                     ],
-                                    [
-                                        "type" => "text",
-                                        //site name
-                                        "text" => Carbon::now()->format('F j, Y')
-                                    ],
-                                    [
-                                        "type" => "text",
-                                        //item name
-                                        "text" => $message
-                                    ],
+                                    // [
+                                    //     "type" => "text",
+                                    //     //site name
+                                    //     "text" => Carbon::now()->format('F j, Y')
+                                    // ],
+                                    // [
+                                    //     "type" => "text",
+                                    //     //item name
+                                    //     "text" => $message
+                                    // ],
                                 ]
                             ],
                         ]
                     ]
                 ];
+
+                // dd($body);
+
                 $data = [];
                 $check = $this->pushWhatsappMessage($body, $data);
                 break;

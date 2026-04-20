@@ -17,7 +17,7 @@ class CreateWhatsappMessageTemplatesTable extends Migration
             $table->id();
             $table->string("name");
             $table->string("code")->unique();
-            $table->string("description")->nullable();
+            $table->text("description")->nullable();
             $table->boolean("has_file");
             $table->timestamps();
         });

@@ -40,17 +40,17 @@ class DatabaseSeeder extends Seeder
         // $this->call(ProductAppendTableSeeder::class);
         // $this->call(ProductVariantAppendTableSeeder::class);
 
-        // $this->call(PositionTableSeeder::class);
-        // $this->call(ProductTableSeeder::class);
+        $this->call(PositionTableSeeder::class);
+        $this->call(ProductTableSeeder::class);
 
-        // $this->call(UserTableSeeder::class);
+        $this->call(UserTableSeeder::class);
         // $this->call(PaymentMethodTableSeeder::class);
 
         // $this->call(SummaryTableSeeder::class);
         // $this->call(RequestFormTableSeeder::class);
         // $this->call(DeliveryTableSeeder::class);
-        // $this->call(SitesTableSeeder::class);
-        // $this->call(InventoryTableSeeder::class);
+        $this->call(SitesTableSeeder::class);
+        $this->call(InventoryTableSeeder::class);
         // $this->call(SerialSeeder::class);
         // $this->call(ClientTableSeeder::class);
         // $this->call(ExpenseTypeTableSeeder::class);
@@ -61,9 +61,9 @@ class DatabaseSeeder extends Seeder
         // $this->call(MaterialsTypeSeederTable::class);
         // $this->call(ReceiptSummariesSeeder::class);
 
-        // $this->call(AccountTypeTableSeeder::class);
-        // $this->call(AccountsGroupTableSeeder::class);
-        // $this->call(AccountingAccountsTableSeeder::class);
+        $this->call(AccountTypeTableSeeder::class);
+        $this->call(AccountsGroupTableSeeder::class);
+        $this->call(AccountingAccountsTableSeeder::class);
         // $this->call(RequestFormItemsTableSeeder::class);
         // $this->call(ProductAccountsTableSeeder::class);
         // $this->call(InventoryAccountsTableSeeder::class);
