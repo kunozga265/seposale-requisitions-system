@@ -115,10 +115,10 @@ class ClientsImport implements ToCollection, WithHeadingRow
                         (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
                     }
                 } else if ($this->type == "BATCH_SEND") {
-                    if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $this->template->code)->exists() || $this->force_send == true) {
+                    $template = WhatsappMessageTemplate::find($this->template["id"]);
+                    if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $template->code)->exists() || $this->force_send == true) {
 
-                        $template = WhatsappMessageTemplate::find($this->template["id"]);
-                        (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, $message, $this->template_file);
+                        (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, "", $this->template_file);
                     }
                 }
             }
