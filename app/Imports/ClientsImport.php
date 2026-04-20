@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Referral;
 use App\Models\WhatsappMessage;
+use App\Models\WhatsappMessageTemplate;
 
 class ClientsImport implements ToCollection, WithHeadingRow
 {
@@ -115,7 +116,9 @@ class ClientsImport implements ToCollection, WithHeadingRow
                     }
                 } else if ($this->type == "BATCH_SEND") {
                     if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $this->template->code)->exists() || $this->force_send == true) {
-                        (new NotificationController())->processWhatsappTemplateMessage($this->template, $client->serial, $message, $this->template_file);
+
+                        $template = WhatsappMessageTemplate::find($this->template["id"]);
+                        (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, $message, $this->template_file);
                     }
                 }
             }
