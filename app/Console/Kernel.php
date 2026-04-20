@@ -4,11 +4,14 @@ namespace App\Console;
 
 use App\Http\Controllers\NotificationController;
 use App\Imports\ClientsImport;
+use App\Models\Client;
 use App\Models\Sale;
 use App\Models\CustomJob;
 use App\Models\User;
 use App\Models\Referral;
 use App\Models\PaymentReceipt;
+use App\Models\WhatsappMessage;
+use App\Models\WhatsappMessageTemplate;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
@@ -75,7 +78,20 @@ class Kernel extends ConsoleKernel
                     case "BATCH_SEND":
                         Log::info("Running Job: Sending Batch Template Message");
                         break;
-                        
+                    case "LATEST_UPLOADS":
+                        $clients = Client::where('created_at', '>', Carbon::createFromTimestamp(1776682800))->get();
+
+                        $template = WhatsappMessageTemplate::where('code','introductory_01')->first();
+                        $message = "";
+                        $template_file = "files/seposale_pricelist.pdf";
+
+                        foreach ($clients as $client) {
+                            if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $template->code)->exists()) {
+                                (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, $message, $template_file);
+                            }
+                        }
+                        break;
+
                     default:
                         Log::info("Running Job: Unknown Type {$job->type}");
                 }
