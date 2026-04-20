@@ -1741,6 +1741,7 @@ class NotificationController extends Controller
         switch ($template->code) {
 
             case "introductory_01":
+            case "introductory_02":
                 $client = \App\Models\Client::where('serial', $serial)->first();
 
                 $body = [
