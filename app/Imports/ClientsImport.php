@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Referral;
+use App\Models\WhatsappMessage;
 
 class ClientsImport implements ToCollection, WithHeadingRow
 {
@@ -20,6 +21,7 @@ class ClientsImport implements ToCollection, WithHeadingRow
     public $referred_by_id;
     public $template;
     public $template_file;
+    public $force_send;
 
     public function __construct($type, $content)
     {
@@ -28,6 +30,7 @@ class ClientsImport implements ToCollection, WithHeadingRow
         $this->referred_by_id = $content["referred_by_id"];
         $this->template = $content["template"];
         $this->template_file = $content["template_file"];
+        $this->force_send = $content["force_send"];
     }
 
 
@@ -99,9 +102,13 @@ class ClientsImport implements ToCollection, WithHeadingRow
                 }
 
                 if ($this->type == "PRICELIST_SEND") {
-                    (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+                    if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', 'pricelist_referred')->exists() || $this->force_send) {
+                        (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+                    }
                 } else if ($this->type == "BATCH_SEND") {
-                    (new NotificationController())->processWhatsappTemplateMessage($this->template, $client->serial, $message, $this->template_file);
+                    if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $this->template->code)->exists() || $this->force_send) {
+                        (new NotificationController())->processWhatsappTemplateMessage($this->template, $client->serial, $message, $this->template_file);
+                    }
                 }
             }
         }
