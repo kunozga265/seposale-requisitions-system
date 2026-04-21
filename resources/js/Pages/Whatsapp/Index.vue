@@ -56,7 +56,7 @@
 
                     <a :href="route('whatsapp.index', { filter: 'responses' })">
                         <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                            :class="{ 'info': filter === 'all' }">
+                            :class="{ 'info': filter === 'responses' }">
                             <div>Responses</div>
                             <i v-show="filter === 'responses'"
                                 class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
