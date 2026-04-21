@@ -13,12 +13,25 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class WhatsappMessageController extends Controller
-{     public function index(Request $request)
+{
+    public function index(Request $request)
     {
         $user = User::find(Auth::id());
 
+        $filter = strtolower($request->query("filter"));
+
         if ($user->hasRole('management') || $user->hasRole('administrator') || $user->hasRole('sales')) {
-            $messages = WhatsappMessage::latest()->paginate((new AppController())->paginate);
+
+            if ($filter == "responses") {
+                $messages = WhatsappMessage::where('type', 1)->latest()->paginate((new AppController())->paginate);
+                $filter = "responses";
+            } else if ($filter == "sent") {
+                $messages = WhatsappMessage::where('type', 0)->latest()->paginate((new AppController())->paginate);
+                $filter = "sent";
+            } else {
+                $messages = WhatsappMessage::latest()->paginate((new AppController())->paginate);
+                $filter = "all";
+            }
         } else {
             $messages = $user->whatsappMessages()->latest()->paginate((new AppController())->paginate);
         }
@@ -30,6 +43,7 @@ class WhatsappMessageController extends Controller
             //Web Response
             return Inertia::render('Whatsapp/Index', [
                 'messages' => WhatsappMessageResource::collection($messages),
+                'filter' => $filter
             ]);
         }
     }

@@ -47,7 +47,7 @@ class SaleController extends Controller
             $headline = "unpaid";
         } else if ($filter == "partially-paid") {
             $sales = Sale::where("status", 1)->orderBy("date", "desc")->paginate($this->paginate);
-            $headline = "partially-paid";
+        $headline = "partially-paid";
         } else if ($filter == "fully-paid") {
             $sales = Sale::where("status", 2)->orderBy("date", "desc")->paginate($this->paginate);
             $headline = "fully-paid";

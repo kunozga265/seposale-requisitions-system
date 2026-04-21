@@ -21,7 +21,7 @@
         </template>
 
         <template #actions>
-             <inertia-link :href="route('whatsapp.templates.index')">
+            <inertia-link :href="route('whatsapp.templates.index')">
                 <primary-button>
                     Templates
                 </primary-button>
@@ -31,16 +31,48 @@
         </template>
 
         <div class="py-6">
-            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 mb-4">
+
+                <div v-show="checkRole($page.props.auth.data, 'management') ||
+                    checkRole($page.props.auth.data, 'administrator') ||
+                    checkRole($page.props.auth.data, 'sales')" class="flex gap-x-2">
+
+                    <a :href="route('whatsapp.index', { filter: 'all' })">
+                        <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                            :class="{ 'info': filter === 'all' }">
+                            <div>All</div>
+                            <i v-show="filter === 'all' || filter == null"
+                                class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                        </div>
+                    </a>
+
+                    <a :href="route('whatsapp.index', { filter: 'sent' })">
+                        <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                            :class="{ 'info': filter === 'sent' }">
+                            <div>Sent Messages</div>
+                            <i v-show="filter === 'sent'" class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                        </div>
+                    </a>
+
+                    <a :href="route('whatsapp.index', { filter: 'responses' })">
+                        <div class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                            :class="{ 'info': filter === 'all' }">
+                            <div>Responses</div>
+                            <i v-show="filter === 'responses'"
+                                class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                        </div>
+                    </a>
+
+                </div>
 
                 <div class="grid grid-cols-1 mb-4">
 
                     <div class="page-section">
-                        <div class="page-section-header">
+                        <!-- <div class="page-section-header">
                             <div class="page-section-title">
                                 All
                             </div>
-                        </div>
+                        </div> -->
                         <div class="page-section-content">
 
                             <div class="card">
@@ -107,7 +139,7 @@ import Message from './Message.vue';
 import { Money } from "v-money";
 
 export default {
-    props: ['messages'],
+    props: ['messages', 'filter'],
     components: {
         Money,
         Pagination,

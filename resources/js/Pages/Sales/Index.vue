@@ -28,7 +28,12 @@
             </inertia-link>
         </template>
 
-        <div class="mx-9 flex justify-between">
+       
+
+        <div class="py-6">
+            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+
+                 <div class=" flex justify-between">
             <div>
                 <div v-if="section === 'block'" class="flex">
                     <a :href="route('sales.index', { section: 'block', filter: 'all' })">
@@ -93,9 +98,6 @@
 
             </div>
         </div>
-
-        <div class="py-6">
-            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
                 <div class="page-section">
                     <div class="page-section-header">
