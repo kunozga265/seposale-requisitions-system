@@ -107,7 +107,7 @@ class Kernel extends ConsoleKernel
 
                 Storage::disk('public_uploads')->delete($file);
             }
-        })->everyFifteenMinutes();
+        })->hourly();
     }
 
     /**

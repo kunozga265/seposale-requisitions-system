@@ -116,8 +116,8 @@ class ClientsImport implements ToCollection, WithHeadingRow
                     }
                 } else if ($this->type == "BATCH_SEND") {
                     $template = WhatsappMessageTemplate::find($this->template["id"]);
+                    
                     if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $template->code)->exists() || $this->force_send == true) {
-
                         (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, "", $this->template_file);
                     }
                 }
