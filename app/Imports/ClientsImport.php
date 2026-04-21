@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Referral;
 use App\Models\WhatsappMessage;
 use App\Models\WhatsappMessageTemplate;
+use Illuminate\Support\Facades\Log;
 
 class ClientsImport implements ToCollection, WithHeadingRow
 {
@@ -113,12 +114,16 @@ class ClientsImport implements ToCollection, WithHeadingRow
 
                     if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', 'pricelist_referred')->exists() || $this->force_send == true) {
                         (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+                    }else{
+                        Log::error("Aborted: Pricelist already sent to {$client->name}.");
                     }
                 } else if ($this->type == "BATCH_SEND") {
                     $template = WhatsappMessageTemplate::find($this->template["id"]);
                     
                     if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $template->code)->exists() || $this->force_send == true) {
                         (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, "", $this->template_file);
+                    }else{
+                        Log::error("Aborted: {$template->name} message already sent to {$client->name}.");
                     }
                 }
             }

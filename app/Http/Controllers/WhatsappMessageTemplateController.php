@@ -106,11 +106,12 @@ class WhatsappMessageTemplateController extends Controller
                     'file' => ['required'],
                 ]);
 
+                // Generate a temporary filename
+                $tempFile = 'temp_excel_' . time() .  '.xlsx';
+
                 try {
                     $fileData = $this->getFileData($request->file);
 
-                    // Generate a temporary filename
-                    $tempFile = 'temp_excel_' . time() .  '.xlsx';
                     // $tempFile = 'temp_excel_' . time() .  $fileData['ext'];
 
                     // Store the file temporarily in storage/app
@@ -132,10 +133,11 @@ class WhatsappMessageTemplateController extends Controller
                         "type" => "BATCH_SEND",
                         "content" => json_encode([
                             'file' => $filename,
-                            'template' => $template,
-                            'template_file' => $template_filename,
                             'referred_by_id' => $request->user_id,
                             'user_id' => Auth::id(),
+                            'force_send' => $request->force_send,
+                            'template' => $template,
+                            'template_file' => $template_filename,
                         ]),
                     ]);
                 } catch (\Exception $e) {
@@ -245,9 +247,9 @@ class WhatsappMessageTemplateController extends Controller
                     return response()->json(new ClientResource($client), 201);
                 else {
                     //Web Response
-                    if($res){
+                    if ($res) {
                         return Redirect::back()->with('success', 'Successfully sent!');
-                        }else
+                    } else
                         return Redirect::back()->with('error', 'Could not send. An error occurred.!');
                 }
             }

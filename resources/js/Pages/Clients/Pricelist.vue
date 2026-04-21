@@ -192,25 +192,38 @@
                                             Upload List of Clients
                                         </div>
                                         <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
-                                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                                             class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm" />
                                         <div class="text-red-500 text-xs" v-if="form.errors.file">Required
                                         </div>
                                     </div>
 
                                     <div class="my-4 text-xs">
-                                        Ensure you have the following columns; <b>Name</b> & <b>Phone Number</b>. <br/>"Phone Number Other" and "Email" are optional.
+                                        Ensure you have the following columns; <b>Name</b> & <b>Phone Number</b>.
+                                        <br />"Phone
+                                        Number Other" and "Email" are optional.
                                     </div>
 
 
 
                                 </div>
 
-                                <div class="flex items-center mb-4">
-                                    <input checked id="backdate" type="checkbox" v-model="form.referred"
-                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                    <label for="backdate"
-                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Referred</label>
+                                <div class="flex gap-x-4">
+
+                                    <div class="flex items-center mb-4">
+                                        <input checked id="backdate" type="checkbox" v-model="form.referred"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="backdate"
+                                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Referred</label>
+                                    </div>
+
+                                    <div class="flex items-center mb-4">
+                                        <input checked id="forceSend" type="checkbox" v-model="form.forceSend"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="forceSend"
+                                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Force
+                                            Send</label>
+                                    </div>
                                 </div>
 
                                 <div v-if="form.referred">
@@ -299,6 +312,7 @@ export default {
 
             form: this.$inertia.form({
                 referred: false,
+                forceSend: false,
                 userId: null,
                 name: '',
                 phoneNumber: '',
@@ -344,11 +358,11 @@ export default {
                     this.error = "Select client"
                     return false
                 }
-            }else{
-                  if (this.form.file?.length === 0 || this.form.file == null) {
+            } else {
+                if (this.form.file?.length === 0 || this.form.file == null) {
                     this.error = "Select file"
                     return false
-                } 
+                }
 
             }
 
@@ -374,6 +388,7 @@ export default {
                 .transform(data => ({
                     ...data,
                     type: this.checkClient,
+                    force_send: this.form.forceSend,
                     user_id: this.form.userId,
                     client_id: this.client == null ? null : this.client.id,
                     client_type_id: this.form.clientTypeId,

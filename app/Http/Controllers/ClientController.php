@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\ClientsCheckImport;
+use App\Models\WhatsappMessage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
@@ -389,6 +390,7 @@ class ClientController extends Controller
                         'file' => $filename,
                         'referred_by_id' => $request->user_id,
                         'user_id' => Auth::id(),
+                        'force_send' => $request->force_send,
                     ]),
                 ]);
             } catch (\Exception $e) {
@@ -490,7 +492,13 @@ class ClientController extends Controller
                 $message = "Quality products and services are guaranteed.";
             }
 
-            (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+            if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', 'pricelist_referred')->exists() || $request->force_send == true) {
+                (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
+            }else{
+                Log::error("Aborted: Pricelist already sent to {$client->name}.");
+                return Redirect::back()->with('error', 'Pricelist already sent. Force send if you want to resend.');
+
+            }
 
 
             if ((new AppController())->isApi($request))
