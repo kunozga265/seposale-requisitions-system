@@ -21,10 +21,15 @@
         </template>
 
         <template #actions>
-            <inertia-link :href="route('whatsapp.templates.index')">
+            <inertia-link :href="route('whatsapp.templates.send')">
                 <primary-button>
-                    Templates
+                    Send Messages
                 </primary-button>
+            </inertia-link>
+            <inertia-link :href="route('whatsapp.templates.index')">
+                <secondary-button>
+                    Templates
+                </secondary-button>
             </inertia-link>
 
 
@@ -113,7 +118,7 @@
                     </div>
                 </div>
 
-                <pagination :object="messages" />
+                <pagination :object="messages"  :params="`filter=${filter}`"/>
             </div>
         </div>
     </app-layout>
