@@ -35,7 +35,7 @@
         <div class="page-section">
           <div class="page-section-header">
             <div class="page-section-title">
-              All
+              All ({{ count }})
             </div>
           </div>
           <div class="page-section-content">
@@ -79,6 +79,12 @@
                         <option value="asc">ASC</option>
                         <option value="desc">DESC</option>
                       </select>
+
+                    </div>
+                    <div style="max-width: 130px;" class="w-full p-2 pb-4 heading-font text-left relative">
+
+                      <jet-input id="code" type="text" class="block" @enter="search" v-model="pagination"
+                        autocomplete="seposale-pagination" />
 
                     </div>
                   </div>
@@ -152,7 +158,8 @@
                 </div>
 
               </div>
-              <!--              <pagination :object="clients"/>-->
+              <pagination :object="clients"
+                :params="`q=${form.name}&filter=${filter}&order=${order}&pagination=${pagination}`" />
             </div>
           </div>
         </div>
@@ -182,6 +189,8 @@ export default {
     'param_filter',
     'param_order',
     'param_query',
+    'param_pagination',
+    'count',
   ],
   components: {
     JetInput, DeliveryStatus, SaleStatus,
@@ -191,9 +200,11 @@ export default {
     PrimaryButton,
     SecondaryButton,
     JetLabel,
+
   },
   data() {
     return {
+      pagination: this.param_pagination,
       filter: this.param_filter ?? 'name',
       order: this.param_order ?? 'asc',
       form: this.$inertia.form({
@@ -256,7 +267,7 @@ export default {
   },
   methods: {
     search(q) {
-      this.$inertia.get(this.route('clients.index', { 'q': this.form.name, 'filter': this.filter, 'order': this.order }))
+      this.$inertia.get(this.route('clients.index', { 'q': this.form.name, 'filter': this.filter, 'order': this.order, 'pagination': this.pagination }))
     },
     navigateToClient(id) {
       this.$inertia.get(this.route('clients.show', { 'id': id }))

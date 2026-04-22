@@ -42,12 +42,16 @@ class ClientController extends Controller
         $filter = strtolower($request->query("filter"));
         $order = strtolower($request->query("order"));
         $query_text = strtolower($request->query("q"));
+        $pagination = $request->query("pagination");
 
         if ($filter == '') {
             $filter = 'name';
         }
         if ($order == '') {
             $order = 'asc';
+        }
+        if ($pagination == null || !is_numeric($pagination)) {
+            $pagination = 500;
         }
 
         $raw = Client::query();
@@ -71,7 +75,7 @@ class ClientController extends Controller
             });
         }
 
-        $clients = $raw->paginate($this->paginate);
+        $clients = $raw->paginate($pagination);
 
 
         if ((new AppController())->isApi($request))
@@ -84,6 +88,8 @@ class ClientController extends Controller
                 'param_filter' => $filter,
                 'param_order' => $order,
                 'param_query' => $query_text,
+                'param_pagination' => $pagination,
+                'count' => Client::count(),
             ]);
         }
     }
