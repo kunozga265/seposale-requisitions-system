@@ -57,18 +57,18 @@
                           <i class="mdi mdi-close"></i>
                         </button>
                         <jet-input id="code" type="text" class="block w-full" placeholder="Search Name..."
-                          v-model="form.name" autocomplete="seposale-filter-code" />
+                          @enter="search" v-model="form.name" autocomplete="seposale-filter-code" />
 
                       </div>
                     </div>
 
                     <div style="max-width: 130px;" class="w-full p-2 pb-4 heading-font text-left relative">
-                     
+
                       <select v-model="filter"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                         <!-- <option value="NONE">None</option> -->
-                        <option value="NAME">Name</option>
-                        <option value="PAYMENTS">Payments</option>
+                        <option value="name">Name</option>
+                        <option value="payments">Payments</option>
                       </select>
 
                     </div>
@@ -76,8 +76,8 @@
 
                       <select v-model="order"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
-                        <option value="ASC">ASC</option>
-                        <option value="DESC">DESC</option>
+                        <option value="asc">ASC</option>
+                        <option value="desc">DESC</option>
                       </select>
 
                     </div>
@@ -87,7 +87,7 @@
 
                       <tr>
                         <th scope="col" class="p-2 pb-0 heading-font text-left"></th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">#</th>
+                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-left">#</th> -->
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Name</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-center">Organisation</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-left flex items-center">Phone Number
@@ -124,7 +124,7 @@
                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
 
                         </td>
-                        <td @click="navigateToClient(client.id)" class="p-2 text-left ">{{ index + 1 }}</td>
+                        <!-- <td @click="navigateToClient(client.id)" class="p-2 text-left ">{{ index + 1 }}</td> -->
                         <td @click="navigateToClient(client.id)" class="p-2 text-left ">
                           <div>{{ client.name }}</div>
                           <div class="text-red">{{ findMatch(client) }}</div>
@@ -179,6 +179,9 @@ import JetLabel from '@/Jetstream/Label'
 export default {
   props: [
     'clients',
+    'param_filter',
+    'param_order',
+    'param_query',
   ],
   components: {
     JetInput, DeliveryStatus, SaleStatus,
@@ -191,10 +194,10 @@ export default {
   },
   data() {
     return {
-      filter: 'NAME',
-      order: 'ASC',
+      filter: this.param_filter ?? 'name',
+      order: this.param_order ?? 'asc',
       form: this.$inertia.form({
-        name: ""
+        name: this.param_query ?? ""
       }),
       listOfClients: []
     }
@@ -203,38 +206,38 @@ export default {
     filteredClients() {
       let filtered = this.clients.data
 
-      /* Filter Sales By Client*/
-      if (this.form.name.length !== 0) {
-        filtered = (filtered).filter((client) => {
-          if (client.alias) {
-            return client.name.toLowerCase().includes(this.form.name.toLowerCase()) || client.alias.toLowerCase().includes(this.form.name.toLowerCase())
-          } else {
-            return client.name.toLowerCase().includes(this.form.name.toLowerCase())
-          }
-        })
-      }
+      // /* Filter Sales By Client*/
+      // if (this.form.name.length !== 0) {
+      //   filtered = (filtered).filter((client) => {
+      //     if (client.alias) {
+      //       return client.name.toLowerCase().includes(this.form.name.toLowerCase()) || client.alias.toLowerCase().includes(this.form.name.toLowerCase())
+      //     } else {
+      //       return client.name.toLowerCase().includes(this.form.name.toLowerCase())
+      //     }
+      //   })
+      // }
 
-      // SORT BY NAME
-      switch (this.filter) {
-        case 'PAYMENTS':
-          filtered.sort((a, b) => {
-            if (this.order == 'ASC') {
-              return a.totalPayments - b.totalPayments
-            } else {
-              return b.totalPayments - a.totalPayments
-            }
-          })
-          break
-        case 'NAME':
-          filtered.sort((a, b) => {
-            if (this.order == 'ASC') {
-              return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
-            } else {
-              return b.name.localeCompare(a.name, undefined, { sensitivity: 'base' })
-            }
-          })
-          break
-      }
+      // // SORT BY NAME
+      // switch (this.filter) {
+      //   case 'PAYMENTS':
+      //     filtered.sort((a, b) => {
+      //       if (this.order == 'ASC') {
+      //         return a.totalPayments - b.totalPayments
+      //       } else {
+      //         return b.totalPayments - a.totalPayments
+      //       }
+      //     })
+      //     break
+      //   case 'NAME':
+      //     filtered.sort((a, b) => {
+      //       if (this.order == 'ASC') {
+      //         return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+      //       } else {
+      //         return b.name.localeCompare(a.name, undefined, { sensitivity: 'base' })
+      //       }
+      //     })
+      //     break
+      // }
 
 
       return filtered
@@ -243,12 +246,23 @@ export default {
       return this.listOfClients
     }
   },
+  watch: {
+    filter() {
+      this.search();
+    },
+    order() {
+      this.search();
+    },
+  },
   methods: {
+    search(q) {
+      this.$inertia.get(this.route('clients.index', { 'q': this.form.name, 'filter': this.filter, 'order': this.order }))
+    },
     navigateToClient(id) {
       this.$inertia.get(this.route('clients.show', { 'id': id }))
     },
     selectClient(id) {
-      //add id if not in list
+      //add id if not in listx
       if (this.listOfClients.includes(id)) {
         const index = this.listOfClients.indexOf(id);
         if (index > -1) {

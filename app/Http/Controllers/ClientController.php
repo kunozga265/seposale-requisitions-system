@@ -35,9 +35,43 @@ use Illuminate\Support\Facades\Hash;
 
 class ClientController extends Controller
 {
+    private int $paginate = 500;
+
     public function index(Request $request)
     {
-        $clients = Client::orderBy("name", "asc")->get();
+        $filter = strtolower($request->query("filter"));
+        $order = strtolower($request->query("order"));
+        $query_text = strtolower($request->query("q"));
+
+        if ($filter == '') {
+            $filter = 'name';
+        }
+        if ($order == '') {
+            $order = 'asc';
+        }
+
+        $raw = Client::query();
+
+        // 🔹 Sorting
+        if ($filter === 'payments') {
+            $raw->withSum('receipts', 'amount')
+                ->orderBy('receipts_sum_amount', $order ?? 'desc');
+        } else {
+            $raw->orderBy('name', $order ?? 'asc');
+        }
+
+        // 🔹 Search (proper grouping)
+        if (!empty($query_text)) {
+            $raw->where(function ($q) use ($query_text) {
+                $q->where('name', 'like', "%{$query_text}%")
+                    ->orWhere('alias', 'like', "%{$query_text}%")
+                    ->orWhere('address', 'like', "%{$query_text}%")
+                    ->orWhere('phone_number', 'like', "%{$query_text}%")
+                    ->orWhere('phone_number_other', 'like', "%{$query_text}%");
+            });
+        }
+
+        $clients = $raw->paginate($this->paginate);
 
 
         if ((new AppController())->isApi($request))
@@ -47,6 +81,9 @@ class ClientController extends Controller
             //Web Response
             return Inertia::render('Clients/Index', [
                 'clients' => ClientResource::collection($clients),
+                'param_filter' => $filter,
+                'param_order' => $order,
+                'param_query' => $query_text,
             ]);
         }
     }
@@ -494,10 +531,9 @@ class ClientController extends Controller
 
             if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', 'pricelist_referred')->exists() || $request->force_send == true) {
                 (new NotificationController())->processWhatsappMessage("pricelist_referred", $client->serial, $message);
-            }else{
+            } else {
                 Log::error("Aborted: Pricelist already sent to {$client->name}.");
                 return Redirect::back()->with('error', 'Pricelist already sent. Force send if you want to resend.');
-
             }
 
 

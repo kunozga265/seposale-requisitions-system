@@ -19,6 +19,7 @@ class Client extends Model
     {
         return $this->receipts()->sum('amount');
     }
+    
     public function sales()
     {
         return $this->hasMany(Sale::class);
