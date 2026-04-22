@@ -19,19 +19,29 @@ class WhatsappMessageController extends Controller
         $user = User::find(Auth::id());
 
         $filter = strtolower($request->query("filter"));
+        $query_text = strtolower($request->query("q"));
 
         if ($user->hasRole('management') || $user->hasRole('administrator') || $user->hasRole('sales')) {
 
             if ($filter == "responses") {
-                $messages = WhatsappMessage::where('type', 1)->latest()->paginate((new AppController())->paginate);
+                $raw = WhatsappMessage::where('type', 1)->latest();
                 $filter = "responses";
             } else if ($filter == "sent") {
-                $messages = WhatsappMessage::where('type', 0)->latest()->paginate((new AppController())->paginate);
+                $raw = WhatsappMessage::where('type', 0)->latest();
                 $filter = "sent";
             } else {
-                $messages = WhatsappMessage::latest()->paginate((new AppController())->paginate);
+                $raw = WhatsappMessage::latest();
                 $filter = "all";
             }
+
+            if ($query_text != null || $query_text != "") {
+                $raw =  $raw->whereHas('client', function ($query) use ($query_text) {
+                    $query->where('name', 'like', '%' . $query_text . '%')
+                        ->orWhere('alias', 'like', '%' . $query_text . '%');
+                });
+            }
+
+            $messages = $raw->paginate((new AppController())->paginate);
         } else {
             $messages = $user->whatsappMessages()->latest()->paginate((new AppController())->paginate);
         }
@@ -43,7 +53,8 @@ class WhatsappMessageController extends Controller
             //Web Response
             return Inertia::render('Whatsapp/Index', [
                 'messages' => WhatsappMessageResource::collection($messages),
-                'filter' => $filter
+                'filter' => $filter,
+                'query_text' => $query_text ?? "",
             ]);
         }
     }

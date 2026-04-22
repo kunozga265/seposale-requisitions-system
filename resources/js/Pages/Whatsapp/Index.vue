@@ -36,7 +36,7 @@
         </template>
 
         <div class="py-6">
-            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 mb-4">
+            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 space-y-4 mb-4">
 
                 <div v-show="checkRole($page.props.auth.data, 'management') ||
                     checkRole($page.props.auth.data, 'administrator') ||
@@ -70,7 +70,9 @@
 
                 </div>
 
-                <div class="grid grid-cols-1 mb-4">
+
+
+                <div class="grid grid-cols-1">
 
                     <div class="page-section">
                         <!-- <div class="page-section-header">
@@ -79,6 +81,20 @@
                             </div>
                         </div> -->
                         <div class="page-section-content">
+                            <div class="w-full mb-4">
+                                <!-- <jet-label for="clientType" value="Search" /> -->
+
+                                <div class="w-full heading-font text-left relative">
+                                    <button v-show="query.length > 0" @click="query = ''"
+                                        class="absolute top-3 right-4 h-5 w-5 close-field rounded-full bg-white p-1 hover:bg-gray-300 flex justify-center items-center transition ease-out duration-500">
+                                        <i class="mdi mdi-close"></i>
+                                    </button>
+
+                                    <jet-input id="code" type="text" class="block w-full" placeholder="Search..."
+                                        @enter="search" v-model="query" autocomplete="seposale-filter-code" />
+
+                                </div>
+                            </div>
 
                             <div class="card">
                                 <div class="p-2 mb-2 relative ">
@@ -118,7 +134,7 @@
                     </div>
                 </div>
 
-                <pagination :object="messages"  :params="`filter=${filter}`"/>
+                <pagination :object="messages" :params="`filter=${filter}&q=${query}`" />
             </div>
         </div>
     </app-layout>
@@ -144,7 +160,7 @@ import Message from './Message.vue';
 import { Money } from "v-money";
 
 export default {
-    props: ['messages', 'filter'],
+    props: ['messages', 'filter', 'query_text'],
     components: {
         Money,
         Pagination,
@@ -165,6 +181,7 @@ export default {
     },
     data() {
         return {
+            query: this.query_text,
 
             form: this.$inertia.form({
                 dates: "",
@@ -214,6 +231,9 @@ export default {
         },
     },
     methods: {
+        search(q) {
+            this.$inertia.get(this.route('whatsapp.index', { 'q': q, 'filter': this.filter }))
+        },
         navigateToTransaction(serial) {
             this.$inertia.get(this.route('accounts.transaction', { 'serial': serial }))
         },
