@@ -260,7 +260,7 @@ class ProductController extends Controller
             'products' => $products->chunk(2),
         ]);
 
-        $filename = public_path('files') . "/seposale_pricelist.pdf";
+        $filename = public_path('files') . "/seposale_pricelist_" . date('Y-m') . ".pdf";
 
         $pdf->save($filename);
     }
