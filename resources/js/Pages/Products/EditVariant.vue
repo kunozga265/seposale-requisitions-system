@@ -188,7 +188,7 @@ export default {
                 this.form.id = this.products[this.variantIndex].variant_id
                 this.form.description = this.products[this.variantIndex].description
                 this.form.photo = this.products[this.variantIndex].photo
-                this.form.variantName = this.products[this.variantIndex].name
+                this.form.variantName = this.products[this.variantIndex].variant_name
                 this.form.unit = this.products[this.variantIndex].unit
                 this.form.quantity = this.products[this.variantIndex].quantity
                 this.form.cost = this.products[this.variantIndex].cost
