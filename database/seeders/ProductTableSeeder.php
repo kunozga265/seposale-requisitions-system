@@ -19,6 +19,7 @@ class ProductTableSeeder extends Seeder
         $product = Product::create([
             "name" => "Cement",
             "slug" => Str::slug("Cement"),
+            "photo" => "images/gallery/cement.jpg"
 
         ]);
 
@@ -45,6 +46,7 @@ class ProductTableSeeder extends Seeder
         $product = Product::create([
             "name" => "Quarry Stone",
             "slug" => Str::slug("Quarry Stone"),
+            "photo" => "images/gallery/quarry-stone.jpg"
         ]);
 
         ProductVariant::create([
@@ -78,6 +80,7 @@ class ProductTableSeeder extends Seeder
         $product = Product::create([
             "name" => "Pebble Stone",
             "slug" => Str::slug("Pebble Stone"),
+            "photo" => "images/gallery/pebble-stone.jpg"
         ]);
 
         ProductVariant::create([
@@ -111,6 +114,7 @@ class ProductTableSeeder extends Seeder
         $product = Product::create([
             "name" => "Quarry Dust",
             "slug" => Str::slug("Quarry Dust"),
+            "photo" => "images/gallery/quarry-dust.jpg"
         ]);
 
         ProductVariant::create([
@@ -144,6 +148,7 @@ class ProductTableSeeder extends Seeder
         $product = Product::create([
             "name" => "Cement Block",
             "slug" => Str::slug("Cement Block"),
+            "photo" => "images/gallery/cement-blocks.jpg"
         ]);
 
         ProductVariant::create([
@@ -169,6 +174,7 @@ class ProductTableSeeder extends Seeder
         $product = Product::create([
             "name" => "River Sand",
             "slug" => Str::slug("River Sand"),
+            "photo" => "images/gallery/river-sand.jpg"
         ]);
 
         ProductVariant::create([
@@ -194,6 +200,7 @@ class ProductTableSeeder extends Seeder
         $product = Product::create([
             "name" => "Other",
             "slug" => Str::slug("Other"),
+            "photo" => "images/gallery/other.jpg"
         ]);
         $product = Product::create([
             "name" => "Services",

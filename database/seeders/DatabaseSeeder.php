@@ -34,20 +34,20 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //Essentials
-        $this->call(RoleTableSeeder::class);
-        $this->call(PositionTableSeeder::class);
-        $this->call(ProductTableSeeder::class);
-        $this->call(ProductAppendTableSeeder::class);
-        $this->call(ProductVariantAppendTableSeeder::class);
-        $this->call(UserTableSeeder::class);
-        $this->call(PaymentMethodTableSeeder::class);
-        $this->call(SitesTableSeeder::class);
-        $this->call(InventoryTableSeeder::class);
-        $this->call(AccountTypeTableSeeder::class);
-        $this->call(AccountsGroupTableSeeder::class);
-        $this->call(AccountingAccountsTableSeeder::class);
-        $this->call(ProductAccountsTableSeeder::class);
-        $this->call(ClientTypeTableSeeder::class);
+        // $this->call(RoleTableSeeder::class);
+        // $this->call(PositionTableSeeder::class);
+        // $this->call(ProductTableSeeder::class);
+        // $this->call(ProductAppendTableSeeder::class);
+        // $this->call(ProductVariantAppendTableSeeder::class);
+        // $this->call(UserTableSeeder::class);
+        // $this->call(PaymentMethodTableSeeder::class);
+        // $this->call(SitesTableSeeder::class);
+        // $this->call(InventoryTableSeeder::class);
+        // $this->call(AccountTypeTableSeeder::class);
+        // $this->call(AccountsGroupTableSeeder::class);
+        // $this->call(AccountingAccountsTableSeeder::class);
+        // $this->call(ProductAccountsTableSeeder::class);
+        // $this->call(ClientTypeTableSeeder::class);
 
 
         //Optionals
