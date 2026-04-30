@@ -203,6 +203,7 @@ class ProductController extends Controller
             "name" => $request->variant_name,
             "description" => $request->description,
             "slug" => Str::slug($request->description),
+            "photo" => $request->photo,
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
@@ -226,12 +227,19 @@ class ProductController extends Controller
 
         $request->validate([
             'id' => ['required'],
+            'variant_name' => ['required'],
+            'description' => ['required'],
             'cost' => ['required'],
             'cost_original' => ['required'],
         ]);
 
         $productVariant = ProductVariant::find($request->id);
         $productVariant->update([
+            "name" => $request->variant_name,
+            "photo" => $request->photo,
+            "description" => $request->description,
+            "unit" => $request->unit,
+            "quantity" => $request->quantity,
             "cost" => $request->cost,
             "cost_original" => $request->cost_original,
         ]);
@@ -245,7 +253,7 @@ class ProductController extends Controller
             return response()->json();
         else {
             //Web Response
-            return Redirect::route('products.index')->with('success', 'Product price udpated!!');
+            return Redirect::route('products.index')->with('success', 'Product udpated!!');
         }
     }
 

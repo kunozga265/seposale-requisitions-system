@@ -1,5 +1,8 @@
 <template>
   <div>
+
+    <!-- <Head title="Products" /> -->
+
     <jet-banner />
 
     <div class="min-h-screen bg-gray-100">
@@ -317,7 +320,8 @@
                 </a>
               </li> -->
 
-              <li v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+              <li
+                v-if="checkRole($page.props.auth.data, 'accountant') || checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
                 <div @click="reports = !reports"
                   class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
@@ -347,11 +351,11 @@
                       Financial Statements
                     </a>
                   </li>
-                
-                
+
+
                 </ul>
               </li>
-              <li >
+              <li>
                 <div @click="more = !more"
                   class="mb-2 flex items-center justify-between p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                   <div>
@@ -363,21 +367,23 @@
                   </div>
                 </div>
                 <ul v-show="more">
-                  <li v-if=" checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
                     <a :href="route('vacancies.index')"
                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Vacancies
                     </a>
                   </li>
-                  
-                  <li v-if=" checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')  || checkRole($page.props.auth.data, 'sales')">
+
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'sales')">
                     <a :href="route('whatsapp.index')"
                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Whatsapp Messages
                     </a>
                   </li>
-                  
-                
+
+
                 </ul>
               </li>
               <li>
@@ -532,6 +538,7 @@
 </template>
 
 <script>
+// import { Head } from '@inertiajs/inertia-vue'
 import JetApplicationMark from '@/Jetstream/ApplicationMark'
 import JetBanner from '@/Jetstream/Banner'
 import JetDropdown from '@/Jetstream/Dropdown'
@@ -542,6 +549,7 @@ import Toast from "@/Components/Toast";
 
 export default {
   components: {
+    // Head,
     JetApplicationMark,
     JetBanner,
     JetDropdown,

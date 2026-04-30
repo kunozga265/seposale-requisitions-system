@@ -690,6 +690,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['employee', 'management']
         ])->name('clients.update');
 
+        Route::post('/destroy/{id}', [
+            "uses"  => "App\Http\Controllers\ClientController@destroy",
+            'roles' => ['employee', 'management']
+        ])->name('clients.destroy');
+
         Route::get('/pricelist', [
             "uses"  => "App\Http\Controllers\ClientController@pricelist",
             'roles' => ['employee', 'management']
@@ -994,7 +999,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         Route::post('/edit-variant', [
             "uses"  => "App\Http\Controllers\ProductController@editVariant",
             'roles' => ['employee', 'management']
-        ])->name('products.edit-price');
+        ])->name('products.edit-variant');
 
         Route::get('/edit/{id}', [
             "uses"  => "App\Http\Controllers\ProductController@edit",

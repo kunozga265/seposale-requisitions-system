@@ -308,6 +308,9 @@ class AppController extends Controller
             case 'PRICELIST':
                 $filename = "files/list-of-clients/" . $type . "-" . uniqid() . "." . $ext;
                 break;
+            case 'PRODUCTS':
+                $filename = "files/products/" . $type . "-" . uniqid() . "." . $ext;
+                break;
             default:
                 $filename = "files/other/" . $type . "-" . uniqid() . "." . $ext;
         }

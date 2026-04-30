@@ -573,4 +573,69 @@ class ClientController extends Controller
             return null;
         }
     }
+
+    public function destroy(Request $request, $id)
+    {
+        //find out if the request is valid
+        $client = Client::find($id);
+
+        if (is_object($client)) {
+
+            $message = "";
+            $check = false;
+
+            if ($client->totalPayments() > 0 || $client->receipts->count() > 0) {
+                $message = "Has bought something before";
+                $check = false;
+            } else if ($client->sales->count() > 0) {
+                $message = "Has sales records";
+                $check = false;
+            } else if ($client->siteSales->count() > 0) {
+                $message = "Has site sales records";
+                $check = false;
+            } else if ($client->collections->count() > 0) {
+                $message = "Has collections records";
+                $check = false;
+            } else if ($client->invoices->count() > 0) {
+                $message = "Has invoices records";
+                $check = false;
+            } else if ($client->quotations->count() > 0) {
+                $message = "Has quotations records";
+                $check = false;
+            } else {
+                $check = true;
+            }
+
+
+
+            if ($check) {
+
+                $client->delete();
+
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => 'Client has been deleted']);
+                } else {
+                    //Web Response
+                    return Redirect::route('clients.index')->with('success', 'Client has been deleted');
+                }
+            } else {
+                if ((new AppController())->isApi($request)) {
+                    //API Response
+                    return response()->json(['message' => 'Client has been deleted'], 400);
+                } else {
+                    //Web Response
+                    return Redirect::route('clients.index')->with('error', 'Failed to delete. ' . $message);
+                }
+            }
+        } else {
+            if ((new AppController())->isApi($request)) {
+                //API Response
+                return response()->json(['message' => "Client not found"], 404);
+            } else {
+                //Web Response
+                return Redirect::back()->with('error', 'Client not found');
+            }
+        }
+    }
 }

@@ -1,211 +1,217 @@
 <template>
-    <app-layout>
-        <template #header>
-            Dashboard
-        </template>
+    <div>
 
-        <template #breadcrumbs>
-            <li aria-current="page">
-                <div class="flex items-center">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                    <span
-                        class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">Dashboard</span>
+        <Head title="Dashboard" />
+        
+        <app-layout>
+            <template #header>
+                Dashboard
+            </template>
+
+            <template #breadcrumbs>
+                <li aria-current="page">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span
+                            class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">Dashboard</span>
+                    </div>
+                </li>
+            </template>
+
+            <template #actions
+                v-if="!checkRole($page.props.auth.data, 'unverified') && !checkRole($page.props.auth.data, 'disabled')">
+
+
+                <div class="flex gap-x-2">
+
+                    <jet-dropdown align="right" width="48">
+                        <template #trigger>
+                            <primary-button>
+                                Quick Actions
+                            </primary-button>
+                        </template>
+
+                        <template #content>
+                            <!--                    &lt;!&ndash; Account Management &ndash;&gt;-->
+                            <!--                    <div class="block px-4 py-2 text-xs text-gray-400">-->
+                            <!--                        Quick Actions-->
+                            <!--                    </div>-->
+
+                            <jet-dropdown-link class="text-left" :href="route('request-forms.create')">
+                                Create Requisition
+                            </jet-dropdown-link>
+                            <div class="border-t border-gray-100"></div>
+
+                            <jet-dropdown-link class="text-left" :href="route('quotations.create')">
+                                Generate Quotation
+                            </jet-dropdown-link>
+                            <div class="border-t border-gray-100"></div>
+
+                            <jet-dropdown-link class="text-left" :href="route('sales.create')">
+                                Record Sale
+                            </jet-dropdown-link>
+                            <jet-dropdown-link class="text-left" :href="route('clients.pricelist')">
+                                Send Pricelist
+                            </jet-dropdown-link>
+
+
+                        </template>
+                    </jet-dropdown>
+
+                    <secondary-button @click.native="findRequestDialog = true"
+                        style="padding-top: 0.4rem; padding-bottom: 0.4rem;">
+                        Find Request
+                        <i class="ml-2 mdi mdi-magnify text-lg"></i>
+                    </secondary-button>
                 </div>
-            </li>
-        </template>
 
-        <template #actions
-            v-if="!checkRole($page.props.auth.data, 'unverified') && !checkRole($page.props.auth.data, 'disabled')">
+            </template>
 
-
-            <div class="flex gap-x-2">
-
-                <jet-dropdown align="right" width="48">
-                    <template #trigger>
-                        <primary-button>
-                            Quick Actions
-                        </primary-button>
-                    </template>
-
-                    <template #content>
-                        <!--                    &lt;!&ndash; Account Management &ndash;&gt;-->
-                        <!--                    <div class="block px-4 py-2 text-xs text-gray-400">-->
-                        <!--                        Quick Actions-->
-                        <!--                    </div>-->
-
-                        <jet-dropdown-link class="text-left" :href="route('request-forms.create')">
-                            Create Requisition
-                        </jet-dropdown-link>
-                        <div class="border-t border-gray-100"></div>
-
-                        <jet-dropdown-link class="text-left" :href="route('quotations.create')">
-                            Generate Quotation
-                        </jet-dropdown-link>
-                        <div class="border-t border-gray-100"></div>
-
-                        <jet-dropdown-link class="text-left" :href="route('sales.create')">
-                            Record Sale
-                        </jet-dropdown-link>
-                        <jet-dropdown-link class="text-left" :href="route('clients.pricelist')">
-                            Send Pricelist
-                        </jet-dropdown-link>
-
-
-                    </template>
-                </jet-dropdown>
-
-                <secondary-button @click.native="findRequestDialog = true"
-                    style="padding-top: 0.4rem; padding-bottom: 0.4rem;">
+            <dialog-modal :show="findRequestDialog" @close="findRequestDialog = false">
+                <template #title>
                     Find Request
-                    <i class="ml-2 mdi mdi-magnify text-lg"></i>
-                </secondary-button>
-            </div>
+                </template>
 
-        </template>
+                <template #content>
 
-        <dialog-modal :show="findRequestDialog" @close="findRequestDialog = false">
-            <template #title>
-                Find Request
-            </template>
-
-            <template #content>
-
-                <div class="mb-4">
-                    <jet-label for="requestCode" value="Enter Request Code" />
-                    <jet-input id="requestCode" type="text" class="mt-1 block w-full" v-model="form.requestCode"
-                        autocomplete="geoserve-request-code" />
-                    <!-- <span v-show="form.requestCode.length !== 8" class="text-xs text-red-600">Enter 8 Characters</span> -->
-                </div>
-            </template>
-
-            <template #footer>
-                <secondary-button @click.native="findRequestDialog = false">
-                    Cancel
-                </secondary-button>
-
-                <primary-button class="ml-2" @click.native="findRequest" :disabled="form.processing">
-                    <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
-                        viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                            fill="#E5E7EB" />
-                        <path
-                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                            fill="currentColor" />
-                    </svg>
-                    Search
-                </primary-button>
-            </template>
-        </dialog-modal>
-
-        <div class="py-6">
-            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-
-                <div v-if="checkRole($page.props.auth.data, 'unverified')">
-
-                    <!--                    <div class="text-sm text-center">Awaiting Verification</div>-->
-                    <div class=" bg-white shadow-md overflow-hidden rounded-xl">
-                        <div class="px-6 py-4">
-                            <img class="mx-auto max-h-96" :src="fileUrl('images/access-blocked.svg')"
-                                alt="Access Blocked">
-                        </div>
-                        <div class="px-6 py-4 heading-font bg-blue-700 text-center text-lg text-white">
-                            <svg role="status" class="inline w-4 h-4 mr-3 text-white animate-spin" viewBox="0 0 100 101"
-                                fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                    fill="#E5E7EB" />
-                                <path
-                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                    fill="currentColor" />
-                            </svg>
-                            Awaiting Verification
-                        </div>
+                    <div class="mb-4">
+                        <jet-label for="requestCode" value="Enter Request Code" />
+                        <jet-input id="requestCode" type="text" class="mt-1 block w-full" v-model="form.requestCode"
+                            autocomplete="geoserve-request-code" />
+                        <!-- <span v-show="form.requestCode.length !== 8" class="text-xs text-red-600">Enter 8 Characters</span> -->
                     </div>
-                </div>
-                <div v-else-if="checkRole($page.props.auth.data, 'disabled')">
-                    <div class=" bg-white shadow-md overflow-hidden rounded-xl">
-                        <div class="px-6 py-4">
-                            <img class="mx-auto max-h-96" :src="fileUrl('images/access-blocked.svg')"
-                                alt="Access Blocked">
-                        </div>
-                        <div class="px-6 py-4 heading-font bg-rose-600 text-center text-lg text-white">
-                            Your account is disabled
-                        </div>
-                    </div>
+                </template>
 
-                </div>
-                <div v-else>
-                    <div class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Overview
+                <template #footer>
+                    <secondary-button @click.native="findRequestDialog = false">
+                        Cancel
+                    </secondary-button>
+
+                    <primary-button class="ml-2" @click.native="findRequest" :disabled="form.processing">
+                        <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
+                            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                fill="#E5E7EB" />
+                            <path
+                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                fill="currentColor" />
+                        </svg>
+                        Search
+                    </primary-button>
+                </template>
+            </dialog-modal>
+
+            <div class="py-6">
+                <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+
+                    <div v-if="checkRole($page.props.auth.data, 'unverified')">
+
+                        <!--                    <div class="text-sm text-center">Awaiting Verification</div>-->
+                        <div class=" bg-white shadow-md overflow-hidden rounded-xl">
+                            <div class="px-6 py-4">
+                                <img class="mx-auto max-h-96" :src="fileUrl('images/access-blocked.svg')"
+                                    alt="Access Blocked">
+                            </div>
+                            <div class="px-6 py-4 heading-font bg-blue-700 text-center text-lg text-white">
+                                <svg role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
+                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                        fill="#E5E7EB" />
+                                    <path
+                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                        fill="currentColor" />
+                                </svg>
+                                Awaiting Verification
                             </div>
                         </div>
-                        <div class="page-section-content">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">
-                                <div class="card mb-0" v-if="awaitingApprovalCount > 0">
-                                    <div class="flex justify-start items-center">
-                                        <div class="ml-3 mr-1 relative">
-                                            <i class="mdi mdi-book-clock text-yellow" style="font-size: 32px;"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="heading-font" style="font-weight: 600;">Awaiting Approval</div>
-                                            <div class="text-sm text-gray-400">{{ awaitingApprovalCount }}
-                                                {{ awaitingApprovalCount == 1 ? 'Request' : 'Requests' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card mb-0" v-if="awaitingInitiationCount > 0">
-                                    <div class="flex justify-start items-center">
-                                        <div class="ml-3 mr-1 relative">
-                                            <i class="mdi mdi-book-check text-green" style="font-size: 32px;"></i>
-                                        </div>
+                    </div>
+                    <div v-else-if="checkRole($page.props.auth.data, 'disabled')">
+                        <div class=" bg-white shadow-md overflow-hidden rounded-xl">
+                            <div class="px-6 py-4">
+                                <img class="mx-auto max-h-96" :src="fileUrl('images/access-blocked.svg')"
+                                    alt="Access Blocked">
+                            </div>
+                            <div class="px-6 py-4 heading-font bg-rose-600 text-center text-lg text-white">
+                                Your account is disabled
+                            </div>
+                        </div>
 
-                                        <div class="ml-4">
-                                            <div class="heading-font" style="font-weight: 600;">Awaiting Initiation
+                    </div>
+                    <div v-else>
+                        <div class="page-section">
+                            <div class="page-section-header">
+                                <div class="page-section-title">
+                                    Overview
+                                </div>
+                            </div>
+                            <div class="page-section-content">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">
+                                    <div class="card mb-0" v-if="awaitingApprovalCount > 0">
+                                        <div class="flex justify-start items-center">
+                                            <div class="ml-3 mr-1 relative">
+                                                <i class="mdi mdi-book-clock text-yellow" style="font-size: 32px;"></i>
                                             </div>
-                                            <div class="text-sm text-gray-400">{{ awaitingInitiationCount }}
-                                                {{ awaitingInitiationCount == 1 ? 'Request' : 'Requests' }}
+                                            <div class="ml-4">
+                                                <div class="heading-font" style="font-weight: 600;">Awaiting Approval
+                                                </div>
+                                                <div class="text-sm text-gray-400">{{ awaitingApprovalCount }}
+                                                    {{ awaitingApprovalCount == 1 ? 'Request' : 'Requests' }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="card mb-0" v-if="awaitingReconciliationCount > 0">
-                                    <div class="flex justify-start items-center">
-                                        <div class="ml-3 mr-1 relative">
-                                            <i class="mdi mdi-book-clock text-green" style="font-size: 32px;"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="heading-font" style="font-weight: 600;">Awaiting
-                                                Reconciliation
+                                    <div class="card mb-0" v-if="awaitingInitiationCount > 0">
+                                        <div class="flex justify-start items-center">
+                                            <div class="ml-3 mr-1 relative">
+                                                <i class="mdi mdi-book-check text-green" style="font-size: 32px;"></i>
                                             </div>
-                                            <div class="text-sm text-gray-400">{{ awaitingReconciliationCount }}
-                                                {{ awaitingReconciliationCount == 1 ? 'Request' : 'Requests' }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card mb-0" v-if="activeCount > 0">
-                                    <div class="flex justify-start items-center">
-                                        <div class="ml-3 mr-1 relative">
-                                            <i class="mdi  mdi-book-multiple text-blue" style="font-size: 32px;"></i>
-                                        </div>
-                                        <div class="ml-4">
-                                            <div class="heading-font" style="font-weight: 600;">Active</div>
-                                            <div class="text-sm text-gray-400">{{ activeCount }}
-                                                {{ activeCount == 1 ? 'Request' : 'Requests' }}
+
+                                            <div class="ml-4">
+                                                <div class="heading-font" style="font-weight: 600;">Awaiting Initiation
+                                                </div>
+                                                <div class="text-sm text-gray-400">{{ awaitingInitiationCount }}
+                                                    {{ awaitingInitiationCount == 1 ? 'Request' : 'Requests' }}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <!-- <div class="card mb-0">
+                                    <div class="card mb-0" v-if="awaitingReconciliationCount > 0">
+                                        <div class="flex justify-start items-center">
+                                            <div class="ml-3 mr-1 relative">
+                                                <i class="mdi mdi-book-clock text-green" style="font-size: 32px;"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="heading-font" style="font-weight: 600;">Awaiting
+                                                    Reconciliation
+                                                </div>
+                                                <div class="text-sm text-gray-400">{{ awaitingReconciliationCount }}
+                                                    {{ awaitingReconciliationCount == 1 ? 'Request' : 'Requests' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card mb-0" v-if="activeCount > 0">
+                                        <div class="flex justify-start items-center">
+                                            <div class="ml-3 mr-1 relative">
+                                                <i class="mdi  mdi-book-multiple text-blue"
+                                                    style="font-size: 32px;"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="heading-font" style="font-weight: 600;">Active</div>
+                                                <div class="text-sm text-gray-400">{{ activeCount }}
+                                                    {{ activeCount == 1 ? 'Request' : 'Requests' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <div class="card mb-0">
 
                                     <div class="flex justify-start items-center">
                                         <div class="ml-3 mr-1 relative">
@@ -223,7 +229,7 @@
                                         </div>
                                     </div>
                                 </div> -->
-                                <!-- <div class="card mb-0">
+                                    <!-- <div class="card mb-0">
 
                                     <div class="flex justify-start items-center">
                                         <div class="ml-3 mr-1 relative">
@@ -254,66 +260,66 @@
                                     </div>
                                 </div> -->
 
-                                <div class="card mb-0"
-                                    v-if="unverifiedUsersCount > 0 && (checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'administrator'))">
-                                    <inertia-link :href="route('users')">
-                                        <div class="flex justify-start items-center">
-                                            <div class="ml-3 mr-1 relative">
-                                                <i class="mdi mdi-account-supervisor-circle"
-                                                    style="font-size: 32px; color:#eab308"></i>
-                                            </div>
-                                            <div class="ml-4">
-                                                <div class="heading-font" style="font-weight: 600;">Unverified Users
+                                    <div class="card mb-0"
+                                        v-if="unverifiedUsersCount > 0 && (checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'administrator'))">
+                                        <inertia-link :href="route('users')">
+                                            <div class="flex justify-start items-center">
+                                                <div class="ml-3 mr-1 relative">
+                                                    <i class="mdi mdi-account-supervisor-circle"
+                                                        style="font-size: 32px; color:#eab308"></i>
                                                 </div>
-                                                <div class="text-sm text-gray-400">{{ unverifiedUsersCount }}
-                                                    {{ unverifiedUsersCount == 1 ? 'User' : 'Users' }}
+                                                <div class="ml-4">
+                                                    <div class="heading-font" style="font-weight: 600;">Unverified Users
+                                                    </div>
+                                                    <div class="text-sm text-gray-400">{{ unverifiedUsersCount }}
+                                                        {{ unverifiedUsersCount == 1 ? 'User' : 'Users' }}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </inertia-link>
+                                        </inertia-link>
+                                    </div>
                                 </div>
+                                <!--                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">-->
+
+                                <!--                                <div class="card mb-0 lg:col-span-2">-->
+                                <!--                                    <div class="flex justify-between mb-4">-->
+                                <!--                                        <div class="heading-font mb-4">Tasks</div>-->
+                                <!--                                        <div-->
+                                <!--                                            class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">-->
+                                <!--                                            <div>5+ More</div>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                    <div class="grid grid-cols-1 md:grid-cols-2  gap-4">-->
+
+                                <!--                                        <div v-for="i in 6" class="record mb-3 flex justify-between items-center">-->
+                                <!--                                            <div class="flex items-center">-->
+                                <!--                                                <div-->
+                                <!--                                                    class="h-8 w-8 bg-yellow-300 rounded-full flex justify-center items-center">-->
+                                <!--                                                    <div class="text-xs text-white">{{ i }}</div>-->
+                                <!--                                                </div>-->
+                                <!--                                                <div class="ml-3 text-sm ">-->
+                                <!--                                                    <div class="text-sm">John Doe #{{ i }}</div>-->
+                                <!--                                                    <div class="text-xs text-gray-500" v-if="true">-->
+                                <!--                                                        <i class="mdi mdi mdi-adjust text-xs text-gray-500"></i>-->
+                                <!--                                                        Quarry Stone-->
+                                <!--                                                        <i class="mdi mdi mdi-map-marker-outline text-xs text-gray-500"></i>-->
+                                <!--                                                        Location {{ i }}-->
+                                <!--                                                    </div>-->
+                                <!--                                                </div>-->
+                                <!--                                            </div>-->
+                                <!--                                            <div class="heading-font text-xs text-gray-500">25 Tonnes</div>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
+                                <!--                                <div class="">-->
+
+                                <!--                                </div>-->
+
+                                <!--                            </div>-->
+
                             </div>
-                            <!--                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">-->
-
-                            <!--                                <div class="card mb-0 lg:col-span-2">-->
-                            <!--                                    <div class="flex justify-between mb-4">-->
-                            <!--                                        <div class="heading-font mb-4">Tasks</div>-->
-                            <!--                                        <div-->
-                            <!--                                            class="flex items-center rounded-full px-3 bg-gray-200 text-gray-600 text-xs font-bold ">-->
-                            <!--                                            <div>5+ More</div>-->
-                            <!--                                        </div>-->
-                            <!--                                    </div>-->
-                            <!--                                    <div class="grid grid-cols-1 md:grid-cols-2  gap-4">-->
-
-                            <!--                                        <div v-for="i in 6" class="record mb-3 flex justify-between items-center">-->
-                            <!--                                            <div class="flex items-center">-->
-                            <!--                                                <div-->
-                            <!--                                                    class="h-8 w-8 bg-yellow-300 rounded-full flex justify-center items-center">-->
-                            <!--                                                    <div class="text-xs text-white">{{ i }}</div>-->
-                            <!--                                                </div>-->
-                            <!--                                                <div class="ml-3 text-sm ">-->
-                            <!--                                                    <div class="text-sm">John Doe #{{ i }}</div>-->
-                            <!--                                                    <div class="text-xs text-gray-500" v-if="true">-->
-                            <!--                                                        <i class="mdi mdi mdi-adjust text-xs text-gray-500"></i>-->
-                            <!--                                                        Quarry Stone-->
-                            <!--                                                        <i class="mdi mdi mdi-map-marker-outline text-xs text-gray-500"></i>-->
-                            <!--                                                        Location {{ i }}-->
-                            <!--                                                    </div>-->
-                            <!--                                                </div>-->
-                            <!--                                            </div>-->
-                            <!--                                            <div class="heading-font text-xs text-gray-500">25 Tonnes</div>-->
-                            <!--                                        </div>-->
-                            <!--                                    </div>-->
-                            <!--                                </div>-->
-                            <!--                                <div class="">-->
-
-                            <!--                                </div>-->
-
-                            <!--                            </div>-->
-
                         </div>
-                    </div>
-                    <!-- <div class="page-section">
+                        <!-- <div class="page-section">
                         <div class="page-section-header">
                             <div class="page-section-title">
                                 Accounts
@@ -863,7 +869,7 @@
                         </div>
                     </div> -->
 
-                    <!--          <div v-if="dashboardReports.data.length > 0" class="page-section">
+                        <!--          <div v-if="dashboardReports.data.length > 0" class="page-section">
                                 <div class="page-section-header">
                                   <div class="page-section-title">
                                     Overview
@@ -1058,46 +1064,50 @@
                                 </div>
                               </div>
                               -->
-                    <div class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Awaiting your action
+                        <div class="page-section">
+                            <div class="page-section-header">
+                                <div class="page-section-title">
+                                    Awaiting your action
+                                </div>
                             </div>
-                        </div>
-                        <div class="page-section-content">
-                            <div class="grid grid-cols-1 md:grid-cols-2">
-                                <request v-for="(request, index) in toApprove.data" :key="index" :request="request" />
-                                <div v-if="toApprove.data.length === 0"
-                                    class="text-center text-gray-400 md:col-span-2 text-sm">
-                                    No Requests To Approve
+                            <div class="page-section-content">
+                                <div class="grid grid-cols-1 md:grid-cols-2">
+                                    <request v-for="(request, index) in toApprove.data" :key="index"
+                                        :request="request" />
+                                    <div v-if="toApprove.data.length === 0"
+                                        class="text-center text-gray-400 md:col-span-2 text-sm">
+                                        No Requests To Approve
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="page-section">
-                        <div class="page-section-header">
-                            <div class="page-section-title">
-                                Active Requests
+                        <div class="page-section">
+                            <div class="page-section-header">
+                                <div class="page-section-title">
+                                    Active Requests
+                                </div>
                             </div>
-                        </div>
-                        <div class="page-section-content">
-                            <div class="grid grid-cols-1 md:grid-cols-2">
-                                <request v-for="(request, index) in active.data" :key="index" :request="request" />
-                                <div v-if="active.data.length === 0"
-                                    class="text-center text-gray-400 md:col-span-2 text-sm">
-                                    No Active Requests
+                            <div class="page-section-content">
+                                <div class="grid grid-cols-1 md:grid-cols-2">
+                                    <request v-for="(request, index) in active.data" :key="index" :request="request" />
+                                    <div v-if="active.data.length === 0"
+                                        class="text-center text-gray-400 md:col-span-2 text-sm">
+                                        No Active Requests
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </app-layout>
+
+        </app-layout>
+    </div>
 
 </template>
 
 <script>
+
 import AppLayout from '@/Layouts/AppLayout'
 import DoughnutChart from "@/Components/Charts/DoughnutChart";
 import BarChart from "@/Components/Charts/BarChart";

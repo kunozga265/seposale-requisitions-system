@@ -32,6 +32,7 @@
       <a :href="route('clients.edit', { 'id': client.data.id })">
         <primary-button>Edit</primary-button>
       </a>
+      <danger-button @click.native="deleteDialog = true">Delete</danger-button>
     </template>
 
     <dialog-modal :show="deleteDialog" @close="deleteDialog = false">
@@ -40,8 +41,8 @@
       </template>
 
       <template #content>
-        Are you sure you want to delete this quotation?
-        Once you delete, this quotation will no longer be available.
+        Are you sure you want to delete this client?
+        Once you delete, this client will no longer be available.
       </template>
 
       <template #footer>
@@ -49,7 +50,7 @@
           Cancel
         </secondary-button>
 
-        <danger-button class="ml-2" @click.native="deleteQuotation">
+        <danger-button class="ml-2" @click.native="deleteClient">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
             viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -81,7 +82,7 @@
                   <div class="text-gray-600 font-semibold">Name</div>
                   <div>{{ client.data.name }}</div>
                 </div>
-                <div v-if=" client.data.type != null" class="border-b px-4 py-3 flex justify-between text-sm">
+                <div v-if="client.data.type != null" class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Type</div>
                   <div>{{ client.data.type.name }}</div>
                 </div>
@@ -192,8 +193,8 @@
               <div v-else>
 
                 <div class="grid grid-cols-1 md:grid-cols-2">
-                  <inertia-link :href="route('sites.sales.show', { code:sale.site.code, id: sale.id })" v-for="(sale, index) in siteSales.data"
-                    :key="index">
+                  <inertia-link :href="route('sites.sales.show', { code: sale.site.code, id: sale.id })"
+                    v-for="(sale, index) in siteSales.data" :key="index">
                     <div class="app-card">
                       <div class="header justify-between items-center border-b">
                         <div>
@@ -335,8 +336,8 @@
               <div v-else>
 
                 <div class="grid grid-cols-1 md:grid-cols-2">
-                  <inertia-link :href="route('invoices.show', { id: invoice.id })" v-for="(invoice, index) in invoices.data"
-                    v-if="invoice.sale != null" :key="index">
+                  <inertia-link :href="route('invoices.show', { id: invoice.id })"
+                    v-for="(invoice, index) in invoices.data" v-if="invoice.sale != null" :key="index">
                     <div class="app-card">
                       <div class="header justify-between items-center border-b">
                         <div>
@@ -433,13 +434,13 @@ export default {
     printQuotation() {
       this.$inertia.get(this.route('quotations.print', { 'id': this.quotation.data.id }))
     },
-    // deleteQuotation() {
-    //     this.form
-    //         .post(this.route('quotations.delete', {'id': this.quotation.data.id}), {
-    //             preserveScroll: true,
-    //             onSuccess: () => this.deleteDialog = false,
-    //         })
-    // },
+    deleteClient() {
+      this.form
+        .post(this.route('clients.destroy', { 'id': this.client.data.id }), {
+          preserveScroll: true,
+          onSuccess: () => this.deleteDialog = false,
+        })
+    },
 
   }
 }
