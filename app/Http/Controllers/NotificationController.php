@@ -478,7 +478,7 @@ class NotificationController extends Controller
 
 
             // $name = $requestForm->user->firstName . " " . $requestForm->user->lastName;
-            $message = "A payment of MK{$amount} has been received from {$sale->client->name}. \nPlease generate a receipt for this order.";
+            $message = "A payment of MK" . number_format($amount) . " has been received from {$sale->client->name}. \nPlease generate a receipt for this order.";
             $subject = "Proof of Payment";
 
             foreach ($accountants as $user) {
