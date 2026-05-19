@@ -73,17 +73,21 @@
 
                         <td class="p-2 text-left ">{{ getDate(receipt.date * 1000) }}</td>
                         <td>
-                          <span v-if="receipt.sale != null" @click="navigateToSale(receipt.sale.id)" class="p-2 text-left">{{ receipt.sale.code }}
+                          <span v-if="receipt.sale != null" @click="navigateToSale(receipt.sale.id)"
+                            class="p-2 text-left">{{ receipt.sale.code }}
                           </span>
-                          
+
                         </td>
-                        <td @click="navigateToReceipt(receipt.id)"  class="p-2 text-left">{{ receipt.code }}</td>
-                        <td @click="navigateToClient(receipt.client.id)" class="p-2 text-left ">{{ receipt.client.name
+                        <td @click="navigateToReceipt(receipt.id)" class="p-2 text-left">{{ receipt.code }}</td>
+                        <td @click="navigateToClient(receipt.client.id)" class="p-2 text-left ">{{ receipt.client?.name
                         }}
                         </td>
                         <td class="p-2 text-left ">{{ receipt.paymentMethod }}</td>
                         <td class="p-2 text-right ">{{ numberWithCommas(receipt.amount) }}</td>
-                        <td class="p-2 text-left ">{{ receipt.generatedBy.fullName }}</td>
+                        <td class="p-2 text-left ">
+                          <span v-if="receipt.generatedBy != null">{{ receipt.generatedBy.fullName }}</span>
+                          <span v-else>System</span>
+                        </td>
                         <td class="text-center">
                           <input id="default-radio-1" :checked="receipt.record" type="checkbox" disabled
                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
@@ -94,10 +98,10 @@
                   </table>
                 </div>
 
-                
+
               </div>
-              
-              <pagination :object="receipts"/>
+
+              <pagination :object="receipts" />
               <!-- <div class="grid grid-cols-1 md:grid-cols-2">
                 <inertia-link :href="route('receipts.show', { id: receipt.id })"
                   v-for="(receipt, index) in receipts.data" :key="index">
@@ -214,7 +218,7 @@ export default {
           }
           else {
             return receipt.code.toLowerCase().includes(this.search.toLowerCase()) ||
-            // receipt.sale.code.toLowerCase().includes(this.search.toLowerCase()) ||
+              // receipt.sale.code.toLowerCase().includes(this.search.toLowerCase()) ||
               receipt.client.name.toLowerCase().includes(this.search.toLowerCase())
 
           }

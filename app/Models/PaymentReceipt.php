@@ -29,6 +29,12 @@ class PaymentReceipt extends Model
         return $this->belongsTo(PaymentMethod::class);
     }
 
+        public function account()
+    {
+        return $this->belongsTo(AccountingAccount::class, "account_id");
+    }
+
+
     public function getType()
     {
         if ($this->file != null) {
@@ -60,5 +66,6 @@ class PaymentReceipt extends Model
         'site_sale_id',
         'user_id',
         'payment_method_id',
+        'account_id',
     ];
 }

@@ -681,10 +681,10 @@
                                         <div>
                                             <div class="name font-normal ml-3 flex justify-between">
                                                 <div>{{ receipt.paymentMethod }}</div>
-                                                <div>Issued By {{ receipt.generatedBy.firstName }}
-                                                    {{ receipt.generatedBy.middleName }}
-                                                    {{ receipt.generatedBy.lastName }}
+                                                <div v-if="receipt.generatedBy != null">Issued By {{
+                                                    receipt.generatedBy.fullName }}
                                                 </div>
+                                                <div v-else>System Generated</div>
 
                                             </div>
                                         </div>

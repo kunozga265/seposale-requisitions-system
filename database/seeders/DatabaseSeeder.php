@@ -21,8 +21,10 @@ use App\Models\Supplier;
 use App\Models\Transporter;
 use App\Models\RequestForm;
 use App\Models\AccountingRecord;
+use App\Models\Sale;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -67,7 +69,16 @@ class DatabaseSeeder extends Seeder
         // $this->call(RequestFormItemsTableSeeder::class);
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
-        $this->call(BrandTableSeeder::class);
+        // $this->call(BrandTableSeeder::class);
+
+        $sales = Sale::where('location','!=',null)->get();
+
+        Storage::disk('local')->put('locations.txt', 'Locations');
+        foreach($sales as $sale){
+            Storage::disk('local')->append('locations.txt', $sale->location);
+        }
+
+        
 
     }
 }

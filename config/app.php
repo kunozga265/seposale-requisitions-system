@@ -236,4 +236,11 @@ return [
 
     ],
 
+
+    'standard_bank' => [
+        'api_key' => env('STD_BANK_API_KEY'),
+        'gateway_url' => env('STD_BANK_GATEWAY_URL'),
+        'outlet_id' => env('STD_BANK_OUTLET_ID'),
+    ],
+
 ];

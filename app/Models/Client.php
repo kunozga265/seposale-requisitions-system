@@ -92,7 +92,9 @@ class Client extends Model
         'address',
         "organisation",
         "alias",
-        "client_type_id"
+        "client_type_id",
+        "billing_address",
+        "saved_card"
     ];
 
     protected $hidden = [

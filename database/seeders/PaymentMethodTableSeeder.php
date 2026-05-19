@@ -38,6 +38,10 @@ class PaymentMethodTableSeeder extends Seeder
             ["photo" => "files/payment-methods/std.png"]
         );
         PaymentMethod::updateOrCreate(
+            ["name" => "Standard Bank Online"],
+            ["photo" => "files/payment-methods/std.png"]
+        );
+        PaymentMethod::updateOrCreate(
             ["name" => "FCB"],
             ["photo" => "files/payment-methods/fcb.png"]
         );

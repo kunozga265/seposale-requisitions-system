@@ -3,10 +3,12 @@
 namespace App\Console;
 
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
 use App\Imports\ClientsImport;
 use App\Models\Client;
 use App\Models\Sale;
 use App\Models\CustomJob;
+use App\Models\Payment;
 use App\Models\User;
 use App\Models\Referral;
 use App\Models\PaymentReceipt;
@@ -108,6 +110,17 @@ class Kernel extends ConsoleKernel
                 Storage::disk('public_uploads')->delete($file);
             }
         })->hourly();
+
+        //Check Payments
+        $schedule->call(function () {
+
+            $payments = Payment::where('state', 'STARTED')->get();
+            Log::info($payments);
+            foreach ($payments as $payment) {
+                $status = (new PaymentController())->runCallback($payment, $payment->sale);
+                Log::info("RUN PAYMENT CHECK: Status: $status Ref#: {$payment->reference}, Sale Order #: LL{$payment->sale->formattedCode()}");
+            }
+        })->everyMinute();
     }
 
     /**

@@ -528,7 +528,7 @@ class NotificationController extends Controller
         }
     }
 
-    public function notifySales($object, $type)
+    public function notifySales($object, $type, $extra = null)
     {
         $role = Role::where('name', 'sales')->first();
         $users = $role->users;

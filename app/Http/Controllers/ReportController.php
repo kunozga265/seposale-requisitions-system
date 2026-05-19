@@ -137,7 +137,7 @@ class ReportController extends Controller
 
         $data = [];
         foreach ($requestForms as $requestForm) {
-            if ($requestForm->type != "FUEL")
+            if ($requestForm->type == "FUEL")
                 $amount = $requestForm->fuelRequestedMoney;
             else
                 $amount = $requestForm->total;

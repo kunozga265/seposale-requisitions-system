@@ -22,6 +22,7 @@ return [
     'allowed_origins' => [
         'http://seposale-pub.test', // Explicitly allow your Vue frontend
         'https://seposale.com', 
+        'http://public.local', 
     ],
 
     'allowed_origins_patterns' => [],
