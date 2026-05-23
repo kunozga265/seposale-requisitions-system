@@ -159,6 +159,10 @@ class QuotationController extends Controller
 
                 'information' => json_encode($request->information),
                 'total' => $request->total,
+                'vat' => $request->vat,
+                'meta' => json_encode([
+                    'notes' => $request->notes
+                ]),
 
                 //Requested by
                 'user_id' => $user->id,
@@ -313,6 +317,11 @@ class QuotationController extends Controller
 
                     'information' => json_encode($request->information),
                     'total' => $request->total,
+                    'vat' => $request->vat,
+                    'meta' => json_encode([
+                        'notes' => $request->notes
+                    ]),
+
 
                     //Requested by
                     'quotes' => json_encode($request->quotes ?? []),
@@ -385,7 +394,7 @@ class QuotationController extends Controller
             $now_d = Carbon::createFromTimestamp($quotation->created_at->getTimestamp(), 'Africa/Lusaka')->format('F j, Y');
             $now_t = Carbon::createFromTimestamp($quotation->created_at->getTimestamp(), 'Africa/Lusaka')->format('H:i');
 
-            $total_in_words = SpellNumber::value($quotation->total)
+            $total_in_words = SpellNumber::value($quotation->total + $quotation->vat)
                 ->locale('en')
                 ->currency('Kwacha')
                 ->fraction('Tambala')

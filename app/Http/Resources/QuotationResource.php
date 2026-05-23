@@ -28,8 +28,10 @@ class QuotationResource extends JsonResource
             'recipientPhoneNumber' => $this->recipient_phone_number,
             'information' => json_decode($this->information),
             'total' => floatval($this->total),
+            'vat' => floatval($this->vat),
             'requestedBy' => new UserResource($this->user),
             'quotes' => json_decode($this->quotes),
+            'meta' => json_decode($this->meta),
             'date' => $this->created_at->getTimestamp(),
             'hasSale' => $this->sale_id != null,
             "sale" => $this->sale != null ? [

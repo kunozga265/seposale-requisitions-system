@@ -12,6 +12,23 @@ class Quotation extends Model
     use HasFactory;
     use SoftDeletes;
 
+      public function __get($name)
+    {
+        if ($name === 'notes') {
+
+            $meta =  json_decode($this->meta, true);
+            if($meta["notes"] != null && trim($meta["notes"]) != "" ){
+                return $meta["notes"];
+            }else{
+                return null;
+            }
+        }
+
+        // It's important to call the parent __get() method
+        // to allow other properties to be accessed normally.
+        return parent::__get($name);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -45,5 +62,7 @@ class Quotation extends Model
         "user_id",
         "sale_id",
         "whatsapp",
+        "vat",
+        "meta",
     ];
 }

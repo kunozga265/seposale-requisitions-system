@@ -212,6 +212,7 @@
             </div>
           </div>
 
+
           <div class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
@@ -261,6 +262,9 @@
                           <jet-input type="text" class="block w-full" v-model="info.units" />
                         </td>
                         <td class="py-2 pr-1">
+                          <!--                                                <money-->
+                          <!--                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"-->
+                          <!--                                                    v-bind="moneyMaskOptions" v-model="info.quantity"/>-->
                           <jet-input type="number" step="0.01" class="block w-full" v-model="info.quantity" />
                         </td>
                         <td class="py-2 pr-1">
@@ -274,26 +278,69 @@
                           <!--                                                <jet-input type="text" class="block w-full" v-model="info.totalCost" value="23" />-->
                         </td>
                       </tr>
+                      <tr>
+                        <td colspan="5">
+                          <div class="mt-2 ml-2 flex justify-start items-center">
+                            <div @click="addRecord" class="flex justify-start items-center cursor">
+                              <div>
+                                <i class="mdi mdi-plus-circle text-blue-600"></i>
+                              </div>
+                              <div class="ml-2 text-blue-600 text-sm">
+                                Add Blank
+                              </div>
+                            </div>
+                            <div @click="addRecordDialog = true" class="ml-3 flex justify-start items-center cursor">
+                              <div>
+                                <i class="mdi mdi-plus-circle text-blue-600"></i>
+                              </div>
+                              <div class="ml-2 text-blue-600 text-sm">
+                                Add Product
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr v-show="calculateVat">
+                        <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">Sub Total</td>
+                        <td>
+                          <div
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {{ numberWithCommas((totalCost).toFixed(2)) }}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr v-show="calculateVat">
+                        <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">VAT
+                          ({{ (vatRate * 100).toFixed(1) }}%)</td>
+                        <td>
+                          <div
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {{ numberWithCommas((vat).toFixed(2)) }}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">Grand Total</td>
+                        <td>
+                          <div
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {{ numberWithCommas((totalCost + vat).toFixed(2)) }}
+                          </div>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
-                  <div class="mt-2 ml-2 flex justify-start items-center">
-                    <div @click="addRecord" class="flex justify-start items-center cursor">
-                      <div>
-                        <i class="mdi mdi-plus-circle text-blue-600"></i>
-                      </div>
-                      <div class="ml-2 text-blue-600 text-sm">
-                        Add Blank
-                      </div>
-                    </div>
-                    <div @click="addRecordDialog = true" class="ml-3 flex justify-start items-center cursor">
-                      <div>
-                        <i class="mdi mdi-plus-circle text-blue-600"></i>
-                      </div>
-                      <div class="ml-2 text-blue-600 text-sm">
-                        Add Product
-                      </div>
-                    </div>
+
+                  <div class="flex items-center mb-2 justify-start">
+                    <input checked id="calculate-vat" type="checkbox" value="" v-model="calculateVat"
+                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="calculate-vat"
+                      class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Calculate
+                      Vat</label>
                   </div>
+
+                  <!--                 
                   <div class="text-center">
                     <div v-if="isNaN(totalCost)" class="text-red-600 uppercase font-semibold heading-font">
                       Enter valid total cost
@@ -303,11 +350,26 @@
                       <div class="total">{{ numberWithCommas(totalCost) }}</div>
                     </div>
                     <div class="text-gray-600 text-xs">Total Cost</div>
-                  </div>
+                  </div> -->
                   <!-- <div class="mt-4 text-gray-600 text-sm">
                       I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment.
                   </div> -->
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
+                Notes
+              </div>
+            </div>
+            <div class="page-section-content flex justify-center">
+              <div class="card w-full sm:max-w-md md:max-w-3xl">
+
+                <vue2-tinymce-editor v-model="form.notes"></vue2-tinymce-editor>
+
               </div>
             </div>
           </div>
@@ -452,6 +514,7 @@ import DialogModal from "@/Jetstream/DialogModal.vue";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 import vSelect from "vue-select"
 import "vue-select/dist/vue-select.css"
+import { Vue2TinymceEditor } from "vue2-tinymce-editor";
 
 export default {
   props: ["quotation", "products", "clients", "clientTypes"],
@@ -466,6 +529,7 @@ export default {
     SecondaryButton,
     pdf,
     vSelect,
+    Vue2TinymceEditor,
   },
   data() {
     return {
@@ -477,6 +541,8 @@ export default {
       addRecordUnits: "",
       addRecordQuantity: 0,
       addRecordUnitCost: 0,
+      vatRate: 0.175,
+      calculateVat: this.quotation.data.vat > 0,
       form: this.$inertia.form({
         name: "",
         phoneNumber: "",
@@ -491,6 +557,7 @@ export default {
         recipientName: this.quotation.data.recipientName,
         recipientProfession: this.quotation.data.recipientProfession,
         recipientPhoneNumber: this.quotation.data.recipientPhoneNumber,
+        notes: this.quotation.data.meta?.notes,
         information: this.quotation.data.information,
       }),
       quotes: this.quotation.data.quotes,
@@ -546,6 +613,14 @@ export default {
 
       }
       return parseFloat(totalCost.toFixed(2))
+    },
+    vat() {
+      if (this.calculateVat) {
+        return this.totalCost * this.vatRate
+      } else {
+        return 0
+      }
+
     },
     quoteFiles() {
       let files = []
@@ -632,7 +707,8 @@ export default {
           recipient_profession: this.form.recipientProfession,
           recipient_phone_number: this.form.recipientPhoneNumber,
           client_type_id: this.form.clientTypeId,
-          client_type: this.form.clientType
+          client_type: this.form.clientType,
+          vat: this.vat
         }))
         .post(this.route('quotations.update', { id: this.quotation.data.id }))
     },

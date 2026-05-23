@@ -59,7 +59,7 @@
                       </div>
                       <div class="flex items-center ">
                         <div class="currency ">MK</div>
-                        <div class="total">{{ numberWithCommas(quotation.total) }}</div>
+                        <div class="total">{{ numberWithCommas(quotation.total + quotation.vat ) }}</div>
                       </div>
                     </div>
                     <div>

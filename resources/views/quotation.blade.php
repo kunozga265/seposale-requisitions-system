@@ -197,9 +197,21 @@
                 <td style="text-align: right">{{number_format($info->totalCost,2)}}</td>
             </tr>
         @endforeach
+        @if ($quotation->vat > 0)
+        <tr class="total">
+            <td colspan="4">SubTotal</td>
+            <td>{{number_format($quotation->total,2)}}</td>
+        </tr>
+        @endif
+        @if ($quotation->vat > 0)
+        <tr class="total">
+            <td colspan="4">VAT (17.5%)</td>
+            <td>{{number_format($quotation->vat,2)}}</td>
+        </tr>
+        @endif
         <tr class="total">
             <td colspan="4">Total</td>
-            <td>{{number_format($quotation->total,2)}}</td>
+            <td>{{number_format(($quotation->total + $quotation->vat),2)}}</td>
         </tr>
         <tr>
             <td colspan="5" class="total-in-words">
@@ -208,6 +220,13 @@
         </tr>
         </tbody>
     </table>
+
+    @if ($quotation->notes != null)
+    <div style="margin-top: 0px">
+        {{-- <div>Notes</div> --}}
+        <div style="font-style: italic" class="">{!! $quotation->notes !!}
+        </div>
+        @endif
 
     <div style="margin-top: 24px">
         <div>Prepared By</div>

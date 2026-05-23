@@ -218,7 +218,7 @@
                       <th scope="col" class="heading-font">
                         Unit Cost
                       </th>
-                      <th scope="col" class="heading-font">
+                      <th scope="col" class="heading-font text-right">
                         Total Cost
                       </th>
                     </tr>
@@ -239,20 +239,52 @@
                       <td class="py-2 pr-1">
                         {{ numberWithCommas(info.unitCost) }}
                       </td>
-                      <td class="py-2 pr-1">
+                      <td class="py-2 pr-1 text-right">
                         {{ numberWithCommas(info.totalCost) }}
+                      </td>
+                    </tr>
+                    <tr v-show="quotation.data.vat > 0">
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">Sub Total</th>
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total) }}
+                      </td>
+                    </tr>
+                    <tr v-show="quotation.data.vat > 0">
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">VAT (17.5%)</th>
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.vat) }}
                       </td>
                     </tr>
                     <tr>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
-                      <td class="pt-4 pr-1 text-base font-bold">{{ numberWithCommas(quotation.data.total) }}</td>
+                      <th class="pt-2 text-right pr-1 text-sm uppercase heading-font font-bold">Grand Total</th>
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total +
+                        quotation.data.vat) }}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="quotation.data.meta?.notes?.length > 0" class="page-section md:col-span-2">
+          <div class="page-section-header">
+            <div class="page-section-title">
+              Notes
+            </div>
+          </div>
+          <div  class="page-section-content">
+            <div class="card">
+
+              <div v-html="quotation.data.meta?.notes"></div>
+
             </div>
           </div>
         </div>
