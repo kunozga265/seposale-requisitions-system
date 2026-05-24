@@ -42,5 +42,6 @@ class Batch extends Model
         "material_id",
         "production_id",
         "ready_date",
+        "active",
     ];
 }

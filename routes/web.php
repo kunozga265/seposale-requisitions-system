@@ -592,7 +592,13 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\InventoryController@update",
             'roles' => ['employee', 'management']
         ])->name('inventories.update');
+
+        Route::post('/update', [
+            "uses"  => "App\Http\Controllers\InventoryController@addStock",
+            'roles' => ['employee', 'management']
+        ])->name('inventories.add-stock');
     });
+
     Route::group(['prefix' => 'damages'], function () {
 
         Route::post('/store', [

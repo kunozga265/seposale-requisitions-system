@@ -25,6 +25,10 @@ class Inventory extends Model
     {
         return $this->hasMany(Batch::class);
     }
+    public function inactiveBatches()
+    {
+        return $this->batches()->where('active',false)->get();
+    }
 
     public function damages()
     {

@@ -64,7 +64,7 @@ class InventoryController extends Controller
                         break;
                     case "batches":
                         //get batches
-                        $batches = $inventory->batches()->orderBy("date", "desc")->get();
+                        $batches = $inventory->batches()->where('active',true)->orderBy("date", "desc")->get();
                         break;
                     case "damages":
                         //get damages
@@ -87,7 +87,7 @@ class InventoryController extends Controller
                             ->orderBy("ready_date", "asc")
                             ->get();
 
-                            $pending_collections = $inventory->pending()["collections"];
+                        $pending_collections = $inventory->pending()["collections"];
                 }
 
                 //get products
@@ -241,7 +241,7 @@ class InventoryController extends Controller
         }
     }
 
-    public function update(Request $request)
+    public function addStock(Request $request)
     {
 
         $inventory = Inventory::find($request->inventory_id);
@@ -250,59 +250,65 @@ class InventoryController extends Controller
 
             //Validate all the important attributes
             $request->validate([
-                'total' => ['required', "numeric", "gt:0"],
-                'quantity' => ['required', "numeric", "gt:0"],
+                // 'total' => ['required', "numeric", "gt:0"],
+                // 'quantity' => ['required', "numeric", "gt:0"],
                 'date' => ['required'],
+                'batches' => ['required'],
             ]);
 
-            $availableStock = $inventory->available_stock + $request->quantity;
+            foreach ($request->batches as $batch_id) {
 
-            //if there is still available stock just append quantity
-            if ($inventory->available_stock  >= 0) {
-                $batch_balance = $request->quantity;
-            } else {
-                //if adding new stock results in a SURPLUS of stock, set batch quantity to surplus
-                if ($availableStock >= 0) {
-                    $batch_balance = $availableStock;
+                $batch = Batch::find($batch_id);
+
+                $availableStock = $inventory->available_stock + $batch->quantity;
+
+                //if there is still available stock just append quantity
+                if ($inventory->available_stock  >= 0) {
+                    $batch_balance = $batch->quantity;
+                } else {
+                    //if adding new stock results in a SURPLUS of stock, set batch quantity to surplus
+                    if ($availableStock >= 0) {
+                        $batch_balance = $availableStock;
+                    }
+                    //if adding new stock results in a DEFICIT of stock, set batch quantity to 0
+                    else {
+                        $batch_balance = 0;
+                    }
                 }
-                //if adding new stock results in a DEFICIT of stock, set batch quantity to 0
-                else {
-                    $batch_balance = 0;
-                }
+
+                $inventory->update([
+                    'available_stock' => $availableStock
+                ]);
+
+                // return response()->json(new InventoryResource($inventory), 201);
+
+                $batch->update([
+                    "date" => $request->date,
+                    "ready_date" => $request->date,
+                    "accounting_balance" => $batch->quantity,
+                    "balance" =>  $batch_balance,
+                    "photo" => $request->photo ?? null,
+                    "comments" => $request->comments,
+                    "inventory_id" => $inventory->id,
+                    "active" => true,
+                    "user_id" => Auth::id(),
+                ]);
+
+
+                //Logging
+                SystemLog::create([
+                    "user_id" => Auth::id(),
+                    "message" => "New Stock! Added {$request->quantity} to {$inventory->name}",
+                    "inventory_id" => $inventory->id,
+                    "contents" => json_encode([
+                        "date" => $request->date,
+                        "quantity" => $request->quantity,
+                        "comments" => $request->comments,
+                        "photo" => $request->photo,
+                    ])
+                ]);
             }
 
-            $inventory->update([
-                'available_stock' => $availableStock
-            ]);
-
-            // return response()->json(new InventoryResource($inventory), 201);
-
-            Batch::create([
-                "date" => $request->date,
-                "ready_date" => $request->date,
-                "price" =>  $request->total / $request->quantity,
-                "quantity" => $request->quantity,
-                "accounting_balance" => $request->quantity,
-                "balance" =>  $batch_balance,
-                "photo" => $request->photo ?? null,
-                "comments" => $request->comments,
-                "inventory_id" => $inventory->id,
-                "user_id" => Auth::id(),
-            ]);
-
-
-            //Logging
-            SystemLog::create([
-                "user_id" => Auth::id(),
-                "message" => "New Stock! Added {$request->quantity} to {$inventory->name}",
-                "inventory_id" => $inventory->id,
-                "contents" => json_encode([
-                    "date" => $request->date,
-                    "quantity" => $request->quantity,
-                    "comments" => $request->comments,
-                    "photo" => $request->photo,
-                ])
-            ]);
 
             //Run notifications
             //        (new NotificationController())->requestFormNotifications($requestForm, "REQUEST_FORM_PENDING");
@@ -320,6 +326,46 @@ class InventoryController extends Controller
             }
         } else {
             return Redirect::back()->with('error', 'Resource not found');
+        }
+    }
+    
+    public function initiateStock($inventory_id, $amount, $quantity)
+    {
+
+        $inventory = Inventory::find($inventory_id);
+
+        if (is_object($inventory)) {
+
+            Batch::create([
+                "date" => Carbon::now()->getTimestamp(),
+                "ready_date" => Carbon::now()->getTimestamp(),
+                "price" =>  $amount / $quantity,
+                "quantity" => $quantity,
+                "accounting_balance" => 0,
+                "balance" =>  0,
+                "photo" =>  null,
+                "comments" => null,
+                "inventory_id" => $inventory->id,
+                "active" => false,
+                "user_id" => Auth::id(),
+            ]);
+
+            //Logging
+            SystemLog::create([
+                "user_id" => Auth::id(),
+                "message" => "Stock initiated! Added {$quantity} to {$inventory->name}",
+                "inventory_id" => $inventory->id,
+                "contents" => json_encode([
+                    "date" => Carbon::now()->getTimestamp(),
+                    "quantity" => $quantity,
+                    "comments" => "",
+                    "photo" => null,
+                ])
+            ]);
+
+            return true;
+        } else {
+            return false;
         }
     }
 }

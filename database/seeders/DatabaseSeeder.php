@@ -21,6 +21,7 @@ use App\Models\Supplier;
 use App\Models\Transporter;
 use App\Models\RequestForm;
 use App\Models\AccountingRecord;
+use App\Models\Batch;
 use App\Models\Sale;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Log;
@@ -42,7 +43,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(ProductAppendTableSeeder::class);
         // $this->call(ProductVariantAppendTableSeeder::class);
         // $this->call(UserTableSeeder::class);
-        // $this->call(PaymentMethodTableSeeder::class);
+        $this->call(PaymentMethodTableSeeder::class);
         // $this->call(SitesTableSeeder::class);
         // $this->call(InventoryTableSeeder::class);
         // $this->call(AccountTypeTableSeeder::class);
@@ -71,14 +72,13 @@ class DatabaseSeeder extends Seeder
         // $this->call(MaterialsTableSeeder::class);
         // $this->call(BrandTableSeeder::class);
 
-        $sales = Sale::where('location','!=',null)->get();
+        $batches = Batch::all();
 
-        Storage::disk('local')->put('locations.txt', 'Locations');
-        foreach($sales as $sale){
-            Storage::disk('local')->append('locations.txt', $sale->location);
+        foreach($batches as $batch){
+            $batch->update([
+                'active' => true
+            ]);
         }
-
-        
 
     }
 }

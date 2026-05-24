@@ -30,7 +30,7 @@
             </li>
         </template>
 
-        <template v-if="" #actions>
+        <template  #actions>
             <!--      <span v-if="sale.data.invoice">-->
             <!--        <a :href="route('invoices.print',{'id':sale.data.invoice.id})" target="_blank">-->
             <!--        <primary-button>Print Invoice</primary-button>-->

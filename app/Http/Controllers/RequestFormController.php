@@ -1447,6 +1447,12 @@ class RequestFormController extends Controller
                             "accounting_record_id" => $alternate_record->id
                         ]);
 
+                        //if inventory add batch record
+                        if ($request_form_item->inventory_id != null) {
+                            (new InventoryController())->initiateStock($request_form_item->inventory_id, $item["amount"],  $item["amount"]/$request_form_item->unit_cost);
+                        }
+
+
                         $index++;
                     }
 

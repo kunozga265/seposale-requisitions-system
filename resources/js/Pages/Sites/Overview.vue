@@ -112,7 +112,7 @@
                             <jet-label for="date" value="Date" />
                             <vue-date-time-picker color="#1a56db" v-model="form.date" :max-date="maxDate" />
                         </div>
-                        <div v-if="form.inventoryId !== 0" class="mb-2">
+                        <!-- <div v-if="form.inventoryId !== 0" class="mb-2">
                             <jet-label for="quantity" value="Quantity" />
                             <jet-input type="number" step="0.01" class="block w-full" v-model="form.quantity"
                                 required />
@@ -123,7 +123,6 @@
                         </div>
                         <div v-if="form.inventoryId !== 0" class="mb-2">
                             <jet-label for="quantity" value="Total Cost" />
-                            <!-- <jet-input type="number" step="0.01" class="block w-full" v-model="form.total" required /> -->
                             <money
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                 v-bind="moneyMaskOptions" v-model="form.total" />
@@ -131,6 +130,14 @@
                                 <span>Upto MK{{ numberWithCommas(inventory.inventoryValue.toFixed(1)) }}</span>
                                 <span>Product + Transport Cost</span>
                             </div>
+                        </div> -->
+                        <div v-if="form.inventoryId !== 0" class="mb-2 md:col-span-2">
+                            <select v-model="form.batches" multiple  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                                <option v-for="(batch) in inventory.batches" :value="batch.id">
+                                    {{ getDate(batch.date * 1000) }} ({{ batch.quantity }} {{ inventory.units }}{{
+                                    batch.quantity != 1 ? "s" : "" }})
+                                </option>
+                            </select>
                         </div>
                         <div v-if="form.inventoryId !== 0" class="mb-2 md:col-span-2">
                             <jet-label for="comments" value="Comments" />
@@ -565,7 +572,7 @@
 
                                             <td @click="navigateToClient(productCompound.sale.client.id)"
                                                 class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
-                                                {{ productCompound.sale.client.name }}
+                                                {{ productCompound.sale.client?.name }}
                                             </td>
                                             <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
                                                 :class="{ 'strike-through': productCompound.trashed }"
@@ -636,7 +643,7 @@
 
                                             <td @click="navigateToClient(productCompound.sale.client.id)"
                                                 class="py-2 pr-1 cursor-pointer hover:bg-gray-50">
-                                                {{ productCompound.sale.client.name }}
+                                                {{ productCompound.sale.client?.name }}
                                             </td>
                                             <th @click="navigateToInventory(productCompound.inventory.id)" scope="row"
                                                 :class="{ 'strike-through': productCompound.trashed }"
@@ -898,6 +905,7 @@ export default {
 
                 inventoryId: 0,
                 quantity: 0,
+                batches: [],
                 total: 0,
                 comments: "",
                 date: "",
@@ -1112,12 +1120,16 @@ export default {
                 this.addStockErrorMessage = "Select date"
                 return false
             }
-            if (!this.form.quantity || this.form.quantity <= 0) {
-                this.addStockErrorMessage = "Enter quantity"
-                return false
-            }
-            if (this.form.total <= 0) {
-                this.addStockErrorMessage = "Enter total cost"
+            // if (!this.form.quantity || this.form.quantity <= 0) {
+            //     this.addStockErrorMessage = "Enter quantity"
+            //     return false
+            // }
+            // if (this.form.total <= 0) {
+            //     this.addStockErrorMessage = "Enter total cost"
+            //     return false
+            // }
+            if (this.form.batches.length == 0) {
+                this.addStockErrorMessage = "Select available batches"
                 return false
             }
             if (this.form.total > this.inventory.inventoryValue) {
@@ -1184,7 +1196,7 @@ export default {
                     date: (new Date(this.form.date).getTime()) / 1000,
                     inventory_id: this.form.inventoryId
                 }))
-                .post(this.route('inventories.update'), {
+                .post(this.route('inventories.add-stock'), {
                     preserveScroll: true,
                     onSuccess: () => {
                         this.cancelAddStockDialog()

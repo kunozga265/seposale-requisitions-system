@@ -32,6 +32,7 @@ class InventoryResource extends JsonResource
             "readyStock" => floatval($this->stock()),
             "product" => $this->product,
             "site" => $this->site,
+            "batches" => $this->inactiveBatches(),
             // "inventoryAccount" => $this->inventoryAccount
             "inventoryValue" => floatval($this->value()),
             "cogsAccount" => $this->cogsAccount,

@@ -1,7 +1,7 @@
 <template>
   <app-layout>
     <template #header>
-      Edit Client
+      Edit Zone
     </template>
 
     <template #breadcrumbs>
@@ -14,7 +14,7 @@
           </svg>
           <a :href="route('clients.index')"
             class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-            Clients
+            Zones
           </a>
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
@@ -23,7 +23,7 @@
           </svg>
           <a :href="route('clients.show',{id:client.data.id})"
             class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-             {{ client.data.name }}
+             {{ zone.data.name }}
           </a>
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
             <path fill-rule="evenodd"
@@ -37,117 +37,91 @@
       </li>
     </template>
 
-    <div class="py-6">
-      <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <form @submit.prevent="submit">
-          <div class="page-section">
-            <div class="page-section-header">
-              <div class="page-section-title">
-                Details
-              </div>
-            </div>
-            <div class="page-section-content flex justify-center">
+     <div class="py-6">
+            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+                <form @submit.prevent="submit">
+                    <div class="page-section">
+                        <!-- <div class="page-section-header">
+                            <div class="page-section-title">
+                                Details
+                            </div>
+                        </div> -->
+                        <div class="page-section-content flex justify-center">
 
-              <div class="card w-full sm:max-w-md md:max-w-3xl">
+                            <div class="card w-full sm:max-w-md md:max-w-3xl">
 
-                <jet-validation-errors class="mb-4" />
+                                <jet-validation-errors class="mb-4" />
 
-                <div class="grid grid-cols-1 md:grid-cols-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2">
 
-                  <div class="p-2 mb-2 md:col-span-2">
-                    <div class="flex justify-between">
-                      <jet-label for="name" value="Name" />
-                      <div class="flex items-center mb-2">
-                        <input checked id="backdate" type="checkbox" value="" v-model="form.organisation"
-                          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label for="backdate"
-                          class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Organisation</label>
-                      </div>
+
+
+
+                                    <div class="p-2 mb-2 md:col-span-2">
+                                        <jet-label for="name" value="Name" />
+                                        <jet-input id="name" type="text" class="block w-full" v-model="form.name"
+                                            autocomplete="seposale-customer-zone-name" />
+                                    </div>
+
+                                    <div class="p-2 mb-2">
+                                        <jet-label for="level" value="Level" />
+                                        <jet-input id="level" type="number" class="block w-full"
+                                            v-model="form.level"
+                                            autocomplete="seposale-customer-phone-number-other" />
+                                    </div>
+
+                                    <div class="p-2 mb-2">
+                                        <jet-label for="cost" value="Extra Transport" />
+                                        <jet-input id="cost" type="number" class="block w-full"
+                                            v-model="form.cost"
+                                            autocomplete="seposale-customer-phone-number-other" />
+                                    </div>
+
+                                </div>
+
+                                <div class="p-6">
+
+                                    <ZonePicker @zone-saved="handleZoneSaved" />
+
+                                    <div v-if="form.coordinates.length > 0">
+                                        <h3>Saved Zone Polygon Coordinates:</h3>
+                                        <ul>
+                                            <li v-for="(point, index) in form.coordinates" :key="index">
+                                                Point {{ index + 1 }}: Lat {{ point.lat.toFixed(5) }}, Lng {{
+                                                    point.lng.toFixed(5) }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <jet-input id="name" type="text" class="block w-full" v-model="form.name"
-                      autocomplete="seposale-customer-name" />
-                  </div>
+                    <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
+                        <div v-show="!validation" id="toast-danger"
+                            class="flex items-center w-full max-w-xs p-4 mb-4 text-red-700 bg-red-100 rounded-lg shadow dark:text-red-400 dark:bg-red-800"
+                            role="alert">
+                            <div
+                                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
+                                <i class="mdi mdi-alert-circle text-2xl"></i>
+                            </div>
+                            <div class="ml-3 text-sm font-normal">{{ error }}</div>
+                        </div>
+                    </div>
 
 
-                  <div class="p-2 mb-2" :class="{ 'md:col-span-2': form.clientTypeId != 0 }">
-                    <jet-label for="clientType" value="Select Type" />
-                    <select v-model="form.clientTypeId" id="clientType"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                      required>
-                      <option v-for="(type, index) in clientTypes" :value="type.id" :key="index">
-                        {{ type.name }}
-                      </option>
-                      <option value="0">Other</option>
-                    </select>
-                  </div>
-
-                  <div v-show="form.clientTypeId == 0" class="p-2 mb-2">
-                    <jet-label for="other" value="Type (Other)" />
-                    <jet-input id="other" type="text" class="block w-full" v-model="form.clientType"
-                      autocomplete="seposale-customer-type" />
-                  </div>
-
-                  <div v-show="form.organisation" class="p-2 mb-2 md:col-span-2">
-                    <jet-label for="alias=name" value="Alias Name" />
-                    <jet-input id="alias-name" type="text" class="block w-full" v-model="form.alias"
-                      autocomplete="seposale-customer-alias-name" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <whatsapp-label title="Phone Number" />
-                    <jet-input id="phoneNumber" type="text" class="block w-full" v-model="form.phoneNumber"
-                      autocomplete="seposale-customer-phone-number" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <jet-label for="phoneNumber" value="Phone Number (Secondary)" />
-                    <jet-input id="phoneNumber" type="text" class="block w-full" v-model="form.phoneNumberOther"
-                      autocomplete="seposale-customer-phone-number-other" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <jet-label for="email" value="Email" />
-                    <jet-input id="email" type="email" class="block w-full" v-model="form.email"
-                      autocomplete="seposale-customer-email" />
-                  </div>
-
-                  <div class="p-2 mb-2">
-                    <jet-label for="address" value="Address" />
-                    <jet-input id="address" type="text" class="block w-full" v-model="form.address"
-                      autocomplete="seposale-customer-address" />
-                  </div>
-
-                </div>
-              </div>
+                    <div class="text-center mt-8">
+                        <div v-show="validation">
+                            <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
+                                :disabled="form.processing">
+                                Create
+                            </jet-button>
+                            <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
+                        </div>
+                    </div>
+                </form>
             </div>
-          </div>
-
-          <div class="fixed right-6 bottom-6 md:right-10 md:bottom-10">
-            <div v-show="!validation" id="toast-danger"
-              class="flex items-center w-full max-w-xs p-4 mb-4 text-red-700 bg-red-100 rounded-lg shadow dark:text-red-400 dark:bg-red-800"
-              role="alert">
-              <div
-                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-red-500 bg-red-100 rounded-lg dark:bg-red-800 dark:text-red-200">
-                <i class="mdi mdi-alert-circle text-2xl"></i>
-              </div>
-              <div class="ml-3 text-sm font-normal">{{ error }}</div>
-            </div>
-          </div>
-
-
-          <div class="text-center mt-8">
-            <div v-show="validation">
-              <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
-                :disabled="form.processing">
-                Update
-              </jet-button>
-              <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+        </div>
   </app-layout>
 </template>
 
@@ -161,72 +135,98 @@ import SecondaryButton from '@/Jetstream/SecondaryButton'
 import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
 import PrimaryButton from "@/Jetstream/Button.vue";
 import DialogModal from "@/Jetstream/DialogModal.vue";
+import { Money } from "v-money";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 
+import ZonePicker from '../../Components/ZonePicker.vue';
+import axios from 'axios';
+
 export default {
-  props: ["client", "products", "clients", "clientTypes"],
-  components: {
-    WhatsappLabel,
-    DialogModal, PrimaryButton,
-    AppLayout,
-    JetInput,
-    JetLabel,
-    JetButton,
-    JetValidationErrors,
-    SecondaryButton,
-    pdf,
-  },
-  data() {
-    return {
-      form: this.$inertia.form({
-        name: this.client.data.name,
-        phoneNumber: this.client.data.phoneNumber,
-        phoneNumberOther: this.client.data.phoneNumberOther,
-        email: this.client.data.email,
-        address: this.client.data.address,
-        organisation: this.client.data.organisation,
-        alias: this.client.data.alias,
-        clientTypeId: this.client.data.type != null ? this.client.data.type.id : null,
-        clientType: '',
-      }),
-      error: '',
+    props: ["products", "zones", "zoneTypes"],
+    components: {
+        WhatsappLabel,
+        Money,
+        DialogModal, PrimaryButton,
+        AppLayout,
+        JetInput,
+        JetLabel,
+        JetButton,
+        JetValidationErrors,
+        SecondaryButton,
+        pdf,
+        ZonePicker,
+        AppLayout
+    },
+    data() {
+        return {
+            checkZone: "existing",
+            addRecordDialog: false,
+            productIndex: -1,
+            zoneIndex: -1,
+            addRecordUnits: "",
+            addRecordQuantity: 0,
+            addRecordUnitCost: 0,
+            form: this.$inertia.form({
+                name: '',
+                level: 1,
+                cost: 0,
+                coordinates: []
+            }),
+            error: '',
+        }
+    },
+    created() {
+
+
+    },
+    computed: {
+        validation() {
+            if (this.form.name.length === 0) {
+                this.error = "Enter zone name"
+                return false
+            } else if (this.form.level <= 0) {
+                this.error = "Please enter level"
+                return false
+            } else if (this.form.cost < 0) {
+                this.error = "Please enter extra cost"
+                return false
+            } else if (this.form.coordinates.length == 0) {
+                this.error = "Please select and save zone coordinates"
+                return false
+            }
+            return true
+
+        },
+    },
+    watch: {
+
+    },
+    methods: {
+        submit() {
+            this.form
+                .transform(data => ({
+                    ...data,
+                    
+                }))
+                .post(this.route('zones.store'))
+        },
+
+        handleZoneSaved(polygonData) {
+            console.log("Polygon data received:", polygonData);
+            this.form.coordinates = polygonData;
+        },
+        // async submitToBackend() {
+        //     try {
+        //         await axios.post('/api/zones', {
+        //             name: this.form.zone_name,
+        //             polygon: this.form.coordinates
+        //         });
+        //         alert('Zone saved successfully!');
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // }
     }
-  },
-  created() {
-
-  },
-  computed: {
-    validation() {
-      if (this.form.name.length === 0) {
-        this.error = "Enter customer name"
-        return false
-      } else if (this.form.clientTypeId === null) {
-        this.error = "Please enter customer type"
-        return false
-      } else if (this.form.clientTypeId == 0 && this.form.clientType.length === 0) {
-        this.error = "Please enter customer (other) type"
-        return false
-      } else if (this.form.phoneNumber.length === 0 && this.form.phoneNumberOther.length === 0) {
-        this.error = "Enter at least one phone number"
-        return false
-      }
-      return true
-    },
-  },
-  watch: {
-
-  },
-  methods: {
-    submit() {
-      this.form
-        .transform(data => ({
-          ...data,
-          client_type_id: this.form.clientTypeId,
-          client_type: this.form.clientType
-        }))
-        .post(this.route('clients.update', { id: this.client.data.id }))
-    },
-  }
 
 }
 </script>
