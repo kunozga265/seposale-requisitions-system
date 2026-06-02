@@ -1,4 +1,4 @@
-<template>
+e<template>
   <app-layout>
     <template #header>
       New Quotation
@@ -310,7 +310,7 @@
                         <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">VAT
                           ({{ (vatRate * 100).toFixed(1) }}%)</td>
                         <td>
-                           <div
+                          <div
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                             {{ numberWithCommas((vat).toFixed(2)) }}
                           </div>
@@ -364,7 +364,7 @@
             <div class="page-section-content flex justify-center">
               <div class="card w-full sm:max-w-md md:max-w-3xl">
 
-               <vue2-tinymce-editor v-model="form.notes"></vue2-tinymce-editor>
+                <vue2-tinymce-editor v-model="form.notes"></vue2-tinymce-editor>
 
               </div>
             </div>
@@ -528,7 +528,7 @@ export default {
     SecondaryButton,
     pdf,
     vSelect,
-     Vue2TinymceEditor,
+    Vue2TinymceEditor,
   },
   data() {
     return {

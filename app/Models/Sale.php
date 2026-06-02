@@ -148,5 +148,6 @@ class Sale extends Model
         'confirmed_date',
         'location_id',
         'meta',
+        'vat',
     ];
 }

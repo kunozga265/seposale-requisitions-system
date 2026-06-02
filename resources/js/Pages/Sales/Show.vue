@@ -30,7 +30,7 @@
             </li>
         </template>
 
-        <template  #actions>
+        <template #actions>
             <!--      <span v-if="sale.data.invoice">-->
             <!--        <a :href="route('invoices.print',{'id':sale.data.invoice.id})" target="_blank">-->
             <!--        <primary-button>Print Invoice</primary-button>-->
@@ -442,17 +442,40 @@
                                                 </td>
 
                                             </tr>
+                                            <tr v-show="sale.data.vat > 0">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">Sub
+                                                    Total</th>
+                                                <td class="pt-2 text-right pr-1 text-sm font-bold">{{
+                                                    numberWithCommas(sale.data.totalRaw) }}
+                                                </td>
+                                            </tr>
+                                            <tr v-show="sale.data.vat > 0">
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">VAT
+                                                    (17.5%)
+                                                </th>
+                                                <td class="pt-2 text-right pr-1 text-sm font-bold">{{
+                                                    numberWithCommas(sale.data.vat) }}
+                                                </td>
+                                            </tr>
                                             <tr>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-
-                                                <th class="pt-4 pr-1 text-base heading-font font-bold text-right">Total
-                                                </th>
-                                                <td class="pt-4 pr-1 text-base font-bold text-right">
-                                                    {{ numberWithCommas(sale.data.total) }}
-                                                </td>
+                                                <th
+                                                    class="pt-2 text-right pr-1 text-sm uppercase heading-font font-bold">
+                                                    Grand
+                                                    Total</th>
+                                                <td class="pt-2 text-right pr-1 text-sm font-bold">{{
+                                                    numberWithCommas(sale.data.total) }}</td>
                                             </tr>
                                         </tbody>
                                     </table>

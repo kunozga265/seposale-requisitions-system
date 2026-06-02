@@ -52,7 +52,7 @@
             </div>
             <div class="page-section-content flex justify-center">
 
-              <div class="card w-full sm:max-w-md md:max-w-3xl">
+              <div class="card w-full sm:max-w-md md:max-w-4xl">
 
                 <jet-validation-errors class="mb-4" />
 
@@ -211,7 +211,7 @@
 
 
 
-              <div class="card w-full sm:max-w-md md:max-w-3xl">
+              <div class="card w-full sm:max-w-md md:max-w-4xl">
                 <div v-if="sale.data.meta?.locationData != null">
                   <LocationViewer class="mb-4" :locationData="sale.data.meta?.locationData" />
                 </div>
@@ -250,7 +250,7 @@
             </div>
             <div class="page-section-content flex justify-center">
 
-              <div class="card default-table w-full sm:max-w-md md:max-w-3xl">
+              <div class="card default-table w-full sm:max-w-md md:max-w-4xl">
 
                 <div class="p-2 mb-2 relative overflow-x-auto">
                   <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -319,6 +319,62 @@
                           <!--                                                <jet-input type="text" class="block w-full" v-model="info.totalCost" value="23" />-->
                         </td>
                       </tr>
+                      <tr>
+                        <td colspan="5">
+                          <div class="mt-2 ml-2 flex justify-start items-center">
+                            <div @click="addRecord" class="flex justify-start items-center cursor">
+                              <div>
+                                <i class="mdi mdi-plus-circle text-blue-600"></i>
+                              </div>
+                              <div class="ml-2 text-blue-600 text-sm">
+                                Add Blank
+                              </div>
+                            </div>
+                            <div @click="addRecordDialog = true" class="ml-3 flex justify-start items-center cursor">
+                              <div>
+                                <i class="mdi mdi-plus-circle text-blue-600"></i>
+                              </div>
+                              <div class="ml-2 text-blue-600 text-sm">
+                                Add Product
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr v-show="calculateVat">
+                        <td colspan="6" class="heading-font p-2 uppercase font-bold text-right">
+                          Sub
+                          Total</td>
+                        <td>
+                          <div
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {{ numberWithCommas((totalCost).toFixed(2)) }}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr v-show="calculateVat">
+                        <td colspan="6" class="heading-font p-2 uppercase font-bold text-right">
+                          VAT
+                          ({{ (vatRate * 100).toFixed(1) }}%)</td>
+                        <td>
+                          <div
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {{ numberWithCommas((vat).toFixed(2)) }}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="6" class="heading-font p-2 uppercase font-bold text-right">
+                          Grand
+                          Total</td>
+                        <td>
+                          <div
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                            {{ numberWithCommas((totalCost + vat).toFixed(2)) }}
+                          </div>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
 
@@ -328,7 +384,15 @@
                     </div>
                   </div>
 
+                  <div class="flex items-center mb-2 justify-start">
+                    <input checked id="calculate-vat" type="checkbox" value="" v-model="calculateVat"
+                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="calculate-vat"
+                      class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Calculate
+                      Vat</label>
+                  </div>
 
+                  <!-- 
                   <div class="mt-2 ml-2 flex justify-start items-center">
                     <div @click="addRecord" class="flex justify-start items-center cursor">
                       <div>
@@ -356,7 +420,7 @@
                       <div class="total">{{ numberWithCommas(totalCost) }}</div>
                     </div>
                     <div class="text-gray-600 text-xs">Total Cost</div>
-                  </div>
+                  </div> -->
                   <!-- <div class="mt-4 text-gray-600 text-sm">
                       I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment.
                   </div> -->
@@ -373,7 +437,7 @@
             </div>
             <div class="page-section-content flex justify-center">
 
-              <div class="card w-full sm:max-w-md md:max-w-3xl">
+              <div class="card w-full sm:max-w-md md:max-w-4xl">
                 <div class="p-2 mb-2">
                   <jet-label for="lpo" value="Local Purchase Order (LPO)" />
                   <jet-input id="lpo" type="text" class="block w-full" v-model="form.localPurchaseOrder"
@@ -516,6 +580,9 @@ export default {
 
       backdateCheck: false,
       maxDate: new Date().toISOString().substr(0, 10),
+      vatRate: 0.175,
+      calculateVat: false,
+
       form: this.$inertia.form({
         name: '',
         phoneNumber: '',
@@ -602,6 +669,14 @@ export default {
 
       }
       return parseFloat(totalCost.toFixed(2))
+    },
+    vat() {
+      if (this.calculateVat) {
+        return this.totalCost * this.vatRate
+      } else {
+        return 0
+      }
+
     },
     quoteFiles() {
       let files = []
@@ -703,7 +778,8 @@ export default {
           recipient_phone_number: this.form.recipientPhoneNumber,
           local_purchase_order: this.form.localPurchaseOrder,
           client_type_id: this.form.clientTypeId,
-          client_type: this.form.clientType
+          client_type: this.form.clientType,
+          vat: this.vat
 
         }))
         .post(this.route('sales.update', { id: this.sale.data.id }))

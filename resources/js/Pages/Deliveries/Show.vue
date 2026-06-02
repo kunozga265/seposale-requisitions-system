@@ -80,7 +80,7 @@
                         </jet-dropdown-link>
                         <div class="border-t border-gray-100"></div>
 
-                        <jet-dropdown-link v-show="delivery.data.status === 2" @click.native="completeDialog = true"
+                        <jet-dropdown-link v-show="delivery.data.status === 2 || delivery.data.quantityDelivered == delivery.data.summary.quantity" @click.native="completeDialog = true"
                             as="button" class="text-left">
                             Complete
                         </jet-dropdown-link>

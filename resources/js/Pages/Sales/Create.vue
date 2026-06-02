@@ -60,8 +60,8 @@
 
                                     <div class="p-2 mb-2">
                                         <jet-label for="clientIndex" value="Client" />
-                                        <v-select  label="name" :options="clients.data" placeholder="Select Client" v-model="selectedClient" 
-                                         />
+                                        <v-select label="name" :options="clients.data" placeholder="Select Client"
+                                            v-model="selectedClient" />
 
 
                                         <!-- <select v-model="clientIndex" id="clientIndex"
@@ -77,8 +77,8 @@
                                         <div class="p-2 mb-2 md:col-span-2" v-show="selectedClient.organisation">
                                             <jet-label for="alias-name" value="Alias Name" />
                                             <jet-input id="alias-name" type="text" class="block w-full"
-                                                v-model="selectedClient.alias" autocomplete="seposale-customer-alias-name"
-                                                disabled />
+                                                v-model="selectedClient.alias"
+                                                autocomplete="seposale-customer-alias-name" disabled />
                                         </div>
                                         <div v-if="selectedClient.type != null" class="p-2 mb-2">
                                             <jet-label for="type" value="Type" />
@@ -107,8 +107,8 @@
                                         <div class="p-2 mb-2">
                                             <jet-label for="address" value="Address" />
                                             <jet-input id="address" type="text" class="block w-full"
-                                                v-model="selectedClient.address" autocomplete="seposale-customer-address"
-                                                disabled />
+                                                v-model="selectedClient.address"
+                                                autocomplete="seposale-customer-address" disabled />
                                         </div>
                                     </div>
 
@@ -305,9 +305,77 @@
                                                     <!--                                                <jet-input type="text" class="block w-full" v-model="info.totalCost" value="23" />-->
                                                 </td>
                                             </tr>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <div class="mt-2 ml-2 flex justify-start items-center">
+                                                        <div @click="addRecord"
+                                                            class="flex justify-start items-center cursor">
+                                                            <div>
+                                                                <i class="mdi mdi-plus-circle text-blue-600"></i>
+                                                            </div>
+                                                            <div class="ml-2 text-blue-600 text-sm">
+                                                                Add Blank
+                                                            </div>
+                                                        </div>
+                                                        <div @click="addRecordDialog = true"
+                                                            class="ml-3 flex justify-start items-center cursor">
+                                                            <div>
+                                                                <i class="mdi mdi-plus-circle text-blue-600"></i>
+                                                            </div>
+                                                            <div class="ml-2 text-blue-600 text-sm">
+                                                                Add Product
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr v-show="calculateVat">
+                                                <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">
+                                                    Sub
+                                                    Total</td>
+                                                <td>
+                                                    <div
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                                                        {{ numberWithCommas((totalCost).toFixed(2)) }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr v-show="calculateVat">
+                                                <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">
+                                                    VAT
+                                                    ({{ (vatRate * 100).toFixed(1) }}%)</td>
+                                                <td>
+                                                    <div
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                                                        {{ numberWithCommas((vat).toFixed(2)) }}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">
+                                                    Grand
+                                                    Total</td>
+                                                <td>
+                                                    <div
+                                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                                                        {{ numberWithCommas((totalCost + vat).toFixed(2)) }}
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
-                                    <div class="mt-2 ml-2 flex justify-start items-center">
+
+                                    <div class="flex items-center mb-2 justify-start">
+                                        <input checked id="calculate-vat" type="checkbox" value=""
+                                            v-model="calculateVat"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="calculate-vat"
+                                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Calculate
+                                            Vat</label>
+                                    </div>
+
+                                    <!-- <div class="mt-2 ml-2 flex justify-start items-center">
                                         <div @click="addRecord" class="flex justify-start items-center cursor">
                                             <div>
                                                 <i class="mdi mdi-plus-circle text-blue-600"></i>
@@ -325,8 +393,8 @@
                                                 Add Product
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="text-center">
+                                    </div> -->
+                                    <!-- <div class="text-center">
                                         <div v-if="isNaN(totalCost)"
                                             class="text-red-600 uppercase font-semibold heading-font">
                                             Enter valid total cost
@@ -336,7 +404,7 @@
                                             <div class="total">{{ numberWithCommas(totalCost) }}</div>
                                         </div>
                                         <div class="text-gray-600 text-xs">Total Cost</div>
-                                    </div>
+                                    </div> -->
                                     <!-- <div class="mt-4 text-gray-600 text-sm">
                                         I accept the advances listed above and I acknowledge that I must return the full amount or account for it on a company expense form within 3 days of returning to Geoserve from this assignment.
                                     </div> -->
@@ -344,6 +412,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Notes
+                            </div>
+                        </div>
+                        <div class="page-section-content flex justify-center">
+                            <div class="card w-full sm:max-w-md md:max-w-3xl">
+
+                                <vue2-tinymce-editor v-model="form.notes"></vue2-tinymce-editor>
+
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div class="page-section">
                         <div class="page-section-header">
@@ -434,14 +518,7 @@
                     </div>
                 </div>
 
-                <div v-if="productIndex !== -1" class="mb-4">
-                    <!-- <div class="flex items-center mb-4">
-                        <input checked id="backdate" type="checkbox" v-model="outsource"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                        <label for="backdate"
-                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Outsource
-                            Products?</label>
-                    </div> -->
+                <!-- <div v-if="productIndex !== -1" class="mb-4">
 
                     <div class="flex items-center mb-2">
                         <input id="default-radio-1" type="radio" value="outsource" v-model="outsource"
@@ -479,10 +556,6 @@
                                     class="border-t-1 cursor-pointer hover:bg-gray-50"
                                     v-for="(inventory, index) in product.inventories" :key="index">
                                     <td class="text-left">
-
-                                        <!-- <i v-show="form.inventoryId == inventory.id"
-                                                        class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"></i> -->
-                                        <!-- <span v-show="form.inventoryId == inventory.id"    class="mdi mdi-check-circle text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">Check!</span> -->
                                         <input id="default-radio-1" :checked="form.inventoryId == inventory.id"
                                             type="checkbox" disabled value="deliver"
                                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
@@ -527,7 +600,7 @@
 
                     </div>
 
-                </div>
+                </div> -->
             </template>
 
             <template #footer>
@@ -556,6 +629,7 @@ import DialogModal from "@/Jetstream/DialogModal.vue";
 import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 import vSelect from "vue-select"
 import "vue-select/dist/vue-select.css"
+import { Vue2TinymceEditor } from "vue2-tinymce-editor";
 
 export default {
     props: ["products", "clients", "clientTypes"],
@@ -570,6 +644,7 @@ export default {
         SecondaryButton,
         pdf,
         vSelect,
+        Vue2TinymceEditor,
     },
     data() {
         return {
@@ -594,6 +669,8 @@ export default {
             date: null,
             maxDate: new Date().toISOString().substr(0, 10),
             minDate: null,
+            vatRate: 0.175,
+            calculateVat: false,
             form: this.$inertia.form({
 
                 name: '',
@@ -610,6 +687,7 @@ export default {
                 recipientProfession: '',
                 recipientPhoneNumber: '',
                 localPurchaseOrder: '',
+                notes: '',
                 information: [
 
                 ],
@@ -671,6 +749,14 @@ export default {
 
             }
             return parseFloat(totalCost.toFixed(2))
+        },
+        vat() {
+            if (this.calculateVat) {
+                return this.totalCost * this.vatRate
+            } else {
+                return 0
+            }
+
         },
         quoteFiles() {
             let files = []
@@ -781,7 +867,8 @@ export default {
                     recipient_phone_number: this.form.recipientPhoneNumber,
                     local_purchase_order: this.form.localPurchaseOrder,
                     client_type_id: this.form.clientTypeId,
-                    client_type: this.form.clientType
+                    client_type: this.form.clientType,
+                    vat: this.vat
                 }))
                 .post(this.route('sales.store'))
         },

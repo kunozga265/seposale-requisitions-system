@@ -248,7 +248,7 @@
                       <td></td>
                       <td></td>
                       <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">Sub Total</th>
-                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total) }}
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.totalRaw) }}
                       </td>
                     </tr>
                     <tr v-show="quotation.data.vat > 0">
@@ -264,8 +264,7 @@
                       <td></td>
                       <td></td>
                       <th class="pt-2 text-right pr-1 text-sm uppercase heading-font font-bold">Grand Total</th>
-                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total +
-                        quotation.data.vat) }}</td>
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total) }}</td>
                     </tr>
                   </tbody>
                 </table>

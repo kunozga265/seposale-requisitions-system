@@ -72,13 +72,13 @@ class DatabaseSeeder extends Seeder
         // $this->call(MaterialsTableSeeder::class);
         // $this->call(BrandTableSeeder::class);
 
-        $batches = Batch::all();
+        // $batches = Batch::all();
 
-        foreach($batches as $batch){
-            $batch->update([
-                'active' => true
-            ]);
-        }
+        // foreach($batches as $batch){
+        //     $batch->update([
+        //         'active' => true
+        //     ]);
+        // }
 
     }
 }
