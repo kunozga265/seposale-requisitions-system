@@ -264,7 +264,7 @@
                       <td></td>
                       <td></td>
                       <th class="pt-2 text-right pr-1 text-sm uppercase heading-font font-bold">Grand Total</th>
-                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total) }}</td>
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total + quotation.data.vat) }}</td>
                     </tr>
                   </tbody>
                 </table>

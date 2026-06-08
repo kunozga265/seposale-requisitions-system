@@ -158,7 +158,7 @@ class QuotationController extends Controller
                 'recipient_phone_number' => $request->recipient_phone_number,
 
                 'information' => json_encode($request->information),
-                'total' => $request->total + $request->vat,
+                'total' => $request->total,
                 'vat' => $request->vat,
                 'meta' => json_encode([
                     'notes' => $request->notes
@@ -316,7 +316,7 @@ class QuotationController extends Controller
                     'recipient_phone_number' => $request->recipient_phone_number,
 
                     'information' => json_encode($request->information),
-                    'total' => $request->total + $request->vat,
+                    'total' => $request->total,
                     'vat' => $request->vat,
                     'meta' => json_encode([
                         'notes' => $request->notes
