@@ -12,14 +12,14 @@ class Quotation extends Model
     use HasFactory;
     use SoftDeletes;
 
-      public function __get($name)
+    public function __get($name)
     {
         if ($name === 'notes') {
 
             $meta =  json_decode($this->meta, true);
-            if($meta["notes"] != null && trim($meta["notes"]) != "" ){
+            if ($meta["notes"] != null && trim($meta["notes"]) != "") {
                 return $meta["notes"];
-            }else{
+            } else {
                 return null;
             }
         }
@@ -63,6 +63,7 @@ class Quotation extends Model
         "sale_id",
         "whatsapp",
         "vat",
+        'vat_option',
         "meta",
     ];
 }

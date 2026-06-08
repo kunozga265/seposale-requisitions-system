@@ -200,7 +200,7 @@
         @if ($quotation->vat > 0)
         <tr class="total">
             <td colspan="4">SubTotal</td>
-            <td>{{number_format($quotation->total,2)}}</td>
+            <td>{{number_format($quotation->total - $quotation->vat,2)}}</td>
         </tr>
         @endif
         @if ($quotation->vat > 0)
@@ -211,7 +211,7 @@
         @endif
         <tr class="total">
             <td colspan="4">Total</td>
-            <td>{{number_format(($quotation->total + $quotation->vat),2)}}</td>
+            <td>{{number_format(($quotation->total),2)}}</td>
         </tr>
         <tr>
             <td colspan="5" class="total-in-words">

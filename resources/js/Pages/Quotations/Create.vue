@@ -264,7 +264,7 @@ e<template>
                           <jet-input type="number" step="0.01" class="block w-full" v-model="info.quantity" />
                         </td>
                         <td class="py-2 pr-1">
-                          <jet-input type="number" step="0.01" class="block w-full" v-model="info.unitCost" />
+                          <jet-input type="number" :step="vatOption != 'INCLUSIVE' ? 0.01 : 0.00001" class="block w-full" v-model="info.unitCost" />
                         </td>
                         <td class="py-2 pr-1">
                           <div
@@ -297,7 +297,7 @@ e<template>
                         </td>
                       </tr>
 
-                      <tr v-show="calculateVat">
+                      <tr v-show="vatOption != 'NONE'">
                         <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">Sub Total</td>
                         <td>
                           <div
@@ -306,7 +306,7 @@ e<template>
                           </div>
                         </td>
                       </tr>
-                      <tr v-show="calculateVat">
+                      <tr v-show="vatOption != 'NONE'">
                         <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">VAT
                           ({{ (vatRate * 100).toFixed(1) }}%)</td>
                         <td>
@@ -328,12 +328,30 @@ e<template>
                     </tbody>
                   </table>
 
-                  <div class="flex items-center mb-2 justify-start">
+                  <!-- <div class="flex items-center mb-2 justify-start">
                     <input checked id="calculate-vat" type="checkbox" value="" v-model="calculateVat"
                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                     <label for="calculate-vat"
                       class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Calculate
                       Vat</label>
+                  </div> -->
+
+
+                  <div class="flex items-center mb-4">
+                    <input id="default-radio-1" type="radio" value="NONE" v-model="vatOption"
+                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="default-radio-1"
+                      class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">None</label>
+
+                    <input checked id="default-radio-2" type="radio" value="INCLUSIVE" v-model="vatOption"
+                      class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="default-radio-2"
+                      class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Inclusive</label>
+
+                    <input checked id="default-radio-2" type="radio" value="EXCLUSIVE" v-model="vatOption"
+                      class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                    <label for="default-radio-2"
+                      class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Exclusive</label>
                   </div>
 
                   <!--                 
@@ -532,6 +550,7 @@ export default {
   },
   data() {
     return {
+      vatOption: "NONE",
       checkClient: "existing",
       addRecordDialog: false,
       productIndex: -1,
@@ -631,13 +650,15 @@ export default {
       return parseFloat(totalCost.toFixed(2))
     },
     vat() {
-      if (this.calculateVat) {
-        return this.totalCost * this.vatRate
-      } else {
-        return 0
+      switch (this.vatOption) {
+        case "INCLUSIVE":
+        case "EXCLUSIVE":
+          return this.totalCost * this.vatRate
+        default:
+          return 0
       }
-
     },
+
     quoteFiles() {
       let files = []
       for (let x in this.quotes)
@@ -685,6 +706,27 @@ export default {
     checkClient() {
       this.clientIndex = -1
     },
+    vatOption() {
+
+      for (let x in this.form.information) {
+
+        if (this.form.information[x].unitCostOriginal > 0) {
+          switch (this.vatOption) {
+            case "NONE":
+              this.form.information[x].unitCost = this.form.information[x].unitCostOriginal
+              break;
+            case "INCLUSIVE":
+              this.form.information[x].unitCost = (this.form.information[x].unitCostOriginal / (1 + this.vatRate)).toFixed(5)
+              break;
+            case "EXCLUSIVE":
+              this.form.information[x].unitCost = this.form.information[x].unitCostOriginal
+              break;
+
+          }
+        }
+      }
+    },
+
     calculateVat() {
       if (this.calculateVat) {
         this.form.vat = this.totalCost * this.vatRate
@@ -719,7 +761,8 @@ export default {
           recipient_phone_number: this.form.recipientPhoneNumber,
           client_type_id: this.form.clientTypeId,
           client_type: this.form.clientType,
-          vat: this.vat
+          vat: this.vat,
+          vat_option: this.vatOption,
         }))
         .post(this.route('quotations.store'))
     },
@@ -733,6 +776,7 @@ export default {
           "units": '',
           "quantity": 0,
           "unitCost": 0,
+          "unitCostOriginal": 0,
           "totalCost": 0,
         })
 
@@ -747,6 +791,7 @@ export default {
           "units": this.addRecordUnits,
           "quantity": this.addRecordQuantity,
           "unitCost": this.addRecordUnitCost,
+          "unitCostOriginal": this.addRecordUnitCost,
           "totalCost": this.addRecordTotal,
         })
 

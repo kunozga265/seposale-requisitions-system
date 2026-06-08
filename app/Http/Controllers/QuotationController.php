@@ -158,8 +158,9 @@ class QuotationController extends Controller
                 'recipient_phone_number' => $request->recipient_phone_number,
 
                 'information' => json_encode($request->information),
-                'total' => $request->total,
+                'total' => $request->total + $request->vat,
                 'vat' => $request->vat,
+                'vat_option' => $request->vat_option,
                 'meta' => json_encode([
                     'notes' => $request->notes
                 ]),
@@ -316,8 +317,9 @@ class QuotationController extends Controller
                     'recipient_phone_number' => $request->recipient_phone_number,
 
                     'information' => json_encode($request->information),
-                    'total' => $request->total,
+                    'total' => $request->total + $request->vat,
                     'vat' => $request->vat,
+                    'vat_option' => $request->vat_option,
                     'meta' => json_encode([
                         'notes' => $request->notes
                     ]),
@@ -394,7 +396,7 @@ class QuotationController extends Controller
             $now_d = Carbon::createFromTimestamp($quotation->created_at->getTimestamp(), 'Africa/Lusaka')->format('F j, Y');
             $now_t = Carbon::createFromTimestamp($quotation->created_at->getTimestamp(), 'Africa/Lusaka')->format('H:i');
 
-            $total_in_words = SpellNumber::value($quotation->total + $quotation->vat)
+            $total_in_words = SpellNumber::value(round($quotation->total, 2))
                 ->locale('en')
                 ->currency('Kwacha')
                 ->fraction('Tambala')

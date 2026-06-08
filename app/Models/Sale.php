@@ -149,5 +149,7 @@ class Sale extends Model
         'location_id',
         'meta',
         'vat',
+        'vat_paid',
+        'vat_option',
     ];
 }

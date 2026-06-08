@@ -237,10 +237,10 @@
                         {{ numberWithCommas(info.quantity) }}
                       </td>
                       <td class="py-2 pr-1">
-                        {{ numberWithCommas(info.unitCost) }}
+                        {{ numberWithCommas(info.unitCost.toFixed(2)) }}
                       </td>
                       <td class="py-2 pr-1 text-right">
-                        {{ numberWithCommas(info.totalCost) }}
+                        {{ numberWithCommas(info.totalCost.toFixed(2)) }}
                       </td>
                     </tr>
                     <tr v-show="quotation.data.vat > 0">
@@ -248,7 +248,7 @@
                       <td></td>
                       <td></td>
                       <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">Sub Total</th>
-                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.totalRaw) }}
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.totalRaw.toFixed(2)) }}
                       </td>
                     </tr>
                     <tr v-show="quotation.data.vat > 0">
@@ -256,7 +256,7 @@
                       <td></td>
                       <td></td>
                       <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">VAT (17.5%)</th>
-                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.vat) }}
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.vat.toFixed(2)) }}
                       </td>
                     </tr>
                     <tr>
@@ -264,7 +264,7 @@
                       <td></td>
                       <td></td>
                       <th class="pt-2 text-right pr-1 text-sm uppercase heading-font font-bold">Grand Total</th>
-                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total + quotation.data.vat) }}</td>
+                      <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(quotation.data.total.toFixed(2)) }}</td>
                     </tr>
                   </tbody>
                 </table>

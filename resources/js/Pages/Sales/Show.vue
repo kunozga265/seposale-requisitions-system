@@ -404,16 +404,16 @@
                                                 </td>
                                                 <td class="py-2 pr-1 text-right">
                                                     {{
-                                                        numberWithCommas(productCompound.amount / productCompound.quantity)
+                                                        numberWithCommas((productCompound.amount / productCompound.quantity).toFixed(2))
                                                     }}
                                                 </td>
                                                 <td class="py-2 pr-1 text-right">
-                                                    {{ numberWithCommas(productCompound.amount) }}
+                                                    {{ numberWithCommas(productCompound.amount.toFixed(2)) }}
                                                 </td>
                                                 <td class="py-2 pr-1 text-right">
                                                     {{
                                                         productCompound.balance != null ?
-                                                            numberWithCommas(productCompound.balance)
+                                                            numberWithCommas(productCompound.balance.toFixed(2))
                                                             : "-"
                                                     }}
                                                 </td>
@@ -450,7 +450,7 @@
                                                 <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">Sub
                                                     Total</th>
                                                 <td class="pt-2 text-right pr-1 text-sm font-bold">{{
-                                                    numberWithCommas(sale.data.totalRaw) }}
+                                                    numberWithCommas(sale.data.totalRaw.toFixed(2)) }}
                                                 </td>
                                             </tr>
                                             <tr v-show="sale.data.vat > 0">
@@ -462,7 +462,7 @@
                                                     (17.5%)
                                                 </th>
                                                 <td class="pt-2 text-right pr-1 text-sm font-bold">{{
-                                                    numberWithCommas(sale.data.vat) }}
+                                                    numberWithCommas(sale.data.vat.toFixed(2)) }}
                                                 </td>
                                             </tr>
                                             <tr>
@@ -475,7 +475,7 @@
                                                     Grand
                                                     Total</th>
                                                 <td class="pt-2 text-right pr-1 text-sm font-bold">{{
-                                                    numberWithCommas(sale.data.total) }}</td>
+                                                    numberWithCommas(sale.data.total.toFixed(2)) }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
