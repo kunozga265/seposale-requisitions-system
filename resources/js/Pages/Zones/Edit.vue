@@ -1,43 +1,46 @@
 <template>
-  <app-layout>
-    <template #header>
-      Edit Zone
-    </template>
+    <app-layout>
+        <template #header>
+            Edit Zone
+        </template>
 
-    <template #breadcrumbs>
-      <li aria-current="page">
-        <div class="flex items-center">
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clip-rule="evenodd"></path>
-          </svg>
-          <a :href="route('clients.index')"
-            class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-            Zones
-          </a>
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clip-rule="evenodd"></path>
-          </svg>
-          <a :href="route('clients.show',{id:client.data.id})"
-            class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-             {{ zone.data.name }}
-          </a>
-          <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd"
-              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-              clip-rule="evenodd"></path>
-          </svg>
-          <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
-           Edit
-          </span>
-        </div>
-      </li>
-    </template>
+        <template #breadcrumbs>
+            <li aria-current="page">
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <a :href="route('zones.index')"
+                        class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                        Zones
+                    </a>
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <a :href="route('zones.show', { id: zone.data.id })"
+                        class="heading-font uppercase inline-flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
+                        {{ zone.data.name }}
+                    </a>
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Edit
+                    </span>
+                </div>
+            </li>
+        </template>
 
-     <div class="py-6">
+        <div class="py-6">
             <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
                 <form @submit.prevent="submit">
                     <div class="page-section">
@@ -65,15 +68,13 @@
 
                                     <div class="p-2 mb-2">
                                         <jet-label for="level" value="Level" />
-                                        <jet-input id="level" type="number" class="block w-full"
-                                            v-model="form.level"
+                                        <jet-input id="level" type="number" class="block w-full" v-model="form.level"
                                             autocomplete="seposale-customer-phone-number-other" />
                                     </div>
 
                                     <div class="p-2 mb-2">
                                         <jet-label for="cost" value="Extra Transport" />
-                                        <jet-input id="cost" type="number" class="block w-full"
-                                            v-model="form.cost"
+                                        <jet-input id="cost" type="number" class="block w-full" v-model="form.cost"
                                             autocomplete="seposale-customer-phone-number-other" />
                                     </div>
 
@@ -114,7 +115,7 @@
                         <div v-show="validation">
                             <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
                                 :disabled="form.processing">
-                                Create
+                                Update
                             </jet-button>
                             <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
                         </div>
@@ -122,7 +123,7 @@
                 </form>
             </div>
         </div>
-  </app-layout>
+    </app-layout>
 </template>
 
 <script>
@@ -142,7 +143,7 @@ import ZonePicker from '../../Components/ZonePicker.vue';
 import axios from 'axios';
 
 export default {
-    props: ["products", "zones", "zoneTypes"],
+    props: ["zone",],
     components: {
         WhatsappLabel,
         Money,
@@ -167,10 +168,10 @@ export default {
             addRecordQuantity: 0,
             addRecordUnitCost: 0,
             form: this.$inertia.form({
-                name: '',
-                level: 1,
-                cost: 0,
-                coordinates: []
+                name: this.zone.data.name,
+                level: this.zone.data.level,
+                cost: this.zone.data.cost,
+                coordinates: this.zone.data.coordinates
             }),
             error: '',
         }
@@ -184,12 +185,12 @@ export default {
             if (this.form.name.length === 0) {
                 this.error = "Enter zone name"
                 return false
-            } else if (this.form.level <= 0) {
-                this.error = "Please enter level"
-                return false
-            } else if (this.form.cost < 0) {
-                this.error = "Please enter extra cost"
-                return false
+                // } else if (this.form.level <= 0) {
+                //     this.error = "Please enter level"
+                //     return false
+                // } else if (this.form.cost < 0) {
+                //     this.error = "Please enter extra cost"
+                //     return false
             } else if (this.form.coordinates.length == 0) {
                 this.error = "Please select and save zone coordinates"
                 return false
@@ -206,9 +207,9 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
-                    
+
                 }))
-                .post(this.route('zones.store'))
+                .post(this.route('zones.update', { 'id': this.zone.data.id }))
         },
 
         handleZoneSaved(polygonData) {

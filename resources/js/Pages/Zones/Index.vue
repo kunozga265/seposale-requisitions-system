@@ -56,10 +56,10 @@
                     <thead class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 
                       <tr>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">#</th>
+                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-left">#</th> -->
                         <th scope="col" class="p-2 pb-0 heading-font text-left">Name</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Level</th>
-                        <th scope="col" class="p-2 pb-0 heading-font text-left">Cost</th>
+                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-left">Transport Options</th> -->
+                        <!-- <th scope="col" class="p-2 pb-0 heading-font text-left">Cost</th> -->
 
                       </tr>
 
@@ -68,13 +68,13 @@
 
                       <tr class="border-b cursor-pointer hover:bg-gray-100 transition ease-in-out duration-200"
                         @click="navigateToZone(zone.id)" v-for="(zone, index) in filteredZones" :key="index">
-                        <td class="p-2 text-left ">{{ index + 1 }}</td>
+                        <!-- <td class="p-2 text-left ">{{ index + 1 }}</td> -->
                         <td class="p-2 text-left ">
                           <div>{{ zone.name }}</div>
                         </td>
-                        <td class="p-2 text-left ">{{ zone.level }}</td>
-                        <td class="p-2 text-left ">{{ zone.cost }}
-                        </td>
+                        <!-- <td class="p-2 text-left ">{{ zone.options }}</td> -->
+                        <!-- <td class="p-2 text-left ">{{ zone.cost }} -->
+                        <!-- </td> -->
 
                       </tr>
                     </tbody>

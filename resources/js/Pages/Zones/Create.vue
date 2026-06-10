@@ -128,7 +128,7 @@ import ZonePicker from '../../Components/ZonePicker.vue';
 import axios from 'axios';
 
 export default {
-    props: ["products", "zones", "zoneTypes"],
+    props: ["zone", "products",],
     components: {
         WhatsappLabel,
         Money,
@@ -152,7 +152,7 @@ export default {
             addRecordUnits: "",
             addRecordQuantity: 0,
             addRecordUnitCost: 0,
-            form: this.$inertia.form({
+           form: this.$inertia.form({
                 name: '',
                 level: 1,
                 cost: 0,
@@ -170,12 +170,12 @@ export default {
             if (this.form.name.length === 0) {
                 this.error = "Enter zone name"
                 return false
-            } else if (this.form.level <= 0) {
-                this.error = "Please enter level"
-                return false
-            } else if (this.form.cost < 0) {
-                this.error = "Please enter extra cost"
-                return false
+            // } else if (this.form.level <= 0) {
+            //     this.error = "Please enter level"
+            //     return false
+            // } else if (this.form.cost < 0) {
+            //     this.error = "Please enter extra cost"
+            //     return false
             } else if (this.form.coordinates.length == 0) {
                 this.error = "Please select and save zone coordinates"
                 return false

@@ -22,78 +22,151 @@ L.Icon.Default.mergeOptions({
 
 export default {
     name: 'LocationViewer',
+
     props: {
         locationData: {
             type: Object,
-            required: true,
-            // Expected format: { lat: -13.9626, lng: 33.7741, name: 'Area 47' }
+            required: true
+        },
+
+        zone: {
+            type: Object,
+            default: null
+            // Expected:
+            // {
+            //   coordinates: [
+            //     { lat: -13.9, lng: 33.7 },
+            //     { lat: -13.8, lng: 33.8 }
+            //   ]
+            // }
         }
     },
+
     created() {
-        // Non-reactive variables to hold the Leaflet instances
         this.map = null;
         this.marker = null;
+        this.polygon = null;
     },
+
     mounted() {
         this.initMap();
     },
+
     beforeDestroy() {
-        // Cleanup to prevent memory leaks when navigating away
         if (this.map) {
             this.map.remove();
         }
     },
+
     watch: {
-        // Watch for prop changes: If the parent updates the location, move the map!
         locationData: {
             deep: true,
-            handler(newLocation) {
-                this.updateMap(newLocation);
+            handler() {
+                this.updateMap();
+            }
+        },
+
+        zone: {
+            deep: true,
+            handler() {
+                this.updateZone();
             }
         }
     },
+
     methods: {
         initMap() {
-            // Safety check
-            if (!this.locationData || !this.locationData.lat || !this.locationData.lng) {
-                console.error("Invalid or missing locationData provided to LocationViewer");
+            if (
+                !this.locationData ||
+                !this.locationData.lat ||
+                !this.locationData.lng
+            ) {
+                console.error(
+                    'Invalid or missing locationData provided to LocationViewer'
+                );
                 return;
             }
 
             const { lat, lng, name } = this.locationData;
 
-            // 1. Initialize Map using this.$refs
-            this.map = L.map(this.$refs.mapContainer).setView([lat, lng], 15);
+            this.map = L.map(this.$refs.mapContainer).setView(
+                [lat, lng],
+                14
+            );
 
-            // 2. Add OpenStreetMap Tiles
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(this.map);
+            L.tileLayer(
+                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }
+            ).addTo(this.map);
 
-            // 3. Add Marker
             this.marker = L.marker([lat, lng]).addTo(this.map);
-            
-            // 4. (Optional) Add popup if a name was provided
+
             if (name) {
                 this.marker.bindPopup(`<b>${name}</b>`).openPopup();
             }
+
+            // Initial zone render
+            this.updateZone();
         },
-        
-        updateMap(newLocation) {
-            if (newLocation && newLocation.lat && newLocation.lng && this.map && this.marker) {
-                const newLatLng = [newLocation.lat, newLocation.lng];
-                
-                // Move the map and the marker
-                this.map.setView(newLatLng, 15);
-                this.marker.setLatLng(newLatLng);
-                
-                // Update popup text
-                if (newLocation.name) {
-                    this.marker.bindPopup(`<b>${newLocation.name}</b>`).openPopup();
-                } else {
-                    this.marker.closePopup();
-                    this.marker.unbindPopup();
-                }
+
+        updateMap() {
+            if (
+                !this.locationData ||
+                !this.map ||
+                !this.marker
+            ) {
+                return;
+            }
+
+            const { lat, lng, name } = this.locationData;
+
+            if (!lat || !lng) {
+                return;
+            }
+
+            const newLatLng = [lat, lng];
+
+            this.map.setView(newLatLng, 15);
+            this.marker.setLatLng(newLatLng);
+
+            if (name) {
+                this.marker.bindPopup(`<b>${name}</b>`).openPopup();
+            } else {
+                this.marker.closePopup();
+                this.marker.unbindPopup();
+            }
+        },
+
+        updateZone() {
+            if (!this.map) {
+                return;
+            }
+
+            // Remove previous polygon
+            if (this.polygon) {
+                this.map.removeLayer(this.polygon);
+                this.polygon = null;
+            }
+
+            // Draw new polygon
+            if (
+                this.zone &&
+                this.zone.coordinates &&
+                this.zone.coordinates.length
+            ) {
+                const latLngs = this.zone.coordinates.map(coord => [
+                    coord.lat,
+                    coord.lng
+                ]);
+
+                this.polygon = L.polygon(latLngs, {
+                    color: '#3b82f6',
+                    fillColor: '#3b82f6',
+                    fillOpacity: 0.3,
+                    weight: 2
+                }).addTo(this.map);
             }
         }
     }

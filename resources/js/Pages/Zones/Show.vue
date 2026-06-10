@@ -67,22 +67,99 @@
     <div class="py-6">
       <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
-        <div class="grid grid-cols-1">
+        <div class="grid grid-cols-3 gap-4">
+          <div class="page-section md:col-span-2">
+            <div class="page-section-header">
+              <div class="page-section-title">
+                Overview
+              </div>
+            </div>
+            <div class="page-section-content">
+              <div class="card">
+                <div class="md:p-8">
+                  <BarChart :chart-options="chartOptions" :chart-data="chartData" />
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
-                Zone Details
+                Map
               </div>
             </div>
             <div class="page-section-content">
 
-                <LocationViewer class="mb-4" :locationData="zone.data.meta?.locationData" />
-
-
-
-
+              <div class="card">
+                <LocationViewer class="" :locationData="zone.data.center" :zone="zone.data" />
+              </div>
             </div>
           </div>
+
+          <div class="page-section md:col-span-3">
+            <div class="page-section-header">
+              <div class="page-section-title">
+                Transport Options
+              </div>
+            </div>
+            <div class="page-section-content">
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+
+                <div v-for="(product, index) in products" class="card" :key="index">
+                  <div class="title text-lg app-font mb-4">{{ product.name }}</div>
+
+
+                  <div class="p-2 mb-2 relative ">
+                    <table class="w-full  text-left text-gray-500 dark:text-gray-400">
+                      <thead
+                        class="mb-8 text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr v-if="product.vehicleTypes[0].variants.length == 0">
+                          <th scope="col" class="p-2  heading-font text-left">Vehicle Type</th>
+                          <th scope="col" class="p-2  heading-font text-center">Max</th>
+                          <th scope="col" class="p-2  heading-font text-right">Cost</th>
+                        </tr>
+                        <tr v-else>
+                          <th scope="col" class="p-2  heading-font text-left">Vehicle Type</th>
+                          <th v-for="variant in product.vehicleTypes[0].variants" scope="col"
+                            class="p-2  heading-font text-center">{{ variant.product.description }} Max</th>
+                          <th scope="col" class="p-2  heading-font text-center">Cost</th>
+                        </tr>
+
+
+                      </thead>
+                      <tbody class="pt-8">
+
+                        <tr v-show="vehicleType.variants.length == 0" class="border-t"
+                          v-for="(vehicleType, _index) in product.vehicleTypes" :key="vehicleType.name + _index">
+
+                          <td class="p-2 text-left ">{{ vehicleType.name }} - {{ vehicleType.capacity }}</td>
+                          <td class="p-2 text-center ">{{ numberWithCommas(vehicleType.max) }}</td>
+                          <td class="p-2 text-right ">{{ numberWithCommas(vehicleType.cost) }}</td>
+                        </tr>
+
+                        <tr v-show="vehicleType.variants.length != 0" class="border-t"
+                          v-for="(vehicleType, _index) in product.vehicleTypes" :key="_index">
+
+                          <td class="p-2 text-left ">{{ vehicleType.name }} - {{ vehicleType.capacity }}</td>
+                          <td v-for="(variant,__index) in vehicleType.variants" class="p-2 text-center " :key="vehicleType.name + __index">{{
+                            numberWithCommas(variant.max) }}</td>
+                          <td class="p-2 text-right ">{{ numberWithCommas(vehicleType.cost) }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+
+
+
+
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -105,6 +182,7 @@ import JetInput from "@/Jetstream/Input";
 import SaleStatus from "@/Components/SaleStatus.vue";
 import Pagination from "@/Components/Pagination.vue";
 import LocationViewer from '../../Components/LocationViewer.vue'
+import BarChart from "@/Components/Charts/BarChart.vue";
 
 export default {
   props: ['zone',],
@@ -112,6 +190,7 @@ export default {
     Pagination,
     SaleStatus,
     AppLayout,
+    BarChart,
     DoughnutChart,
     PieChart,
     PrimaryButton,
@@ -134,14 +213,82 @@ export default {
       denyDialog: false,
       deleteDialog: false,
       form: this.$inertia.form({}),
+      chartOptions: {
+        plugins: {
+          tooltip: {
+            enabled: true
+          },
+          legend: {
+            display: false,
+          }
+        },
+        scales: {
+          xAxes: {
+            grid: {
+              display: false
+            },
+            stacked: true,
+          },
+          yAxes: {
+            grid: {
+              display: false
+            },
+            stacked: true,
+          },
+        },
+        maintainAspectRatio: false
+      },
 
-
+      chartData: {
+        datasets: [
+          {
+            label: "Deliveries",
+            data: [],
+            backgroundColor: ['#1a56db', '#ed0b4b', '#b1bbc9', '#e3ebf6'],
+          },
+        ],
+        labels: []
+      },
     }
   },
   created() {
 
+    for (let y in this.zone.data.deliverySummary) {
+      this.chartData.datasets[0].data.push(this.zone.data.deliverySummary[y].deliveries)
+      this.chartData.labels.push(this.zone.data.deliverySummary[y].name)
+      // }
+    }
+
   },
-  computed: {},
+  computed: {
+    products() {
+      const products = {};
+
+      this.zone.data.options.forEach(item => {
+        const productId = item.product.id;
+
+        if (!products[productId]) {
+          products[productId] = {
+            id: item.product.id,
+            name: item.product.name,
+            vehicleTypes: []
+          };
+        }
+
+        products[productId].vehicleTypes.push({
+          id: item.vehicleType.id,
+          name: item.vehicleType.name,
+          capacity: item.vehicleType.capacity,
+          cost: item.cost,
+          max: item.max,
+          available: item.available,
+          variants: item.meta?.variants || []
+        });
+      });
+
+      return Object.values(products);
+    }
+  },
   methods: {
     printQuotation() {
       this.$inertia.get(this.route('quotations.print', { 'id': this.quotation.data.id }))

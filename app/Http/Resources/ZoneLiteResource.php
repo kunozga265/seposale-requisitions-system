@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ZoneResource extends JsonResource
+class ZoneLiteResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,11 +19,9 @@ class ZoneResource extends JsonResource
             "name" => $this->name,
             "level" =>  intval($this->level),
             "cost" => floatval($this->cost),
-            "costs" =>  ZoneCostResource::collection(json_decode($this->costs)),
-            "coordinates" => json_decode($this->coordinates),
-            "options" => TransportOptionResource::collection($this->transportOptions),
-            "center" => $this->getGeographicCenter(),
-            "deliverySummary" => $this->deliverySummary()
+            // "costs" =>  ZoneCostResource::collection(json_decode($this->costs)),
+            // "coordinates" => json_decode($this->coordinates),
+            "options" => $this->transportOptions->count()
         ];
     }
 }

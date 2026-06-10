@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpParser\Node\Stmt\Break_;
 
 class ReportController extends Controller
 {
@@ -171,44 +172,94 @@ class ReportController extends Controller
         ]);
     }
 
-    public function generateSalesReport(Request $request)
+    public function generateReceipts()
+    {
+        $users = User::orderBy('firstName', 'asc')->get();
+        return Inertia::render('Reports/Receipts', [
+            'users' =>  UserResource::collection($users),
+        ]);
+    }
+
+    public function generateGenericReport(Request $request)
     {
 
         $startDate = $request->startDate;
         $endDate = $request->endDate;
 
 
-        $sales = Sale::where('date', '>=', $startDate)
-            ->where('date', '<=', $endDate)
-            ->get();
+        switch ($request) {
+            case 'SALES':
+                $sales = Sale::where('date', '>=', $startDate)
+                    ->where('date', '<=', $endDate)
+                    ->get();
 
-        $data = [];
-        foreach ($sales as $sale) {
-            foreach ($sale->products as $summary) {
+                $data = [];
+
+                foreach ($sales as $sale) {
+                    foreach ($sale->products as $summary) {
 
 
-                $data[] = [
-                    'Date'     => date("j/m/Y", $sale->date),
-                    'Code'              => $sale->formattedCode(),
-                    'Client Name'       => $sale->client->name,
-                    'Client Phone Number'       => strval($sale->client->phone_number),
-                    'Product'            => $summary->description,
-                    'Quantity'            => $summary->formattedUnits($summary->quantity),
-                    'Location'            => $sale->location,
-                    'Amount'            => $summary->amount,
-                    'Balance'            => $summary->balance,
-                    'Costs'            => $summary->costs(),
-                    'Profit'            => $summary->profit(),
-                    'Status'            => $summary->statusMessage,
-                ];
-            }
+                        $data[] = [
+                            'Date'     => date("j/m/Y", $sale->date),
+                            'Code'              => $sale->formattedCode(),
+                            'Client Name'       => $sale->client->name,
+                            'Client Phone Number'       => strval($sale->client->phone_number),
+                            'Product'            => $summary->description,
+                            'Quantity'            => $summary->formattedUnits($summary->quantity),
+                            'Location'            => $sale->location,
+                            'Amount'            => $summary->amount,
+                            'Balance'            => $summary->balance,
+                            'Costs'            => $summary->costs(),
+                            'Profit'            => $summary->profit(),
+                            'Status'            => $summary->statusMessage,
+                        ];
+                    }
+                }
+                $filename = "Sales-Export-" . date("d-m-Y-H-i") . ".xlsx";
+
+                // dd($type, $requestType, $requestStatus, $startDate, $endDate, $data, $requestForms);
+
+                return Excel::download(new SalesExport($data), $filename);
+                break;
+            case 'RECEIPTS':
+                $sales = Sale::where('date', '>=', $startDate)
+                    ->where('date', '<=', $endDate)
+                    ->get();
+
+                $data = [];
+
+                foreach ($sales as $sale) {
+                    foreach ($sale->products as $summary) {
+
+
+                        $data[] = [
+                            'Date'     => date("j/m/Y", $sale->date),
+                            'Code'              => $sale->formattedCode(),
+                            'Client Name'       => $sale->client->name,
+                            'Client Phone Number'       => strval($sale->client->phone_number),
+                            'Product'            => $summary->description,
+                            'Quantity'            => $summary->formattedUnits($summary->quantity),
+                            'Location'            => $sale->location,
+                            'Amount'            => $summary->amount,
+                            'Balance'            => $summary->balance,
+                            'Costs'            => $summary->costs(),
+                            'Profit'            => $summary->profit(),
+                            'Status'            => $summary->statusMessage,
+                        ];
+                    }
+                }
+                $filename = "Sales-Export-" . date("d-m-Y-H-i") . ".xlsx";
+
+                // dd($type, $requestType, $requestStatus, $startDate, $endDate, $data, $requestForms);
+
+                return Excel::download(new SalesExport($data), $filename);
+
+            default:
+                return Redirect::back()->with('error', "An error occurred. Please try again");
         }
-        $filename = "Sales-Export-" . date("d-m-Y-H-i") . ".xlsx";
-
-        // dd($type, $requestType, $requestStatus, $startDate, $endDate, $data, $requestForms);
-
-        return Excel::download(new SalesExport($data), $filename);
     }
+
+
     private function getApprovalStatus($status)
     {
         switch ($status) {

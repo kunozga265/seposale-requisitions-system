@@ -11,6 +11,7 @@ use App\Http\Resources\ReceiptResource;
 use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\ZoneLiteResource;
 use App\Http\Resources\ZoneResource;
 use App\Models\Client;
 use App\Models\ClientType;
@@ -48,7 +49,7 @@ class ZoneController extends Controller
         else {
             //Web Response
             return Inertia::render('Zones/Index', [
-                'zones' => ZoneResource::collection($zones),
+                'zones' => ZoneLiteResource::collection($zones),
             ]);
         }
     }
@@ -94,14 +95,14 @@ class ZoneController extends Controller
         $request->validate([
             'name' => ['required'],
             'coordinates' => ['required'],
-            'cost' => ['required'],
-            'level' => ['required'],
+            // 'cost' => ['required'],
+            // 'level' => ['required'],
         ]);
 
         $zone = Zone::create([
             'name' => ucwords($request->name),
             'cost' => floatval($request->cost),
-            'level' => intval($request->level),
+            'level' => intval($request->level ?? 1),
             'coordinates' => json_encode($request->coordinates),
         ]);
 
@@ -142,14 +143,14 @@ class ZoneController extends Controller
             $request->validate([
                 'name' => ['required'],
                 'coordinates' => ['required'],
-                'cost' => ['required'],
-                'level' => ['required'],
+                // 'cost' => ['required'],
+                // 'level' => ['required'],
             ]);
 
             $zone->update([
                 'name' => ucwords($request->name),
                 'cost' => floatval($request->cost),
-                'level' => intval($request->level),
+                'level' => intval($request->level ?? 1),
                 'coordinates' => json_encode($request->coordinates),
             ]);
 
