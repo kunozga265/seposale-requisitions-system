@@ -7,6 +7,8 @@ use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
+use App\Models\Delivery;
+use App\Models\DeliveryRequest;
 use App\Models\Receipt;
 use App\Models\ReceiptSummary;
 use App\Models\Sale;
@@ -78,8 +80,9 @@ class ReceiptController extends Controller
         $user = (new AppController())->getAuthUser($request);
 
         $request->validate([
-            'withholding' => ['required'],
-            'information' => ['required'],
+            'delivery_request_id' => ['required'],
+            // 'withholding' => ['required'],
+            // 'information' => ['required'],
             'type' => ['required'],
         ]);
 
@@ -89,249 +92,197 @@ class ReceiptController extends Controller
 
             $receipt = Cache::lock($user->id . ':receipt:store', 10)->get(function () use ($user, $request, $sale) {
 
-                //Checking
-                $total = 0;
-                $filteredProducts = [];
-                foreach ($request->information as $item) {
-                    $amount = $item["amount"];
-                    $total += $amount;
 
-                    $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
-                    if (isset($summary->balance)) {
-                        $balance = $summary->balance - $amount;
-                        if ($balance < 0) {
-                            return Redirect::back()->with("error", "Payment is more than what is required");
-                        }
-                    }
-                    if ($amount > 0) {
-                        $filteredProducts[] = $item;
-                    }
-                }
+                if ($request->delivery_request_id == 0) {
 
-                $new_balance = $sale->balance - $total;
-                if ($new_balance < 0) {
-                    return Redirect::back()->with("error", "Payment is more than what is required");
-                } else if ($total <= 0) {
-                    return Redirect::back()->with("error", "Receipt amount is zero");
-                }
-
-                if ($request->withholding) {
-                    $account_id = (new AccountingAccountController())->getAccount(1200)->id;
-                    $payment_method_id = PaymentMethod::where('name', 'Withholding')->first()->id;
-                } else {
                     $request->validate([
-                        'account_id' => ['required'],
-                        'payment_method_id' => ['required'],
+                        'withholding' => ['required'],
+                        'information' => ['required'],
                     ]);
 
-                    $account_id = $request->account_id;
-                    $payment_method_id = $request->payment_method_id;
-                }
-                //Validate all the important attributes
+                    //Checking
+                    $total = 0;
+                    $filteredProducts = [];
+                    foreach ($request->information as $item) {
+                        $amount = $item["amount"];
+                        $total += $amount;
 
-
-
-                // $receipt = Receipt::find(1);
-                $receipt = Receipt::create([
-                    'code' => $this->getCodeReceiptNumber(),
-                    'serial' => (new AppController())->generateUniqueCode("RECEIPT"),
-                    'client_id' => $sale->client->id,
-                    // "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
-                    // "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
-                    'account_id' => $account_id,
-                    'payment_method_id' => $payment_method_id,
-                    'amount' => $total,
-                    'reference' => strtoupper($request->reference),
-                    // 'information' => json_encode($filteredProducts),
-                    'user_id' => $user->id,
-                    'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
-                ]);
-
-                $wallet_account = AccountingAccount::find($account_id);
-                $unearned_revenue_account = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
-                $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
-
-                $wallet_account_balance = $wallet_account->balance;
-                $unearned_revenue_balance = $unearned_revenue_account->balance;
-                $receivables_balance = $receivables_account->balance;
-
-                $index = 0;
-                //Updating data
-                foreach ($filteredProducts as $item) {
-                    $amount = $item["amount"];
-                    $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
-                    $paid_balance = $summary->paidBalance();
-
-                    //   if ($paid_balance < 0) {
-                    //     $remainder = $amount - abs($paid_balance);
-                    //     $partial_payment = abs($paid_balance);
-                    //   }
-
-                    //  dump("paid_balance: $paid_balance");
-                    //  dump("partial_payment: $partial_payment");
-                    //  dd("remainder: $remainder");
-
-                    if (isset($summary->balance)) {
-                        $balance = $summary->balance - $amount;
-
-                        //create receipt transaction
-                        $receiptSummary = ReceiptSummary::create([
-                            "balance" => $balance,
-                            "amount" => $amount,
-                            "cost" => $summary->cost(),
-                            "units" => $summary->units,
-                            "receipt_id" => $receipt->id,
-                        ]);
-
-                        $sale->update([
-                            "balance" => $new_balance,
-                            "editable" => false,
-                            "status" => $new_balance == 0 ? 2 : 1
-                        ]);
-
-
-                        $summary->update([
-                            "balance" => $balance
-                        ]);
-
-                        switch ($request->type) {
-                            case "ORDINARY":
-                                $summary_id = $summary->id;
-                                $sale_id = $summary->sale->id;
-
-                                $site_sale_id = $summary->siteSaleSummary?->sale->id;
-                                $site_sale_summary_id = $summary->siteSaleSummary?->id;
-
-                                $summary->siteSaleSummary?->update([
-                                    "balance" => $balance
-                                ]);
-
-                                $summary->siteSaleSummary?->sale->update([
-                                    "balance" => $new_balance,
-                                    "editable" => false,
-                                    "status" => $new_balance == 0 ? 2 : 1
-                                ]);
-
-
-                                break;
-                            default:
-                                $summary_id = $summary->summary?->id;
-                                $sale_id = $summary->summary?->sale->id;
-
-                                $site_sale_id = $summary->sale->id;
-                                $site_sale_summary_id = $summary->id;
-
-                                $summary->summary?->update([
-                                    "balance" => $balance
-                                ]);
-
-                                $summary->summary?->sale->update([
-                                    "balance" => $new_balance,
-                                    "editable" => false,
-                                    "status" => $new_balance == 0 ? 2 : 1
-                                ]);
+                        $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
+                        if (isset($summary->balance)) {
+                            $balance = $summary->balance - $amount;
+                            if ($balance < 0) {
+                                return Redirect::back()->with("error", "Payment is more than what is required");
+                            }
                         }
+                        if ($amount > 0) {
+                            $filteredProducts[] = $item;
+                        }
+                    }
 
+                    $new_balance = $sale->balance - $total;
+                    if ($new_balance < 0) {
+                        return Redirect::back()->with("error", "Payment is more than what is required");
+                    } else if ($total <= 0) {
+                        return Redirect::back()->with("error", "Receipt amount is zero");
+                    }
 
-
-                        $receipt->update([
-                            "sale_id" =>  $sale_id,
-                            "site_sale_id" =>  $site_sale_id,
+                    if ($request->withholding) {
+                        $account_id = (new AccountingAccountController())->getAccount(1200)->id;
+                        $payment_method_id = PaymentMethod::where('name', 'Withholding')->first()->id;
+                    } else {
+                        $request->validate([
+                            'account_id' => ['required'],
+                            'payment_method_id' => ['required'],
                         ]);
 
-                        $receiptSummary->update([
-                            "name" => $summary->description(),
-                            "summary_id" => $summary_id,
-                            "site_sale_summary_id" => $site_sale_summary_id,
-                        ]);
+                        $account_id = $request->account_id;
+                        $payment_method_id = $request->payment_method_id;
+                    }
+                    //Validate all the important attributes
 
 
 
-                        //check if there is a delivery on delivery or collection end proportionate the amount that neeeds to go to receivables
-                        if ($summary->deliveryExists() || $summary->getCollectionStatus() > 0) {
+                    // $receipt = Receipt::find(1);
+                    $receipt = Receipt::create([
+                        'code' => $this->getCodeReceiptNumber(),
+                        'serial' => (new AppController())->generateUniqueCode("RECEIPT"),
+                        'client_id' => $sale->client->id,
+                        // "sale_id" =>  $request->type == "ORDINARY" ? $sale->id : null,
+                        // "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
+                        'account_id' => $account_id,
+                        'payment_method_id' => $payment_method_id,
+                        'amount' => $total,
+                        'reference' => strtoupper($request->reference),
+                        // 'information' => json_encode($filteredProducts),
+                        'user_id' => $user->id,
+                        'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+                    ]);
 
-                            //client owes us
-                            if ($paid_balance < 0) {
-                                $remainder = $amount - abs($paid_balance);
-                                $partial_payment = abs($paid_balance);
+                    $wallet_account = AccountingAccount::find($account_id);
+                    $unearned_revenue_account = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
+                    $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
 
-                                if ($remainder <= 0) {
-                                    //debit cash account
-                                    $wallet_record = AccountingRecord::create([
-                                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                                        "reference" => strtoupper($receipt->reference),
-                                        "date" => $receipt->date + $index,
-                                        "name" => $receipt->client->name,
-                                        "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
-                                        "amount" => $amount,
-                                        "opening_balance" => $wallet_account_balance,
-                                        "closing_balance" => $wallet_account_balance + $amount,
-                                        "type" => "DEBIT", // incrementing the account balance
-                                        "accounting_account_id" => $wallet_account->id,
-                                        "receipt_id" => $receipt->id,
-                                        "receipt_summary_id" => $receiptSummary->id,
+                    $wallet_account_balance = $wallet_account->balance;
+                    $unearned_revenue_balance = $unearned_revenue_account->balance;
+                    $receivables_balance = $receivables_account->balance;
+
+                    $index = 0;
+                    //Updating data
+                    foreach ($filteredProducts as $item) {
+                        $amount = $item["amount"];
+                        $summary = $request->type == "ORDINARY" ? Summary::findOrFail($item["id"]) : SiteSaleSummary::findOrFail($item["id"]);
+                        $paid_balance = $summary->paidBalance();
+
+                        //   if ($paid_balance < 0) {
+                        //     $remainder = $amount - abs($paid_balance);
+                        //     $partial_payment = abs($paid_balance);
+                        //   }
+
+                        //  dump("paid_balance: $paid_balance");
+                        //  dump("partial_payment: $partial_payment");
+                        //  dd("remainder: $remainder");
+
+                        if (isset($summary->balance)) {
+                            $balance = $summary->balance - $amount;
+
+                            //create receipt transaction
+                            $receiptSummary = ReceiptSummary::create([
+                                "balance" => $balance,
+                                "amount" => $amount,
+                                "cost" => $summary->cost(),
+                                "units" => $summary->units,
+                                "receipt_id" => $receipt->id,
+                            ]);
+
+                            $sale->update([
+                                "balance" => $new_balance,
+                                "editable" => false,
+                                "status" => $new_balance == 0 ? 2 : 1
+                            ]);
+
+
+                            $summary->update([
+                                "balance" => $balance
+                            ]);
+
+                            switch ($request->type) {
+                                case "ORDINARY":
+                                    $summary_id = $summary->id;
+                                    $sale_id = $summary->sale->id;
+
+                                    $site_sale_id = $summary->siteSaleSummary?->sale->id;
+                                    $site_sale_summary_id = $summary->siteSaleSummary?->id;
+
+                                    $summary->siteSaleSummary?->update([
+                                        "balance" => $balance
                                     ]);
-                                    $wallet_account_balance += $amount;
 
-                                    //credit receivables
-                                    $receivables_record = AccountingRecord::create([
-                                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                                        "reference" => strtoupper($receipt->reference),
-                                        "date" => $receipt->date + $index,
-                                        "name" => $receipt->client->name,
-                                        "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
-                                        "amount" => $amount,
-                                        "opening_balance" => $receivables_balance,
-                                        "closing_balance" => $receivables_balance - $amount,
-                                        "type" => "CREDIT", // incrementing the account balance
-                                        "accounting_account_id" => $receivables_account->id,
-                                        "accounting_record_id" => $wallet_record->id,
-                                        "receipt_id" => $receipt->id,
-                                        "receipt_summary_id" => $receiptSummary->id,
-                                    ]);
-                                    $receivables_balance -= $amount;
-
-                                    $wallet_record->update([
-                                        "accounting_record_id" => $receivables_record->id
+                                    $summary->siteSaleSummary?->sale->update([
+                                        "balance" => $new_balance,
+                                        "editable" => false,
+                                        "status" => $new_balance == 0 ? 2 : 1
                                     ]);
 
-                                    switch ($request->type) {
-                                        case "ORDINARY":
-                                            $wallet_record->update([
-                                                "summary_id" => $summary->id,
-                                            ]);
-                                            $receivables_record->update([
-                                                "summary_id" => $summary->id,
-                                            ]);
-                                            break;
-                                        default:
-                                            $wallet_record->update([
-                                                "site_sale_summary_id" => $summary->id,
-                                            ]);
-                                            $receivables_record->update([
-                                                "site_sale_summary_id" => $summary->id,
-                                            ]);
-                                    }
-                                } else {
-                                    // partly debit cash and credit receivables
-                                    //debit cash account
-                                    if ($partial_payment > 0) {
+
+                                    break;
+                                default:
+                                    $summary_id = $summary->summary?->id;
+                                    $sale_id = $summary->summary?->sale->id;
+
+                                    $site_sale_id = $summary->sale->id;
+                                    $site_sale_summary_id = $summary->id;
+
+                                    $summary->summary?->update([
+                                        "balance" => $balance
+                                    ]);
+
+                                    $summary->summary?->sale->update([
+                                        "balance" => $new_balance,
+                                        "editable" => false,
+                                        "status" => $new_balance == 0 ? 2 : 1
+                                    ]);
+                            }
+
+
+
+                            $receipt->update([
+                                "sale_id" =>  $sale_id,
+                                "site_sale_id" =>  $site_sale_id,
+                            ]);
+
+                            $receiptSummary->update([
+                                "name" => $summary->description(),
+                                "summary_id" => $summary_id,
+                                "site_sale_summary_id" => $site_sale_summary_id,
+                            ]);
+
+
+
+                            //check if there is a delivery on delivery or collection end proportionate the amount that neeeds to go to receivables
+                            if ($summary->deliveryExists() || $summary->getCollectionStatus() > 0) {
+
+                                //client owes us
+                                if ($paid_balance < 0) {
+                                    $remainder = $amount - abs($paid_balance);
+                                    $partial_payment = abs($paid_balance);
+
+                                    if ($remainder <= 0) {
+                                        //debit cash account
                                         $wallet_record = AccountingRecord::create([
                                             "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                                             "reference" => strtoupper($receipt->reference),
                                             "date" => $receipt->date + $index,
                                             "name" => $receipt->client->name,
-                                            // "description" => $receiptSummary->name,
-                                            "description" => $receiptSummary->name . "({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
-                                            "amount" => $partial_payment,
+                                            "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
+                                            "amount" => $amount,
                                             "opening_balance" => $wallet_account_balance,
-                                            "closing_balance" => $wallet_account_balance + $partial_payment,
+                                            "closing_balance" => $wallet_account_balance + $amount,
                                             "type" => "DEBIT", // incrementing the account balance
                                             "accounting_account_id" => $wallet_account->id,
                                             "receipt_id" => $receipt->id,
                                             "receipt_summary_id" => $receiptSummary->id,
                                         ]);
-                                        $wallet_account_balance += $partial_payment;
+                                        $wallet_account_balance += $amount;
 
                                         //credit receivables
                                         $receivables_record = AccountingRecord::create([
@@ -339,17 +290,17 @@ class ReceiptController extends Controller
                                             "reference" => strtoupper($receipt->reference),
                                             "date" => $receipt->date + $index,
                                             "name" => $receipt->client->name,
-                                            "description" => $receiptSummary->name . "({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
-                                            "amount" => $partial_payment,
+                                            "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
+                                            "amount" => $amount,
                                             "opening_balance" => $receivables_balance,
-                                            "closing_balance" => $receivables_balance - $partial_payment,
+                                            "closing_balance" => $receivables_balance - $amount,
                                             "type" => "CREDIT", // incrementing the account balance
                                             "accounting_account_id" => $receivables_account->id,
                                             "accounting_record_id" => $wallet_record->id,
                                             "receipt_id" => $receipt->id,
                                             "receipt_summary_id" => $receiptSummary->id,
                                         ]);
-                                        $receivables_balance -= $partial_payment;
+                                        $receivables_balance -= $amount;
 
                                         $wallet_record->update([
                                             "accounting_record_id" => $receivables_record->id
@@ -372,69 +323,186 @@ class ReceiptController extends Controller
                                                     "site_sale_summary_id" => $summary->id,
                                                 ]);
                                         }
+                                    } else {
+                                        // partly debit cash and credit receivables
+                                        //debit cash account
+                                        if ($partial_payment > 0) {
+                                            $wallet_record = AccountingRecord::create([
+                                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                                "reference" => strtoupper($receipt->reference),
+                                                "date" => $receipt->date + $index,
+                                                "name" => $receipt->client->name,
+                                                // "description" => $receiptSummary->name,
+                                                "description" => $receiptSummary->name . "({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
+                                                "amount" => $partial_payment,
+                                                "opening_balance" => $wallet_account_balance,
+                                                "closing_balance" => $wallet_account_balance + $partial_payment,
+                                                "type" => "DEBIT", // incrementing the account balance
+                                                "accounting_account_id" => $wallet_account->id,
+                                                "receipt_id" => $receipt->id,
+                                                "receipt_summary_id" => $receiptSummary->id,
+                                            ]);
+                                            $wallet_account_balance += $partial_payment;
 
-                                        $index++;
-                                    }
+                                            //credit receivables
+                                            $receivables_record = AccountingRecord::create([
+                                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                                "reference" => strtoupper($receipt->reference),
+                                                "date" => $receipt->date + $index,
+                                                "name" => $receipt->client->name,
+                                                "description" => $receiptSummary->name . "({$summary->formattedUnits($partial_payment / ($summary->amount /$summary->quantity))})",
+                                                "amount" => $partial_payment,
+                                                "opening_balance" => $receivables_balance,
+                                                "closing_balance" => $receivables_balance - $partial_payment,
+                                                "type" => "CREDIT", // incrementing the account balance
+                                                "accounting_account_id" => $receivables_account->id,
+                                                "accounting_record_id" => $wallet_record->id,
+                                                "receipt_id" => $receipt->id,
+                                                "receipt_summary_id" => $receiptSummary->id,
+                                            ]);
+                                            $receivables_balance -= $partial_payment;
 
-                                    //Handle balance
-                                    if ($remainder > 0) {
-                                        $wallet_record = AccountingRecord::create([
-                                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                                            "reference" => strtoupper($receipt->reference),
-                                            "date" => $receipt->date + $index,
-                                            "name" => $receipt->client->name,
-                                            "description" => $receiptSummary->name . "({$summary->formattedUnits($remainder / ($summary->amount /$summary->quantity))})",
-                                            "amount" => $remainder,
-                                            "opening_balance" => $wallet_account_balance,
-                                            "closing_balance" => $wallet_account_balance + $remainder,
-                                            "type" => "DEBIT", // incrementing the account balance
-                                            "accounting_account_id" => $wallet_account->id,
-                                            "receipt_id" => $receipt->id,
-                                            "receipt_summary_id" => $receiptSummary->id,
-                                        ]);
-                                        $wallet_account_balance += $remainder;
+                                            $wallet_record->update([
+                                                "accounting_record_id" => $receivables_record->id
+                                            ]);
 
-                                        $unearned_revenue_record = AccountingRecord::create([
-                                            "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                                            "reference" => strtoupper($receipt->reference),
-                                            "date" => $receipt->date + $index,
-                                            "name" => $receipt->client->name,
-                                            "description" => $receiptSummary->name . "({$summary->formattedUnits($remainder / ($summary->amount /$summary->quantity))})",
-                                            "amount" => $remainder,
-                                            "opening_balance" => $unearned_revenue_balance,
-                                            "closing_balance" => $unearned_revenue_balance + $remainder,
-                                            "type" => "CREDIT", // incrementing the account balance
-                                            "accounting_account_id" => $unearned_revenue_account->id,
-                                            "accounting_record_id" => $wallet_record->id,
-                                            "receipt_id" => $receipt->id,
-                                            "receipt_summary_id" => $receiptSummary->id,
-                                        ]);
-                                        $unearned_revenue_balance += $remainder;
+                                            switch ($request->type) {
+                                                case "ORDINARY":
+                                                    $wallet_record->update([
+                                                        "summary_id" => $summary->id,
+                                                    ]);
+                                                    $receivables_record->update([
+                                                        "summary_id" => $summary->id,
+                                                    ]);
+                                                    break;
+                                                default:
+                                                    $wallet_record->update([
+                                                        "site_sale_summary_id" => $summary->id,
+                                                    ]);
+                                                    $receivables_record->update([
+                                                        "site_sale_summary_id" => $summary->id,
+                                                    ]);
+                                            }
 
-                                        $wallet_record->update([
-                                            "accounting_record_id" => $unearned_revenue_record->id
-                                        ]);
-
-                                        switch ($request->type) {
-                                            case "ORDINARY":
-                                                $wallet_record->update([
-                                                    "summary_id" => $summary->id,
-                                                ]);
-                                                $unearned_revenue_record->update([
-                                                    "summary_id" => $summary->id,
-                                                ]);
-                                                break;
-                                            default:
-                                                $wallet_record->update([
-                                                    "site_sale_summary_id" => $summary->id,
-                                                ]);
-                                                $unearned_revenue_record->update([
-                                                    "site_sale_summary_id" => $summary->id,
-                                                ]);
+                                            $index++;
                                         }
+
+                                        //Handle balance
+                                        if ($remainder > 0) {
+                                            $wallet_record = AccountingRecord::create([
+                                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                                "reference" => strtoupper($receipt->reference),
+                                                "date" => $receipt->date + $index,
+                                                "name" => $receipt->client->name,
+                                                "description" => $receiptSummary->name . "({$summary->formattedUnits($remainder / ($summary->amount /$summary->quantity))})",
+                                                "amount" => $remainder,
+                                                "opening_balance" => $wallet_account_balance,
+                                                "closing_balance" => $wallet_account_balance + $remainder,
+                                                "type" => "DEBIT", // incrementing the account balance
+                                                "accounting_account_id" => $wallet_account->id,
+                                                "receipt_id" => $receipt->id,
+                                                "receipt_summary_id" => $receiptSummary->id,
+                                            ]);
+                                            $wallet_account_balance += $remainder;
+
+                                            $unearned_revenue_record = AccountingRecord::create([
+                                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                                "reference" => strtoupper($receipt->reference),
+                                                "date" => $receipt->date + $index,
+                                                "name" => $receipt->client->name,
+                                                "description" => $receiptSummary->name . "({$summary->formattedUnits($remainder / ($summary->amount /$summary->quantity))})",
+                                                "amount" => $remainder,
+                                                "opening_balance" => $unearned_revenue_balance,
+                                                "closing_balance" => $unearned_revenue_balance + $remainder,
+                                                "type" => "CREDIT", // incrementing the account balance
+                                                "accounting_account_id" => $unearned_revenue_account->id,
+                                                "accounting_record_id" => $wallet_record->id,
+                                                "receipt_id" => $receipt->id,
+                                                "receipt_summary_id" => $receiptSummary->id,
+                                            ]);
+                                            $unearned_revenue_balance += $remainder;
+
+                                            $wallet_record->update([
+                                                "accounting_record_id" => $unearned_revenue_record->id
+                                            ]);
+
+                                            switch ($request->type) {
+                                                case "ORDINARY":
+                                                    $wallet_record->update([
+                                                        "summary_id" => $summary->id,
+                                                    ]);
+                                                    $unearned_revenue_record->update([
+                                                        "summary_id" => $summary->id,
+                                                    ]);
+                                                    break;
+                                                default:
+                                                    $wallet_record->update([
+                                                        "site_sale_summary_id" => $summary->id,
+                                                    ]);
+                                                    $unearned_revenue_record->update([
+                                                        "site_sale_summary_id" => $summary->id,
+                                                    ]);
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    $wallet_record = AccountingRecord::create([
+                                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                        "reference" => strtoupper($receipt->reference),
+                                        "date" => $receipt->date + $index,
+                                        "name" => $receipt->client->name,
+                                        "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
+                                        "amount" => $amount,
+                                        "opening_balance" => $wallet_account_balance,
+                                        "closing_balance" => $wallet_account_balance + $amount,
+                                        "type" => "DEBIT", // incrementing the account balance
+                                        "accounting_account_id" => $wallet_account->id,
+                                        "receipt_id" => $receipt->id,
+                                        "receipt_summary_id" => $receiptSummary->id,
+                                    ]);
+                                    $wallet_account_balance += $amount;
+
+                                    $unearned_revenue_record = AccountingRecord::create([
+                                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                                        "reference" => strtoupper($receipt->reference),
+                                        "date" => $receipt->date + $index,
+                                        "name" => $receipt->client->name,
+                                        "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
+                                        "amount" => $amount,
+                                        "opening_balance" => $unearned_revenue_balance,
+                                        "closing_balance" => $unearned_revenue_balance + $amount,
+                                        "type" => "CREDIT", // incrementing the account balance
+                                        "accounting_account_id" => $unearned_revenue_account->id,
+                                        "accounting_record_id" => $wallet_record->id,
+                                        "receipt_id" => $receipt->id,
+                                        "receipt_summary_id" => $receiptSummary->id,
+                                    ]);
+                                    $unearned_revenue_balance += $amount;
+
+                                    $wallet_record->update([
+                                        "accounting_record_id" => $unearned_revenue_record->id
+                                    ]);
+
+                                    switch ($request->type) {
+                                        case "ORDINARY":
+                                            $wallet_record->update([
+                                                "summary_id" => $summary->id,
+                                            ]);
+                                            $unearned_revenue_record->update([
+                                                "summary_id" => $summary->id,
+                                            ]);
+                                            break;
+                                        default:
+                                            $wallet_record->update([
+                                                "site_sale_summary_id" => $summary->id,
+                                            ]);
+                                            $unearned_revenue_record->update([
+                                                "site_sale_summary_id" => $summary->id,
+                                            ]);
                                     }
                                 }
                             } else {
+                                //there is no delivery or collection, credit unearned revenue
                                 $wallet_record = AccountingRecord::create([
                                     "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
                                     "reference" => strtoupper($receipt->reference),
@@ -490,67 +558,112 @@ class ReceiptController extends Controller
                                         ]);
                                 }
                             }
-                        } else {
-                            //there is no delivery or collection, credit unearned revenue
-                            $wallet_record = AccountingRecord::create([
-                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                                "reference" => strtoupper($receipt->reference),
-                                "date" => $receipt->date + $index,
-                                "name" => $receipt->client->name,
-                                "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
-                                "amount" => $amount,
-                                "opening_balance" => $wallet_account_balance,
-                                "closing_balance" => $wallet_account_balance + $amount,
-                                "type" => "DEBIT", // incrementing the account balance
-                                "accounting_account_id" => $wallet_account->id,
-                                "receipt_id" => $receipt->id,
-                                "receipt_summary_id" => $receiptSummary->id,
-                            ]);
-                            $wallet_account_balance += $amount;
 
-                            $unearned_revenue_record = AccountingRecord::create([
-                                "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                                "reference" => strtoupper($receipt->reference),
-                                "date" => $receipt->date + $index,
-                                "name" => $receipt->client->name,
-                                "description" => $receiptSummary->name . "({$summary->formattedUnits($amount / ($summary->amount /$summary->quantity))})",
-                                "amount" => $amount,
-                                "opening_balance" => $unearned_revenue_balance,
-                                "closing_balance" => $unearned_revenue_balance + $amount,
-                                "type" => "CREDIT", // incrementing the account balance
-                                "accounting_account_id" => $unearned_revenue_account->id,
-                                "accounting_record_id" => $wallet_record->id,
-                                "receipt_id" => $receipt->id,
-                                "receipt_summary_id" => $receiptSummary->id,
-                            ]);
-                            $unearned_revenue_balance += $amount;
-
-                            $wallet_record->update([
-                                "accounting_record_id" => $unearned_revenue_record->id
-                            ]);
-
-                            switch ($request->type) {
-                                case "ORDINARY":
-                                    $wallet_record->update([
-                                        "summary_id" => $summary->id,
-                                    ]);
-                                    $unearned_revenue_record->update([
-                                        "summary_id" => $summary->id,
-                                    ]);
-                                    break;
-                                default:
-                                    $wallet_record->update([
-                                        "site_sale_summary_id" => $summary->id,
-                                    ]);
-                                    $unearned_revenue_record->update([
-                                        "site_sale_summary_id" => $summary->id,
-                                    ]);
-                            }
+                            $index++;
                         }
-
-                        $index++;
                     }
+                } else {
+
+                    $delivery_request = DeliveryRequest::find($request->delivery_request_id);
+                    $total = $delivery_request->amount;
+
+
+
+                    $wallet_account = AccountingAccount::find($request->account_id);
+                    $unearned_revenue_account = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
+                    $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
+
+                    $wallet_account_balance = $wallet_account->balance;
+                    $unearned_revenue_balance = $unearned_revenue_account->balance;
+                    $receivables_balance = $receivables_account->balance;
+
+                    $payment_method_id = $request->payment_method_id;
+
+                    // $receipt = Receipt::find(1);
+                    $receipt = Receipt::create([
+                        'code' => $this->getCodeReceiptNumber(),
+                        'serial' => (new AppController())->generateUniqueCode("RECEIPT"),
+                        'client_id' => $sale->client->id,
+                        "sale_id" => $sale->id,
+                        // "site_sale_id" =>  $type == "SITE" ? $sale->id : null,
+                        'account_id' => $wallet_account->id,
+                        'payment_method_id' => $payment_method_id,
+                        'amount' => $delivery_request->amount,
+                        'reference' => strtoupper($request->reference),
+                        // 'information' => json_encode($filteredProducts),
+                        'user_id' => Auth::id(),
+                        'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+                    ]);
+
+
+                    $receiptSummary = ReceiptSummary::create([
+                        "name" => "Delivery: " . $delivery_request->transportOption->vehicleName . " to deliver ({$delivery_request->summary->formattedUnits($delivery_request->quantity)})",
+                        "summary_id" => $delivery_request->summary->id,
+                        "balance" => 0,
+                        "amount" => $total,
+                        "cost" => $total / $delivery_request->trips,
+                        "units" => 'Trip',
+                        "receipt_id" => $receipt->id,
+                    ]);
+
+                    $wallet_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($receipt->reference),
+                        "date" => $receipt->date,
+                        "name" => $receipt->client->name,
+                        "description" => $delivery_request->transportOption->vehicleName . " to deliver ({$delivery_request->summary->formattedUnits($delivery_request->quantity)})",
+                        "amount" => $total,
+                        "opening_balance" => $wallet_account_balance,
+                        "closing_balance" => $wallet_account_balance + $total,
+                        "type" => "DEBIT", // incrementing the account balance
+                        "accounting_account_id" => $wallet_account->id,
+                        "receipt_id" => $receipt->id,
+                        "receipt_summary_id" => $receiptSummary->id,
+                    ]);
+                    $wallet_account_balance += $total;
+
+                    $unearned_revenue_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($receipt->reference),
+                        "date" => $receipt->date,
+                        "name" => $receipt->client->name,
+                        "description" => $delivery_request->transportOption->vehicleName . " to deliver ({$delivery_request->summary->formattedUnits($delivery_request->quantity)})",
+                        "amount" => $total,
+                        "opening_balance" => $unearned_revenue_balance,
+                        "closing_balance" => $unearned_revenue_balance + $total,
+                        "type" => "CREDIT", // incrementing the account balance
+                        "accounting_account_id" => $unearned_revenue_account->id,
+                        "accounting_record_id" => $wallet_record->id,
+                        "receipt_id" => $receipt->id,
+                        "receipt_summary_id" => $receiptSummary->id,
+                    ]);
+                    $unearned_revenue_balance += $total;
+
+                    $wallet_record->update([
+                        "accounting_record_id" => $unearned_revenue_record->id
+                    ]);
+
+                    if ($delivery_request->summary->delivery == null) {
+
+                        $delivery = Delivery::create([
+                            "code" => (new DeliveryController())->getCodeNumber(),
+                            'serial' => (new AppController())->generateUniqueCode("DELIVERY"),
+                            "status" => 1,
+                            "quantity_delivered" => 0,
+                            "summary_id" => $delivery_request->summary->id,
+                            "tracking_number" => uniqid(),
+                            "due_date" => Carbon::now()->addDay()->getTimestamp(),
+                        ]);
+                    } else {
+                        $delivery = $delivery_request->summary->delivery;
+                    }
+
+                    $delivery_request->update([
+                        'delivery_id' => $delivery->id,
+                        'receipt_id' => $receipt->id
+                    ]);
                 }
+
 
                 //Update the account balance
                 $wallet_account->update([

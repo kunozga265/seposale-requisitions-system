@@ -60,6 +60,7 @@ class SummaryResource extends JsonResource
             'profit' => floatval($this->profit()),
             'meta' => json_decode($this->meta),
             'waiver' => boolval($this->waiver),
+            'deliveryRequests' => DeliveryRequestResource::collection($this->deliveryRequests),
         ];
     }
 

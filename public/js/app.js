@@ -8552,6 +8552,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       payableError: "",
       showLogs: false,
       minDate: new Date(this.delivery.data.summary.date * 1000).toISOString().substr(0, 10),
+      deliveryRequestId: 0,
       form: this.$inertia.form({
         quantity: 0,
         cost: 0,
@@ -8624,21 +8625,23 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       return null;
     },
     noteValidation: function noteValidation() {
-      if (!this.form.quantity || this.form.quantity <= 0) {
-        this.addNoteErrorMessage = "Enter quantity";
-        return false;
-      }
-      if (this.form.quantity > this.quantityBalance) {
-        this.addNoteErrorMessage = "Quantity cannot be greater than balance";
-        return false;
-      }
-      if (this.form.cost <= 0) {
-        this.addNoteErrorMessage = "Enter cost of delivery";
-        return false;
-      }
-      if (this.form.cost > this.delivery.data.costBalance) {
-        this.addNoteErrorMessage = "Cost cannot be greater than requested amount";
-        return false;
+      if (this.deliveryRequestId == 0) {
+        if (!this.form.quantity || this.form.quantity <= 0) {
+          this.addNoteErrorMessage = "Enter quantity";
+          return false;
+        }
+        if (this.form.quantity > this.quantityBalance) {
+          this.addNoteErrorMessage = "Quantity cannot be greater than balance";
+          return false;
+        }
+        if (this.form.cost <= 0) {
+          this.addNoteErrorMessage = "Enter cost of delivery";
+          return false;
+        }
+        if (this.form.cost > this.delivery.data.costBalance) {
+          this.addNoteErrorMessage = "Cost cannot be greater than requested amount";
+          return false;
+        }
       }
       if (this.form.recipientName.length === 0 || this.form.recipientName == "") {
         this.addNoteErrorMessage = "Enter recipient name";
@@ -8740,6 +8743,21 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
     }
   },
   watch: {
+    deliveryRequestId: function deliveryRequestId() {
+      var _this = this;
+      if (this.deliveryRequestId == 0) {
+        this.form.quantity = 0;
+        this.form.cost = 0;
+      } else {
+        var deliveryRequest = this.delivery.data.deliveryRequests.find(function (d) {
+          return d.id == _this.deliveryRequestId;
+        });
+        if (deliveryRequest) {
+          this.form.quantity = deliveryRequest.quantity;
+          this.form.cost = deliveryRequest.amount;
+        }
+      }
+    },
     payableCheck: function payableCheck() {
       this.clearPayables();
     }
@@ -8783,27 +8801,28 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       }));
     },
     submit: function submit() {
-      var _this = this;
+      var _this2 = this;
       this.form.transform(function (data) {
         return _objectSpread(_objectSpread({}, data), {}, {
-          recipient_name: _this.form.recipientName,
-          recipient_phone_number: _this.form.recipientPhoneNumber
+          recipient_name: _this2.form.recipientName,
+          recipient_phone_number: _this2.form.recipientPhoneNumber,
+          delivery_request_id: _this2.deliveryRequestId
         });
       }).post(this.route('deliveries.update', {
         'id': this.delivery.data.summary.id
       }), {
         // preserveScroll: true,
         onSuccess: function onSuccess() {
-          _this.showDialog = false;
-          _this.form.quantity = 0;
-          _this.form.collectedBy = "";
-          _this.form.recipientPhoneNumber = "";
+          _this2.showDialog = false;
+          _this2.form.quantity = 0;
+          _this2.form.collectedBy = "";
+          _this2.form.recipientPhoneNumber = "";
           document.getElementById('photo').value = "";
         }
       });
     },
     submitRequest: function submitRequest() {
-      var _this2 = this;
+      var _this3 = this;
       this.form.transform(function (data) {
         return _objectSpread({}, data);
       }).post(this.route('request-forms.store.delivery', {
@@ -8811,8 +8830,8 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       }), {
         // preserveScroll: true,
         onSuccess: function onSuccess() {
-          _this2.requisitionDialog = false;
-          _this2.form.expenses = {
+          _this3.requisitionDialog = false;
+          _this3.form.expenses = {
             transportation: {
               check: false,
               transporterId: 0,
@@ -8834,7 +8853,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       });
     },
     complete: function complete() {
-      var _this3 = this;
+      var _this4 = this;
       this.form.transform(function (data) {
         return _objectSpread({}, data);
       }).post(this.route('deliveries.complete', {
@@ -8842,33 +8861,33 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       }), {
         // preserveScroll: true,
         onSuccess: function onSuccess() {
-          _this3.completeDialog = false;
-          _this3.form.product = 0;
-          _this3.form.transportation = 0;
-          _this3.form.other = 0;
-          _this3.form.comments = "";
+          _this4.completeDialog = false;
+          _this4.form.product = 0;
+          _this4.form.transportation = 0;
+          _this4.form.other = 0;
+          _this4.form.comments = "";
           document.getElementById('photo').value = "";
         }
       });
     },
     cancelDelivery: function cancelDelivery() {
-      var _this4 = this;
+      var _this5 = this;
       this.form.transform(function (data) {
         return _objectSpread(_objectSpread({}, data), {}, {
-          recipient_name: _this4.form.collectedBy,
-          recipient_phone_number: _this4.form.recipientPhoneNumber
+          recipient_name: _this5.form.collectedBy,
+          recipient_phone_number: _this5.form.recipientPhoneNumber
         });
       }).post(this.route('deliveries.cancel', {
         'id': this.delivery.data.id
       }), {
         // preserveScroll: true,
         onSuccess: function onSuccess() {
-          _this4.cancelDialog = false;
+          _this5.cancelDialog = false;
         }
       });
     },
     deleteDelivery: function deleteDelivery() {
-      var _this5 = this;
+      var _this6 = this;
       this.form.transform(function (data) {
         return _objectSpread({}, data);
       })["delete"](this.route('deliveries.destroy', {
@@ -8876,21 +8895,21 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       }), {
         // preserveScroll: true,
         onSuccess: function onSuccess() {
-          _this5.destroyDialog = false;
+          _this6.destroyDialog = false;
         }
       });
     },
     photoUpload: function photoUpload(file) {
-      var _this6 = this;
+      var _this7 = this;
       var reader = new FileReader();
       if (file) {
         reader.readAsDataURL(file);
         reader.onload = function (e) {
-          axios.post(_this6.$page.props.publicPath + "api/1.0.0/upload", {
+          axios.post(_this7.$page.props.publicPath + "api/1.0.0/upload", {
             type: "DELIVERY_NOTE",
             file: e.target.result
           }).then(function (res) {
-            _this6.form.photo = res.data.file;
+            _this7.form.photo = res.data.file;
           })["catch"](function (res) {
             // this.form.errors.push(res.data.message)
           });
@@ -16783,6 +16802,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       attachPurchaseOrderDialog: false,
       paymentMethodIndex: -1,
       accountIndex: -1,
+      deliveryRequestId: 0,
       backdateCheck: false,
       fullPaymentCheck: false,
       date: null,
@@ -16977,6 +16997,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
       var _this = this;
       this.form.transform(function (data) {
         return _objectSpread(_objectSpread({}, data), {}, {
+          delivery_request_id: _this.deliveryRequestId,
           payment_method_id: _this.paymentMethod == null ? null : _this.paymentMethod.id,
           account_id: _this.account == null ? null : _this.account.id,
           date: _this.getTimestampFromDate(_this.date),
@@ -37784,6 +37805,78 @@ var render = function render() {
             value: _vm.delivery.data.status === 1,
             expression: "delivery.data.status === 1"
           }],
+          staticClass: "mb-4 md:col-span-2"
+        }, [_c("div", {
+          staticClass: "text-base"
+        }, [_vm._v("Transport Options")]), _vm._v(" "), _c("div", {}, [_c("div", [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.deliveryRequestId,
+            expression: "deliveryRequestId"
+          }],
+          staticClass: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600",
+          attrs: {
+            id: "default-radio-0",
+            type: "radio"
+          },
+          domProps: {
+            value: 0,
+            checked: _vm._q(_vm.deliveryRequestId, 0)
+          },
+          on: {
+            change: function change($event) {
+              _vm.deliveryRequestId = 0;
+            }
+          }
+        }), _vm._v(" "), _c("label", {
+          staticClass: "ml-1 text-sm font-medium text-gray-900 dark:text-gray-300",
+          attrs: {
+            "for": "default-radio-0"
+          }
+        }, [_vm._v("New Delivery\n                            ")])]), _vm._v(" "), _vm._l(_vm.delivery.data.deliveryRequests, function (deliveryRequest, index) {
+          return _c("div", {
+            directives: [{
+              name: "show",
+              rawName: "v-show",
+              value: deliveryRequest.active,
+              expression: "deliveryRequest.active"
+            }]
+          }, [_c("input", {
+            directives: [{
+              name: "model",
+              rawName: "v-model",
+              value: _vm.deliveryRequestId,
+              expression: "deliveryRequestId"
+            }],
+            staticClass: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600",
+            attrs: {
+              checked: "",
+              id: "default-radio-".concat(deliveryRequest.id),
+              type: "radio"
+            },
+            domProps: {
+              value: deliveryRequest.id,
+              checked: _vm._q(_vm.deliveryRequestId, deliveryRequest.id)
+            },
+            on: {
+              change: function change($event) {
+                _vm.deliveryRequestId = deliveryRequest.id;
+              }
+            }
+          }), _vm._v(" "), _c("label", {
+            staticClass: "ml-1 text-sm font-medium text-gray-900 dark:text-gray-300",
+            attrs: {
+              "for": "default-radio-".concat(deliveryRequest.id)
+            }
+          }, [_vm._v(_vm._s(deliveryRequest.transportOption.vehicleType.name) + " - " + _vm._s(deliveryRequest.transportOption.vehicleType.capacity) + " (" + _vm._s(deliveryRequest.quantity) + ")")])]);
+        })], 2)]), _vm._v(" "), _c("div", {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: _vm.delivery.data.status === 1,
+            expression: "delivery.data.status === 1"
+          }],
           staticClass: "mb-4"
         }, [_c("div", {
           staticClass: "text-mute text-sm"
@@ -37793,7 +37886,8 @@ var render = function render() {
             min: "0",
             max: _vm.quantityBalance,
             type: "number",
-            step: "0.01"
+            step: "0.01",
+            disabled: _vm.deliveryRequestId != 0
           },
           model: {
             value: _vm.form.quantity,
@@ -37816,6 +37910,9 @@ var render = function render() {
           staticClass: "text-mute text-sm"
         }, [_vm._v("\n                        Cost of Delivery\n                    ")]), _vm._v(" "), _c("money", _vm._b({
           staticClass: "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white",
+          attrs: {
+            disabled: _vm.deliveryRequestId != 0
+          },
           model: {
             value: _vm.form.cost,
             callback: function callback($$v) {
@@ -37824,6 +37921,12 @@ var render = function render() {
             expression: "form.cost"
           }
         }, "money", _vm.moneyMaskOptions, false)), _vm._v(" "), _c("div", {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: _vm.deliveryRequestId == 0,
+            expression: "deliveryRequestId == 0"
+          }],
           staticClass: "mt-1 text-xs text-gray-500"
         }, [_vm._v("\n                        Up to MK" + _vm._s(_vm.numberWithCommas(_vm.delivery.data.costBalance)) + "\n                    ")])], 1), _vm._v(" "), _c("div", {
           directives: [{
@@ -61649,6 +61752,78 @@ var render = function render() {
         return [_c("jet-validation-errors", {
           staticClass: "mb-4"
         }), _vm._v(" "), _c("div", {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: _vm.sale.data.deliveryRequests.length > 0,
+            expression: "sale.data.deliveryRequests.length > 0"
+          }],
+          staticClass: "mb-4 md:col-span-2"
+        }, [_c("div", {
+          staticClass: "text-base"
+        }, [_vm._v("Receipt Type")]), _vm._v(" "), _c("div", [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.deliveryRequestId,
+            expression: "deliveryRequestId"
+          }],
+          staticClass: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600",
+          attrs: {
+            id: "default-radio-0",
+            type: "radio"
+          },
+          domProps: {
+            value: 0,
+            checked: _vm._q(_vm.deliveryRequestId, 0)
+          },
+          on: {
+            change: function change($event) {
+              _vm.deliveryRequestId = 0;
+            }
+          }
+        }), _vm._v(" "), _c("label", {
+          staticClass: "ml-1 text-sm font-medium text-gray-900 dark:text-gray-300",
+          attrs: {
+            "for": "default-radio-0"
+          }
+        }, [_vm._v("\n                                                Standard\n                                            ")])]), _vm._v(" "), _vm._l(_vm.sale.data.deliveryRequests, function (deliveryRequest, index) {
+          return _c("div", {
+            directives: [{
+              name: "show",
+              rawName: "v-show",
+              value: !deliveryRequest.paid,
+              expression: "!deliveryRequest.paid "
+            }]
+          }, [_c("input", {
+            directives: [{
+              name: "model",
+              rawName: "v-model",
+              value: _vm.deliveryRequestId,
+              expression: "deliveryRequestId"
+            }],
+            staticClass: "w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600",
+            attrs: {
+              checked: "",
+              id: "default-radio-".concat(deliveryRequest.id),
+              type: "radio"
+            },
+            domProps: {
+              value: deliveryRequest.id,
+              checked: _vm._q(_vm.deliveryRequestId, deliveryRequest.id)
+            },
+            on: {
+              change: function change($event) {
+                _vm.deliveryRequestId = deliveryRequest.id;
+              }
+            }
+          }), _vm._v(" "), _c("label", {
+            staticClass: "ml-1 text-sm font-medium text-gray-900 dark:text-gray-300",
+            attrs: {
+              "for": "default-radio-".concat(deliveryRequest.id)
+            }
+          }, [_vm._v("Delivery\n                                                Request " + _vm._s(deliveryRequest.transportOption.vehicleType.name) + " (" + _vm._s(deliveryRequest.transportOption.vehicleType.capacity) + ") (MK" + _vm._s(_vm.numberWithCommas(deliveryRequest.amount)) + ")")])]);
+        })], 2), _vm._v(" "), _c("div", [_c("div", {
           staticClass: "mb-4"
         }, [_c("div", {
           staticClass: "flex justify-between mb-2"
@@ -61695,6 +61870,12 @@ var render = function render() {
             "for": "backdate"
           }
         }, [_vm._v("Backdate")])]), _vm._v(" "), _c("div", {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: _vm.deliveryRequestId == 0,
+            expression: "deliveryRequestId == 0"
+          }],
           staticClass: "flex items-center mb-2"
         }, [_c("input", {
           directives: [{
@@ -61736,7 +61917,7 @@ var render = function render() {
           attrs: {
             "for": "withholding"
           }
-        }, [_vm._v("Withholding\n                                                    Tax")])])]), _vm._v(" "), _vm.backdateCheck ? _c("vue-date-time-picker", {
+        }, [_vm._v("Withholding\n                                                        Tax")])])]), _vm._v(" "), _vm.backdateCheck ? _c("vue-date-time-picker", {
           attrs: {
             color: "#1a56db",
             "max-date": _vm.maxDate
@@ -61786,7 +61967,7 @@ var render = function render() {
             domProps: {
               value: index
             }
-          }, [_vm._v("\n                                                    " + _vm._s(account.name) + "\n                                                ")]);
+          }, [_vm._v("\n                                                        " + _vm._s(account.name) + "\n                                                    ")]);
         }), 0)], 1), _vm._v(" "), _c("div", {
           staticClass: "mb-4"
         }, [_c("jet-label", {
@@ -61823,7 +62004,7 @@ var render = function render() {
             domProps: {
               value: index
             }
-          }, [_vm._v("\n                                                    " + _vm._s(paymentMethod.name) + "\n                                                ")]);
+          }, [_vm._v("\n                                                        " + _vm._s(paymentMethod.name) + "\n                                                    ")]);
         }), 0)], 1)]) : _vm._e(), _vm._v(" "), _c("div", {
           staticClass: "mb-4"
         }, [_c("jet-label", {
@@ -61844,11 +62025,23 @@ var render = function render() {
             expression: "form.reference"
           }
         })], 1), _vm._v(" "), _c("div", {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: _vm.deliveryRequestId == 0,
+            expression: "deliveryRequestId == 0"
+          }],
           staticClass: "mb-4"
         }, [_c("div", {
           staticClass: "heading-font text-"
         }, [_vm._v("Payment Summary;")])]), _vm._v(" "), _vm._l(_vm.form.information, function (product, index) {
           return _c("div", {
+            directives: [{
+              name: "show",
+              rawName: "v-show",
+              value: _vm.deliveryRequestId == 0,
+              expression: "deliveryRequestId == 0"
+            }],
             key: index,
             staticClass: "mb-4"
           }, [_c("div", {
@@ -61892,14 +62085,20 @@ var render = function render() {
             "class": {
               "text-red-500": !_vm.balanceValidate(product)
             }
-          }, [_vm._v("Balance:\n                                            MK" + _vm._s(_vm.numberWithCommas(product.balance)) + "\n                                        ")])], 1);
+          }, [_vm._v("Balance:\n                                                MK" + _vm._s(_vm.numberWithCommas(product.balance)) + "\n                                            ")])], 1);
         }), _vm._v(" "), _c("div", {
+          directives: [{
+            name: "show",
+            rawName: "v-show",
+            value: _vm.deliveryRequestId == 0,
+            expression: "deliveryRequestId == 0"
+          }],
           staticClass: "flex justify-between"
         }, [_c("div", {
           staticClass: "mb-4"
         }, [_c("div", {
           staticClass: "heading-font text-lg"
-        }, [_vm._v("MK\n                                                " + _vm._s(_vm.numberWithCommas(_vm.receiptAmount.toFixed(2))) + "\n                                            ")]), _vm._v(" "), _c("div", {
+        }, [_vm._v("MK\n                                                    " + _vm._s(_vm.numberWithCommas(_vm.receiptAmount.toFixed(2))) + "\n                                                ")]), _vm._v(" "), _c("div", {
           staticClass: "heading-font text-xs"
         }, [_vm._v("Total Amount")])]), _vm._v(" "), _c("div", {
           staticClass: "mb-4"
@@ -61908,9 +62107,9 @@ var render = function render() {
           "class": {
             "text-red-500": !_vm.amountValidation
           }
-        }, [_vm._v("MK\n                                                " + _vm._s(_vm.numberWithCommas(_vm.receiptBalance.toFixed(2))) + "\n                                            ")]), _vm._v(" "), _c("div", {
+        }, [_vm._v("MK\n                                                    " + _vm._s(_vm.numberWithCommas(_vm.receiptBalance.toFixed(2))) + "\n                                                ")]), _vm._v(" "), _c("div", {
           staticClass: "heading-font text-xs"
-        }, [_vm._v("Balance")])])])];
+        }, [_vm._v("Balance")])])])], 2)];
       },
       proxy: true
     }, {
@@ -61956,7 +62155,7 @@ var render = function render() {
         })]), _vm._v("\n                                        Proceed\n                                    ")])];
       },
       proxy: true
-    }], null, false, 3049657735)
+    }], null, false, 370055279)
   }), _vm._v(" "), _vm.checkRole(_vm.$page.props.auth.data, "accountant") || _vm.checkRole(_vm.$page.props.auth.data, "management") ? _c("secondary-button", {
     staticClass: "ml-3",
     nativeOn: {

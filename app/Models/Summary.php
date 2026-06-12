@@ -91,6 +91,16 @@ class Summary extends Model
         return $this->hasOne(Delivery::class);
     }
 
+    // public function transportOption()
+    // {
+    //     return $this->hasOneThrough(TransportOption::class, DeliveryRequest::class, "summary_id", "id", "id", "transport_option_id");
+    // }
+
+    public function deliveryRequests()
+    {
+        return $this->hasMany(DeliveryRequest::class);
+    }
+
     public function deliveryExists()
     {
         if ($this->delivery == null) {

@@ -80,8 +80,9 @@
                         </jet-dropdown-link>
                         <div class="border-t border-gray-100"></div>
 
-                        <jet-dropdown-link v-show="delivery.data.status === 2 || delivery.data.quantityDelivered == delivery.data.summary.quantity" @click.native="completeDialog = true"
-                            as="button" class="text-left">
+                        <jet-dropdown-link
+                            v-show="delivery.data.status === 2 || delivery.data.quantityDelivered == delivery.data.summary.quantity"
+                            @click.native="completeDialog = true" as="button" class="text-left">
                             Complete
                         </jet-dropdown-link>
 
@@ -92,7 +93,9 @@
                 <danger-button v-if="delivery.data.status === 1" @click.native="cancelDialog = true">Cancel
                 </danger-button>
 
-                <danger-button v-if="checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'administrator')"  @click.native="deleteDialog = true">Delete
+                <danger-button
+                    v-if="checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'administrator')"
+                    @click.native="deleteDialog = true">Delete
                 </danger-button>
             </div>
         </template>
@@ -111,12 +114,38 @@
                     </div>
 
 
+                    <div v-show="delivery.data.status === 1" class="mb-4 md:col-span-2">
+
+                        <div class="text-base">Transport Options</div>
+                        <div class="">
+                            <div>
+                                <input id="default-radio-0" type="radio" :value="0" v-model="deliveryRequestId"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="default-radio-0"
+                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">New Delivery
+                                </label>
+                            </div>
+
+                            <div v-show="deliveryRequest.active"
+                                v-for="(deliveryRequest, index) in delivery.data.deliveryRequests">
+                                <input checked :id="`default-radio-${deliveryRequest.id}`" type="radio" :value="deliveryRequest.id"
+                                    v-model="deliveryRequestId"
+                                    class=" w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label :for="`default-radio-${deliveryRequest.id}`"
+                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">{{
+                                        deliveryRequest.transportOption.vehicleType.name }} - {{
+                                        deliveryRequest.transportOption.vehicleType.capacity }} ({{ deliveryRequest.quantity
+                                    }})</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div v-show="delivery.data.status === 1" class="mb-4">
                         <div class="text-mute text-sm">
                             Quantity Delivered
                         </div>
                         <jet-input min="0" :max="quantityBalance" type="number" step="0.01" class="block w-full"
-                            v-model="form.quantity" />
+                            v-model="form.quantity" :disabled="deliveryRequestId != 0" />
                         <div class="mt-1 text-xs text-gray-500">
                             Remaining: {{ quantityBalance }} {{ delivery.data.summary.units }}{{ quantityBalance != 1 ?
                                 "s" : "" }}
@@ -128,8 +157,8 @@
                         </div>
                         <money
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                            v-bind="moneyMaskOptions" v-model="form.cost" />
-                        <div class="mt-1 text-xs text-gray-500">
+                            v-bind="moneyMaskOptions" v-model="form.cost" :disabled="deliveryRequestId != 0" />
+                        <div v-show="deliveryRequestId == 0" class="mt-1 text-xs text-gray-500">
                             Up to MK{{ numberWithCommas(delivery.data.costBalance) }}
                         </div>
 
@@ -938,7 +967,9 @@ export default {
             payableError: "",
             showLogs: false,
             minDate: new Date(this.delivery.data.summary.date * 1000).toISOString().substr(0, 10),
+            deliveryRequestId: 0,
             form: this.$inertia.form({
+
                 quantity: 0,
                 cost: 0,
                 photo: "",
@@ -1020,22 +1051,26 @@ export default {
         },
 
         noteValidation() {
-            if (!this.form.quantity || this.form.quantity <= 0) {
-                this.addNoteErrorMessage = "Enter quantity"
-                return false
+            if (this.deliveryRequestId == 0) {
+
+                if (!this.form.quantity || this.form.quantity <= 0) {
+                    this.addNoteErrorMessage = "Enter quantity"
+                    return false
+                }
+                if (this.form.quantity > this.quantityBalance) {
+                    this.addNoteErrorMessage = "Quantity cannot be greater than balance"
+                    return false
+                }
+                if (this.form.cost <= 0) {
+                    this.addNoteErrorMessage = "Enter cost of delivery"
+                    return false
+                }
+                if (this.form.cost > this.delivery.data.costBalance) {
+                    this.addNoteErrorMessage = "Cost cannot be greater than requested amount"
+                    return false
+                }
             }
-            if (this.form.quantity > this.quantityBalance) {
-                this.addNoteErrorMessage = "Quantity cannot be greater than balance"
-                return false
-            }
-            if (this.form.cost <= 0) {
-                this.addNoteErrorMessage = "Enter cost of delivery"
-                return false
-            }
-            if (this.form.cost > this.delivery.data.costBalance) {
-                this.addNoteErrorMessage = "Cost cannot be greater than requested amount"
-                return false
-            }
+
             if (this.form.recipientName.length === 0 || this.form.recipientName == "") {
                 this.addNoteErrorMessage = "Enter recipient name"
                 return false
@@ -1155,9 +1190,23 @@ export default {
 
     },
     watch: {
+        deliveryRequestId() {
+            if (this.deliveryRequestId == 0) {
+                this.form.quantity = 0
+                this.form.cost = 0
+            } else {
+                const deliveryRequest = this.delivery.data.deliveryRequests.find(d => d.id == this.deliveryRequestId)
+
+                if (deliveryRequest) {
+                    this.form.quantity = deliveryRequest.quantity
+                    this.form.cost = deliveryRequest.amount
+                }
+
+            }
+        },
         payableCheck() {
             this.clearPayables()
-        }
+        },
     },
     methods: {
         addPayable(payable) {
@@ -1198,6 +1247,7 @@ export default {
                     ...data,
                     recipient_name: this.form.recipientName,
                     recipient_phone_number: this.form.recipientPhoneNumber,
+                    delivery_request_id: this.deliveryRequestId
                 }))
                 .post(this.route('deliveries.update', { 'id': this.delivery.data.summary.id }), {
                     // preserveScroll: true,

@@ -58,6 +58,7 @@ class SaleResource extends JsonResource
             'confirmedDate' => floatval($this->confirmed_date),
             'meta' => json_decode($this->meta),
             'zone' => new ZoneResource($this->zone),
+             "deliveryRequests" => DeliveryRequestResource::collection($this->deliveryRequests),
 
         ];
     }

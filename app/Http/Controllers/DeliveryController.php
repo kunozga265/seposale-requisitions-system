@@ -8,6 +8,7 @@ use App\Http\Resources\SaleResource;
 use App\Models\AccountingRecord;
 use App\Models\Delivery;
 use App\Models\DeliveryNote;
+use App\Models\DeliveryRequest;
 use App\Models\Expense;
 use App\Models\Payable;
 use App\Models\Summary;
@@ -112,8 +113,6 @@ class DeliveryController extends Controller
 
         if (is_object($summary)) {
 
-            
-
             if ($summary->delivery == null) {
                 //Validate all the important attributes
                 $request->validate([
@@ -121,7 +120,7 @@ class DeliveryController extends Controller
                     'waiver' => ['required'],
                 ]);
 
-               if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0 && !$summary->waiver) {
+                if ($this->getPaymentStatus($summary->amount, $summary->balance) == 0 && !$summary->waiver) {
                     return Redirect::back()->with("error", "Product has not been paid for. Please update payment status first.");
                 }
 
@@ -179,6 +178,7 @@ class DeliveryController extends Controller
 
                 //Validate all the important attributes
                 $request->validate([
+                    'delivery_request_id' => ['required'],
                     'quantity' => ['required'],
                     'photo' => ['required'],
                     'recipient_name' => ['required'],
@@ -240,47 +240,55 @@ class DeliveryController extends Controller
                     "delivery_id" => $summary->delivery->id,
                 ]);
 
+                if ($request->delivery_request_id != 0) {
+                    $delivery_request = DeliveryRequest::find($request->delivery_request_id);
 
-                //record cogs
-                $cogs_record = $summary->product->cogsAccount->records()->create([
-                    "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                    "reference" => strtoupper(""),
-                    "date" => Carbon::now()->getTimestamp(),
-                    "name" => $summary->sale->client->name,
-                    "description" => $summary->description,
-                    "amount" => $request->cost,
-                    "opening_balance" => $summary->product->cogsAccount->balance,
-                    "closing_balance" => $summary->product->cogsAccount->balance + $request->cost,
-                    "type" => "DEBIT", // incrementing the account balance
-                    "accounting_account_id" => $summary->product->cogsAccount->id,
-                    "summary_id" => $summary->id
-                ]);
-                $summary->product->cogsAccount->update([
-                    "balance" => $summary->product->cogsAccount->balance + $request->cost
-                ]);
+                    $delivery_request->update([
+                        'active' => false,
+                    ]);
+                } else {
+                    //record cogs
+                    $cogs_record = $summary->product->cogsAccount->records()->create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper(""),
+                        "date" => Carbon::now()->getTimestamp(),
+                        "name" => $summary->sale->client->name,
+                        "description" => $summary->description,
+                        "amount" => $request->cost,
+                        "opening_balance" => $summary->product->cogsAccount->balance,
+                        "closing_balance" => $summary->product->cogsAccount->balance + $request->cost,
+                        "type" => "DEBIT", // incrementing the account balance
+                        "accounting_account_id" => $summary->product->cogsAccount->id,
+                        "summary_id" => $summary->id
+                    ]);
+                    $summary->product->cogsAccount->update([
+                        "balance" => $summary->product->cogsAccount->balance + $request->cost
+                    ]);
 
-                //update inventory account
-                $inventory_record = $summary->product->inventoryAccount->records()->create([
-                    "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
-                    "reference" => strtoupper(""),
-                    "date" => Carbon::now()->getTimestamp(),
-                    "name" => $summary->sale->client->name,
-                    "description" => $summary->description,
-                    "amount" => $request->cost,
-                    "opening_balance" => $summary->product->inventoryAccount->balance,
-                    "closing_balance" => $summary->product->inventoryAccount->balance - $request->cost,
-                    "type" => "CREDIT", // decrementing the account balance
-                    "accounting_account_id" => $summary->product->inventoryAccount->id,
-                    "accounting_record_id" => $cogs_record->id,
-                    "summary_id" => $summary->id
-                ]);
-                $summary->product->inventoryAccount->update([
-                    "balance" => $summary->product->inventoryAccount->balance - $request->cost
-                ]);
+                    //update inventory account
+                    $inventory_record = $summary->product->inventoryAccount->records()->create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper(""),
+                        "date" => Carbon::now()->getTimestamp(),
+                        "name" => $summary->sale->client->name,
+                        "description" => $summary->description,
+                        "amount" => $request->cost,
+                        "opening_balance" => $summary->product->inventoryAccount->balance,
+                        "closing_balance" => $summary->product->inventoryAccount->balance - $request->cost,
+                        "type" => "CREDIT", // decrementing the account balance
+                        "accounting_account_id" => $summary->product->inventoryAccount->id,
+                        "accounting_record_id" => $cogs_record->id,
+                        "summary_id" => $summary->id
+                    ]);
+                    $summary->product->inventoryAccount->update([
+                        "balance" => $summary->product->inventoryAccount->balance - $request->cost
+                    ]);
 
-                $cogs_record->update([
-                    "accounting_record_id" => $inventory_record->id,
-                ]);
+                    $cogs_record->update([
+                        "accounting_record_id" => $inventory_record->id,
+                    ]);
+                }
+
 
 
                 //record collection if exists
@@ -301,9 +309,14 @@ class DeliveryController extends Controller
                     $unearned_revenue = (new AccountingAccountController())->getAccount(2050); //unearned revenue account
                     $receivables_account = (new AccountingAccountController())->getAccount(1030); //receivables account
 
-                    //update accounts
-                    $amount = ($request->quantity / $summary->quantity) * $summary->amount; // calculate the amount to be moved
-                    $remainder = $summary->paidBalance() - $amount;
+                    if ($request->delivery_request_id != 0) {
+                        $amount = $request->cost;
+                        $remainder = 0;
+                    } else {
+                        //update accounts
+                        $amount = ($request->quantity / $summary->quantity) * $summary->amount; // calculate the amount to be moved
+                        $remainder = $summary->paidBalance() - $amount;
+                    }
 
 
                     if ($remainder >= 0) {
@@ -538,7 +551,7 @@ class DeliveryController extends Controller
 
                 $transactions = AccountingRecord::where("summary_id", $delivery->summary->id)->get();
 
-                 //reverse transactions
+                //reverse transactions
                 (new AccountingRecordController())->reverseTransactions($transactions);
 
                 //Logging
@@ -547,10 +560,10 @@ class DeliveryController extends Controller
                     "message" => "Delivery has been deleted",
                     "delivery_id" => $delivery->id,
                 ]);
-                
+
                 $delivery->delete();
 
-                return Redirect::route('sales.show',['id'=>$sale_id])->with('success', 'Delivery deleted successfully');
+                return Redirect::route('sales.show', ['id' => $sale_id])->with('success', 'Delivery deleted successfully');
             }
         } else {
             if ((new AppController())->isApi($request)) {

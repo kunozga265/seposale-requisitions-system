@@ -11,7 +11,7 @@ class Delivery extends Model
 {
     use HasFactory;
 
-      public function __get($name)
+    public function __get($name)
     {
         if ($name === 'location') {
 
@@ -25,7 +25,7 @@ class Delivery extends Model
 
     public function deliveredBy()
     {
-        return $this->belongsTo(User::class,"delivered_by");
+        return $this->belongsTo(User::class, "delivered_by");
     }
 
     public function initiatedBy()
@@ -60,6 +60,11 @@ class Delivery extends Model
         return $this->hasMany(DeliveryNote::class);
     }
 
+    public function deliveryRequests()
+    {
+        return $this->hasMany(DeliveryRequest::class);
+    }
+
     public function overdue()
     {
         $due_date = Carbon::createFromTimestamp($this->due_date);
@@ -73,12 +78,13 @@ class Delivery extends Model
         return (new AppController())->getZeroedNumber($this->code);
     }
 
-    public function costs(){
+    public function costs()
+    {
         $total = 0;
 
-        foreach($this->requestForms as $requestForm){
-            foreach($requestForm->items as $item){
-                foreach($item->records()->where("type","DEBIT")->get() as $record){
+        foreach ($this->requestForms as $requestForm) {
+            foreach ($requestForm->items as $item) {
+                foreach ($item->records()->where("type", "DEBIT")->get() as $record) {
                     $total += $record->amount;
                 }
             }
@@ -87,10 +93,11 @@ class Delivery extends Model
         return $total;
     }
 
-    public function availableCostBalance(){
+    public function availableCostBalance()
+    {
         $total = 0;
         // $notes = json_decode($this->notes, true) ?? [];
-        foreach($this->deliveryNotes as $note){
+        foreach ($this->deliveryNotes as $note) {
             $total += $note->cost ?? 0;
         }
         return $this->costs() - $total;

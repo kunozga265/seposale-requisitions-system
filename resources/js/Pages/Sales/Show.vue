@@ -404,7 +404,8 @@
                                                 </td>
                                                 <td class="py-2 pr-1 text-right">
                                                     {{
-                                                        numberWithCommas((productCompound.amount / productCompound.quantity).toFixed(2))
+                                                        numberWithCommas((productCompound.amount /
+                                                            productCompound.quantity).toFixed(2))
                                                     }}
                                                 </td>
                                                 <td class="py-2 pr-1 text-right">
@@ -729,100 +730,136 @@
                                 <template #content>
                                     <jet-validation-errors class="mb-4" />
 
-                                    <div class="mb-4">
-                                        <!--                                    <jet-label for="lastRefillDate" value="Backdate" />-->
-                                        <div class="flex justify-between mb-2">
-                                            <div class="flex items-center mb-2">
-                                                <input checked id="backdate" type="checkbox" value=""
-                                                    v-model="backdateCheck"
-                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                                <label for="backdate"
-                                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
-                                            </div>
-                                            <div class="flex items-center mb-2">
-                                                <input checked id="withholding" type="checkbox" value=""
-                                                    v-model="form.withholding"
-                                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                                <label for="withholding"
-                                                    class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Withholding
-                                                    Tax</label>
-                                            </div>
+                                    <div v-show="sale.data.deliveryRequests.length > 0" class="mb-4 md:col-span-2">
+
+                                        <div class="text-base">Receipt Type</div>
+                                        <div>
+                                            <input id="default-radio-0" type="radio" :value="0"
+                                                v-model="deliveryRequestId"
+                                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label for="default-radio-0"
+                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                Standard
+                                            </label>
                                         </div>
-                                        <vue-date-time-picker v-if="backdateCheck" color="#1a56db" v-model="date"
-                                            :max-date="maxDate" />
+
+                                        <div v-show="!deliveryRequest.paid "
+                                            v-for="(deliveryRequest, index) in sale.data.deliveryRequests">
+                                            <input checked :id="`default-radio-${deliveryRequest.id}`" type="radio" :value="deliveryRequest.id"
+                                                v-model="deliveryRequestId"
+                                                class=" w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                            <label :for="`default-radio-${deliveryRequest.id}`"
+                                                class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Delivery
+                                                Request {{
+                                                    deliveryRequest.transportOption.vehicleType.name }} ({{
+                                                    deliveryRequest.transportOption.vehicleType.capacity }}) (MK{{
+                                                    numberWithCommas(deliveryRequest.amount)
+                                                }})</label>
+                                        </div>
                                     </div>
-                                    <div v-if="!form.withholding" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+                                    <div >
+
+
 
                                         <div class="mb-4">
-                                            <jet-label for="paymentMethod" value="Select Account" />
-                                            <select v-model="accountIndex" id="paymentMethod"
-                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                                required>
-                                                <option v-for="(account, index) in accounts" :value="index"
-                                                    :key="index">
-                                                    {{ account.name }}
-                                                </option>
-                                            </select>
-                                        </div>
-
-                                        <div class="mb-4">
-                                            <jet-label for="paymentMethod" value="Select Payment Method" />
-                                            <select v-model="paymentMethodIndex" id="paymentMethod"
-                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                                required>
-                                                <option v-for="(paymentMethod, index) in paymentMethods" :value="index"
-                                                    :key="index">
-                                                    {{ paymentMethod.name }}
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <jet-label for="reference" value="Reference" />
-                                        <jet-input type="text" class="block w-full" v-model="form.reference" />
-                                    </div>
-                                    <div class="mb-4">
-                                        <div class="heading-font text-">Payment Summary;</div>
-                                    </div>
-
-                                    <div class="mb-4" v-for="(product, index) in form.information" :key="index">
-                                        <div class="flex justify-between">
-                                            <jet-label for="amount" :value="product.name" />
-                                            <div class="flex items-center mb-2">
-                                                <div @click="product.amount = product.balance"
-                                                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
-                                                    :class="{ 'info': product.amount == product.balance }">
-                                                    <div>Full Payment</div>
-                                                    <i v-show="product.amount == product.balance"
-                                                        class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                                            <!--                                    <jet-label for="lastRefillDate" value="Backdate" />-->
+                                            <div class="flex justify-between mb-2">
+                                                <div class="flex items-center mb-2">
+                                                    <input checked id="backdate" type="checkbox" value=""
+                                                        v-model="backdateCheck"
+                                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                    <label for="backdate"
+                                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Backdate</label>
+                                                </div>
+                                                <div v-show="deliveryRequestId == 0" class="flex items-center mb-2">
+                                                    <input checked id="withholding" type="checkbox" value=""
+                                                        v-model="form.withholding"
+                                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                                    <label for="withholding"
+                                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Withholding
+                                                        Tax</label>
                                                 </div>
                                             </div>
+                                            <vue-date-time-picker v-if="backdateCheck" color="#1a56db" v-model="date"
+                                                :max-date="maxDate" />
                                         </div>
-                                        <money
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                                            v-bind="moneyMaskOptions" v-model="product.amount" />
-                                        <!--                    <jet-input type="text" class="block w-full" v-model="form.amount"/>-->
-                                        <div class="mt-1 text-xs text-gray-500"
-                                            :class="{ 'text-red-500': !balanceValidate(product) }">Balance:
-                                            MK{{ numberWithCommas(product.balance) }}
+                                        <div v-if="!form.withholding" class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+                                            <div class="mb-4">
+                                                <jet-label for="paymentMethod" value="Select Account" />
+                                                <select v-model="accountIndex" id="paymentMethod"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                    required>
+                                                    <option v-for="(account, index) in accounts" :value="index"
+                                                        :key="index">
+                                                        {{ account.name }}
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <jet-label for="paymentMethod" value="Select Payment Method" />
+                                                <select v-model="paymentMethodIndex" id="paymentMethod"
+                                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                    required>
+                                                    <option v-for="(paymentMethod, index) in paymentMethods"
+                                                        :value="index" :key="index">
+                                                        {{ paymentMethod.name }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="mb-4">
+                                            <jet-label for="reference" value="Reference" />
+                                            <jet-input type="text" class="block w-full" v-model="form.reference" />
+                                        </div>
+                                        <div v-show="deliveryRequestId == 0" class="mb-4">
+                                            <div class="heading-font text-">Payment Summary;</div>
+                                        </div>
+
+                                        <div v-show="deliveryRequestId == 0" class="mb-4" v-for="(product, index) in form.information" :key="index">
+                                            <div class="flex justify-between">
+                                                <jet-label for="amount" :value="product.name" />
+                                                <div class="flex items-center mb-2">
+                                                    <div @click="product.amount = product.balance"
+                                                        class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold "
+                                                        :class="{ 'info': product.amount == product.balance }">
+                                                        <div>Full Payment</div>
+                                                        <i v-show="product.amount == product.balance"
+                                                            class="ml-2 mdi mdi-check-circle text-gray-600  cursor"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <money
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                v-bind="moneyMaskOptions" v-model="product.amount" />
+                                            <!--                    <jet-input type="text" class="block w-full" v-model="form.amount"/>-->
+                                            <div class="mt-1 text-xs text-gray-500"
+                                                :class="{ 'text-red-500': !balanceValidate(product) }">Balance:
+                                                MK{{ numberWithCommas(product.balance) }}
+                                            </div>
+                                        </div>
+
+                                        <div v-show="deliveryRequestId == 0" class="flex justify-between">
+                                            <div class="mb-4">
+                                                <div class="heading-font text-lg ">MK
+                                                    {{ numberWithCommas(receiptAmount.toFixed(2)) }}
+                                                </div>
+                                                <div class="heading-font text-xs">Total Amount</div>
+                                            </div>
+                                            <div class="mb-4">
+                                                <div class="heading-font text-lg"
+                                                    :class="{ 'text-red-500': !amountValidation }">MK
+                                                    {{ numberWithCommas(receiptBalance.toFixed(2)) }}
+                                                </div>
+                                                <div class="heading-font text-xs">Balance</div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="flex justify-between">
-                                        <div class="mb-4">
-                                            <div class="heading-font text-lg ">MK
-                                                {{ numberWithCommas(receiptAmount.toFixed(2)) }}
-                                            </div>
-                                            <div class="heading-font text-xs">Total Amount</div>
-                                        </div>
-                                        <div class="mb-4">
-                                            <div class="heading-font text-lg"
-                                                :class="{ 'text-red-500': !amountValidation }">MK
-                                                {{ numberWithCommas(receiptBalance.toFixed(2)) }}
-                                            </div>
-                                            <div class="heading-font text-xs">Balance</div>
-                                        </div>
-                                    </div>
+                                  
+
 
 
                                 </template>
@@ -1236,6 +1273,7 @@ export default {
             attachPurchaseOrderDialog: false,
             paymentMethodIndex: -1,
             accountIndex: -1,
+            deliveryRequestId: 0,
             backdateCheck: false,
 
             fullPaymentCheck: false,
@@ -1461,6 +1499,7 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
+                    delivery_request_id: this.deliveryRequestId,
                     payment_method_id: this.paymentMethod == null ? null : this.paymentMethod.id,
                     account_id: this.account == null ? null : this.account.id,
                     date: this.getTimestampFromDate(this.date),

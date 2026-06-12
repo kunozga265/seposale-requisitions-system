@@ -109,6 +109,11 @@ class Sale extends Model
             });
     }
 
+    public function deliveryRequests()
+    {
+        return $this->hasMany(DeliveryRequest::class);
+    }
+
     /**
      * Get all collections related to this sale
      */
