@@ -64,7 +64,7 @@
 
                                 <div class="p-6">
 
-                                    <ZonePicker @zone-saved="handleZoneSaved" />
+                                    <ZonePicker :coordinates="[]" @zone-saved="handleZoneSaved" />
 
                                     <div v-if="form.coordinates.length > 0">
                                         <h3>Saved Zone Polygon Coordinates:</h3>

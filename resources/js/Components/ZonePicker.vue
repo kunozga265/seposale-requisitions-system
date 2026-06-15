@@ -55,10 +55,11 @@ L.Icon.Default.mergeOptions({
 
 export default {
     name: 'ZonePicker',
+    props: ['coordinates'],
     data() {
         return {
             // Only data that affects the UI/template goes here
-            points: [], 
+            points: this.coordinates ?? [], 
         };
     },
     created() {
@@ -69,6 +70,7 @@ export default {
     },
     mounted() {
         this.initMap();
+        this.updatePolygon();
     },
     beforeDestroy() {
         // Cleanup to prevent memory leaks
