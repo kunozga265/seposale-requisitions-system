@@ -158,8 +158,8 @@ class QuotationController extends Controller
                 'recipient_phone_number' => $request->recipient_phone_number,
 
                 'information' => json_encode($request->information),
-                'total' => $request->total + $request->vat,
-                'vat' => $request->vat,
+                'total' => floatval($request->total) + floatval($request->vat),
+                'vat' => floatval($request->vat),
                 'vat_option' => $request->vat_option,
                 'meta' => json_encode([
                     'notes' => $request->notes
@@ -317,8 +317,8 @@ class QuotationController extends Controller
                     'recipient_phone_number' => $request->recipient_phone_number,
 
                     'information' => json_encode($request->information),
-                    'total' => $request->total + $request->vat,
-                    'vat' => $request->vat,
+                    'total' => floatval($request->total) + floatval($request->vat),
+                    'vat' => floatval($request->vat),
                     'vat_option' => $request->vat_option,
                     'meta' => json_encode([
                         'notes' => $request->notes
