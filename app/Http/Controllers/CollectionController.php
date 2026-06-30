@@ -237,7 +237,7 @@ class CollectionController extends Controller
                 "closing_balance" => $unearned_revenue->balance - $amount,
                 "type" => "DEBIT", // decrementing the account balance
                 "accounting_account_id" => $unearned_revenue->id,
-                "summary_id" => $summary->id,
+                "summary_id" => $summary->summary?->id,
                 "collection_id" => $collection->id,
             ]);
 
@@ -257,7 +257,7 @@ class CollectionController extends Controller
                 "type" => "CREDIT", // incrementing the account balance
                 "accounting_account_id" => $revenue_account->id,
                 "accounting_record_id" => $unearned_revenue_record->id,
-                "summary_id" => $summary->id,
+                "summary_id" => $summary->summary?->id,
                 "collection_id" => $collection->id,
             ]);
 
@@ -284,7 +284,7 @@ class CollectionController extends Controller
                     "closing_balance" => $unearned_revenue->balance - $partial_payment,
                     "type" => "DEBIT", // decrementing the account balance
                     "accounting_account_id" => $unearned_revenue->id,
-                    "summary_id" => $summary->id,
+                    "summary_id" => $summary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
 
@@ -304,7 +304,7 @@ class CollectionController extends Controller
                     "type" => "CREDIT", // incrementing the account balance
                     "accounting_account_id" => $revenue_account->id,
                     "accounting_record_id" => $unearned_revenue_record->id,
-                    "summary_id" => $summary->id,
+                    "summary_id" => $summary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
 
@@ -328,7 +328,7 @@ class CollectionController extends Controller
                     "closing_balance" => $receivables_account->balance + $sale_balance,
                     "type" => "DEBIT", // incrementing the account balance
                     "accounting_account_id" => $receivables_account->id,
-                    "summary_id" => $summary->id,
+                    "summary_id" => $summary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
 
@@ -348,7 +348,7 @@ class CollectionController extends Controller
                     "type" => "CREDIT", // incrementing the account balance
                     "accounting_account_id" => $revenue_account->id,
                     "accounting_record_id" => $receivables_record->id,
-                    "summary_id" => $summary->id,
+                    "summary_id" => $summary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
 
@@ -414,7 +414,7 @@ class CollectionController extends Controller
                 "closing_balance" => $cogs_balance + $cost,
                 "type" => "DEBIT", // incrementing the account balance
                 "accounting_account_id" => $summary->inventory->cogsAccount->id,
-                "summary_id" => $summary->id,
+                "summary_id" => $summary->summary?->id,
                 "collection_id" => $collection->id,
             ]);
             $cogs_balance += $cost;
@@ -433,7 +433,7 @@ class CollectionController extends Controller
                 "type" => "CREDIT", // decrementing the account balance
                 "accounting_account_id" => $summary->inventory->inventoryAccount->id,
                 "accounting_record_id" => $cogs_record->id,
-                "summary_id" => $summary->id,
+                "summary_id" => $summary->summary?->id,
                 "collection_id" => $collection->id,
             ]);
             $inventory_balance -= $cost;
@@ -663,7 +663,7 @@ class CollectionController extends Controller
                     "closing_balance" => $unearned_revenue->balance - $amount,
                     "type" => "DEBIT", // decrementing the account balance
                     "accounting_account_id" => $unearned_revenue->id,
-                    "summary_id" => $collection->siteSaleSummary->id,
+                    "summary_id" => $collection->siteSaleSummary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
 
@@ -683,7 +683,7 @@ class CollectionController extends Controller
                     "type" => "CREDIT", // incrementing the account balance
                     "accounting_account_id" => $revenue_account->id,
                     "accounting_record_id" => $unearned_revenue_record->id,
-                    "summary_id" => $collection->siteSaleSummary->id,
+                    "summary_id" => $collection->siteSaleSummary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
 
@@ -711,7 +711,7 @@ class CollectionController extends Controller
                         "closing_balance" => $unearned_revenue->balance - $partial_payment,
                         "type" => "DEBIT", // decrementing the account balance
                         "accounting_account_id" => $unearned_revenue->id,
-                        "summary_id" => $collection->siteSaleSummary->id,
+                        "summary_id" => $collection->siteSaleSummary->summary?->id,
                         "collection_id" => $collection->id,
                     ]);
 
@@ -731,7 +731,7 @@ class CollectionController extends Controller
                         "type" => "CREDIT", // incrementing the account balance
                         "accounting_account_id" => $revenue_account->id,
                         "accounting_record_id" => $unearned_revenue_record->id,
-                        "summary_id" => $collection->siteSaleSummary->id,
+                        "summary_id" => $collection->siteSaleSummary->summary?->id,
                         "collection_id" => $collection->id,
                     ]);
 
@@ -756,7 +756,7 @@ class CollectionController extends Controller
                         "closing_balance" => $receivables_account->balance + $sale_balance,
                         "type" => "DEBIT", // incrementing the account balance
                         "accounting_account_id" => $receivables_account->id,
-                        "summary_id" => $collection->siteSaleSummary->id,
+                        "summary_id" => $collection->siteSaleSummary->summary?->id,
                         "collection_id" => $collection->id,
                     ]);
 
@@ -776,7 +776,7 @@ class CollectionController extends Controller
                         "type" => "CREDIT", // incrementing the account balance
                         "accounting_account_id" => $revenue_account->id,
                         "accounting_record_id" => $receivables_record->id,
-                        "summary_id" => $collection->siteSaleSummary->id,
+                        "summary_id" => $collection->siteSaleSummary->summary?->id,
                         "collection_id" => $collection->id,
                     ]);
 
@@ -832,7 +832,7 @@ class CollectionController extends Controller
                     "closing_balance" => $cogs_balance + $cost,
                     "type" => "DEBIT", // incrementing the account balance
                     "accounting_account_id" => $collection->siteSaleSummary->inventory->cogsAccount->id,
-                    "summary_id" => $collection->siteSaleSummary->id,
+                    "summary_id" => $collection->siteSaleSummary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
                 $cogs_balance += $cost;
@@ -851,7 +851,7 @@ class CollectionController extends Controller
                     "type" => "CREDIT", // decrementing the account balance
                     "accounting_account_id" => $collection->siteSaleSummary->inventory->inventoryAccount->id,
                     "accounting_record_id" => $cogs_record->id,
-                    "summary_id" => $collection->siteSaleSummary->id,
+                    "summary_id" => $collection->siteSaleSummary->summary?->id,
                     "collection_id" => $collection->id,
                 ]);
                 $inventory_balance -= $cost;

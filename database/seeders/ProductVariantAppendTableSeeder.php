@@ -295,5 +295,27 @@ class ProductVariantAppendTableSeeder extends Seeder
             'description_full' => null,
             'link' => null,
         ]);
+
+
+        \App\Models\ProductVariant::updateOrCreate([
+            "description" => "Transportation",
+            'slug' => Str::slug("transportation"),
+            "unit" => "Delivery",
+            "quantity" => 1,
+            "cost" => 100000,
+            "cost_original" => 100000,
+            "product_id" => 8,
+            'name' => "Transportation",
+            'transport_inclusive' => false,
+            'specifications' => json_encode([
+                // "Weight" => "50kg",
+            ]),
+            'product_information' => json_encode([
+                //  "Source" => "Locally Mined",
+            ]),
+            'about' => null,
+            'description_full' => null,
+            'link' => null,
+        ]);
     }
 }

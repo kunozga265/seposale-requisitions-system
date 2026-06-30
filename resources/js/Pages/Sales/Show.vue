@@ -239,7 +239,7 @@
                             <div class="card ">
 
                                 <div v-if="sale.data.meta?.locationData != null">
-                                    <LocationViewer class="mb-4" :locationData="sale.data.meta?.locationData" />
+                                    <LocationViewer class="mb-4" :locationData="sale.data.meta?.locationData" :zone="sale.data.zone" />
                                 </div>
 
                                 <div class="border-b px-4 py-3 flex justify-between text-sm">

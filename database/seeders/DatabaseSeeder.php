@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(PositionTableSeeder::class);
         // $this->call(ProductTableSeeder::class);
         // $this->call(ProductAppendTableSeeder::class);
-        // $this->call(ProductVariantAppendTableSeeder::class);
+        $this->call(ProductVariantAppendTableSeeder::class);
         // $this->call(UserTableSeeder::class);
         $this->call(PaymentMethodTableSeeder::class);
         // $this->call(SitesTableSeeder::class);
@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
         // $this->call(BrandTableSeeder::class);
-        $this->call(TransportOptionTableSeeder::class);
+        // $this->call(TransportOptionTableSeeder::class);
         
         // $batches = Batch::all();
 
