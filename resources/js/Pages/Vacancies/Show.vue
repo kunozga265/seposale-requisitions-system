@@ -148,14 +148,15 @@
                       <td class="p-2 text-left ">{{ application.firstName }} {{ application.lastName }}</td>
                       
                       <td class="p-2 text-left ">{{ application.gender }}</td>
-                      <td class="p-2 text-left ">{{ application.dateOfBirth }}</td>
+                      <td class="p-2 text-left ">{{ getDate(application.dateOfBirth*1000)  }}</td>
                       <td class="p-2 text-left ">{{ application.qualifications }}</td>
                       
-                 
+                    
                     </tr>
                     </tbody>
                   </table>
                 </div>
+
               </div>
 <!--              <pagination :object="vacancies"/>-->
             </div>

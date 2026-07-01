@@ -65,7 +65,7 @@
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Date</div>
-                  <div>{{ application.data.dateOfBirth }}</div>
+                  <div>{{ getDate(application.data.dateOfBirth * 1000) }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Email</div>
