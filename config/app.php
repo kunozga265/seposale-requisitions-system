@@ -243,4 +243,6 @@ return [
         'outlet_id' => env('STD_BANK_OUTLET_ID'),
     ],
 
+    'ecommerce_upload_key' => env('ECOMMERCE_UPLOAD_KEY'),
+
 ];

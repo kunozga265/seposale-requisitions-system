@@ -62,8 +62,12 @@
                         <div class="total">{{ numberWithCommas(quotation.total.toFixed(2) ) }}</div>
                       </div>
                     </div>
-                    <div>
+                    <div class="flex items-center justify-between">
                       <div class="name font-normal ml-3">{{ quotation.client.name }}</div>
+                      <span v-if="quotation.clientGenerated && !quotation.confirmed"
+                        class="mr-3 rounded px-2 py-0.5 text-xs font-semibold bg-amber-100 text-amber-800">
+                        Unconfirmed
+                      </span>
                     </div>
                   </div>
                 </inertia-link>

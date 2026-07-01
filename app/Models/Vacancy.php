@@ -19,6 +19,7 @@ class Vacancy extends Model
         "title",
         "slug",
         "date",
+        "due_date",
         "department",
         "body",
         "fields",

@@ -14,6 +14,11 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function reward()
+    {
+        return $this->hasOne(ProductVariantReward::class);
+    }
+
     protected $fillable = [
         "name",
         "slug",

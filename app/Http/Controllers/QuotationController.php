@@ -424,4 +424,24 @@ class QuotationController extends Controller
             }
         }
     }
+
+    public function confirm(Request $request, $id)
+    {
+        $quotation = Quotation::find($id);
+
+        if (! $quotation) {
+            if ((new AppController())->isApi($request)) {
+                return response()->json(['message' => 'Quotation not found'], 404);
+            }
+            return Redirect::back()->with('error', 'Quotation not found');
+        }
+
+        $quotation->update(['confirmed' => true]);
+
+        if ((new AppController())->isApi($request)) {
+            return response()->json(new QuotationResource($quotation));
+        }
+
+        return Redirect::back()->with('success', 'Quotation confirmed.');
+    }
 }

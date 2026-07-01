@@ -70,6 +70,11 @@ Route::group(['prefix' => '1.0.0'], function () {
         'roles' => ['employee', 'administrator']
     ]);
 
+    // Accepts file uploads from the ecommerce app (authenticated by shared key, no user session required).
+    Route::post("/ecommerce/upload", [
+        "uses" => "App\Http\Controllers\EcommerceUploadController@store",
+    ]);
+
     Route::post("/upload/delete", [
         "uses" => "App\Http\Controllers\AppController@removeFile",
         'roles' => ['employee', 'administrator']

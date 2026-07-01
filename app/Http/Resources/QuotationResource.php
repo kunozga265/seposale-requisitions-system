@@ -40,7 +40,9 @@ class QuotationResource extends JsonResource
                 "id" => intval($this->sale?->id),
                 'code' =>  "LL" . (new AppController())->getZeroedNumber($this->sale->code_alt),
             ] : null,
-            'whatsapp' => $this->whatsapp != null ? intval($this->whatsapp) == 1 : false,
+            'whatsapp'        => $this->whatsapp != null ? intval($this->whatsapp) == 1 : false,
+            'clientGenerated' => (bool) $this->client_generated,
+            'confirmed'       => (bool) $this->confirmed,
         ];
     }
 }

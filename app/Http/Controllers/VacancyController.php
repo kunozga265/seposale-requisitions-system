@@ -6,6 +6,7 @@ use App\Http\Resources\ApplicationResource;
 use App\Http\Resources\VacancyResource;
 use App\Models\Application;
 use App\Models\Vacancy;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -43,7 +44,7 @@ class VacancyController extends Controller
                 //Web Response
                 return Inertia::render('Vacancies/Show', [
                     'vacancy' => new VacancyResource($vacancy),
-                    'applications' => ApplicationResource::collection($vacancy->applications()->where('date_of_birth','>=',883605600)->get()),
+                    'applications' => ApplicationResource::collection($vacancy->applications()->get()),
                 ]);
             }
         } else {
@@ -106,7 +107,8 @@ class VacancyController extends Controller
             "slug" =>  Str::slug($request->title . date("-Y-m-d")),
             "department" => $request->department,
             "body" => $request->body,
-            "date" => $request->date,
+            "date" => Carbon::now()->timestamp,
+            "due_date" => $request->date,
             "fields" => json_encode($request->fields),
         ]);
 
@@ -157,7 +159,8 @@ class VacancyController extends Controller
                 "slug" =>  Str::slug($request->title . date("-Y-m-d")),
                 "department" => $request->department,
                 "body" => $request->body,
-                "date" => $request->date,
+                // "date" => Carbon::now()->timestamp,
+                "due_date" => $request->date,
                 "fields" => json_encode($request->fields),
             ]);
 

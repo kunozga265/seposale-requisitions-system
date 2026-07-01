@@ -7,8 +7,11 @@ use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
+use App\Models\ClientReward;
 use App\Models\Delivery;
 use App\Models\DeliveryRequest;
+use App\Models\ProductVariant;
+use App\Models\ProductVariantReward;
 use App\Models\Receipt;
 use App\Models\ReceiptSummary;
 use App\Models\Sale;
@@ -256,7 +259,31 @@ class ReceiptController extends Controller
                                 "site_sale_summary_id" => $site_sale_summary_id,
                             ]);
 
-
+                            // Credit rewards proportionally per payment (ORDINARY sales only)
+                            if ($request->type === "ORDINARY" && !empty($summary->product_variant_id)) {
+                                $rewardRecord = ProductVariantReward::where('product_variant_id', $summary->product_variant_id)
+                                    ->where('active', true)->first();
+                                if ($rewardRecord && $rewardRecord->reward_amount > 0) {
+                                    $variant   = ProductVariant::find($summary->product_variant_id);
+                                    $packSize  = $variant ? max(1, (int) ($variant->quantity ?? 1)) : 1;
+                                    $unitPrice = $summary->cost();
+                                    if ($unitPrice > 0) {
+                                        $counts = ($amount / $unitPrice) / $packSize;
+                                        $reward = round($counts * $rewardRecord->reward_amount, 2);
+                                        if ($reward > 0) {
+                                            ClientReward::create([
+                                                'client_id'          => $receipt->client_id,
+                                                'product_variant_id' => $summary->product_variant_id,
+                                                'sale_id'            => $sale_id,
+                                                'receipt_id'         => $receipt->id,
+                                                'amount'             => $reward,
+                                                'type'               => 'earned',
+                                                'date'               => $receipt->date,
+                                            ]);
+                                        }
+                                    }
+                                }
+                            }
 
                             //check if there is a delivery on delivery or collection end proportionate the amount that neeeds to go to receivables
                             if ($summary->deliveryExists() || $summary->getCollectionStatus() > 0) {

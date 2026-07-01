@@ -65,5 +65,7 @@ class Quotation extends Model
         "vat",
         'vat_option',
         "meta",
+        "client_generated",
+        "confirmed",
     ];
 }

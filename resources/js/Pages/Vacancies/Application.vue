@@ -65,7 +65,7 @@
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Date</div>
-                  <div>{{ getDate(application.data.dateOfBirth * 1000) }}</div>
+                  <div>{{ application.data.dateOfBirth }}</div>
                 </div>
                 <div class="border-b px-4 py-3 flex justify-between text-sm">
                   <div class="text-gray-600 font-semibold">Email</div>
@@ -102,7 +102,7 @@
                       <div class="text-xs text-gray-500">{{field.label}}</div>
 
                       <div v-if="field.type == 'text'" class="">{{field.value}}</div>
-                      <a v-else-if="field.type == 'file'" :href="siteUrl(field.value)" target="_blank">
+                      <a v-else-if="field.type == 'file'" :href="fileUrl(field.value)" target="_blank">
                         <primary-button>Download</primary-button>
                       </a>
                     </div>

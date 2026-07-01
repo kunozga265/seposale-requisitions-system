@@ -32,6 +32,16 @@
       <div class="md:flex grid grid-cols-2 md:grid-cols-5 gap-1">
         <whatsapp template="quotation" :serial="quotation.data.serial" :sent="quotation.data.whatsapp" />
 
+        <span v-if="quotation.data.clientGenerated && !quotation.data.confirmed"
+          class="inline-flex items-center rounded px-2 py-1 text-xs font-semibold bg-amber-100 text-amber-800">
+          Unconfirmed
+        </span>
+
+        <primary-button v-if="quotation.data.clientGenerated && !quotation.data.confirmed"
+          @click.native="confirmQuotation">
+          Confirm
+        </primary-button>
+
         <primary-button class="" v-if="!quotation.data.hasSale" @click.native="generateSale">Generate
           Sale</primary-button>
 
@@ -313,7 +323,7 @@
         </div>
 
         <div>
-          <div class="page-section">
+          <div v-if="quotation.data.requestedBy != null" class="page-section">
             <div class="page-section-content">
               <div class="card p-0">
                 <div class="p-3 text-white text-sm font-semibold bg-system heading-font uppercase rounded-t-lg">
@@ -453,6 +463,12 @@ export default {
         .post(this.route('quotations.delete', { 'id': this.quotation.data.id }), {
           preserveScroll: true,
           onSuccess: () => this.deleteDialog = false,
+        })
+    },
+    confirmQuotation() {
+      this.form
+        .post(this.route('quotations.confirm', { 'id': this.quotation.data.id }), {
+          preserveScroll: true,
         })
     },
     displayAttachment(index, type) {

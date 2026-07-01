@@ -321,6 +321,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\QuotationController@destroy",
             'roles' => ['employee', 'management']
         ])->name('quotations.delete');
+
+        Route::post('/confirm/{id}', [
+            "uses"  => "App\Http\Controllers\QuotationController@confirm",
+            'roles' => ['employee', 'management']
+        ])->name('quotations.confirm');
     });
 
     Route::group(['prefix' => 'invoices'], function () {
@@ -1228,5 +1233,118 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\ZoneController@destroy",
             'roles' => ['employee', 'management']
         ])->name('zones.delete');
+    });
+
+    Route::group(['prefix' => 'rewards'], function () {
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@index",
+            'roles' => ['management', 'employee']
+        ])->name('rewards.index');
+
+        Route::post('/withdrawal-requests/{id}/approve', [
+            "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@approve",
+            'roles' => ['management']
+        ])->name('rewards.withdrawal.approve');
+
+        Route::post('/withdrawal-requests/{id}/reject', [
+            "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@reject",
+            'roles' => ['management']
+        ])->name('rewards.withdrawal.reject');
+
+        Route::post('/withdrawal-requests/{id}/pay', [
+            "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@pay",
+            'roles' => ['management', 'employee']
+        ])->name('rewards.withdrawal.pay');
+
+        Route::get('/product-rewards', [
+            "uses"  => "App\Http\Controllers\ProductVariantRewardController@index",
+            'roles' => ['management']
+        ])->name('rewards.product-rewards');
+
+        Route::post('/product-rewards/store', [
+            "uses"  => "App\Http\Controllers\ProductVariantRewardController@store",
+            'roles' => ['management']
+        ])->name('rewards.product-rewards.store');
+
+        Route::put('/product-rewards/{id}', [
+            "uses"  => "App\Http\Controllers\ProductVariantRewardController@update",
+            'roles' => ['management']
+        ])->name('rewards.product-rewards.update');
+
+        Route::delete('/product-rewards/{id}', [
+            "uses"  => "App\Http\Controllers\ProductVariantRewardController@destroy",
+            'roles' => ['management']
+        ])->name('rewards.product-rewards.destroy');
+
+        Route::post('/grant', [
+            "uses"  => "App\Http\Controllers\ClientRewardController@store",
+            'roles' => ['management']
+        ])->name('rewards.grant');
+    });
+
+    Route::group(['prefix' => 'reviews'], function () {
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\ReviewController@index",
+            'roles' => ['management', 'employee']
+        ])->name('reviews.index');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\ReviewController@store",
+            'roles' => ['management', 'employee']
+        ])->name('reviews.store');
+
+        Route::put('/{id}', [
+            "uses"  => "App\Http\Controllers\ReviewController@update",
+            'roles' => ['management', 'employee']
+        ])->name('reviews.update');
+
+        Route::delete('/{id}', [
+            "uses"  => "App\Http\Controllers\ReviewController@destroy",
+            'roles' => ['management']
+        ])->name('reviews.destroy');
+    });
+
+    Route::group(['prefix' => 'faqs'], function () {
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\FaqController@index",
+            'roles' => ['management', 'employee']
+        ])->name('faqs.index');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\FaqController@store",
+            'roles' => ['management']
+        ])->name('faqs.store');
+
+        Route::put('/{id}', [
+            "uses"  => "App\Http\Controllers\FaqController@update",
+            'roles' => ['management']
+        ])->name('faqs.update');
+
+        Route::delete('/{id}', [
+            "uses"  => "App\Http\Controllers\FaqController@destroy",
+            'roles' => ['management']
+        ])->name('faqs.destroy');
+    });
+
+    Route::group(['prefix' => 'building-tips'], function () {
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\BuildingTipController@index",
+            'roles' => ['management', 'employee']
+        ])->name('building-tips.index');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\BuildingTipController@store",
+            'roles' => ['management']
+        ])->name('building-tips.store');
+
+        Route::put('/{id}', [
+            "uses"  => "App\Http\Controllers\BuildingTipController@update",
+            'roles' => ['management']
+        ])->name('building-tips.update');
+
+        Route::delete('/{id}', [
+            "uses"  => "App\Http\Controllers\BuildingTipController@destroy",
+            'roles' => ['management']
+        ])->name('building-tips.destroy');
     });
 });
