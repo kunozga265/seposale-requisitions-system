@@ -42,7 +42,7 @@
           Confirm
         </primary-button>
 
-        <primary-button class="" v-if="!quotation.data.hasSale" @click.native="generateSale">Generate
+        <primary-button class="" v-if="!quotation.data.hasSale && (quotation.data.confirmed || !quotation.data.clientGenerated)" @click.native="generateSale">Generate
           Sale</primary-button>
 
         <a class="" :href="route('quotations.print', { 'id': quotation.data.id })" target="_blank">

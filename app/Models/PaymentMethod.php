@@ -9,9 +9,16 @@ class PaymentMethod extends Model
 {
     use HasFactory;
 
-    protected $fillable=[
+    protected $fillable = [
         "name",
         "photo",
+        "for_withdrawal",
+        "withdrawal_fields",
+    ];
+
+    protected $casts = [
+        'for_withdrawal'   => 'boolean',
+        'withdrawal_fields' => 'array',
     ];
 
     protected $hidden = [

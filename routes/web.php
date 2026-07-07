@@ -1282,6 +1282,19 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         ])->name('rewards.grant');
     });
 
+    Route::group(['prefix' => 'payment-methods'], function () {
+
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\PaymentMethodController@index",
+            'roles' => ['management', 'employee']
+        ])->name('payment-methods.index');
+
+        Route::put('/{id}', [
+            "uses"  => "App\Http\Controllers\PaymentMethodController@update",
+            'roles' => ['management', 'employee']
+        ])->name('payment-methods.update');
+    });
+
     Route::group(['prefix' => 'reviews'], function () {
         Route::get('/', [
             "uses"  => "App\Http\Controllers\ReviewController@index",

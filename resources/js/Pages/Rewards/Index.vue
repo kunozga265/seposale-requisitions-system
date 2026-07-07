@@ -127,6 +127,7 @@
                         <th class="p-2 heading-font">Client</th>
                         <th class="p-2 heading-font">Amount (MWK)</th>
                         <th class="p-2 heading-font">Status</th>
+                        <th class="p-2 heading-font">Payout Method</th>
                         <th class="p-2 heading-font">Notes</th>
                         <th class="p-2 heading-font">Requested</th>
                         <th class="p-2 heading-font">Approved By</th>
@@ -144,6 +145,18 @@
                             class="px-2 py-0.5 text-xs rounded-full font-medium">
                             {{ req.status }}
                           </span>
+                        </td>
+                        <td class="p-2 text-sm">
+                          <span v-if="req.paymentMethod" class="font-medium text-gray-900">{{ req.paymentMethod }}</span>
+                          <span v-else class="text-gray-400">—</span>
+                          <div v-if="req.payoutDetails && Object.keys(req.payoutDetails).length"
+                            class="mt-1 space-y-0.5">
+                            <div v-for="(val, key) in req.payoutDetails" :key="key"
+                              class="text-xs text-gray-500">
+                              <span class="capitalize">{{ key.replace(/_/g, ' ') }}:</span>
+                              <span class="font-medium text-gray-700"> {{ val }}</span>
+                            </div>
+                          </div>
                         </td>
                         <td class="p-2 text-sm text-gray-600 max-w-xs truncate">{{ req.notes || '—' }}</td>
                         <td class="p-2 text-sm">{{ formatDate(req.createdAt) }}</td>

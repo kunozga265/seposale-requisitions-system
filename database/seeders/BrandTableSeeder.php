@@ -14,40 +14,74 @@ class BrandTableSeeder extends Seeder
      */
     public function run()
     {
-        Brand::create([
+        Brand::updateOrCreate([
             "name" => "ASUM",
+        ], [
             "file" => "files/brands/asum.png",
-            "description" => "",
+            "description" => "ASUM",
             "link" => null
         ]);
-        Brand::create([
-            "name" => "CCECC",
+        Brand::updateOrCreate([
+            "name" => "China Civil Engineering Construction Corporation",
+        ], [
             "file" => "files/brands/ccecc.png",
-            "description" => "China Civil Engineering Construction Corporation",
+            "description" => "CCECC",
             "link" => null
         ]);
-        Brand::create([
-            "name" => "JW",
+        Brand::updateOrCreate([
+            "name" => "Jehovah's Witnesses",
+        ], [
             "file" => "files/brands/jw.svg",
-            "description" => "Jehovah's Witnesses",
+            "description" => "JW",
             "link" => null
         ]);
-        Brand::create([
-            "name" => "AG",
+        Brand::updateOrCreate([
+            "name" => "Assemblies of God",
+        ], [
             "file" => "files/brands/mag.jpeg",
-            "description" => "Assemblies of God",
+            "description" => "AG",
             "link" => null
         ]);
-        Brand::create([
-            "name" => "SR",
+        Brand::updateOrCreate([
+            "name" => "Smart Realtors",
+        ], [
             "file" => "files/brands/sr.jpeg",
-            "description" => "Smart Realtors",
+            "description" => "SR",
             "link" => null
         ]);
-        Brand::create([
-            "name" => "ME",
+        Brand::updateOrCreate([
+            "name" => "Mota Engil",
+        ], [
             "file" => "files/brands/mota-engil.png",
-            "description" => "Mota Engil",
+            "description" => "ME",
+            "link" => null
+        ]);
+        Brand::updateOrCreate([
+            "name" => "Hisco",
+        ], [
+            "file" => "files/brands/Hisco.jpg",
+            "description" => "Hisco",
+            "link" => null
+        ]);
+        Brand::updateOrCreate([
+            "name" => "Mount Sinai",
+        ], [
+            "file" => "files/brands/Mount Sinai.jpg",
+            "description" => "Mount Sinai",
+            "link" => null
+        ]);
+        Brand::updateOrCreate([
+            "name" => "Smaac Trust",
+        ], [
+            "file" => "files/brands/Smaac Trust.jpg",
+            "description" => "Smaac Trust",
+            "link" => null
+        ]);
+        Brand::updateOrCreate([
+            "name" => "Steecon",
+        ], [
+            "file" => "files/brands/Steecon.png",
+            "description" => "Steecon",
             "link" => null
         ]);
     }

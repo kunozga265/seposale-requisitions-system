@@ -44,8 +44,8 @@ class DatabaseSeeder extends Seeder
         $this->call(ProductVariantAppendTableSeeder::class);
         // $this->call(UserTableSeeder::class);
         $this->call(PaymentMethodTableSeeder::class);
-        $this->call(FaqSeeder::class);
-        $this->call(BuildingTipSeeder::class);
+        // $this->call(FaqSeeder::class);
+        // $this->call(BuildingTipSeeder::class);
         // $this->call(SitesTableSeeder::class);
         // $this->call(InventoryTableSeeder::class);
         // $this->call(AccountTypeTableSeeder::class);
@@ -72,7 +72,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(RequestFormItemsTableSeeder::class);
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
-        // $this->call(BrandTableSeeder::class);
+        $this->call(BrandTableSeeder::class);
         // $this->call(TransportOptionTableSeeder::class);
         
         // $batches = Batch::all();

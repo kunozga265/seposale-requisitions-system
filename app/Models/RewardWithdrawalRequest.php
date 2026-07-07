@@ -13,10 +13,16 @@ class RewardWithdrawalRequest extends Model
         'amount',
         'status',
         'notes',
+        'payment_method_id',
+        'payout_details',
         'approved_by',
         'approved_at',
         'paid_by',
         'paid_at',
+    ];
+
+    protected $casts = [
+        'payout_details' => 'array',
     ];
 
     protected $dates = ['approved_at', 'paid_at'];
@@ -34,6 +40,11 @@ class RewardWithdrawalRequest extends Model
     public function paidBy()
     {
         return $this->belongsTo(User::class, 'paid_by');
+    }
+
+    public function paymentMethod()
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     public function rewards()

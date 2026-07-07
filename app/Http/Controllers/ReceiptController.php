@@ -83,7 +83,7 @@ class ReceiptController extends Controller
         $user = (new AppController())->getAuthUser($request);
 
         $request->validate([
-            'delivery_request_id' => ['required'],
+            // 'delivery_request_id' => ['required'],
             // 'withholding' => ['required'],
             // 'information' => ['required'],
             'type' => ['required'],
@@ -96,7 +96,7 @@ class ReceiptController extends Controller
             $receipt = Cache::lock($user->id . ':receipt:store', 10)->get(function () use ($user, $request, $sale) {
 
 
-                if ($request->delivery_request_id == 0) {
+                if ($request->delivery_request_id == 0 || $request->delivery_request_id == null) {
 
                     $request->validate([
                         'withholding' => ['required'],

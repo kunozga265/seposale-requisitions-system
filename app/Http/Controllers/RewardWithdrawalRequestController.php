@@ -15,22 +15,24 @@ class RewardWithdrawalRequestController extends Controller
 {
     public function index(Request $request)
     {
-        $requests = RewardWithdrawalRequest::with(['client', 'approvedBy', 'paidBy'])
+        $requests = RewardWithdrawalRequest::with(['client', 'approvedBy', 'paidBy', 'paymentMethod'])
             ->orderByRaw("FIELD(status, 'pending', 'approved', 'rejected', 'paid')")
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($r) {
                 return [
-                    'id'          => $r->id,
-                    'client'      => ['id' => $r->client?->id, 'name' => $r->client?->name],
-                    'amount'      => (float) $r->amount,
-                    'status'      => $r->status,
-                    'notes'       => $r->notes,
-                    'approvedBy'  => $r->approvedBy?->name,
-                    'approvedAt'  => $r->approved_at?->toDateTimeString(),
-                    'paidBy'      => $r->paidBy?->name,
-                    'paidAt'      => $r->paid_at?->toDateTimeString(),
-                    'createdAt'   => $r->created_at->toDateTimeString(),
+                    'id'            => $r->id,
+                    'client'        => ['id' => $r->client?->id, 'name' => $r->client?->name],
+                    'amount'        => (float) $r->amount,
+                    'status'        => $r->status,
+                    'notes'         => $r->notes,
+                    'paymentMethod' => $r->paymentMethod ? $r->paymentMethod->name : null,
+                    'payoutDetails' => $r->payout_details ?? [],
+                    'approvedBy'    => $r->approvedBy?->name,
+                    'approvedAt'    => $r->approved_at?->toDateTimeString(),
+                    'paidBy'        => $r->paidBy?->name,
+                    'paidAt'        => $r->paid_at?->toDateTimeString(),
+                    'createdAt'     => $r->created_at->toDateTimeString(),
                 ];
             });
 
