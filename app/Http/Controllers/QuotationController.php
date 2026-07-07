@@ -165,6 +165,8 @@ class QuotationController extends Controller
                     'notes' => $request->notes
                 ]),
 
+                'confirmed' => true,
+
                 //Requested by
                 'user_id' => $user->id,
                 'quotes' => json_encode($request->quotes ?? []),
