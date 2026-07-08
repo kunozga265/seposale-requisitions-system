@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\NotificationResource;
+use App\Mail\ClientNotificationMail;
 use App\Mail\ProjectNewMail;
 use App\Mail\RequestFormApprovedMail;
 use App\Mail\RequestFormDeniedMail;
@@ -883,6 +884,19 @@ class NotificationController extends Controller
                     $sale->update([
                         "whatsapp" => true
                     ]);
+                    if (!empty($sale->client?->email)) {
+                        try {
+                            Mail::to($sale->client->email)->queue(new ClientNotificationMail(
+                                subject: 'Order Confirmation — ' . $sale->formattedCode(),
+                                heading: 'Your order has been received',
+                                body: "Hi {$sale->client->getName()},\n\nWe have received your order {$sale->formattedCode()} for MWK " . number_format($sale->total, 2) . ". Our team will be in touch shortly.",
+                                actionUrl: config('app.ecommerce_url') . '/' . $sale->client->serial . '/sales/' . $sale->serial,
+                                actionLabel: 'View Order',
+                            ));
+                        } catch (\Throwable $e) {
+                            Log::error('ClientNotificationMail (sales_order) failed: ' . $e->getMessage());
+                        }
+                    }
                 }
                 break;
 
@@ -944,6 +958,19 @@ class NotificationController extends Controller
                     $sale->update([
                         "whatsapp" => true
                     ]);
+                    if (!empty($sale->client?->email)) {
+                        try {
+                            Mail::to($sale->client->email)->queue(new ClientNotificationMail(
+                                subject: 'Payment Received — Order ' . $sale->formattedCode(),
+                                heading: 'Payment received',
+                                body: "Hi {$sale->client->getName()},\n\nWe have received your payment of MWK " . number_format($amount, 2) . " for order {$sale->formattedCode()}. Thank you!",
+                                actionUrl: config('app.ecommerce_url') . '/' . $sale->client->serial . '/sales/' . $sale->serial,
+                                actionLabel: 'View Order',
+                            ));
+                        } catch (\Throwable $e) {
+                            Log::error('ClientNotificationMail (proof_of_payment) failed: ' . $e->getMessage());
+                        }
+                    }
                 }
                 break;
 
@@ -1000,6 +1027,19 @@ class NotificationController extends Controller
                     $quotation->update([
                         "whatsapp" => true
                     ]);
+                    if (!empty($quotation->client?->email)) {
+                        try {
+                            Mail::to($quotation->client->email)->queue(new ClientNotificationMail(
+                                subject: 'Quotation — ' . $quotation->formattedCode(),
+                                heading: 'Your quotation is ready',
+                                body: "Hi {$quotation->client->getName()},\n\nYour quotation {$quotation->formattedCode()} is ready for your review.",
+                                actionUrl: config('app.ecommerce_url') . '/' . $quotation->client->serial . '/quotations/' . $quotation->serial,
+                                actionLabel: 'View Quotation',
+                            ));
+                        } catch (\Throwable $e) {
+                            Log::error('ClientNotificationMail (quotation) failed: ' . $e->getMessage());
+                        }
+                    }
                 }
                 break;
 
@@ -1072,6 +1112,19 @@ class NotificationController extends Controller
                     $invoice->update([
                         "whatsapp" => true
                     ]);
+                    if (!empty($invoice->client?->email)) {
+                        try {
+                            Mail::to($invoice->client->email)->queue(new ClientNotificationMail(
+                                subject: 'Invoice — ' . $invoice->formattedCode(),
+                                heading: 'Your invoice is ready',
+                                body: "Hi {$invoice->client->getName()},\n\nYour invoice {$invoice->formattedCode()} for MWK " . number_format($invoice->sale->total, 2) . " is ready.",
+                                actionUrl: config('app.ecommerce_url') . '/' . $invoice->client->serial . '/invoices/' . $invoice->serial,
+                                actionLabel: 'View Invoice',
+                            ));
+                        } catch (\Throwable $e) {
+                            Log::error('ClientNotificationMail (invoice) failed: ' . $e->getMessage());
+                        }
+                    }
                 }
                 break;
 
@@ -1148,6 +1201,19 @@ class NotificationController extends Controller
                     $receipt->update([
                         "whatsapp" => true
                     ]);
+                    if (!empty($receipt->client?->email)) {
+                        try {
+                            Mail::to($receipt->client->email)->queue(new ClientNotificationMail(
+                                subject: 'Payment Receipt — ' . $receipt->formattedCode(),
+                                heading: 'Payment confirmed',
+                                body: "Hi {$receipt->client->getName()},\n\nYour payment of MWK " . number_format($receipt->amount, 2) . " via {$receipt->paymentMethod->name} has been confirmed. Receipt: {$receipt->formattedCode()}.",
+                                actionUrl: config('app.ecommerce_url') . '/' . $receipt->client->serial . '/receipts/' . $receipt->serial,
+                                actionLabel: 'View Receipt',
+                            ));
+                        } catch (\Throwable $e) {
+                            Log::error('ClientNotificationMail (receipt) failed: ' . $e->getMessage());
+                        }
+                    }
                 }
                 break;
 
@@ -1220,6 +1286,20 @@ class NotificationController extends Controller
                     $delivery->update([
                         "whatsapp" => true
                     ]);
+                    $deliveryClient = $delivery->summary->sale->client ?? null;
+                    if (!empty($deliveryClient?->email)) {
+                        try {
+                            Mail::to($deliveryClient->email)->queue(new ClientNotificationMail(
+                                subject: 'Delivery Update — ' . $delivery->formattedCode(),
+                                heading: 'Your delivery is on its way',
+                                body: "Hi {$deliveryClient->getName()},\n\nYour delivery {$delivery->formattedCode()} for {$delivery->quantity_delivered} {$delivery->summary->units}(s) of {$delivery->summary->fullName()} is out for delivery to {$delivery->summary->sale->location}.",
+                                actionUrl: config('app.ecommerce_url') . '/' . $deliveryClient->serial . '/deliveries/' . $delivery->serial,
+                                actionLabel: 'View Delivery',
+                            ));
+                        } catch (\Throwable $e) {
+                            Log::error('ClientNotificationMail (delivery) failed: ' . $e->getMessage());
+                        }
+                    }
                 }
                 break;
             case "delivery_order":
@@ -1370,6 +1450,19 @@ class NotificationController extends Controller
                     $collection->update([
                         "whatsapp" => true
                     ]);
+                    if ($notify !== 'team' && !empty($collection->client?->email)) {
+                        try {
+                            Mail::to($collection->client->email)->queue(new ClientNotificationMail(
+                                subject: 'Collection Update — ' . $collection->formattedCode(),
+                                heading: 'Collection confirmed',
+                                body: "Hi {$collection->client->getName()},\n\n{$collection->quantity} unit(s) of {$collection->inventory->name} have been collected ({$collection->formattedCode()}).",
+                                actionUrl: config('app.ecommerce_url') . '/' . $collection->client->serial . '/collections/' . $collection->serial,
+                                actionLabel: 'View Collection',
+                            ));
+                        } catch (\Throwable $e) {
+                            Log::error('ClientNotificationMail (collection) failed: ' . $e->getMessage());
+                        }
+                    }
                 }
                 break;
 

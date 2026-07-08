@@ -72,8 +72,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(RequestFormItemsTableSeeder::class);
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
-        $this->call(BrandTableSeeder::class);
-        // $this->call(TransportOptionTableSeeder::class);
+        // $this->call(BrandTableSeeder::class);
+        $this->call(TransportOptionTableSeeder::class);
         
         // $batches = Batch::all();
 

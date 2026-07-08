@@ -178,11 +178,33 @@
                               class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200">
                               Reject
                             </button>
-                            <button v-if="req.status === 'approved'"
-                              @click="payRequest(req.id)"
-                              class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200">
-                              Mark Paid
-                            </button>
+                            <template v-if="req.status === 'approved'">
+                              <div v-if="payingId === req.id" class="flex flex-col gap-1 min-w-[160px]">
+                                <select v-model="payWalletAccountId"
+                                  class="border border-gray-300 rounded px-2 py-1 text-xs focus:ring-green-500 focus:border-green-500">
+                                  <option value="" disabled>Select wallet…</option>
+                                  <option v-for="a in walletAccounts" :key="a.id" :value="a.id">
+                                    {{ a.name }} (MK {{ formatMoney(a.balance) }})
+                                  </option>
+                                </select>
+                                <div class="flex gap-1">
+                                  <button @click="confirmPay(req.id)"
+                                    :disabled="!payWalletAccountId"
+                                    class="text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50">
+                                    Confirm
+                                  </button>
+                                  <button @click="payingId = null; payWalletAccountId = ''"
+                                    class="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                              <button v-else
+                                @click="payingId = req.id; payWalletAccountId = ''"
+                                class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200">
+                                Mark Paid
+                              </button>
+                            </template>
                           </div>
                         </td>
                       </tr>
@@ -211,6 +233,8 @@ export default {
     return {
       activeTab: 'withdrawals',
       statusFilter: '',
+      payingId: null,
+      payWalletAccountId: '',
       grantForm: {
         client_id:         '',
         amount:            '',
@@ -261,9 +285,14 @@ export default {
       if (!confirm('Reject this withdrawal request?')) return
       this.$inertia.post(this.route('rewards.withdrawal.reject', { id }))
     },
-    payRequest(id) {
-      if (!confirm('Mark this request as paid? This will deduct the amount from the client\'s reward balance.')) return
-      this.$inertia.post(this.route('rewards.withdrawal.pay', { id }))
+    confirmPay(id) {
+      if (!this.payWalletAccountId) return
+      this.$inertia.post(this.route('rewards.withdrawal.pay', { id }), {
+        wallet_account_id: this.payWalletAccountId,
+      }, {
+        preserveScroll: true,
+        onSuccess: () => { this.payingId = null; this.payWalletAccountId = '' },
+      })
     },
   }
 }

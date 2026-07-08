@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccountingAccount;
+use App\Models\AccountingRecord;
 use App\Models\Client;
 use App\Models\ClientReward;
 use App\Models\RewardWithdrawalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
@@ -66,24 +68,65 @@ class RewardWithdrawalRequestController extends Controller
         return Redirect::back()->with('success', 'Withdrawal request rejected.');
     }
 
-    public function pay($id)
+    public function pay(Request $request, $id)
     {
-        $req = RewardWithdrawalRequest::findOrFail($id);
-
-        $req->update([
-            'status'  => 'paid',
-            'paid_by' => Auth::id(),
-            'paid_at' => now(),
+        $request->validate([
+            'wallet_account_id' => 'required|integer|exists:accounting_accounts,id',
         ]);
 
-        ClientReward::create([
-            'client_id'                    => $req->client_id,
-            'reward_withdrawal_request_id' => $req->id,
-            'amount'                       => -abs($req->amount),
-            'type'                         => 'withdrawn',
-            'date'                         => now()->timestamp,
-        ]);
+        $req = RewardWithdrawalRequest::with('client')->findOrFail($id);
 
-        return Redirect::back()->with('success', 'Marked as paid and balance deducted.');
+        DB::transaction(function () use ($req, $request) {
+            $amount  = abs($req->amount);
+            $wallet  = AccountingAccount::findOrFail($request->wallet_account_id);
+            $expense = AccountingAccount::where('code', 6010)->firstOrFail();
+            $desc    = "Reward withdrawal payout — {$req->client->name}";
+
+            $expenseRecord = AccountingRecord::create([
+                'serial'                => (new AppController())->generateUniqueCode('ACCOUNTING'),
+                'reference'             => '',
+                'date'                  => now()->getTimestamp(),
+                'name'                  => $req->client->name,
+                'description'           => $desc,
+                'amount'                => $amount,
+                'opening_balance'       => $expense->balance,
+                'closing_balance'       => $expense->balance + $amount,
+                'type'                  => 'DEBIT',
+                'accounting_account_id' => $expense->id,
+            ]);
+            $expense->update(['balance' => $expense->balance + $amount]);
+
+            $walletRecord = AccountingRecord::create([
+                'serial'                => (new AppController())->generateUniqueCode('ACCOUNTING'),
+                'reference'             => '',
+                'date'                  => now()->getTimestamp(),
+                'name'                  => $req->client->name,
+                'description'           => $desc,
+                'amount'                => $amount,
+                'opening_balance'       => $wallet->balance,
+                'closing_balance'       => $wallet->balance - $amount,
+                'type'                  => 'CREDIT',
+                'accounting_account_id' => $wallet->id,
+                'accounting_record_id'  => $expenseRecord->id,
+            ]);
+            $wallet->update(['balance' => $wallet->balance - $amount]);
+            $expenseRecord->update(['accounting_record_id' => $walletRecord->id]);
+
+            $req->update([
+                'status'  => 'paid',
+                'paid_by' => Auth::id(),
+                'paid_at' => now(),
+            ]);
+
+            ClientReward::create([
+                'client_id'                    => $req->client_id,
+                'reward_withdrawal_request_id' => $req->id,
+                'amount'                       => -$amount,
+                'type'                         => 'withdrawn',
+                'date'                         => now()->timestamp,
+            ]);
+        });
+
+        return Redirect::back()->with('success', 'Marked as paid and accounting entries created.');
     }
 }

@@ -350,6 +350,13 @@
                       class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Exclusive</label>
                   </div>
 
+
+                  <div v-if="quotation.data.meta?.transportPending" class="py-4">
+                    <div class="flex justify-start items-center denied">
+                      Please confirm transportation cost against location
+                    </div>
+                  </div>
+
                   <!--                 
                   <div class="text-center">
                     <div v-if="isNaN(totalCost)" class="text-red-600 uppercase font-semibold heading-font">

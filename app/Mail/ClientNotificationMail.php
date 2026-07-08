@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
+
+class ClientNotificationMail extends Mailable implements ShouldQueue
+{
+    use Queueable, SerializesModels;
+
+    public function __construct(
+        public string $subject,
+        public string $heading,
+        public string $body,
+        public ?string $actionUrl = null,
+        public ?string $actionLabel = null
+    ) {}
+
+    public function build(): static
+    {
+        return $this->view('emails.client-notification')->subject($this->subject);
+    }
+}
