@@ -12,7 +12,7 @@ class ClientNotificationMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public function __construct(
-        public string $subject,
+        public string $mailSubject,
         public string $heading,
         public string $body,
         public ?string $actionUrl = null,
@@ -21,6 +21,6 @@ class ClientNotificationMail extends Mailable implements ShouldQueue
 
     public function build(): static
     {
-        return $this->view('emails.client-notification')->subject($this->subject);
+        return $this->view('emails.client-notification')->subject($this->mailSubject);
     }
 }
