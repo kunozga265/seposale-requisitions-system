@@ -33,6 +33,7 @@ use App\Models\Statement;
 use App\Models\Summary;
 use App\Models\User;
 use App\Models\CreditVoucher;
+use App\Models\PaymentReceipt;
 use App\Models\SupplierVoucher;
 use App\Models\Supplier;
 use App\Models\Transporter;
@@ -142,6 +143,52 @@ class AppController extends Controller
 
 
         $unverifiedUsers = (new AppController())->getRoleUsers('unverified');
+
+        $pendingQuotations = Quotation::with('client')
+            ->where('confirmed', false)
+            ->orderBy('created_at', 'desc')
+            ->limit(30)
+            ->get()
+            ->map(fn ($q) => [
+                'id'            => $q->id,
+                'code'          => $q->formattedCode(),
+                'serial'        => $q->serial,
+                'clientName'    => $q->client?->name ?? '—',
+                'date'          => $q->created_at?->timestamp,
+                'total'         => (float) $q->total,
+                'clientGenerated' => (bool) $q->client_generated,
+            ]);
+
+        $pendingSales = Sale::with('client')
+            ->where('confirmed', false)
+            ->where('client_generated', true)
+            ->orderBy('date', 'desc')
+            ->limit(30)
+            ->get()
+            ->map(fn ($s) => [
+                'id'         => $s->id,
+                'code'       => (new AppController())->getZeroedNumber($s->code_alt),
+                'serial'     => $s->serial,
+                'clientName' => $s->client?->name ?? '—',
+                'date'       => (int) $s->date,
+                'total'      => (float) $s->total,
+            ]);
+
+        $pendingProofs = PaymentReceipt::with(['sale.client'])
+            ->where('user_id', 0)
+            ->where('active', true)
+            ->orderBy('date', 'desc')
+            ->limit(30)
+            ->get()
+            ->map(fn ($pr) => [
+                'id'         => $pr->id,
+                'date'       => (int) $pr->date,
+                'amount'     => (float) $pr->amount,
+                'description' => $pr->description,
+                'saleId'     => $pr->sale_id,
+                'saleCode'   => $pr->sale ? (new AppController())->getZeroedNumber($pr->sale->code_alt) : null,
+                'clientName' => $pr->sale?->client?->name ?? '—',
+            ]);
         // $unverifiedVehicles = Vehicle::where('verified', 0)->get();
         // $unverifiedProjects = Project::where('verified', 0)->get();
 
@@ -217,7 +264,10 @@ class AppController extends Controller
                 'activeCount' => $activeCount,
                 'totalCount' => $totalCount,
                 'unverifiedUsersCount' => $unverifiedUsers->count(),
-                'dashboardReports' => $dashboardReports
+                'dashboardReports' => $dashboardReports,
+                'pendingQuotations' => $pendingQuotations,
+                'pendingSales'      => $pendingSales,
+                'pendingProofs'     => $pendingProofs,
             ]);
         else {
             //Web Response
@@ -244,8 +294,10 @@ class AppController extends Controller
                 'activeCount' => $activeCount,
                 'totalCount' => $totalCount,
                 'unverifiedUsersCount' => $unverifiedUsers->count(),
-
-                'dashboardReports' => $dashboardReports
+                'dashboardReports'     => $dashboardReports,
+                'pendingQuotations'    => $pendingQuotations,
+                'pendingSales'         => $pendingSales,
+                'pendingProofs'        => $pendingProofs,
             ]);
         }
     }

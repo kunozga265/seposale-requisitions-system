@@ -10774,7 +10774,24 @@ class TransportOptionTableSeeder extends Seeder
         ],
         [
           'cost' => $location['cost'],
-          'costs' => json_encode(array_key_exists('costs', $location) ? $location['costs'] : []),
+          'costs' => json_encode(array_key_exists('costs', $location) ? $location['costs'] : [
+            [
+              "id" => 2, //quarry stone
+              "amount" => 0
+            ],
+            [
+              "id" => 3, //pebble stone
+              "amount" => 0
+            ],
+            [
+              "id" => 4, //quarry dust
+              "amount" => 0
+            ],
+            [
+              "id" => 6, //river sand
+              "amount" => 0
+            ]
+          ]),
           'level' => 1,
           'coordinates' => json_encode(array_key_exists('coordinates', $location) ? $location['coordinates'] : []),
         ]
@@ -10891,7 +10908,7 @@ class TransportOptionTableSeeder extends Seeder
             ],
             [
               'id' => 5, //blocks
-              'max' => 170,
+              'max' => 300,
               'meta' => [
                 "variants" => [
                   [
@@ -11065,16 +11082,16 @@ class TransportOptionTableSeeder extends Seeder
             ],
             [
               'id' => 5, //cement blocks
-              'max' => 600,
+              'max' => 1000,
               'meta' => [
                 "variants" => [
                   [
                     "id" => 9,
-                    "max" => 1000,
+                    "max" => 1200,
                   ],
                   [
                     "id" => 10,
-                    "max" => 1200,
+                    "max" => 1000,
                   ]
                 ]
               ],

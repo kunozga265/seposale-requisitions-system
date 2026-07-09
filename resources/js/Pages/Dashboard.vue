@@ -1064,6 +1064,100 @@
                                 </div>
                               </div>
                               -->
+                        <!-- Client Actions -->
+                        <div class="page-section"
+                            v-if="pendingQuotations.length || pendingSales.length || pendingProofs.length">
+                            <div class="page-section-header">
+                                <div class="page-section-title">Client Actions</div>
+                            </div>
+                            <div class="page-section-content">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+                                    <!-- Unconfirmed Quotations -->
+                                    <div v-if="checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'sales')" class="card mb-0">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="heading-font font-semibold">Unconfirmed Quotations</div>
+                                            <span class="text-xs font-bold bg-yellow-100 text-yellow-700 rounded-full px-2 py-0.5">
+                                                {{ pendingQuotations.length }}
+                                            </span>
+                                        </div>
+                                        <div v-if="pendingQuotations.length === 0" class="text-sm text-gray-400 text-center py-4">All caught up</div>
+                                        <inertia-link
+                                            v-for="q in pendingQuotations" :key="q.id"
+                                            :href="route('quotations.show', { id: q.id })"
+                                            class="record p-2 mb-1 rounded flex justify-between items-center hover:bg-gray-50 transition duration-150">
+                                            <div class="flex items-center gap-3">
+                                                <i class="mdi mdi-file-document-outline text-yellow-500 text-lg"></i>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-800">
+                                                        {{ q.clientName }}
+                                                        <span v-if="q.clientGenerated" class="ml-1 text-xs bg-blue-100 text-blue-600 rounded px-1">online</span>
+                                                    </div>
+                                                    <div class="text-xs text-gray-400">QT {{ q.code }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-xs heading-font text-gray-500 text-right">
+                                                MK{{ numberWithCommas(q.total) }}
+                                            </div>
+                                        </inertia-link>
+                                    </div>
+
+                                    <!-- Unconfirmed Sale Orders -->
+                                    <div v-if="checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'sales')" class="card mb-0">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="heading-font font-semibold">Unconfirmed Orders</div>
+                                            <span class="text-xs font-bold bg-orange-100 text-orange-700 rounded-full px-2 py-0.5">
+                                                {{ pendingSales.length }}
+                                            </span>
+                                        </div>
+                                        <div v-if="pendingSales.length === 0" class="text-sm text-gray-400 text-center py-4">All caught up</div>
+                                        <inertia-link
+                                            v-for="s in pendingSales" :key="s.id"
+                                            :href="route('sales.show', { id: s.id })"
+                                            class="record p-2 mb-1 rounded flex justify-between items-center hover:bg-gray-50 transition duration-150">
+                                            <div class="flex items-center gap-3">
+                                                <i class="mdi mdi-cart-outline text-orange-500 text-lg"></i>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-800">{{ s.clientName }}</div>
+                                                    <div class="text-xs text-gray-400">SO {{ s.code }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-xs heading-font text-gray-500 text-right">
+                                                MK{{ numberWithCommas(s.total) }}
+                                            </div>
+                                        </inertia-link>
+                                    </div>
+
+                                    <!-- Proof of Payments -->
+                                    <div v-if="checkRole($page.props.auth.data, 'management') || checkRole($page.props.auth.data, 'accountant')" class="card mb-0">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <div class="heading-font font-semibold">Proof of Payments</div>
+                                            <span class="text-xs font-bold bg-green-100 text-green-700 rounded-full px-2 py-0.5">
+                                                {{ pendingProofs.length }}
+                                            </span>
+                                        </div>
+                                        <div v-if="pendingProofs.length === 0" class="text-sm text-gray-400 text-center py-4">All caught up</div>
+                                        <inertia-link
+                                            v-for="pr in pendingProofs" :key="pr.id"
+                                            :href="route('sales.show', { id: pr.saleId })"
+                                            class="record p-2 mb-1 rounded flex justify-between items-center hover:bg-gray-50 transition duration-150">
+                                            <div class="flex items-center gap-3">
+                                                <i class="mdi mdi-receipt text-green-600 text-lg"></i>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-800">{{ pr.clientName }}</div>
+                                                    <div class="text-xs text-gray-400">SO {{ pr.saleCode }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="text-xs heading-font text-gray-500 text-right">
+                                                MK{{ numberWithCommas(pr.amount) }}
+                                            </div>
+                                        </inertia-link>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="page-section">
                             <div class="page-section-header">
                                 <div class="page-section-title">
@@ -1139,6 +1233,9 @@ export default {
         'unverifiedVehiclesCount',
         'unverifiedProjectsCount',
         'dashboardReports',
+        'pendingQuotations',
+        'pendingSales',
+        'pendingProofs',
         // 'sales',
         'deliveriesUnderway',
         'deliveriesUncompleted',

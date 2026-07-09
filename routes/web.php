@@ -1360,4 +1360,36 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['management']
         ])->name('building-tips.destroy');
     });
+
+    Route::group(['prefix' => 'members'], function () {
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\MemberController@index",
+            'roles' => ['administrator', 'management']
+        ])->name('members.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\MemberController@create",
+            'roles' => ['administrator', 'management']
+        ])->name('members.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\MemberController@store",
+            'roles' => ['administrator', 'management']
+        ])->name('members.store');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\MemberController@edit",
+            'roles' => ['administrator', 'management']
+        ])->name('members.edit');
+
+        Route::post('/update/{id}', [
+            "uses"  => "App\Http\Controllers\MemberController@update",
+            'roles' => ['administrator', 'management']
+        ])->name('members.update');
+
+        Route::delete('/{id}', [
+            "uses"  => "App\Http\Controllers\MemberController@destroy",
+            'roles' => ['administrator', 'management']
+        ])->name('members.destroy');
+    });
 });
