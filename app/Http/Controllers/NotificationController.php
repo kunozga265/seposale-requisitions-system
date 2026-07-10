@@ -871,7 +871,7 @@ class NotificationController extends Controller
                                 "parameters" => [
                                     [
                                         "type" => "text",
-                                        "text" => "{$sale->client->serial}/sales/{$sale->serial}"
+                                        "text" => "sales/{$sale->serial}"
                                     ]
                                 ]
                             ]
@@ -1014,7 +1014,7 @@ class NotificationController extends Controller
                                 "parameters" => [
                                     [
                                         "type" => "text",
-                                        "text" => "{$quotation->client->serial}/quotations/{$quotation->serial}"
+                                        "text" => "quotations/{$quotation->serial}"
                                     ]
                                 ]
                             ]
@@ -1098,7 +1098,7 @@ class NotificationController extends Controller
                                 "parameters" => [
                                     [
                                         "type" => "text",
-                                        "text" => "{$invoice->client->serial}/invoices/{$invoice->serial}"
+                                        "text" => "invoices/{$invoice->serial}"
                                     ]
                                 ]
                             ]
@@ -1272,7 +1272,7 @@ class NotificationController extends Controller
                                 "parameters" => [
                                     [
                                         "type" => "text",
-                                        "text" => "{$delivery->summary->sale->client->serial}/deliveries/{$delivery->serial}"
+                                        "text" => "deliveries/{$delivery->serial}"
                                     ]
                                 ]
                             ]
@@ -1437,7 +1437,7 @@ class NotificationController extends Controller
                                 "parameters" => [
                                     [
                                         "type" => "text",
-                                        "text" => "{$collection->client->serial}/collections/{$collection->serial}"
+                                        "text" => "collections/{$collection->serial}"
                                     ]
                                 ]
                             ]
@@ -1593,7 +1593,7 @@ class NotificationController extends Controller
                                 "parameters" => [
                                     [
                                         "type" => "text",
-                                        "text" => "{$credit_voucher->contact->serial}/credit-vouchers/{$credit_voucher->serial}"
+                                        "text" => "credit-vouchers/{$credit_voucher->serial}"
                                     ]
                                 ]
                             ]
@@ -1667,7 +1667,7 @@ class NotificationController extends Controller
                             //     "parameters" => [
                             //         [
                             //             "type" => "text",
-                            //             "text" => "{$supplier_voucher->contact->serial}/supplier-vouchers/{$supplier_voucher->serial}"
+                            //             "text" => "supplier-vouchers/{$supplier_voucher->serial}"
                             //         ]
                             //     ]
                             // ]
