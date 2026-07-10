@@ -106,7 +106,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.795232772827156
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 18000,
         "2_ton" => 100000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -193,7 +193,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.75214576721192
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 18000,
         "2_ton" => 90000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -263,7 +263,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.693394660949714
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 10500,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -382,7 +382,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.627176284790046
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 13500,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -483,7 +483,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.68901729583741
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 12000,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -604,7 +604,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.7867033481598
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 13500,
         "2_ton" => 100000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -777,7 +777,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.78669261932374
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 18000,
         "2_ton" => 80000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -930,7 +930,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.79845142364503
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 19500,
         "2_ton" => 80000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -1047,7 +1047,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.79637002944947
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 19500,
         "2_ton" => 80000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -1176,7 +1176,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.785254955291755
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 16500,
         "2_ton" => 80000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -1241,7 +1241,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.77147912979127
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 12000,
         "2_ton" => 80000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -1360,7 +1360,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.79991054534913
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 18000,
         "2_ton" => 90000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -1535,7 +1535,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.78735780715943
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 19500,
         "2_ton" => 90000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -1754,7 +1754,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.8146734237671
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 21000,
         "2_ton" => 100000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -1925,7 +1925,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.79595696926118
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 21000,
         "2_ton" => 100000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -2056,7 +2056,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.8060474395752
           ],
         ],
-        "motorbike" => 2700,
+        "motorbike" => 18000,
         "2_ton" => 108000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -2269,7 +2269,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.795211315155036
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 24000,
         "2_ton" => 90000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -2502,7 +2502,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.748583793640144
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 12000,
         "2_ton" => 80000,
         "5_ton" => 260000,
         "10_ton" => 250000,
@@ -2627,7 +2627,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.77381801605225
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 12000,
         "2_ton" => 80000,
         "5_ton" => 260000,
         "10_ton" => 250000,
@@ -2782,7 +2782,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.79759311676026
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 13500,
         "2_ton" => 80000,
         "5_ton" => 260000,
         "10_ton" => 250000,
@@ -2901,7 +2901,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.7800943851471
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 15000,
         "2_ton" => 90000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -3016,7 +3016,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.797979354858406
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 19500,
         "2_ton" => 100000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -3159,7 +3159,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.80119800567628
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 24000,
         "2_ton" => 100000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -3286,7 +3286,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.788237571716316
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 19500,
         "2_ton" => 90000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -3693,7 +3693,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.82527351379395
           ],
         ],
-        "motorbike" => 2750,
+        "motorbike" => 21000,
         "2_ton" => 110000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -3876,7 +3876,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.718371391296394
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 15000,
         "2_ton" => 90000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -4156,7 +4156,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.721075057983406
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 13500,
         "2_ton" => 80000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -4277,7 +4277,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.74016165733338
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 9000,
         "2_ton" => 70000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -4414,7 +4414,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.75825583934785
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 12000,
         "2_ton" => 80000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -4591,7 +4591,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.74240398406983
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 16500,
         "2_ton" => 90000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -4724,7 +4724,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.76739144325257
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 18000,
         "2_ton" => 90000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -4735,7 +4735,7 @@ class TransportOptionTableSeeder extends Seeder
         "name" => "Area 58",
         "cost" => 0,
         "level" => 1,
-        "motorbike" => 1750,
+        "motorbike" => 7500,
         "2_ton" => 70000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -4747,7 +4747,7 @@ class TransportOptionTableSeeder extends Seeder
         "cost" => 0,
         "level" => 1,
         "coordinates" => [],
-        "motorbike" => 1750,
+        "motorbike" => 13500,
         "2_ton" => 70000,
         "5_ton" => 270000,
         "10_ton" => 250000,
@@ -4855,7 +4855,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.655414581298835
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 12000,
         "2_ton" => 80000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -4956,7 +4956,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.763518333435066
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 15000,
         "2_ton" => 90000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -5071,7 +5071,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.78519594669343
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 15000,
         "2_ton" => 80000,
         "5_ton" => 350000,
         "10_ton" => 350000,
@@ -5196,7 +5196,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.703093528747566
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 12000,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -5208,7 +5208,7 @@ class TransportOptionTableSeeder extends Seeder
         "cost" => 0,
         "level" => 1,
         "coordinates" => [],
-        "motorbike" => 1750,
+        "motorbike" => 12000,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -5295,7 +5295,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.75523567199708
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 18000,
         "2_ton" => 90000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -5464,7 +5464,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.76459121704102
           ],
         ],
-        "motorbike" => 3500,
+        "motorbike" => 21000,
         "2_ton" => 140000,
         "5_ton" => 420000,
         "10_ton" => 400000,
@@ -5567,9 +5567,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.74294042587281
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 9000,
         "2_ton" => 110000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000,
@@ -5722,9 +5722,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.74665260314942
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 16500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 260000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -5821,7 +5821,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.76862525939942
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 19500,
         "2_ton" => 90000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -5998,9 +5998,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.69755744934083
           ],
         ],
-        "motorbike" => 2750,
+        "motorbike" => 15000,
         "2_ton" => 110000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000,
@@ -6141,9 +6141,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.80214214324952
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 18000,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -6236,9 +6236,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.72137546539307
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 13500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000,
@@ -6301,9 +6301,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.62554550170899
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 13500,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -6408,9 +6408,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.68343830108643
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 12000,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -6533,7 +6533,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.71824264526368
           ],
         ],
-        "motorbike" => 2700,
+        "motorbike" => 18000,
         "2_ton" => 108000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -6644,7 +6644,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.753819465637214
           ],
         ],
-        "motorbike" => 2700,
+        "motorbike" => 18000,
         "2_ton" => 108000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -6759,7 +6759,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.75317573547364
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 18000,
         "2_ton" => 90000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -6874,9 +6874,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.71753454208375
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 13500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000,
@@ -7031,7 +7031,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.77081394195557
           ],
         ],
-        "motorbike" => 3200,
+        "motorbike" => 19500,
         "2_ton" => 128000,
         "5_ton" => 420000,
         "10_ton" => 400000,
@@ -7232,7 +7232,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.793516159057624
           ],
         ],
-        "motorbike" => 2700,
+        "motorbike" => 19500,
         "2_ton" => 108000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -7303,9 +7303,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.784503936767585
           ],
         ],
-        "motorbike" => 2500,
+        "motorbike" => 18000,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 380000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -7478,9 +7478,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.79585504531861
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 15000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -7609,9 +7609,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.797957897186286
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 16500,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -7700,9 +7700,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.73040914535523
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 12000,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000,
@@ -7924,7 +7924,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.67146492004395
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 12000,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -8251,9 +8251,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.55923056602479
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 21000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 400000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -8366,9 +8366,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.78113508224488
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 15000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -8537,7 +8537,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.792743682861335
           ],
         ],
-        "motorbike" => 3750,
+        "motorbike" => 22500,
         "2_ton" => 150000,
         "5_ton" => 420000,
         "10_ton" => 400000,
@@ -8712,9 +8712,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.576536178588874
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 15000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 400000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -8811,7 +8811,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.75465631484986
           ],
         ],
-        "motorbike" => 2250,
+        "motorbike" => 18000,
         "2_ton" => 90000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -8916,9 +8916,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.73000144958497
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 13500,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 300000,
         "10_ton" => 320000,
         "15_ton" => 370000,
         "20_ton" => 450000
@@ -8928,9 +8928,9 @@ class TransportOptionTableSeeder extends Seeder
         "cost" => 0,
         "level" => 1,
         "coordinates" => [],
-        "motorbike" => 1750,
+        "motorbike" => 10500,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 300000,
         "10_ton" => 320000,
         "15_ton" => 370000,
         "20_ton" => 450000
@@ -8995,9 +8995,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.799266815185554
           ],
         ],
-        "motorbike" => 2750,
+        "motorbike" => 19500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 400000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -9072,7 +9072,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.71442317962647
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 10500,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -9167,9 +9167,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.67627143859864
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 18000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 400000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -9284,9 +9284,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.813943862915046
           ],
         ],
-        "motorbike" => 2750,
+        "motorbike" => 21000,
         "2_ton" => 110000,
-        "5_ton" => null,
+        "5_ton" => 380000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -9377,9 +9377,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.901383876800544
           ],
         ],
-        "motorbike" => 4000,
+        "motorbike" => 24000,
         "2_ton" => 160000,
-        "5_ton" => null,
+        "5_ton" => 430000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -9462,7 +9462,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.75791788101197
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 12000,
         "2_ton" => 80000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -9579,7 +9579,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.73372435569764
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 13500,
         "2_ton" => 80000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -9666,9 +9666,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.681421279907234
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 7500,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -9788,7 +9788,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.74972105026246
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 13500,
         "2_ton" => 80000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -9927,7 +9927,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.80930900573731
           ],
         ],
-        "motorbike" => 3500,
+        "motorbike" => 19500,
         "2_ton" => 140000,
         "5_ton" => 420000,
         "10_ton" => 400000,
@@ -10022,7 +10022,7 @@ class TransportOptionTableSeeder extends Seeder
           ],
         ],
         "coordinates" => [],
-        "motorbike" => 1750,
+        "motorbike" => 12000,
         "2_ton" => 70000,
         "5_ton" => 300000,
         "10_ton" => 320000,
@@ -10191,7 +10191,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.75115871429444
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 10500,
         "2_ton" => 70000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -10308,7 +10308,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.76243472099305
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 10500,
         "2_ton" => 70000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -10457,7 +10457,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.77613544464112
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 10500,
         "2_ton" => 70000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -10638,7 +10638,7 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.74313354492188
           ],
         ],
-        "motorbike" => 1750,
+        "motorbike" => 9000,
         "2_ton" => 70000,
         "5_ton" => 280000,
         "10_ton" => 250000,
@@ -10729,9 +10729,9 @@ class TransportOptionTableSeeder extends Seeder
             "lng" =>  33.72351855039597
           ],
         ],
-        "motorbike" => 2000,
+        "motorbike" => 13500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000,
