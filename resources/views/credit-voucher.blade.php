@@ -133,6 +133,9 @@
             <div style="font-size: 25px; font-weight: normal; margin-top:0px">Credit Voucher: <span
                     style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
             <div>Delivery #: {{$credit_voucher->delivery->formattedCode()}}</div>
+            @if($credit_voucher->sale)
+                <div>Tracking Number: {{$credit_voucher->sale->serial}}</div>
+            @endif
 
 
         </div>

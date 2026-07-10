@@ -125,6 +125,7 @@
                 style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
         <div>Sales Order:
             #LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($receipt->sale->code_alt)}}</div>
+        <div>Tracking Number: {{$receipt->sale->serial}}</div>
 
 
     </div>

@@ -122,6 +122,11 @@
         </div>
         <div style="font-size: 25px; font-weight: normal; margin-top:0">Quotation: <span
                 style="color:red; font-size: 25px; font-weight: normal; ">#{{$code}}</span></div>
+        @if(isset($quotation->sale))
+            <div>Sales Order:
+                #LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($quotation->sale->code_alt)}}</div>
+            <div>Tracking Number: {{$quotation->sale->serial}}</div>
+        @endif
 
     </div>
 

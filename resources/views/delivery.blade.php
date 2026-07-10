@@ -125,6 +125,7 @@
         </div>
         <div>Sales Order:
             #LL{{(new \App\Http\Controllers\AppController())->getZeroedNumber($delivery->summary->sale->code_alt)}}</div>
+        <div>Tracking Number: {{$delivery->summary->sale->serial}}</div>
 
 
     </div>

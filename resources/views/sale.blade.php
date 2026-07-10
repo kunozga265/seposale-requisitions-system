@@ -125,6 +125,7 @@
             <div style="font-size: 25px; font-weight: normal; margin-top:0px">Sales Order:
                 <span style="color:red; font-size: 25px; font-weight: normal; ">#{{ $code }}</span>
             </div>
+            <div>Tracking Number: {{ $sale->serial }}</div>
 
         </div>
 

@@ -108,7 +108,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000,
@@ -606,7 +606,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -779,7 +779,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -932,7 +932,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -1049,7 +1049,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -1178,7 +1178,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -1243,7 +1243,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -1362,7 +1362,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -1537,7 +1537,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -1756,7 +1756,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -1927,7 +1927,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -2271,7 +2271,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -2504,7 +2504,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 260000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -2629,7 +2629,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 260000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -2784,7 +2784,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 260000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -2903,7 +2903,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -3018,7 +3018,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -3161,7 +3161,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2500,
         "2_ton" => 100000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -3288,7 +3288,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -3695,7 +3695,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2750,
         "2_ton" => 110000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -3878,7 +3878,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -4158,7 +4158,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -4279,7 +4279,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 1750,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -4416,7 +4416,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -4593,7 +4593,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -4726,7 +4726,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -4737,7 +4737,7 @@ class TransportOptionTableSeeder extends Seeder
         "level" => 1,
         "motorbike" => 1750,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -4749,7 +4749,7 @@ class TransportOptionTableSeeder extends Seeder
         "coordinates" => [],
         "motorbike" => 1750,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 270000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -4862,18 +4862,18 @@ class TransportOptionTableSeeder extends Seeder
         "15_ton" => 370000,
         "20_ton" => 450000
       ],
-      [
-        "name" => "Airwing - Before Four Ways",
-        "cost" => 0,
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 1750,
-        "2_ton" => 70000,
-        "5_ton" => 300000,
-        "10_ton" => 320000,
-        "15_ton" => 370000,
-        "20_ton" => 450000
-      ],
+      // [
+      //   "name" => "Airwing - Before Four Ways",
+      //   "cost" => 0,
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 1750,
+      //   "2_ton" => 70000,
+      //   "5_ton" => 300000,
+      //   "10_ton" => 320000,
+      //   "15_ton" => 370000,
+      //   "20_ton" => 450000
+      // ],
       [
         "name" => "Area 49 - Bhagdad",
         "cost" => 0,
@@ -4958,7 +4958,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2250,
         "2_ton" => 90000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -5073,7 +5073,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 350000,
         "10_ton" => 350000,
         "15_ton" => 400000,
         "20_ton" => 500000
@@ -5302,36 +5302,36 @@ class TransportOptionTableSeeder extends Seeder
         "15_ton" => 300000,
         "20_ton" => 400000
       ],
-      [
-        "name" => "Bunda Road - College",
-        "cost" => 0,
-        "costs" => [
-          [
-            "id" => 2, //quarry stone
-            "amount" => 200000
-          ],
-          [
-            "id" => 3, //pebble stone
-            "amount" => 200000
-          ],
-          [
-            "id" => 4, //quarry dust
-            "amount" => 200000
-          ],
-          [
-            "id" => 6, //river sand
-            "amount" => 100000
-          ],
-        ],
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 7500,
-        "2_ton" => 300000,
-        "5_ton" => null,
-        "10_ton" => 400000,
-        "15_ton" => 500000,
-        "20_ton" => 600000
-      ],
+      // [
+      //   "name" => "Bunda Road - College",
+      //   "cost" => 0,
+      //   "costs" => [
+      //     [
+      //       "id" => 2, //quarry stone
+      //       "amount" => 200000
+      //     ],
+      //     [
+      //       "id" => 3, //pebble stone
+      //       "amount" => 200000
+      //     ],
+      //     [
+      //       "id" => 4, //quarry dust
+      //       "amount" => 200000
+      //     ],
+      //     [
+      //       "id" => 6, //river sand
+      //       "amount" => 100000
+      //     ],
+      //   ],
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 7500,
+      //   "2_ton" => 300000,
+      //   "5_ton" => null,
+      //   "10_ton" => 400000,
+      //   "15_ton" => 500000,
+      //   "20_ton" => 600000
+      // ],
       [
         "name" => "Bunda Road - Chiseka",
         "cost" => 0,
@@ -5466,7 +5466,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 3500,
         "2_ton" => 140000,
-        "5_ton" => null,
+        "5_ton" => 420000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -5828,36 +5828,36 @@ class TransportOptionTableSeeder extends Seeder
         "15_ton" => 300000,
         "20_ton" => 400000
       ],
-      [
-        "name" => "CCDC",
-        "cost" => 0,
-        "costs" => [
-          [
-            "id" => 2, //quarry stone
-            "amount" => 0
-          ],
-          [
-            "id" => 3, //pebble stone
-            "amount" => 0
-          ],
-          [
-            "id" => 4, //quarry dust
-            "amount" => 0
-          ],
-          [
-            "id" => 6, //river sand
-            "amount" => 50000
-          ],
-        ],
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 2250,
-        "2_ton" => 90000,
-        "5_ton" => null,
-        "10_ton" => 350000,
-        "15_ton" => 400000,
-        "20_ton" => 500000
-      ],
+      // [
+      //   "name" => "CCDC",
+      //   "cost" => 0,
+      //   "costs" => [
+      //     [
+      //       "id" => 2, //quarry stone
+      //       "amount" => 0
+      //     ],
+      //     [
+      //       "id" => 3, //pebble stone
+      //       "amount" => 0
+      //     ],
+      //     [
+      //       "id" => 4, //quarry dust
+      //       "amount" => 0
+      //     ],
+      //     [
+      //       "id" => 6, //river sand
+      //       "amount" => 50000
+      //     ],
+      //   ],
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 2250,
+      //   "2_ton" => 90000,
+      //   "5_ton" => null,
+      //   "10_ton" => 350000,
+      //   "15_ton" => 400000,
+      //   "20_ton" => 500000
+      // ],
       [
         "name" => "Likuni - Chigwiri",
         "cost" => 0,
@@ -6415,36 +6415,36 @@ class TransportOptionTableSeeder extends Seeder
         "15_ton" => 300000,
         "20_ton" => 400000
       ],
-      [
-        "name" => "Likuni - Chitipi Road",
-        "cost" => 0,
-        "costs" => [
-          [
-            "id" => 2, //quarry stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 3, //pebble stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 4, //quarry dust
-            "amount" => 100000
-          ],
-          [
-            "id" => 6, //river sand
-            "amount" => 50000
-          ],
-        ],
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 2500,
-        "2_ton" => 100000,
-        "5_ton" => null,
-        "10_ton" => 350000,
-        "15_ton" => 400000,
-        "20_ton" => 500000,
-      ],
+      // [
+      //   "name" => "Likuni - Chitipi Road",
+      //   "cost" => 0,
+      //   "costs" => [
+      //     [
+      //       "id" => 2, //quarry stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 3, //pebble stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 4, //quarry dust
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 6, //river sand
+      //       "amount" => 50000
+      //     ],
+      //   ],
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 2500,
+      //   "2_ton" => 100000,
+      //   "5_ton" => null,
+      //   "10_ton" => 350000,
+      //   "15_ton" => 400000,
+      //   "20_ton" => 500000,
+      // ],
       [
         "name" => "Area 25 - Chitukula",
         "cost" => 0,
@@ -7033,41 +7033,41 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 3200,
         "2_ton" => 128000,
-        "5_ton" => null,
+        "5_ton" => 420000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
       ],
-      [
-        "name" => "Kaliyeka",
-        "cost" => 0,
-        "costs" => [
-          [
-            "id" => 2, //quarry stone
-            "amount" => 0
-          ],
-          [
-            "id" => 3, //pebble stone
-            "amount" => 0
-          ],
-          [
-            "id" => 4, //quarry dust
-            "amount" => 0
-          ],
-          [
-            "id" => 6, //river sand
-            "amount" => 50000
-          ],
-        ],
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 2250,
-        "2_ton" => 90000,
-        "5_ton" => null,
-        "10_ton" => 350000,
-        "15_ton" => 400000,
-        "20_ton" => 500000
-      ],
+      // [
+      //   "name" => "Kaliyeka",
+      //   "cost" => 0,
+      //   "costs" => [
+      //     [
+      //       "id" => 2, //quarry stone
+      //       "amount" => 0
+      //     ],
+      //     [
+      //       "id" => 3, //pebble stone
+      //       "amount" => 0
+      //     ],
+      //     [
+      //       "id" => 4, //quarry dust
+      //       "amount" => 0
+      //     ],
+      //     [
+      //       "id" => 6, //river sand
+      //       "amount" => 50000
+      //     ],
+      //   ],
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 2250,
+      //   "2_ton" => 90000,
+      //   "5_ton" => null,
+      //   "10_ton" => 350000,
+      //   "15_ton" => 400000,
+      //   "20_ton" => 500000
+      // ],
       [
         "name" => "Area 25 -Kanengo",
         "cost" => 0,
@@ -7708,66 +7708,66 @@ class TransportOptionTableSeeder extends Seeder
         "20_ton" => 500000,
       ],
 
-      [
-        "name" => "Likuni - Magulosale",
-        "cost" => 0,
-        "costs" => [
-          [
-            "id" => 2, //quarry stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 3, //pebble stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 4, //quarry dust
-            "amount" => 100000
-          ],
-          [
-            "id" => 6, //river sand
-            "amount" => 50000
-          ],
-        ],
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 2500,
-        "2_ton" => 100000,
-        "5_ton" => null,
-        "10_ton" => 350000,
-        "15_ton" => 400000,
-        "20_ton" => 500000,
-      ],
-      [
-        "name" => "Likuni - Malewezi",
-        "cost" => 0,
-        "costs" => [
-          [
-            "id" => 2, //quarry stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 3, //pebble stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 4, //quarry dust
-            "amount" => 100000
-          ],
-          [
-            "id" => 6, //river sand
-            "amount" => 50000
-          ],
-        ],
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 2500,
-        "2_ton" => 100000,
-        "5_ton" => null,
-        "10_ton" => 350000,
-        "15_ton" => 400000,
-        "20_ton" => 500000,
-      ],
+      // [
+      //   "name" => "Likuni - Magulosale",
+      //   "cost" => 0,
+      //   "costs" => [
+      //     [
+      //       "id" => 2, //quarry stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 3, //pebble stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 4, //quarry dust
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 6, //river sand
+      //       "amount" => 50000
+      //     ],
+      //   ],
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 2500,
+      //   "2_ton" => 100000,
+      //   "5_ton" => null,
+      //   "10_ton" => 350000,
+      //   "15_ton" => 400000,
+      //   "20_ton" => 500000,
+      // ],
+      // [
+      //   "name" => "Likuni - Malewezi",
+      //   "cost" => 0,
+      //   "costs" => [
+      //     [
+      //       "id" => 2, //quarry stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 3, //pebble stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 4, //quarry dust
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 6, //river sand
+      //       "amount" => 50000
+      //     ],
+      //   ],
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 2500,
+      //   "2_ton" => 100000,
+      //   "5_ton" => null,
+      //   "10_ton" => 350000,
+      //   "15_ton" => 400000,
+      //   "20_ton" => 500000,
+      // ],
       [
         "name" => "Airwing - Mbavi",
         "cost" => 0,
@@ -8539,41 +8539,41 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 3750,
         "2_ton" => 150000,
-        "5_ton" => null,
+        "5_ton" => 420000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
       ],
-      [
-        "name" => "Likuni - Mpapha",
-        "cost" => 0,
-        "costs" => [
-          [
-            "id" => 2, //quarry stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 3, //pebble stone
-            "amount" => 100000
-          ],
-          [
-            "id" => 4, //quarry dust
-            "amount" => 100000
-          ],
-          [
-            "id" => 6, //river sand
-            "amount" => 50000
-          ],
-        ],
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 2500,
-        "2_ton" => 100000,
-        "5_ton" => null,
-        "10_ton" => 350000,
-        "15_ton" => 400000,
-        "20_ton" => 500000,
-      ],
+      // [
+      //   "name" => "Likuni - Mpapha",
+      //   "cost" => 0,
+      //   "costs" => [
+      //     [
+      //       "id" => 2, //quarry stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 3, //pebble stone
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 4, //quarry dust
+      //       "amount" => 100000
+      //     ],
+      //     [
+      //       "id" => 6, //river sand
+      //       "amount" => 50000
+      //     ],
+      //   ],
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 2500,
+      //   "2_ton" => 100000,
+      //   "5_ton" => null,
+      //   "10_ton" => 350000,
+      //   "15_ton" => 400000,
+      //   "20_ton" => 500000,
+      // ],
       [
         "name" => "Mpingu",
         "cost" => 0,
@@ -9384,18 +9384,18 @@ class TransportOptionTableSeeder extends Seeder
         "15_ton" => 500000,
         "20_ton" => 600000
       ],
-      [
-        "name" => "New Airwing",
-        "cost" => 0,
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 1750,
-        "2_ton" => 70000,
-        "5_ton" => 300000,
-        "10_ton" => 320000,
-        "15_ton" => 370000,
-        "20_ton" => 450000
-      ],
+      // [
+      //   "name" => "New Airwing",
+      //   "cost" => 0,
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 1750,
+      //   "2_ton" => 70000,
+      //   "5_ton" => 300000,
+      //   "10_ton" => 320000,
+      //   "15_ton" => 370000,
+      //   "20_ton" => 450000
+      // ],
       [
         "name" => "Area 49 - New Gulliver",
         "cost" => 0,
@@ -9464,7 +9464,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -9581,7 +9581,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
@@ -9790,23 +9790,23 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 2000,
         "2_ton" => 80000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000,
       ],
-      [
-        "name" => "Old Town",
-        "cost" => 0,
-        "level" => 1,
-        "coordinates" => [],
-        "motorbike" => 2500,
-        "2_ton" => 100000,
-        "5_ton" => null,
-        "10_ton" => 250000,
-        "15_ton" => 300000,
-        "20_ton" => 400000
-      ],
+      // [
+      //   "name" => "Old Town",
+      //   "cost" => 0,
+      //   "level" => 1,
+      //   "coordinates" => [],
+      //   "motorbike" => 2500,
+      //   "2_ton" => 100000,
+      //   "5_ton" => null,
+      //   "10_ton" => 250000,
+      //   "15_ton" => 300000,
+      //   "20_ton" => 400000
+      // ],
       [
         "name" => "Bunda Road - Pondamali",
         "cost" => 0,
@@ -9929,7 +9929,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 3500,
         "2_ton" => 140000,
-        "5_ton" => null,
+        "5_ton" => 420000,
         "10_ton" => 400000,
         "15_ton" => 500000,
         "20_ton" => 600000
@@ -10193,7 +10193,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 1750,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -10310,7 +10310,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 1750,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -10459,7 +10459,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 1750,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
@@ -10640,7 +10640,7 @@ class TransportOptionTableSeeder extends Seeder
         ],
         "motorbike" => 1750,
         "2_ton" => 70000,
-        "5_ton" => null,
+        "5_ton" => 280000,
         "10_ton" => 250000,
         "15_ton" => 300000,
         "20_ton" => 400000
