@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 class Sale extends Model
 {
@@ -80,6 +81,43 @@ class Sale extends Model
     public function attachedReceipts()
     {
         return $this->belongsToMany(Receipt::class, 'receipt_sale', 'sale_id', 'receipt_id');
+    }
+
+    public function agents()
+    {
+        return $this->hasMany(SaleAgent::class);
+    }
+
+    /**
+     * Copy agent commissions from the client's earliest agent-bearing sale onto $sale,
+     * if $sale falls within 3 months of that earlier sale's date.
+     */
+    public static function inheritAgentsFor(Sale $sale): void
+    {
+        $firstSaleWithAgents = static::where('client_id', $sale->client_id)
+            ->where('id', '!=', $sale->id)
+            ->whereHas('agents')
+            ->orderBy('date', 'asc')
+            ->first();
+
+        if (!$firstSaleWithAgents) {
+            return;
+        }
+
+        $windowEnd = Carbon::createFromTimestamp($firstSaleWithAgents->date)->addMonths(3);
+        $saleDate = Carbon::createFromTimestamp($sale->date);
+
+        if ($saleDate->greaterThan($windowEnd)) {
+            return;
+        }
+
+        foreach ($firstSaleWithAgents->agents as $agent) {
+            SaleAgent::create([
+                'sale_id' => $sale->id,
+                'client_id' => $agent->client_id,
+                'percentage' => $agent->percentage,
+            ]);
+        }
     }
 
     public function deliveries()

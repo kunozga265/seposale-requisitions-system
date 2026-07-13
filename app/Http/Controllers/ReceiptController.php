@@ -271,15 +271,40 @@ class ReceiptController extends Controller
                                         $counts = ($amount / $unitPrice) / $packSize;
                                         $reward = round($counts * $rewardRecord->reward_amount, 2);
                                         if ($reward > 0) {
-                                            ClientReward::create([
-                                                'client_id'          => $receipt->client_id,
-                                                'product_variant_id' => $summary->product_variant_id,
-                                                'sale_id'            => $sale_id,
-                                                'receipt_id'         => $receipt->id,
-                                                'amount'             => $reward,
-                                                'type'               => 'earned',
-                                                'date'               => $receipt->date,
-                                            ]);
+                                            $agents = $summary->sale ? $summary->sale->agents : collect();
+
+                                            if ($agents->isEmpty()) {
+                                                ClientReward::create([
+                                                    'client_id'          => $receipt->client_id,
+                                                    'product_variant_id' => $summary->product_variant_id,
+                                                    'sale_id'            => $sale_id,
+                                                    'receipt_id'         => $receipt->id,
+                                                    'amount'             => $reward,
+                                                    'type'               => 'earned',
+                                                    'date'               => $receipt->date,
+                                                ]);
+                                            } else {
+                                                $agentCount      = $agents->count();
+                                                $remainingReward = $reward;
+                                                foreach ($agents as $i => $agent) {
+                                                    $share = ($i === $agentCount - 1)
+                                                        ? $remainingReward
+                                                        : round($reward * ($agent->percentage / 100), 2);
+                                                    $remainingReward -= $share;
+
+                                                    if ($share <= 0) continue;
+
+                                                    ClientReward::create([
+                                                        'client_id'          => $agent->client_id,
+                                                        'product_variant_id' => $summary->product_variant_id,
+                                                        'sale_id'            => $sale_id,
+                                                        'receipt_id'         => $receipt->id,
+                                                        'amount'             => $share,
+                                                        'type'               => 'earned',
+                                                        'date'               => $receipt->date,
+                                                    ]);
+                                                }
+                                            }
                                         }
                                     }
                                 }

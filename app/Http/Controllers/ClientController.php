@@ -183,6 +183,7 @@ class ClientController extends Controller
             'organisation' => $request->organisation,
             'alias' => $request->alias,
             'client_type_id' => $client_type_id,
+            'is_agent' => $request->isAgent,
         ]);
 
         if ((new AppController())->isApi($request))
@@ -363,6 +364,7 @@ class ClientController extends Controller
                 'organisation' => $request->organisation,
                 'alias' => $request->alias,
                 'client_type_id' => $client_type_id,
+                'is_agent' => $request->isAgent,
             ]);
 
 

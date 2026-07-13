@@ -59,6 +59,11 @@ class SaleResource extends JsonResource
             'meta' => json_decode($this->meta),
             'zone' => new ZoneResource($this->zone),
              "deliveryRequests" => DeliveryRequestResource::collection($this->deliveryRequests),
+            'agents' => $this->agents->map(fn ($agent) => [
+                'clientId' => $agent->client_id,
+                'name' => $agent->client->getName(),
+                'percentage' => floatval($agent->percentage),
+            ])->values(),
 
         ];
     }

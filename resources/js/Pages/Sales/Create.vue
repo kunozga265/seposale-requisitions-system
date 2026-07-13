@@ -200,6 +200,52 @@
                         </div>
                     </div>
 
+                    <div class="page-section">
+                        <div class="page-section-header">
+                            <div class="page-section-title">
+                                Agent Commissions
+                            </div>
+                        </div>
+                        <div class="page-section-content flex justify-center">
+
+                            <div class="card w-full sm:max-w-md md:max-w-3xl">
+
+                                <div v-for="(agentRow, index) in form.agents" :key="index" class="card w-full">
+                                    <div class="p-2 mb-2">
+                                        <jet-label value="Agent" />
+                                        <v-select label="name" :options="agentClients.data" placeholder="Select Agent"
+                                            v-model="agentRow.client" />
+                                    </div>
+                                    <div class="p-2 mb-2">
+                                        <jet-label value="Percentage (%)" />
+                                        <jet-input type="number" step="0.01" min="0" max="100" class="block w-full"
+                                            v-model="agentRow.percentage" />
+                                    </div>
+                                    <span @click="removeAgent(index)"
+                                        class="flex items-center text-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 cursor">
+                                        <i class="mdi mdi-close-circle"></i>
+                                        <span class="ml-1 text-sm text-red-600">Remove Agent</span>
+                                    </span>
+                                </div>
+
+                                <div @click="addAgent" class="mt-2 ml-2 flex justify-start items-center cursor w-full">
+                                    <div>
+                                        <i class="mdi mdi-plus-circle text-blue-600"></i>
+                                    </div>
+                                    <div class="ml-2 text-blue-600 text-sm">
+                                        Add Agent
+                                    </div>
+                                </div>
+
+                                <div v-if="form.agents.length > 0" class="mt-2 text-sm"
+                                    :class="Math.abs(agentPercentageTotal - 100) <= 0.01 ? 'text-green-600' : 'text-red-600'">
+                                    Total: {{ agentPercentageTotal }}%
+                                    {{ Math.abs(agentPercentageTotal - 100) <= 0.01 ? '' : '(must total 100%)' }}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="page-section">
                         <div class="page-section-header">
@@ -632,7 +678,7 @@ import "vue-select/dist/vue-select.css"
 import { Vue2TinymceEditor } from "vue2-tinymce-editor";
 
 export default {
-    props: ["products", "clients", "clientTypes"],
+    props: ["products", "clients", "clientTypes", "agentClients"],
     components: {
         WhatsappLabel,
         DialogModal, PrimaryButton,
@@ -689,6 +735,9 @@ export default {
                 localPurchaseOrder: '',
                 notes: '',
                 information: [
+
+                ],
+                agents: [
 
                 ],
 
@@ -758,6 +807,9 @@ export default {
             }
 
         },
+        agentPercentageTotal() {
+            return this.form.agents.reduce((sum, a) => sum + (parseFloat(a.percentage) || 0), 0)
+        },
         quoteFiles() {
             let files = []
             for (let x in this.quotes)
@@ -824,6 +876,9 @@ export default {
             } else if (this.totalCost <= 0) {
                 this.error = "Enter products and services"
                 return false
+            } else if (this.form.agents.length > 0 && Math.abs(this.agentPercentageTotal - 100) > 0.01) {
+                this.error = "Agent percentages must total 100%"
+                return false
             }
 
             return true
@@ -868,9 +923,18 @@ export default {
                     local_purchase_order: this.form.localPurchaseOrder,
                     client_type_id: this.form.clientTypeId,
                     client_type: this.form.clientType,
-                    vat: this.vat
+                    vat: this.vat,
+                    agents: this.form.agents
+                        .filter(a => a.client != null)
+                        .map(a => ({ client_id: a.client.id, percentage: parseFloat(a.percentage) })),
                 }))
                 .post(this.route('sales.store'))
+        },
+        addAgent() {
+            this.form.agents.push({ client: null, percentage: 0 })
+        },
+        removeAgent(index) {
+            this.form.agents.splice(index, 1)
         },
         addRecord() {
 

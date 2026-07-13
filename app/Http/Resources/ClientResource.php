@@ -24,6 +24,7 @@ class ClientResource extends JsonResource
             "organisation" => boolval($this->organisation),
             "alias" => $this->alias,
             "type" => $this->type,
+            "isAgent" => boolval($this->is_agent),
             "totalPayments" => $this->totalPayments(),
             // "sales" => SaleResource::collection($this->sales),
             // "quotations" => QuotationResource::collection($this->sales),

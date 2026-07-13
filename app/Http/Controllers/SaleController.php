@@ -22,6 +22,7 @@ use App\Models\Quotation;
 use App\Models\Receipt;
 use App\Models\ReceiptSummary;
 use App\Models\Sale;
+use App\Models\SaleAgent;
 use App\Models\Summary;
 use App\Models\SystemLog;
 use App\Models\User;
@@ -184,10 +185,12 @@ class SaleController extends Controller
         $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
         $clients = Client::orderBy("name", 'asc')->get();
         $types = ClientType::orderBy("name", "asc")->get();
+        $agentClients = Client::where("is_agent", true)->orderBy("name", 'asc')->get();
         return Inertia::render('Sales/Create', [
             "products" => ProductResource::collection($products),
             "clients" => ClientResource::collection($clients),
-            "clientTypes" => $types
+            "clientTypes" => $types,
+            "agentClients" => ClientResource::collection($agentClients)
         ]);
     }
 
@@ -201,6 +204,11 @@ class SaleController extends Controller
             'products' => ['required'],
             'total' => ['required'],
         ]);
+
+        $agentsError = $this->validateAgentsPayload($request);
+        if ($agentsError) {
+            return $agentsError;
+        }
 
         //get client info
         if (isset($request->client_id)) {
@@ -293,6 +301,19 @@ class SaleController extends Controller
                     ->total}",
                 "sale_id" => $sale->id,
             ]);
+
+            //attach agents
+            if ($request->filled('agents')) {
+                foreach ($request->agents as $agent) {
+                    SaleAgent::create([
+                        'sale_id' => $sale->id,
+                        'client_id' => $agent['client_id'],
+                        'percentage' => $agent['percentage'],
+                    ]);
+                }
+            } else {
+                Sale::inheritAgentsFor($sale);
+            }
 
             //attach products
             foreach ($request->products as $product) {
@@ -405,6 +426,8 @@ class SaleController extends Controller
                         ->total}",
                     "sale_id" => $sale->id,
                 ]);
+
+                Sale::inheritAgentsFor($sale);
 
                 $products = json_decode($quotation->information);
 
@@ -595,6 +618,7 @@ class SaleController extends Controller
             $products = Product::where("id", "!=", (new AppController())->OTHER_PRODUCT_ID)->orderBy("name", 'asc')->get();
             $clients = Client::orderBy("name", 'asc')->get();
             $types = ClientType::orderBy("name", "asc")->get();
+            $agentClients = Client::where("is_agent", true)->orderBy("name", 'asc')->get();
 
             //get user
             $user = (new AppController())->getAuthUser($request);
@@ -604,7 +628,8 @@ class SaleController extends Controller
                     'sale' => new SaleResource($sale),
                     "products" => ProductResource::collection($products),
                     "clients" => ClientResource::collection($clients),
-                    "clientTypes" => $types
+                    "clientTypes" => $types,
+                    "agentClients" => ClientResource::collection($agentClients)
                 ]);
             }
             return Redirect::back()->with('error', 'Sale not editable');
@@ -626,6 +651,11 @@ class SaleController extends Controller
                 'products' => ['required'],
                 'total' => ['required'],
             ]);
+
+            $agentsError = $this->validateAgentsPayload($request);
+            if ($agentsError) {
+                return $agentsError;
+            }
 
             //get client info
             if (isset($request->client_id)) {
@@ -708,6 +738,18 @@ class SaleController extends Controller
                     "message" => "Sale #{$sale->code_alt} updated. Total amount is now {$sale->total}",
                     "sale_id" => $sale->id,
                 ]);
+
+                //Sync agent commissions to match the submitted list (empty = remove all agents)
+                SaleAgent::where('sale_id', $sale->id)->delete();
+                if ($request->filled('agents')) {
+                    foreach ($request->agents as $agent) {
+                        SaleAgent::create([
+                            'sale_id' => $sale->id,
+                            'client_id' => $agent['client_id'],
+                            'percentage' => $agent['percentage'],
+                        ]);
+                    }
+                }
 
                 // 1. Get all incoming summary_ids to determine which items to keep/update
                 $incomingSummaryIds = collect($request->products)
@@ -1072,6 +1114,37 @@ class SaleController extends Controller
                 return Redirect::route('dashboard')->with('error', 'Sale not found');
             }
         }
+    }
+
+    /**
+     * Validates the "agents" payload (client_id + percentage per row) when present.
+     * Returns a redirect response on failure, or null when validation passes / no agents submitted.
+     */
+    private function validateAgentsPayload(Request $request)
+    {
+        if (!$request->filled('agents')) {
+            return null;
+        }
+
+        $request->validate([
+            'agents' => ['array'],
+            'agents.*.client_id' => ['required', 'distinct', 'exists:clients,id'],
+            'agents.*.percentage' => ['required', 'numeric', 'min:0.01', 'max:100'],
+        ]);
+
+        $sum = collect($request->agents)->sum('percentage');
+        if (round($sum, 2) != 100.00) {
+            return Redirect::back()->with('error', 'Agent percentages must total 100');
+        }
+
+        $invalidAgent = Client::whereIn('id', collect($request->agents)->pluck('client_id'))
+            ->where('is_agent', false)
+            ->exists();
+        if ($invalidAgent) {
+            return Redirect::back()->with('error', 'Selected agent is not a valid agent client');
+        }
+
+        return null;
     }
 
     public function getSaleCodeNumber()

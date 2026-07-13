@@ -94,7 +94,8 @@ class Client extends Model
         "alias",
         "client_type_id",
         "billing_address",
-        "saved_card"
+        "saved_card",
+        "is_agent"
     ];
 
     protected $hidden = [
@@ -105,6 +106,7 @@ class Client extends Model
 
     protected $casts = [
         'organisation' => 'boolean',
+        'is_agent' => 'boolean',
     ];
 
 
