@@ -367,13 +367,7 @@
                   </div>
                 </div>
                 <ul v-show="more">
-                  <li
-                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
-                    <a :href="route('members.index')"
-                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
-                      Team Members
-                    </a>
-                  </li>
+                
                   <li
                     v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
                     <a :href="route('vacancies.index')"
@@ -387,6 +381,56 @@
                     <a :href="route('whatsapp.index')"
                       class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                       Whatsapp Messages
+                    </a>
+                  </li>
+               
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                    <a :href="route('rewards.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Rewards
+                    </a>
+                  </li>
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                    <a :href="route('payment-methods.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Payment Methods
+                    </a>
+                  </li>
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                    <a :href="route('reviews.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Reviews
+                    </a>
+                  </li>
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                    <a :href="route('faqs.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      FAQs
+                    </a>
+                  </li>
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                    <a :href="route('building-tips.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Building Tips
+                    </a>
+                  </li>
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                    <a :href="route('policies.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Policies
+                    </a>
+                  </li>
+                  <li
+                    v-if="checkRole($page.props.auth.data, 'administrator') || checkRole($page.props.auth.data, 'management')">
+                    <a :href="route('members.index')"
+                      class="block w-full ml-6 p-2 text-sm font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                      Members (Team)
                     </a>
                   </li>
 

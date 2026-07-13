@@ -28,6 +28,7 @@ class ProductVariantResource extends JsonResource
             "group" => $this->product,
             "photo" => $this->photo ?? $this->product->photo,
              "photos" => $this->photos ?? [$this->photo ?? $this->product->photo],
+            "featured" => boolval($this->featured),
             "transportInclusive" => boolval($this->transport_inclusive),
             "specifications" => json_decode($this->specifications),
             "productInformation" => json_decode($this->product_information),

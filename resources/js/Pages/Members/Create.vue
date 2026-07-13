@@ -6,11 +6,17 @@
       <li aria-current="page">
         <div class="flex items-center">
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            <path fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
           </svg>
-          <a :href="route('members.index')" class="heading-font uppercase text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Team Members</a>
+          <a :href="route('members.index')"
+            class="heading-font uppercase text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">Team
+            Members</a>
           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            <path fill-rule="evenodd"
+              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+              clip-rule="evenodd"></path>
           </svg>
           <span class="heading-font uppercase text-sm font-medium text-gray-500 dark:text-gray-400">New</span>
         </div>
@@ -40,7 +46,8 @@
 
                 <div class="p-2 mb-2">
                   <jet-label for="photo" value="Photo" />
-                  <input id="photo" type="file" accept="image/*" class="block w-full text-sm text-gray-500 mt-1" @change="onPhoto" />
+                  <input id="photo" type="file" accept="image/*" class="block w-full text-sm text-gray-500 mt-1"
+                    @change="onPhoto" />
                   <img v-if="photoPreview" :src="photoPreview" class="mt-3 h-24 w-24 rounded-full object-cover" />
                 </div>
               </div>
@@ -66,22 +73,26 @@
               <div class="card w-full sm:max-w-md md:max-w-3xl">
                 <div class="p-2 mb-2">
                   <jet-label for="facebook" value="Facebook URL" />
-                  <jet-input id="facebook" type="url" class="block w-full" v-model="form.facebook" placeholder="https://facebook.com/..." />
+                  <jet-input id="facebook" type="url" class="block w-full" v-model="form.facebook"
+                    placeholder="https://facebook.com/..." />
                 </div>
                 <div class="p-2 mb-2">
                   <jet-label for="twitter" value="Twitter / X URL" />
-                  <jet-input id="twitter" type="url" class="block w-full" v-model="form.twitter" placeholder="https://x.com/..." />
+                  <jet-input id="twitter" type="url" class="block w-full" v-model="form.twitter"
+                    placeholder="https://x.com/..." />
                 </div>
                 <div class="p-2 mb-2">
                   <jet-label for="linkedin" value="LinkedIn URL" />
-                  <jet-input id="linkedin" type="url" class="block w-full" v-model="form.linkedin" placeholder="https://linkedin.com/in/..." />
+                  <jet-input id="linkedin" type="url" class="block w-full" v-model="form.linkedin"
+                    placeholder="https://linkedin.com/in/..." />
                 </div>
               </div>
             </div>
           </div>
 
           <div class="flex justify-end max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 pb-8">
-            <inertia-link :href="route('members.index')" class="mr-4 inline-flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
+            <inertia-link :href="route('members.index')"
+              class="mr-4 inline-flex items-center px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
               Cancel
             </inertia-link>
             <primary-button :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
@@ -100,9 +111,13 @@ import PrimaryButton from '@/Jetstream/Button'
 import JetLabel from '@/Jetstream/Label'
 import JetInput from '@/Jetstream/Input'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
+import { Vue2TinymceEditor } from "vue2-tinymce-editor";
 
 export default {
-  components: { AppLayout, PrimaryButton, JetLabel, JetInput, JetValidationErrors },
+  components: {
+    AppLayout, PrimaryButton, JetLabel, JetInput, JetValidationErrors,
+    Vue2TinymceEditor,
+  },
   data() {
     return {
       photoPreview: null,

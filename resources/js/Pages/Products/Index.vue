@@ -152,7 +152,7 @@
                         <th scope="col" class="p-2 pb-0 heading-font text-right">Rate</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-right">Discounted Price</th>
                         <th scope="col" class="p-2 pb-0 heading-font text-right">Original Price</th>
-
+                        <th scope="col" class="p-2 pb-0 heading-font text-right">Actions</th>
 
                       </tr>
 
@@ -168,6 +168,12 @@
                         <td class="p-2 text-right ">{{ numberWithCommas(product.cost / product.quantity) }}</td>
                         <td class="p-2 text-right ">{{ numberWithCommas(product.cost) }}</td>
                         <td class="p-2 text-right ">{{ numberWithCommas(product.costOriginal) }}</td>
+                        <td class="p-2 text-right ">
+                          <button type="button" class="text-red-600 hover:text-red-800 text-sm"
+                            @click.stop="deleteVariant(product.variant_id)">
+                            Delete
+                          </button>
+                        </td>
 
                       </tr>
                     </tbody>
@@ -219,11 +225,6 @@ export default {
   data() {
     return {
       addVariantDialog: false,
-      editVariantDialog: false,
-      priceError: "",
-      variantIndex: -1,
-      variantCost: 0,
-      variantCostOriginal: 0,
       form: this.$inertia.form({
         id: 0,
         description: '',
@@ -276,28 +277,6 @@ export default {
         return true
 
     },
-    priceValidation() {
-      if (this.variantIndex < 0) {
-        this.priceError = "Select product"
-        return false
-      } else if (this.variantCost === 0) {
-        this.priceError = "Enter cost "
-        return false
-      } else
-        return true
-
-    },
-  },
-  watch: {
-    variantIndex() {
-      if (this.variantIndex < 0) {
-        this.variantCost = 0
-        this.variantCostOriginal = 0
-      } else {
-        this.variantCost = this.filteredProducts[this.variantIndex].cost
-        this.variantCostOriginal = this.filteredProducts[this.variantIndex].costOriginal
-      }
-    }
   },
   methods: {
     navigateToProduct(id) {
@@ -315,20 +294,10 @@ export default {
           onSuccess: () => this.addVariantDialog = false,
         })
     },
-    editPrice() {
-      this.form
-        .transform(data => ({
-          ...data,
-          id: this.filteredProducts[this.variantIndex].variant_id,
-          cost: this.variantCost,
-          cost_original: this.variantCostOriginal,
-        }))
-        .post(this.route('products.edit-price'), {
-          onSuccess: () => {
-            this.editVariantDialog = false
-            this.variantIndex = -1
-          },
-        })
+    deleteVariant(variantId) {
+      if (!confirm('Delete this product variant? This cannot be undone.')) return
+
+      this.$inertia.delete(this.route('products.variants.destroy', { id: variantId }))
     },
 
     photoUpload(file) {

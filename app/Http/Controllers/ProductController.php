@@ -165,13 +165,13 @@ class ProductController extends Controller
 
         $product = Product::create([
             "name" => $request->name,
-            "slug" => Str::slug($request->name),
+            "slug" => $this->uniqueSlug(Product::class, $request->name),
         ]);
 
         ProductVariant::create([
             "description" => $request->description,
             "name" => $request->variant_name,
-            "slug" => Str::slug($request->description),
+            "slug" => $this->uniqueSlug(ProductVariant::class, $request->description),
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
@@ -185,6 +185,74 @@ class ProductController extends Controller
         else {
             //Web Response
             return Redirect::route('products.index')->with('success', 'Product created!');
+        }
+    }
+
+    public function edit(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        return Inertia::render('Products/Edit', [
+            'product' => new ProductResource($product),
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'name' => ['required'],
+        ]);
+
+        $product->update([
+            "name" => $request->name,
+            "slug" => $request->name === $product->name ? $product->slug : $this->uniqueSlug(Product::class, $request->name, $product->id),
+            "photo" => $request->photo ?? $product->photo,
+            "description" => $request->description,
+            "description_full" => $request->description_full,
+        ]);
+
+        $this->generatePricelist();
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(new ProductResource($product));
+        else {
+            //Web Response
+            return Redirect::route('products.index')->with('success', 'Product updated!');
+        }
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $product->delete();
+
+        $this->generatePricelist();
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(['message' => 'Product deleted']);
+        else {
+            //Web Response
+            return Redirect::route('products.index')->with('success', 'Product deleted!');
+        }
+    }
+
+    public function destroyVariant(Request $request, $id)
+    {
+        $variant = ProductVariant::findOrFail($id);
+        $variant->delete();
+
+        $this->generatePricelist();
+
+        if ((new AppController())->isApi($request))
+            //API Response
+            return response()->json(['message' => 'Product variant deleted']);
+        else {
+            //Web Response
+            return Redirect::back()->with('success', 'Product variant deleted!');
         }
     }
 
@@ -202,7 +270,7 @@ class ProductController extends Controller
         ProductVariant::create([
             "name" => $request->variant_name,
             "description" => $request->description,
-            "slug" => Str::slug($request->description),
+            "slug" => $this->uniqueSlug(ProductVariant::class, $request->description),
             "photo" => $request->photo,
             "unit" => $request->unit,
             "quantity" => $request->quantity,
@@ -255,6 +323,20 @@ class ProductController extends Controller
             //Web Response
             return Redirect::route('products.index')->with('success', 'Product udpated!!');
         }
+    }
+
+    private function uniqueSlug(string $class, string $source, $ignoreId = null)
+    {
+        $base = Str::slug($source);
+        $slug = $base;
+        $suffix = 2;
+
+        while ($class::where('slug', $slug)->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))->exists()) {
+            $slug = "{$base}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
     }
 
     private function generatePricelist()

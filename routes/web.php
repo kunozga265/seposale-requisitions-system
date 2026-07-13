@@ -1018,9 +1018,19 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
         ])->name('products.edit');
 
         Route::post('/update/{id}', [
-            "uses"  => "App\Http\Controllers\DeliveryController@update",
+            "uses"  => "App\Http\Controllers\ProductController@update",
             'roles' => ['employee', 'management']
         ])->name('products.update');
+
+        Route::delete('/variants/{id}', [
+            "uses"  => "App\Http\Controllers\ProductController@destroyVariant",
+            'roles' => ['employee', 'management']
+        ])->name('products.variants.destroy');
+
+        Route::delete('/{id}', [
+            "uses"  => "App\Http\Controllers\ProductController@destroy",
+            'roles' => ['employee', 'management']
+        ])->name('products.destroy');
     });
 
     Route::group(['prefix' => 'transporters'], function () {
@@ -1359,6 +1369,38 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\BuildingTipController@destroy",
             'roles' => ['management']
         ])->name('building-tips.destroy');
+    });
+
+    Route::group(['prefix' => 'policies'], function () {
+        Route::get('/', [
+            "uses"  => "App\Http\Controllers\PolicyController@index",
+            'roles' => ['management', 'employee']
+        ])->name('policies.index');
+
+        Route::get('/create', [
+            "uses"  => "App\Http\Controllers\PolicyController@create",
+            'roles' => ['management']
+        ])->name('policies.create');
+
+        Route::post('/store', [
+            "uses"  => "App\Http\Controllers\PolicyController@store",
+            'roles' => ['management']
+        ])->name('policies.store');
+
+        Route::get('/edit/{id}', [
+            "uses"  => "App\Http\Controllers\PolicyController@edit",
+            'roles' => ['management']
+        ])->name('policies.edit');
+
+        Route::put('/{id}', [
+            "uses"  => "App\Http\Controllers\PolicyController@update",
+            'roles' => ['management']
+        ])->name('policies.update');
+
+        Route::delete('/{id}', [
+            "uses"  => "App\Http\Controllers\PolicyController@destroy",
+            'roles' => ['management']
+        ])->name('policies.destroy');
     });
 
     Route::group(['prefix' => 'members'], function () {

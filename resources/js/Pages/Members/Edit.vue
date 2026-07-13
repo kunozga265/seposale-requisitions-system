@@ -103,9 +103,11 @@ import PrimaryButton from '@/Jetstream/Button'
 import JetLabel from '@/Jetstream/Label'
 import JetInput from '@/Jetstream/Input'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
+import { Vue2TinymceEditor } from "vue2-tinymce-editor"; 
 
 export default {
-  components: { AppLayout, PrimaryButton, JetLabel, JetInput, JetValidationErrors },
+  components: { AppLayout, PrimaryButton, JetLabel, JetInput, 
+    Vue2TinymceEditor, JetValidationErrors },
   props: ['member', 'links'],
   data() {
     return {

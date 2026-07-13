@@ -41,41 +41,34 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2">
 
-                  <div class="p-2 mb-2 md:col-span-2" >
+                  <div class="p-2 mb-2 md:col-span-2">
                     <jet-label for="name" value="Product Name"/>
                     <jet-input id="name" type="text" class="block w-full"
                                v-model="form.name" placeholder="e.g. Quarry Stone"
                                autocomplete="seposale-product-name"/>
                   </div>
 
-                  <div class="p-2 mb-2">
-                    <jet-label for="description" value="Varint Name"/>
+                  <div class="p-2 mb-2 md:col-span-2">
+                    <jet-label for="description" value="Short Description"/>
                     <jet-input id="description" type="text" class="block w-full"
-                               v-model="form.description" placeholder="e.g. 25 Tonnes"
+                               v-model="form.description" placeholder="Short summary shown in listings"
                                autocomplete="seposale-product-description"/>
                   </div>
 
-                  <div class="p-2 mb-2">
-                    <jet-label for="unit" value="Unit"/>
-                    <jet-input id="unit" type="text" class="block w-full"
-                               v-model="form.unit" placeholder="e.g. Tonne"
-                               autocomplete="seposale-product-unit"/>
+                  <div class="p-2 mb-2 md:col-span-2">
+                    <jet-label for="description_full" value="Full Description"/>
+                    <textarea id="description_full" rows="5" v-model="form.description_full"
+                               placeholder="Detailed description shown on the product page"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
                   </div>
 
-                  <div class="p-2 mb-2">
-                    <jet-label for="quantity" value="Quantity"/>
-                    <jet-input id="quantity" type="number" step="0.01" class="block w-full"
-                               v-model="form.quantity"
-                               autocomplete="seposale-product-quantity"/>
+                  <div class="mb-4 md:col-span-2">
+                    <jet-label value="Photo"/>
+                    <img v-if="form.photo" :src="form.photo" class="h-24 w-24 object-cover rounded-md mb-2" alt="">
+                    <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                      accept="image/*" class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                    <div class="text-red-500 text-xs" v-if="form.errors.photo">{{ form.errors.photo }}</div>
                   </div>
-
-                  <div class="p-2 mb-2">
-                    <jet-label for="cost" value="Cost"/>
-                    <jet-input id="cost" type="number" step="0.01" class="block w-full"
-                               v-model="form.cost"
-                               autocomplete="seposale-product-cost"/>
-                  </div>
-
 
                 </div>
               </div>
@@ -99,7 +92,7 @@
             <div v-show="validation">
               <jet-button class="ml-4 text-center" :class="{ 'opacity-25': form.processing }"
                           :disabled="form.processing">
-                Create
+                Update
               </jet-button>
               <div class="text-gray-600 text-sm">Please confirm all details before submission</div>
             </div>
@@ -117,61 +110,58 @@ import JetInput from '@/Jetstream/Input'
 import JetLabel from '@/Jetstream/Label'
 import JetValidationErrors from '@/Jetstream/ValidationErrors'
 import SecondaryButton from '@/Jetstream/SecondaryButton'
-import pdf from 'vue-pdf-embed/dist/vue2-pdf-embed'
-import PrimaryButton from "@/Jetstream/Button.vue";
-import DialogModal from "@/Jetstream/DialogModal.vue";
-import WhatsappLabel from "@/Components/WhatsappLabel.vue";
 
 export default {
-  props: ["product","products","products"],
+  props: ["product"],
   components: {
-    WhatsappLabel,
-    DialogModal, PrimaryButton,
     AppLayout,
     JetInput,
     JetLabel,
     JetButton,
     JetValidationErrors,
     SecondaryButton,
-    pdf,
   },
   data() {
     return {
       form: this.$inertia.form({
         name: this.product.data.name,
-        phoneNumber: this.product.data.phoneNumber,
-        phoneNumberOther: this.product.data.phoneNumberOther,
-        email: this.product.data.email,
-        address: this.product.data.address,
-        organisation: this.product.data.organisation,
-        alias: this.product.data.alias,
+        description: this.product.data.description,
+        description_full: this.product.data.descriptionFull,
+        photo: this.product.data.photo,
       }),
       error: '',
     }
   },
-  created() {
-
-  },
   computed: {
       validation() {
           if (this.form.name.length === 0) {
-              this.error = "Enter customer name"
+              this.error = "Enter product name"
               return false
           } else
               return true
 
       },
   },
-  watch:{
-
-  },
   methods: {
     submit() {
-      this.form
-          .transform(data => ({
-            ...data,
-          }))
-          .post(this.route('products.update',{id:this.product.data.id}))
+      this.form.post(this.route('products.update', { id: this.product.data.id }))
+    },
+
+    photoUpload(file) {
+      const reader = new FileReader();
+      if (file) {
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+            type: "PRODUCTS",
+            file: e.target.result
+          }).then(res => {
+            this.form.photo = res.data.file
+          }).catch(function (res) {
+            // this.form.errors.push(res.data.message)
+          })
+        };
+      }
     },
   }
 

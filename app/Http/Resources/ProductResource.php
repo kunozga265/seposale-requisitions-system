@@ -17,6 +17,10 @@ class ProductResource extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
+            "slug" => $this->slug,
+            "photo" => $this->photo,
+            "description" => $this->description,
+            "descriptionFull" => $this->description_full,
             "variants" => ProductVariantResource::collection($this->variants),
             "inventories" => InventoryResource::collection($this->inventories),
         ];

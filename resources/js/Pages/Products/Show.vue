@@ -29,9 +29,12 @@
     </template>
 
     <template #actions>
-      <!-- <a :href="route('products.edit', { 'id': product.data.id })">
-        <primary-button>Edit</primary-button>
-      </a> -->
+      <div class="flex gap-x-2">
+        <a :href="route('products.edit', { 'id': product.data.id })">
+          <primary-button>Edit</primary-button>
+        </a>
+        <danger-button @click.native="deleteDialog = true">Delete</danger-button>
+      </div>
     </template>
 
     <dialog-modal :show="deleteDialog" @close="deleteDialog = false">
@@ -40,8 +43,8 @@
       </template>
 
       <template #content>
-        Are you sure you want to delete this quotation?
-        Once you delete, this quotation will no longer be available.
+        Are you sure you want to delete this product?
+        Once you delete, this product will no longer be available.
       </template>
 
       <template #footer>
@@ -49,7 +52,7 @@
           Cancel
         </secondary-button>
 
-        <danger-button class="ml-2" @click.native="deleteQuotation">
+        <danger-button class="ml-2" @click.native="deleteProduct" :disabled="form.processing">
           <svg v-show="form.processing" role="status" class="inline w-4 h-4 mr-3 text-white animate-spin"
             viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -188,8 +191,11 @@ export default {
   },
   computed: {},
   methods: {
-
-
+    deleteProduct() {
+      this.form.delete(this.route('products.destroy', { id: this.product.data.id }), {
+        onSuccess: () => this.deleteDialog = false,
+      })
+    },
   }
 }
 </script>
