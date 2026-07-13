@@ -73,7 +73,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(InventoryAccountsTableSeeder::class);
         // $this->call(MaterialsTableSeeder::class);
         // $this->call(BrandTableSeeder::class);
-        $this->call(TransportOptionTableSeeder::class);
+        // $this->call(TransportOptionTableSeeder::class);
+        $this->call(PolicyTableSeeder::class);
         
         // $batches = Batch::all();
 
