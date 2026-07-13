@@ -1002,16 +1002,6 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             'roles' => ['employee', 'management']
         ])->name('products.store');
 
-        Route::post('/add-variant', [
-            "uses"  => "App\Http\Controllers\ProductController@addVariant",
-            'roles' => ['employee', 'management']
-        ])->name('products.add-variant');
-
-        Route::post('/edit-variant', [
-            "uses"  => "App\Http\Controllers\ProductController@editVariant",
-            'roles' => ['employee', 'management']
-        ])->name('products.edit-variant');
-
         Route::get('/edit/{id}', [
             "uses"  => "App\Http\Controllers\ProductController@edit",
             'roles' => ['employee', 'management']
@@ -1021,6 +1011,26 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\ProductController@update",
             'roles' => ['employee', 'management']
         ])->name('products.update');
+
+        Route::get('/{id}/variants/create', [
+            "uses"  => "App\Http\Controllers\ProductController@createVariant",
+            'roles' => ['employee', 'management']
+        ])->name('products.variants.create');
+
+        Route::post('/variants/store', [
+            "uses"  => "App\Http\Controllers\ProductController@storeVariant",
+            'roles' => ['employee', 'management']
+        ])->name('products.variants.store');
+
+        Route::get('/variants/{id}/edit', [
+            "uses"  => "App\Http\Controllers\ProductController@editVariantPage",
+            'roles' => ['employee', 'management']
+        ])->name('products.variants.edit');
+
+        Route::post('/variants/{id}/update', [
+            "uses"  => "App\Http\Controllers\ProductController@updateVariant",
+            'roles' => ['employee', 'management']
+        ])->name('products.variants.update');
 
         Route::delete('/variants/{id}', [
             "uses"  => "App\Http\Controllers\ProductController@destroyVariant",
@@ -1290,6 +1300,11 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
             "uses"  => "App\Http\Controllers\ClientRewardController@store",
             'roles' => ['management']
         ])->name('rewards.grant');
+
+        Route::post('/deduct', [
+            "uses"  => "App\Http\Controllers\ClientRewardController@deduct",
+            'roles' => ['management']
+        ])->name('rewards.deduct');
     });
 
     Route::group(['prefix' => 'payment-methods'], function () {

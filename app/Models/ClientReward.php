@@ -17,11 +17,18 @@ class ClientReward extends Model
         'amount',
         'type',
         'date',
+        'note',
+        'user_id',
     ];
 
     public function client()
     {
         return $this->belongsTo(Client::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function variant()

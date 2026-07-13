@@ -21,6 +21,11 @@ class ProductVariant extends Model
         return $this->hasOne(ProductVariantReward::class);
     }
 
+    public function photos()
+    {
+        return $this->hasMany(ProductVariantPhoto::class)->orderBy('sort_order');
+    }
+
     protected $fillable = [
         "name",
         "slug",

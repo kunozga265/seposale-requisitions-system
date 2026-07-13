@@ -78,6 +78,12 @@
                                                autocomplete="seposale-product-cost"/>
                                   </div>
 
+                                  <div class="p-2 mb-2 md:col-span-2">
+                                    <jet-label value="Photo"/>
+                                    <img v-if="form.photo" :src="form.photo" class="h-24 w-24 object-cover rounded-md mb-2" alt="">
+                                    <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
+                                      accept="image/*" class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
+                                  </div>
 
                                 </div>
                             </div>
@@ -149,6 +155,7 @@ export default {
                 unit: '',
                 quantity: 1,
                 cost: 0,
+                photo: '',
             }),
             error: '',
         }
@@ -187,6 +194,22 @@ export default {
                     variant_name : this.form.variantName
                 }))
                 .post(this.route('products.store'))
+        },
+        photoUpload(file) {
+            const reader = new FileReader();
+            if (file) {
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    axios.post(this.$page.props.publicPath + "api/1.0.0/upload", {
+                        type: "PRODUCTS",
+                        file: e.target.result
+                    }).then(res => {
+                        this.form.photo = res.data.file
+                    }).catch(function (res) {
+                        // this.form.errors.push(res.data.message)
+                    })
+                };
+            }
         },
     }
 

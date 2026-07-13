@@ -71,28 +71,88 @@
       <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
 
         <div class="grid grid-cols-1">
-          <!-- <div class="page-section">
+
+          <div class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
                 Product Details
               </div>
             </div>
             <div class="page-section-content">
-
-              <div class="card p-0">
-                <div class="border-b px-4 py-3 flex justify-between text-sm">
-                  <div class="text-gray-600 font-semibold">Name</div>
-                  <div>{{ product.data.name }}</div>
+              <div class="card flex gap-4">
+                <img v-if="product.data.photo" :src="product.data.photo" class="h-28 w-28 object-cover rounded-md flex-shrink-0" alt="">
+                <div class="flex-1">
+                  <div class="text-lg font-semibold heading-font">{{ product.data.name }}</div>
+                  <div v-if="product.data.description" class="text-sm text-gray-600 mt-1">{{ product.data.description }}</div>
+                  <div v-if="product.data.descriptionFull" class="text-sm text-gray-500 mt-2 whitespace-pre-line">{{ product.data.descriptionFull }}</div>
                 </div>
-
               </div>
             </div>
-          </div> -->
+          </div>
 
           <div class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
-                Overview
+                Variants ({{ product.data.variants.length }})
+              </div>
+              <a :href="route('products.variants.create', { id: product.data.id })">
+                <primary-button>Add Variant</primary-button>
+              </a>
+            </div>
+            <div class="page-section-content">
+              <div v-if="product.data.variants.length === 0" class="text-center text-gray-400 text-sm py-8">
+                No variants yet
+              </div>
+              <div v-else class="card">
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                        <th class="p-2 heading-font"></th>
+                        <th class="p-2 heading-font">Name</th>
+                        <th class="p-2 heading-font">Unit</th>
+                        <th class="p-2 heading-font text-right">Cost</th>
+                        <th class="p-2 heading-font text-center">Attributes</th>
+                        <th class="p-2 heading-font text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="variant in product.data.variants" :key="variant.id" class="border-b">
+                        <td class="p-2">
+                          <img v-if="variant.photo" :src="variant.photo" class="h-10 w-10 object-cover rounded" alt="">
+                        </td>
+                        <td class="p-2">
+                          <div class="font-medium text-gray-900">{{ variant.name }}</div>
+                          <div class="text-xs text-gray-500">{{ variant.description }}</div>
+                        </td>
+                        <td class="p-2">{{ variant.unit }}</td>
+                        <td class="p-2 text-right">{{ numberWithCommas(variant.cost) }}</td>
+                        <td class="p-2 text-center">
+                          <span v-if="variant.transportInclusive" class="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full mr-1">Transport Inclusive</span>
+                          <span v-if="variant.featured" class="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full">Featured</span>
+                        </td>
+                        <td class="p-2 text-right">
+                          <a :href="route('products.variants.edit', { id: variant.id })"
+                            class="text-blue-600 hover:text-blue-800 text-sm mr-3">
+                            Edit
+                          </a>
+                          <button type="button" class="text-red-600 hover:text-red-800 text-sm"
+                            @click="deleteVariant(variant.id)">
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
+                Delivery Overview
               </div>
             </div>
             <div class="page-section-content">
@@ -195,6 +255,11 @@ export default {
       this.form.delete(this.route('products.destroy', { id: this.product.data.id }), {
         onSuccess: () => this.deleteDialog = false,
       })
+    },
+    deleteVariant(variantId) {
+      if (!confirm('Delete this product variant? This cannot be undone.')) return
+
+      this.$inertia.delete(this.route('products.variants.destroy', { id: variantId }))
     },
   }
 }

@@ -36,6 +36,13 @@
             class="px-4 py-2 text-sm font-medium heading-font uppercase focus:outline-none">
             Grant Reward
           </button>
+          <button @click="activeTab = 'deduct'"
+            :class="activeTab === 'deduct'
+              ? 'border-b-2 border-indigo-600 text-indigo-600'
+              : 'text-gray-500 hover:text-gray-700'"
+            class="px-4 py-2 text-sm font-medium heading-font uppercase focus:outline-none">
+            Deduct Reward
+          </button>
           <inertia-link :href="route('rewards.product-rewards')"
             class="px-4 py-2 text-sm font-medium heading-font uppercase text-gray-500 hover:text-gray-700">
             Product Rewards
@@ -89,6 +96,65 @@
                     <button type="submit" :disabled="grantSubmitting"
                       class="w-full bg-indigo-600 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-indigo-700 disabled:opacity-60">
                       {{ grantSubmitting ? 'Submitting…' : 'Grant Reward' }}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deduct Reward Tab -->
+        <div v-if="activeTab === 'deduct'">
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">Deduct Reward from Client</div>
+            </div>
+            <div class="page-section-content">
+              <div class="card p-4 max-w-lg">
+                <p class="mb-4 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded p-3">
+                  Use this to correct a reward that was mistakenly credited to the wrong client.
+                  This removes the amount from their reward balance and reverses the accounting entries.
+                </p>
+                <p v-if="$page.props.flash && $page.props.flash.success"
+                  class="mb-4 text-sm text-green-700 bg-green-50 border border-green-200 rounded p-3">
+                  {{ $page.props.flash.success }}
+                </p>
+                <form @submit.prevent="submitDeduct">
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-700 mb-1">Client *</label>
+                      <select v-model="deductForm.client_id" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="" disabled>Select client…</option>
+                        <option v-for="c in clients" :key="c.id" :value="c.id">{{ c.name }}</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-700 mb-1">Amount (MWK) *</label>
+                      <input v-model.number="deductForm.amount" type="number" min="1" step="0.01" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="e.g. 5000" />
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-700 mb-1">Credit wallet account *</label>
+                      <select v-model="deductForm.wallet_account_id" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="" disabled>Select account…</option>
+                        <option v-for="a in walletAccounts" :key="a.id" :value="a.id">
+                          {{ a.name }} (MK {{ formatMoney(a.balance) }})
+                        </option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-xs font-semibold text-gray-700 mb-1">Reason *</label>
+                      <input v-model="deductForm.note" type="text" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="e.g. Reward credited to wrong client on Sale #1234 — correcting" />
+                    </div>
+                    <button type="submit" :disabled="deductSubmitting"
+                      class="w-full bg-red-600 text-white text-sm font-semibold rounded-lg px-4 py-2 hover:bg-red-700 disabled:opacity-60">
+                      {{ deductSubmitting ? 'Submitting…' : 'Deduct Reward' }}
                     </button>
                   </div>
                 </form>
@@ -242,6 +308,13 @@ export default {
         description:       '',
       },
       grantSubmitting: false,
+      deductForm: {
+        client_id:         '',
+        amount:            '',
+        wallet_account_id: '',
+        note:              '',
+      },
+      deductSubmitting: false,
     }
   },
   computed: {
@@ -275,6 +348,17 @@ export default {
           this.grantForm = { client_id: '', amount: '', wallet_account_id: '', description: '' }
         },
         onFinish: () => { this.grantSubmitting = false },
+      })
+    },
+    submitDeduct() {
+      if (this.deductSubmitting) return
+      this.deductSubmitting = true
+      this.$inertia.post(this.route('rewards.deduct'), this.deductForm, {
+        preserveScroll: true,
+        onSuccess: () => {
+          this.deductForm = { client_id: '', amount: '', wallet_account_id: '', note: '' }
+        },
+        onFinish: () => { this.deductSubmitting = false },
       })
     },
     approveRequest(id) {

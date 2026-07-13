@@ -27,7 +27,10 @@ class ProductVariantResource extends JsonResource
             "hasDiscount" => boolval($this->cost != $this->cost_original),
             "group" => $this->product,
             "photo" => $this->photo ?? $this->product->photo,
-             "photos" => $this->photos ?? [$this->photo ?? $this->product->photo],
+            "photos" => $this->photos->map(fn ($photo) => [
+                "id" => $photo->id,
+                "path" => $photo->path,
+            ])->values(),
             "featured" => boolval($this->featured),
             "transportInclusive" => boolval($this->transport_inclusive),
             "specifications" => json_decode($this->specifications),

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductVariantResource;
 use App\Models\Delivery;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\ProductVariantPhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
@@ -166,9 +168,10 @@ class ProductController extends Controller
         $product = Product::create([
             "name" => $request->name,
             "slug" => $this->uniqueSlug(Product::class, $request->name),
+            "photo" => $request->photo,
         ]);
 
-        ProductVariant::create([
+        $variant = ProductVariant::create([
             "description" => $request->description,
             "name" => $request->variant_name,
             "slug" => $this->uniqueSlug(ProductVariant::class, $request->description),
@@ -176,8 +179,17 @@ class ProductController extends Controller
             "quantity" => $request->quantity,
             "cost" => $request->cost,
             "cost_original" => $request->cost,
-            "product_id" => $product->id
+            "product_id" => $product->id,
+            "photo" => $request->photo,
         ]);
+
+        if ($request->photo) {
+            ProductVariantPhoto::create([
+                "product_variant_id" => $variant->id,
+                "path" => $request->photo,
+                "sort_order" => 0,
+            ]);
+        }
 
         if ((new AppController())->isApi($request))
             //API Response
@@ -256,9 +268,17 @@ class ProductController extends Controller
         }
     }
 
-    public function addVariant(Request $request)
+    public function createVariant(Request $request, $id)
     {
+        $product = Product::findOrFail($id);
 
+        return Inertia::render('Products/Variants/Create', [
+            'product' => new ProductResource($product),
+        ]);
+    }
+
+    public function storeVariant(Request $request)
+    {
         $request->validate([
             'id' => ['required'],
             'variant_name' => ['required'],
@@ -267,62 +287,114 @@ class ProductController extends Controller
             'cost_original' => ['required'],
         ]);
 
-        ProductVariant::create([
+        $variant = ProductVariant::create([
             "name" => $request->variant_name,
             "description" => $request->description,
             "slug" => $this->uniqueSlug(ProductVariant::class, $request->description),
-            "photo" => $request->photo,
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
             "cost_original" => $request->cost_original,
-            "product_id" => $request->id
+            "product_id" => $request->id,
+            "description_full" => $request->description_full,
+            "about" => $request->about,
+            "featured" => $request->boolean('featured'),
+            "transport_inclusive" => $request->boolean('transport_inclusive'),
+            "specifications" => json_encode($request->specifications ?? []),
+            "product_information" => json_encode($request->product_information ?? []),
         ]);
+
+        $this->syncVariantPhotos($variant, $request->photos ?? []);
 
         $this->generatePricelist();
 
         if ((new AppController())->isApi($request))
             //API Response
-            return response()->json();
+            return response()->json(new ProductVariantResource($variant), 201);
         else {
             //Web Response
-            return Redirect::route('products.index')->with('success', 'Product variant added!');
+            return Redirect::route('products.show', ['id' => $request->id])->with('success', 'Product variant added!');
         }
     }
 
-    public function editVariant(Request $request)
+    public function editVariantPage(Request $request, $id)
     {
+        $variant = ProductVariant::findOrFail($id);
 
+        return Inertia::render('Products/Variants/Edit', [
+            'variant' => new ProductVariantResource($variant),
+        ]);
+    }
+
+    public function updateVariant(Request $request, $id)
+    {
         $request->validate([
-            'id' => ['required'],
             'variant_name' => ['required'],
             'description' => ['required'],
             'cost' => ['required'],
             'cost_original' => ['required'],
         ]);
 
-        $productVariant = ProductVariant::find($request->id);
-        $productVariant->update([
+        $variant = ProductVariant::findOrFail($id);
+
+        $variant->update([
             "name" => $request->variant_name,
-            "photo" => $request->photo,
             "description" => $request->description,
             "unit" => $request->unit,
             "quantity" => $request->quantity,
             "cost" => $request->cost,
             "cost_original" => $request->cost_original,
+            "description_full" => $request->description_full,
+            "about" => $request->about,
+            "featured" => $request->boolean('featured'),
+            "transport_inclusive" => $request->boolean('transport_inclusive'),
+            "specifications" => json_encode($request->specifications ?? []),
+            "product_information" => json_encode($request->product_information ?? []),
         ]);
 
+        if ($request->filled('removed_photo_ids')) {
+            ProductVariantPhoto::where('product_variant_id', $variant->id)
+                ->whereIn('id', $request->removed_photo_ids)
+                ->delete();
+        }
+
+        $this->syncVariantPhotos($variant, $request->new_photos ?? []);
 
         $this->generatePricelist();
 
-
         if ((new AppController())->isApi($request))
             //API Response
-            return response()->json();
+            return response()->json(new ProductVariantResource($variant));
         else {
             //Web Response
-            return Redirect::route('products.index')->with('success', 'Product udpated!!');
+            return Redirect::route('products.show', ['id' => $variant->product_id])->with('success', 'Product variant updated!');
         }
+    }
+
+    /**
+     * Append new photo paths to a variant's gallery, then re-point the
+     * legacy single `photo` column at the first photo (by sort order) so
+     * older read paths (invoices, pricelists, etc.) keep working.
+     */
+    private function syncVariantPhotos(ProductVariant $variant, array $newPhotoPaths): void
+    {
+        $nextOrder = (int) ($variant->photos()->max('sort_order') + 1);
+
+        foreach ($newPhotoPaths as $path) {
+            if (!$path) {
+                continue;
+            }
+
+            ProductVariantPhoto::create([
+                "product_variant_id" => $variant->id,
+                "path" => $path,
+                "sort_order" => $nextOrder,
+            ]);
+            $nextOrder++;
+        }
+
+        $coverPhoto = $variant->photos()->orderBy('sort_order')->first();
+        $variant->update(['photo' => $coverPhoto?->path]);
     }
 
     private function uniqueSlug(string $class, string $source, $ignoreId = null)

@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\ClientReward;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
@@ -82,5 +83,76 @@ class ClientRewardController extends Controller
         });
 
         return Redirect::back()->with('success', "Reward of MWK " . number_format($request->amount, 2) . " granted to {$client->name}.");
+    }
+
+    /**
+     * Manually deduct from a client's reward balance — e.g. to correct a reward
+     * that was mistakenly credited to the wrong client. Reverses the same
+     * double-entry accounting that granting a reward records.
+     */
+    public function deduct(Request $request)
+    {
+        $request->validate([
+            'client_id'          => 'required|integer|exists:clients,id',
+            'amount'             => 'required|numeric|min:1',
+            'wallet_account_id'  => 'required|integer|exists:accounting_accounts,id',
+            'note'               => 'required|string|max:255',
+        ]);
+
+        $client = Client::findOrFail($request->client_id);
+
+        DB::transaction(function () use ($request, $client) {
+            // 1. Deduct from the client's reward wallet.
+            ClientReward::create([
+                'client_id' => $client->id,
+                'amount'    => $request->amount,
+                'type'      => 'deducted',
+                'date'      => now()->timestamp,
+                'note'      => $request->note,
+                'user_id'   => Auth::id(),
+            ]);
+
+            $wallet  = AccountingAccount::findOrFail($request->wallet_account_id);
+            $expense = AccountingAccount::where('code', self::PROMOTION_ACCOUNT_CODE)->firstOrFail();
+
+            $serial = (new AppController())->generateUniqueCode('ACCOUNTING');
+
+            // 2a. CREDIT Advertising & Promotion Expenses (expense reversed/reduced).
+            $expenseRecord = AccountingRecord::create([
+                'serial'               => $serial,
+                'reference'            => '',
+                'date'                 => Carbon::now()->getTimestamp(),
+                'name'                 => $client->name,
+                'description'          => $request->note,
+                'amount'               => $request->amount,
+                'opening_balance'      => $expense->balance,
+                'closing_balance'      => $expense->balance - $request->amount,
+                'type'                 => 'CREDIT',
+                'accounting_account_id' => $expense->id,
+            ]);
+
+            $expense->update(['balance' => $expense->balance - $request->amount]);
+
+            // 2b. DEBIT the selected wallet account (funds return to reserve).
+            $walletRecord = AccountingRecord::create([
+                'serial'               => (new AppController())->generateUniqueCode('ACCOUNTING'),
+                'reference'            => '',
+                'date'                 => Carbon::now()->getTimestamp(),
+                'name'                 => $client->name,
+                'description'          => $request->note,
+                'amount'               => $request->amount,
+                'opening_balance'      => $wallet->balance,
+                'closing_balance'      => $wallet->balance + $request->amount,
+                'type'                 => 'DEBIT',
+                'accounting_account_id' => $wallet->id,
+                'accounting_record_id'  => $expenseRecord->id,
+            ]);
+
+            $wallet->update(['balance' => $wallet->balance + $request->amount]);
+
+            $expenseRecord->update(['accounting_record_id' => $walletRecord->id]);
+        });
+
+        return Redirect::back()->with('success', "Reward of MWK " . number_format($request->amount, 2) . " deducted from {$client->name}.");
     }
 }
