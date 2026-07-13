@@ -886,7 +886,7 @@ class NotificationController extends Controller
                     ]);
                     if (!empty($sale->client?->email)) {
                         try {
-                            Mail::to($sale->client->email)->queue(new ClientNotificationMail(
+                            Mail::to($sale->client->email)->send(new ClientNotificationMail(
                                 mailSubject: 'Order Confirmation — ' . $sale->formattedCode(),
                                 heading: 'Your order has been received',
                                 body: "Hi {$sale->client->getName()},\n\nWe have received your order {$sale->formattedCode()} for MWK " . number_format($sale->total, 2) . ". Our team will be in touch shortly.",
@@ -960,7 +960,7 @@ class NotificationController extends Controller
                     ]);
                     if (!empty($sale->client?->email)) {
                         try {
-                            Mail::to($sale->client->email)->queue(new ClientNotificationMail(
+                            Mail::to($sale->client->email)->send(new ClientNotificationMail(
                                 mailSubject: 'Payment Received — Order ' . $sale->formattedCode(),
                                 heading: 'Payment received',
                                 body: "Hi {$sale->client->getName()},\n\nWe have received your payment of MWK " . number_format($amount, 2) . " for order {$sale->formattedCode()}. Thank you!",
@@ -1029,7 +1029,7 @@ class NotificationController extends Controller
                     ]);
                     if (!empty($quotation->client?->email)) {
                         try {
-                            Mail::to($quotation->client->email)->queue(new ClientNotificationMail(
+                            Mail::to($quotation->client->email)->send(new ClientNotificationMail(
                                 mailSubject: 'Quotation — ' . $quotation->formattedCode(),
                                 heading: 'Your quotation is ready',
                                 body: "Hi {$quotation->client->getName()},\n\nYour quotation {$quotation->formattedCode()} is ready for your review.",
@@ -1114,7 +1114,7 @@ class NotificationController extends Controller
                     ]);
                     if (!empty($invoice->client?->email)) {
                         try {
-                            Mail::to($invoice->client->email)->queue(new ClientNotificationMail(
+                            Mail::to($invoice->client->email)->send(new ClientNotificationMail(
                                 mailSubject: 'Invoice — ' . $invoice->formattedCode(),
                                 heading: 'Your invoice is ready',
                                 body: "Hi {$invoice->client->getName()},\n\nYour invoice {$invoice->formattedCode()} for MWK " . number_format($invoice->sale->total, 2) . " is ready.",
@@ -1203,7 +1203,7 @@ class NotificationController extends Controller
                     ]);
                     if (!empty($receipt->client?->email)) {
                         try {
-                            Mail::to($receipt->client->email)->queue(new ClientNotificationMail(
+                            Mail::to($receipt->client->email)->send(new ClientNotificationMail(
                                 mailSubject: 'Payment Receipt — ' . $receipt->formattedCode(),
                                 heading: 'Payment confirmed',
                                 body: "Hi {$receipt->client->getName()},\n\nYour payment of MWK " . number_format($receipt->amount, 2) . " via {$receipt->paymentMethod->name} has been confirmed. Receipt: {$receipt->formattedCode()}.",
@@ -1289,7 +1289,7 @@ class NotificationController extends Controller
                     $deliveryClient = $delivery->summary->sale->client ?? null;
                     if (!empty($deliveryClient?->email)) {
                         try {
-                            Mail::to($deliveryClient->email)->queue(new ClientNotificationMail(
+                            Mail::to($deliveryClient->email)->send(new ClientNotificationMail(
                                 mailSubject: 'Delivery Update — ' . $delivery->formattedCode(),
                                 heading: 'Your delivery is on its way',
                                 body: "Hi {$deliveryClient->getName()},\n\nYour delivery {$delivery->formattedCode()} for {$delivery->quantity_delivered} {$delivery->summary->units}(s) of {$delivery->summary->fullName()} is out for delivery to {$delivery->summary->sale->location}.",
@@ -1452,7 +1452,7 @@ class NotificationController extends Controller
                     ]);
                     if ($notify !== 'team' && !empty($collection->client?->email)) {
                         try {
-                            Mail::to($collection->client->email)->queue(new ClientNotificationMail(
+                            Mail::to($collection->client->email)->send(new ClientNotificationMail(
                                 mailSubject: 'Collection Update — ' . $collection->formattedCode(),
                                 heading: 'Collection confirmed',
                                 body: "Hi {$collection->client->getName()},\n\n{$collection->quantity} unit(s) of {$collection->inventory->name} have been collected ({$collection->formattedCode()}).",
