@@ -100,14 +100,14 @@
                             <div class="card w-full sm:max-w-md md:max-w-3xl">
                                 <div class="flex flex-wrap gap-3 mb-3">
                                     <div v-for="photo in existingPhotos" :key="'existing-' + photo.id" class="relative">
-                                        <img :src="photo.path" class="h-24 w-24 object-cover rounded-md">
+                                        <img :src="fileUrl(photo.path)" class="h-24 w-24 object-cover rounded-md">
                                         <button type="button" @click="removeExistingPhoto(photo.id)"
                                             class="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs">
                                             <i class="mdi mdi-close"></i>
                                         </button>
                                     </div>
                                     <div v-for="(path, index) in form.new_photos" :key="'new-' + index" class="relative">
-                                        <img :src="path" class="h-24 w-24 object-cover rounded-md">
+                                        <img :src="fileUrl(path)" class="h-24 w-24 object-cover rounded-md">
                                         <button type="button" @click="form.new_photos.splice(index, 1)"
                                             class="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs">
                                             <i class="mdi mdi-close"></i>

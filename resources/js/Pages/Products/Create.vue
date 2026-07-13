@@ -80,7 +80,7 @@
 
                                   <div class="p-2 mb-2 md:col-span-2">
                                     <jet-label value="Photo"/>
-                                    <img v-if="form.photo" :src="form.photo" class="h-24 w-24 object-cover rounded-md mb-2" alt="">
+                                    <img v-if="form.photo" :src="fileUrl(form.photo)" class="h-24 w-24 object-cover rounded-md mb-2" alt="">
                                     <input type="file" id="photo" @input="photoUpload($event.target.files[0])"
                                       accept="image/*" class="w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"/>
                                   </div>

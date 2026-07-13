@@ -80,7 +80,7 @@
             </div>
             <div class="page-section-content">
               <div class="card flex gap-4">
-                <img v-if="product.data.photo" :src="product.data.photo" class="h-28 w-28 object-cover rounded-md flex-shrink-0" alt="">
+                <img v-if="product.data.photo" :src="fileUrl(product.data.photo)" class="h-28 w-28 object-cover rounded-md flex-shrink-0" alt="">
                 <div class="flex-1">
                   <div class="text-lg font-semibold heading-font">{{ product.data.name }}</div>
                   <div v-if="product.data.description" class="text-sm text-gray-600 mt-1">{{ product.data.description }}</div>
@@ -119,7 +119,7 @@
                     <tbody>
                       <tr v-for="variant in product.data.variants" :key="variant.id" class="border-b">
                         <td class="p-2">
-                          <img v-if="variant.photo" :src="variant.photo" class="h-10 w-10 object-cover rounded" alt="">
+                          <img v-if="variant.photo" :src="fileUrl(variant.photo)" class="h-10 w-10 object-cover rounded" alt="">
                         </td>
                         <td class="p-2">
                           <div class="font-medium text-gray-900">{{ variant.name }}</div>

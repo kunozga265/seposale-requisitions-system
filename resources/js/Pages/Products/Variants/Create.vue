@@ -112,7 +112,7 @@
                             <div class="card w-full sm:max-w-md md:max-w-3xl">
                                 <div class="flex flex-wrap gap-3 mb-3">
                                     <div v-for="(path, index) in form.photos" :key="index" class="relative">
-                                        <img :src="path" class="h-24 w-24 object-cover rounded-md">
+                                        <img :src="fileUrl(path)" class="h-24 w-24 object-cover rounded-md">
                                         <button type="button" @click="removeNewPhoto(index)"
                                             class="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-600 text-white flex items-center justify-center text-xs">
                                             <i class="mdi mdi-close"></i>
