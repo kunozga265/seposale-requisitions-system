@@ -3,12 +3,10 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class UserNewMail extends Mailable implements ShouldQueue, ShouldBeUnique
+class UserNewMail extends Mailable
 {
     use Queueable, SerializesModels;
     public $_subject;
