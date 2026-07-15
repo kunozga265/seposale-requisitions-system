@@ -109,6 +109,19 @@
         .font-bold {
             font-weight: bold;
         }
+
+        .disclaimer {
+            margin-top: 24px;
+            padding-top: 12px;
+            border-top: 1px solid #999;
+            font-size: 10px;
+            font-style: italic;
+            color: #444;
+        }
+
+        .disclaimer p {
+            margin: 4px 0;
+        }
     </style>
 </head>
 
@@ -279,6 +292,10 @@
             </tr>
         </table>
 
+        <div class="disclaimer">
+            <p>To ensure your complete satisfaction, please verify the type, quality, and quantity of materials upon delivery. If you are unavailable, kindly appoint a representative to receive and inspect the materials on your behalf. Please note that materials cannot be returned after offloading or collection.</p>
+            <p>For our Terms, Conditions and Policies visit <strong>www.seposale.com</strong></p>
+        </div>
 
     </div>
 
