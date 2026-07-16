@@ -761,6 +761,7 @@ export default {
           "units": '',
           "quantity": 0,
           "unitCost": 0,
+          "unitCostOriginal": 0,
           "totalCost": 0,
         })
       } else {
@@ -772,6 +773,7 @@ export default {
           "units": this.addRecordUnits,
           "quantity": this.addRecordQuantity,
           "unitCost": this.addRecordUnitCost,
+          "unitCostOriginal": this.addRecordUnitCost,
           "totalCost": this.addRecordTotal,
         })
       }

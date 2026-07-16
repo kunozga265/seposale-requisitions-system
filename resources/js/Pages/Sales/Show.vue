@@ -841,6 +841,34 @@
                                             </div>
                                         </div>
 
+                                        <div v-show="deliveryRequestId == 0 && sale.data.vatOption != 'NONE' && vatBalance > 0"
+                                            class="mb-4">
+                                            <div class="flex justify-between">
+                                                <jet-label for="vat" value="VAT" />
+                                                <div class="flex items-center mb-2">
+                                                    <div @click="vatPayment = suggestedVat"
+                                                        class="flex items-center rounded-full py-2 px-3 mr-2 bg-gray-200 text-gray-600 text-xs font-bold"
+                                                        :class="{ 'info': vatPayment == suggestedVat }">
+                                                        <div>17.5%</div>
+                                                    </div>
+                                                    <div @click="vatPayment = vatBalance"
+                                                        class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold"
+                                                        :class="{ 'info': vatPayment == vatBalance }">
+                                                        <div>Full VAT</div>
+                                                        <i v-show="vatPayment == vatBalance"
+                                                            class="ml-2 mdi mdi-check-circle text-gray-600 cursor"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <money
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                                v-bind="moneyMaskOptions" v-model="vatPayment" />
+                                            <div class="mt-1 text-xs text-gray-500"
+                                                :class="{ 'text-red-500': vatPayment > vatBalance }">VAT Balance:
+                                                MK{{ numberWithCommas(vatBalance) }}
+                                            </div>
+                                        </div>
+
                                         <div v-show="deliveryRequestId == 0" class="flex justify-between">
                                             <div class="mb-4">
                                                 <div class="heading-font text-lg ">MK
@@ -926,6 +954,33 @@
                                         <div class="mt-1 text-xs text-gray-500"
                                             :class="{ 'text-red-500': !balanceValidate(product) }">Balance:
                                             MK{{ numberWithCommas(product.balance) }}
+                                        </div>
+                                    </div>
+
+                                    <div v-show="sale.data.vatOption != 'NONE' && vatBalance > 0" class="mb-4">
+                                        <div class="flex justify-between">
+                                            <jet-label for="vat" value="VAT" />
+                                            <div class="flex items-center mb-2">
+                                                <div @click="vatPayment = suggestedVat"
+                                                    class="flex items-center rounded-full py-2 px-3 mr-2 bg-gray-200 text-gray-600 text-xs font-bold"
+                                                    :class="{ 'info': vatPayment == suggestedVat }">
+                                                    <div>17.5%</div>
+                                                </div>
+                                                <div @click="vatPayment = vatBalance"
+                                                    class="flex items-center rounded-full py-2 px-3 bg-gray-200 text-gray-600 text-xs font-bold"
+                                                    :class="{ 'info': vatPayment == vatBalance }">
+                                                    <div>Full VAT</div>
+                                                    <i v-show="vatPayment == vatBalance"
+                                                        class="ml-2 mdi mdi-check-circle text-gray-600 cursor"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <money
+                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                                            v-bind="moneyMaskOptions" v-model="vatPayment" />
+                                        <div class="mt-1 text-xs text-gray-500"
+                                            :class="{ 'text-red-500': vatPayment > vatBalance }">VAT Balance:
+                                            MK{{ numberWithCommas(vatBalance) }}
                                         </div>
                                     </div>
 
@@ -1325,6 +1380,8 @@ export default {
             selectedProduct: null,
             selectedProductAmount: 0,
             outsource: false,
+            vatRate: 0.175,
+            vatPayment: 0,
         }
     },
     created() {
@@ -1367,15 +1424,25 @@ export default {
             } else
                 return null
         },
+        vatBalance() {
+            return Math.max(0, this.sale.data.vatBalance);
+        },
+        suggestedVat() {
+            let sum = 0;
+            for (let x in this.form.information) {
+                sum += this.form.information[x].amount;
+            }
+            return Math.min(this.vatBalance, +(sum * this.vatRate).toFixed(2));
+        },
         receiptAmount() {
             let sum = 0;
             for (let x in this.form.information) {
                 sum += this.form.information[x].amount;
             }
-            return sum;
+            return sum + this.vatPayment;
         },
         receiptBalance() {
-            return (this.sale.data.balance - this.receiptAmount);
+            return this.sale.data.balance - this.receiptAmount;
         },
         attachment() {
             if (this.attachmentIndex !== null) {
@@ -1504,10 +1571,14 @@ export default {
                     account_id: this.account == null ? null : this.account.id,
                     date: this.getTimestampFromDate(this.date),
                     type: "ORDINARY",
+                    vat: this.vatPayment,
                 }))
                 .post(this.route('receipts.store', { 'id': this.sale.data.id }), {
                     preserveScroll: true,
-                    onSuccess: () => this.newReceiptDialog = false,
+                    onSuccess: () => {
+                        this.newReceiptDialog = false
+                        this.vatPayment = 0
+                    },
                 })
         },
         attachReceipt() {
@@ -1516,10 +1587,14 @@ export default {
                     ...data,
                     receipt_code: this.form.receiptCode,
                     type: "ORDINARY",
+                    vat: this.vatPayment,
                 }))
                 .post(this.route('receipts.attach', { 'id': this.sale.data.id }), {
                     preserveScroll: true,
-                    onSuccess: () => this.attachReceiptDialog = false,
+                    onSuccess: () => {
+                        this.attachReceiptDialog = false
+                        this.vatPayment = 0
+                    },
                 })
         },
         waiver(id) {

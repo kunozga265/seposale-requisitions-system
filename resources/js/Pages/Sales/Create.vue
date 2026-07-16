@@ -339,8 +339,9 @@
                                                         v-model="info.quantity" />
                                                 </td>
                                                 <td class="py-2 pr-1">
-                                                    <jet-input type="number" step="0.01" class="block w-full"
-                                                        v-model="info.unitCost" />
+                                                    <jet-input type="number"
+                                                        :step="vatOption != 'INCLUSIVE' ? 0.01 : 0.00001"
+                                                        class="block w-full" v-model="info.unitCost" />
                                                 </td>
                                                 <td class="py-2 pr-1">
                                                     <div
@@ -376,7 +377,7 @@
                                                 </td>
                                             </tr>
 
-                                            <tr v-show="calculateVat">
+                                            <tr v-show="vatOption != 'NONE'">
                                                 <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">
                                                     Sub
                                                     Total</td>
@@ -387,7 +388,7 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr v-show="calculateVat">
+                                            <tr v-show="vatOption != 'NONE'">
                                                 <td colspan="5" class="heading-font p-2 uppercase font-bold text-right">
                                                     VAT
                                                     ({{ (vatRate * 100).toFixed(1) }}%)</td>
@@ -412,13 +413,23 @@
                                         </tbody>
                                     </table>
 
-                                    <div class="flex items-center mb-2 justify-start">
-                                        <input checked id="calculate-vat" type="checkbox" value=""
-                                            v-model="calculateVat"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                        <label for="calculate-vat"
-                                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Calculate
-                                            Vat</label>
+                                    <div class="flex items-center mb-4">
+                                        <input id="vat-option-none" type="radio" value="NONE" v-model="vatOption"
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="vat-option-none"
+                                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">None</label>
+
+                                        <input id="vat-option-inclusive" type="radio" value="INCLUSIVE"
+                                            v-model="vatOption"
+                                            class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="vat-option-inclusive"
+                                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Inclusive</label>
+
+                                        <input id="vat-option-exclusive" type="radio" value="EXCLUSIVE"
+                                            v-model="vatOption"
+                                            class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="vat-option-exclusive"
+                                            class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Exclusive</label>
                                     </div>
 
                                     <!-- <div class="mt-2 ml-2 flex justify-start items-center">
@@ -716,7 +727,7 @@ export default {
             maxDate: new Date().toISOString().substr(0, 10),
             minDate: null,
             vatRate: 0.175,
-            calculateVat: false,
+            vatOption: "NONE",
             form: this.$inertia.form({
 
                 name: '',
@@ -800,12 +811,13 @@ export default {
             return parseFloat(totalCost.toFixed(2))
         },
         vat() {
-            if (this.calculateVat) {
-                return this.totalCost * this.vatRate
-            } else {
-                return 0
+            switch (this.vatOption) {
+                case "INCLUSIVE":
+                case "EXCLUSIVE":
+                    return this.totalCost * this.vatRate
+                default:
+                    return 0
             }
-
         },
         agentPercentageTotal() {
             return this.form.agents.reduce((sum, a) => sum + (parseFloat(a.percentage) || 0), 0)
@@ -895,6 +907,23 @@ export default {
         backdateCheck() {
             this.date = null
         },
+        vatOption() {
+            for (let x in this.form.information) {
+                if (this.form.information[x].unitCostOriginal > 0) {
+                    switch (this.vatOption) {
+                        case "NONE":
+                            this.form.information[x].unitCost = this.form.information[x].unitCostOriginal
+                            break;
+                        case "INCLUSIVE":
+                            this.form.information[x].unitCost = (this.form.information[x].unitCostOriginal / (1 + this.vatRate)).toFixed(5)
+                            break;
+                        case "EXCLUSIVE":
+                            this.form.information[x].unitCost = this.form.information[x].unitCostOriginal
+                            break;
+                    }
+                }
+            }
+        },
         productIndex() {
             if (this.productIndex === -1 || this.productIndex === "-1") {
                 this.addRecordUnits = ""
@@ -912,7 +941,7 @@ export default {
             this.form
                 .transform(data => ({
                     ...data,
-                    total: this.totalCost,
+                    total: this.totalCost.toFixed(2),
                     quotes: this.quoteFiles,
                     products: this.form.information,
                     date: this.saleDate,
@@ -923,7 +952,8 @@ export default {
                     local_purchase_order: this.form.localPurchaseOrder,
                     client_type_id: this.form.clientTypeId,
                     client_type: this.form.clientType,
-                    vat: this.vat,
+                    vat: this.vat.toFixed(2),
+                    vat_option: this.vatOption,
                     agents: this.form.agents
                         .filter(a => a.client != null)
                         .map(a => ({ client_id: a.client.id, percentage: parseFloat(a.percentage) })),
@@ -945,6 +975,7 @@ export default {
                     "units": '',
                     "quantity": 0,
                     "unitCost": 0,
+                    "unitCostOriginal": 0,
                     "totalCost": 0,
                 })
             } else {
@@ -956,6 +987,7 @@ export default {
                     "units": this.addRecordUnits,
                     "quantity": this.addRecordQuantity,
                     "unitCost": this.addRecordUnitCost,
+                    "unitCostOriginal": this.addRecordUnitCost,
                     "totalCost": this.addRecordTotal,
                     "meta": {
                         "outsource": this.outsource,

@@ -95,6 +95,7 @@ class ReceiptController extends Controller
 
             $receipt = Cache::lock($user->id . ':receipt:store', 10)->get(function () use ($user, $request, $sale) {
 
+                $vat = 0;
 
                 if ($request->delivery_request_id == 0 || $request->delivery_request_id == null) {
 
@@ -122,10 +123,19 @@ class ReceiptController extends Controller
                         }
                     }
 
-                    $new_balance = $sale->balance - $total;
+                    //VAT is tracked separately from the (VAT-exclusive) per-product balances above,
+                    //since Sale::balance is the only VAT-inclusive figure - see Sale::vatBalance().
+                    $vat = round(floatval($request->vat ?? 0), 2);
+                    if ($vat > 0 && $vat > $sale->vatBalance() + 0.01) {
+                        return Redirect::back()->with("error", "VAT payment is more than the outstanding VAT balance");
+                    }
+
+                    $grossTotal = $total + $vat;
+
+                    $new_balance = $sale->balance - $grossTotal;
                     if ($new_balance < 0) {
                         return Redirect::back()->with("error", "Payment is more than what is required");
-                    } else if ($total <= 0) {
+                    } else if ($grossTotal <= 0) {
                         return Redirect::back()->with("error", "Receipt amount is zero");
                     }
 
@@ -154,11 +164,21 @@ class ReceiptController extends Controller
                         // "site_sale_id" =>  $request->type == "SITE" ? $sale->id : null,
                         'account_id' => $account_id,
                         'payment_method_id' => $payment_method_id,
-                        'amount' => $total,
+                        'amount' => $grossTotal,
+                        'vat' => $vat,
                         'reference' => strtoupper($request->reference),
                         // 'information' => json_encode($filteredProducts),
                         'user_id' => $user->id,
                         'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+                    ]);
+
+                    //Hoisted out of the per-product loop below so it also runs for a VAT-only
+                    //receipt (no product line items, $filteredProducts empty).
+                    $sale->update([
+                        "balance" => $new_balance,
+                        "editable" => false,
+                        "status" => $new_balance == 0 ? 2 : 1,
+                        "vat_paid" => $sale->vat_paid + $vat,
                     ]);
 
                     $wallet_account = AccountingAccount::find($account_id);
@@ -196,13 +216,6 @@ class ReceiptController extends Controller
                                 "units" => $summary->units,
                                 "receipt_id" => $receipt->id,
                             ]);
-
-                            $sale->update([
-                                "balance" => $new_balance,
-                                "editable" => false,
-                                "status" => $new_balance == 0 ? 2 : 1
-                            ]);
-
 
                             $summary->update([
                                 "balance" => $balance
@@ -641,6 +654,7 @@ class ReceiptController extends Controller
                         'account_id' => $wallet_account->id,
                         'payment_method_id' => $payment_method_id,
                         'amount' => $delivery_request->amount,
+                        'vat' => $vat,
                         'reference' => strtoupper($request->reference),
                         // 'information' => json_encode($filteredProducts),
                         'user_id' => Auth::id(),
@@ -714,6 +728,54 @@ class ReceiptController extends Controller
                         'delivery_id' => $delivery->id,
                         'receipt_id' => $receipt->id
                     ]);
+                }
+
+                //VAT collected on this receipt is booked once here (not per product line,
+                //it isn't tied to a specific Summary) - debit cash in, credit Taxes Payable.
+                if ($vat > 0) {
+                    $taxes_payable_account = (new AccountingAccountController())->getAccount(2040); //taxes payable account
+                    $taxes_payable_balance = $taxes_payable_account->balance;
+
+                    $vat_wallet_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($receipt->reference),
+                        "date" => $receipt->date + $index,
+                        "name" => $receipt->client->name,
+                        "description" => "VAT collected on Receipt #{$receipt->code}",
+                        "amount" => $vat,
+                        "opening_balance" => $wallet_account_balance,
+                        "closing_balance" => $wallet_account_balance + $vat,
+                        "type" => "DEBIT", // incrementing the account balance
+                        "accounting_account_id" => $wallet_account->id,
+                        "receipt_id" => $receipt->id,
+                    ]);
+                    $wallet_account_balance += $vat;
+
+                    $taxes_payable_record = AccountingRecord::create([
+                        "serial" => (new AppController())->generateUniqueCode("ACCOUNTING"),
+                        "reference" => strtoupper($receipt->reference),
+                        "date" => $receipt->date + $index,
+                        "name" => $receipt->client->name,
+                        "description" => "VAT collected on Receipt #{$receipt->code}",
+                        "amount" => $vat,
+                        "opening_balance" => $taxes_payable_balance,
+                        "closing_balance" => $taxes_payable_balance + $vat,
+                        "type" => "CREDIT", // incrementing the account balance
+                        "accounting_account_id" => $taxes_payable_account->id,
+                        "accounting_record_id" => $vat_wallet_record->id,
+                        "receipt_id" => $receipt->id,
+                    ]);
+                    $taxes_payable_balance += $vat;
+
+                    $vat_wallet_record->update([
+                        "accounting_record_id" => $taxes_payable_record->id
+                    ]);
+
+                    $taxes_payable_account->update([
+                        "balance" => $taxes_payable_balance
+                    ]);
+
+                    $index++;
                 }
 
 
@@ -828,14 +890,23 @@ class ReceiptController extends Controller
                     }
                 }
 
-                $new_balance = $sale->balance - $total;
+                //VAT is tracked separately from the (VAT-exclusive) per-product balances above,
+                //since Sale::balance is the only VAT-inclusive figure - see Sale::vatBalance().
+                $vat = round(floatval($request->vat ?? 0), 2);
+                if ($vat > 0 && $vat > $sale->vatBalance() + 0.01) {
+                    return Redirect::back()->with("error", "VAT payment is more than the outstanding VAT balance");
+                }
+
+                $grossTotal = $total + $vat;
+
+                $new_balance = $sale->balance - $grossTotal;
                 if ($new_balance < 0) {
                     return Redirect::back()->with("error", "Payment is more than what is required");
-                } else if ($total <= 0) {
+                } else if ($grossTotal <= 0) {
                     return Redirect::back()->with("error", "Receipt amount is zero");
                 }
 
-                if ($receipt->amount < $total) {
+                if ($receipt->amount < $grossTotal) {
                     return Redirect::back()->with("error", "Payment is more than the receipt amount");
                 }
 
@@ -859,7 +930,8 @@ class ReceiptController extends Controller
                 $sale->update([
                     "balance" => $new_balance,
                     "editable" => false,
-                    "status" => $new_balance == 0 ? 2 : 1
+                    "status" => $new_balance == 0 ? 2 : 1,
+                    "vat_paid" => $sale->vat_paid + $vat,
                 ]);
 
                 $sale->attachedReceipts()->attach($receipt);

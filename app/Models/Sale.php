@@ -78,6 +78,11 @@ class Sale extends Model
         return $sum;
     }
 
+    public function vatBalance()
+    {
+        return floatval($this->vat) - floatval($this->vat_paid);
+    }
+
     public function attachedReceipts()
     {
         return $this->belongsToMany(Receipt::class, 'receipt_sale', 'sale_id', 'receipt_id');

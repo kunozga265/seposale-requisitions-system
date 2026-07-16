@@ -130,6 +130,7 @@ class Receipt extends Model
         "payment_method_id",
         "user_id",
         "amount",
+        "vat",
         "code",
         "information",
         "reference",

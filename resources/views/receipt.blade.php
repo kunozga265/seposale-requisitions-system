@@ -266,6 +266,18 @@
                     <td style="text-align: right">{{number_format($info->amount,2)}}</td>
                 </tr>
             @endforeach
+              @if ($receipt->vat > 0)
+                    <tr class="total">
+                        <td colspan="4" style="text-align: right; font-weight: bold">SubTotal</td>
+                        <td style="text-align: right; font-weight: bold">{{ number_format($receipt->amount - $receipt->vat, 2) }}</td>
+                    </tr>
+                @endif
+                @if ($receipt->vat > 0)
+                    <tr class="total">
+                        <td colspan="4" style="text-align: right; font-weight: bold">VAT (17.5%)</td>
+                        <td style="text-align: right; font-weight: bold">{{ number_format($receipt->vat, 2) }}</td>
+                    </tr>
+                @endif
             </tbody>
         </table>
     @endif

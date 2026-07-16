@@ -22,6 +22,7 @@ class ReceiptResource extends JsonResource
             "date"                  => intval($this->date),
             "paymentMethod"         => $this->paymentMethod->name,
             "amount"                => floatval($this->amount),
+            "vat"                   => floatval($this->vat),
             "client"                => $this->client,
             "reference"             => $this->reference,
             // "information"           => $this->information(),

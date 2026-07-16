@@ -31,6 +31,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Rmunate\Utilities\SpellNumber;
@@ -286,6 +287,7 @@ class SaleController extends Controller
                 'local_purchase_order' => $request->local_purchase_order,
 
                 'vat' => $request->vat,
+                'vat_option' => $request->vat_option,
                 'meta' => json_encode([
                     'notes' => $request->notes
                 ]),
@@ -349,6 +351,7 @@ class SaleController extends Controller
                     "quantity" => $product["quantity"],
                     "description" => $product["details"],
                     "units" => $product["units"],
+                    "meta" => json_encode($product),
                 ]);
             }
 
@@ -464,6 +467,7 @@ class SaleController extends Controller
                         "quantity" => $product->quantity,
                         "description" => $product->details,
                         "units" => $product->units,
+                        "meta" => json_encode($product),
                     ]);
 
                     // if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
@@ -657,6 +661,9 @@ class SaleController extends Controller
                 return $agentsError;
             }
 
+            // dump($sale);
+            // dd( ($request->total + $request->vat - ($sale->total - $sale->balance)),  $request->total, $request->vat , ($sale->total ), $sale->balance);
+
             //get client info
             if (isset($request->client_id)) {
                 $request->validate([
@@ -718,7 +725,7 @@ class SaleController extends Controller
                 $sale->update([
                     'client_id' => $client->id,
                     'total' => $request->total + $request->vat,
-                    'balance' => $request->total - $sale->balance + $request->vat,
+                    'balance' => $request->total + $request->vat - ($sale->total - $sale->balance),
                     'date' => $request->date ?? $sale->date,
                     'location' => $request->location,
                     'recipient_name' => $request->recipient_name,
@@ -727,6 +734,7 @@ class SaleController extends Controller
                     'local_purchase_order' => $request->local_purchase_order,
 
                     'vat' => $request->vat,
+                    'vat_option' => $request->vat_option,
                     'meta' => json_encode([
                         'notes' => $request->notes
                     ]),
@@ -791,6 +799,7 @@ class SaleController extends Controller
                                 "quantity" => $productData["quantity"],
                                 "description" => $productData["details"],
                                 "units" => $productData["units"],
+                                "meta" => json_encode($productData),
                             ]);
                             continue; // Move to the next product in the loop
                         }
@@ -807,6 +816,7 @@ class SaleController extends Controller
                         "quantity" => $productData["quantity"],
                         "description" => $productData["details"],
                         "units" => $productData["units"],
+                        "meta" => json_encode($productData),
                     ]);
 
                     // if ($summary->product->id != (new AppController())->SERVICES_PRODUCT_ID) {
@@ -1122,7 +1132,7 @@ class SaleController extends Controller
      */
     private function validateAgentsPayload(Request $request)
     {
-        if (!$request->filled('agents')) {
+        if (!$request->filled('agents') || $request->agents === null || !is_array($request->agents) || count($request->agents) === 0) {
             return null;
         }
 
@@ -1131,6 +1141,7 @@ class SaleController extends Controller
             'agents.*.client_id' => ['required', 'distinct', 'exists:clients,id'],
             'agents.*.percentage' => ['required', 'numeric', 'min:0.01', 'max:100'],
         ]);
+
 
         $sum = collect($request->agents)->sum('percentage');
         if (round($sum, 2) != 100.00) {

@@ -199,10 +199,10 @@
                         <th scope="col" class="heading-font">
                           Quantity
                         </th>
-                        <th scope="col" class="heading-font">
+                        <th scope="col" class="heading-font text-right">
                           Unit Cost
                         </th>
-                        <th scope="col" class="heading-font">
+                        <th scope="col" class="heading-font text-right">
                           Total Cost
                         </th>
                       </tr>
@@ -222,20 +222,42 @@
                           <span v-if="info.cost == null">-</span>
                           <span v-else>{{ numberWithCommas((info.amount / info.cost).toFixed(2)) }}</span>
                         </td>
-                        <td class="py-2 pr-1">
+                        <td class="py-2 pr-1 text-right">
                           <span v-if="info.cost == null">-</span>
                           <span v-else>{{ numberWithCommas(info.cost) }}</span>
                         </td>
-                        <td class="py-2 pr-1">
+                        <td class="py-2 pr-1 text-right">
                           {{ numberWithCommas(info.amount) }}
+                        </td>
+                      </tr>
+                      <tr v-show="receipt.data.vat > 0">
+                        <td colspan="4" class="pt-2 text-right pr-1 text-sm uppercase heading-font font-bold">
+                          Sub
+                          Total</td>
+                        <td>
+                          <div class="pt-2 text-right pr-1 text-sm font-bold">
+                            {{ numberWithCommas((receipt.data.amount -
+                              receipt.data.vat).toFixed(2)) }}
+                          </div>
+                        </td>
+                      </tr>
+                      <tr v-show="receipt.data.vat > 0">
+                        <td colspan="4" class="pt-2 text-right pr-1 text-sm uppercase heading-font font-bold">
+                          VAT
+                          (17.5%)</td>
+                        <td>
+                          <div class="pt-2 text-right pr-1 text-sm font-bold">
+                            {{ numberWithCommas((receipt.data.vat).toFixed(2)) }}
+                          </div>
                         </td>
                       </tr>
                       <tr>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <th class="pt-4 pr-1 text-base heading-font font-bold">Total</th>
-                        <td class="pt-4 pr-1 text-base font-bold">{{ numberWithCommas(receipt.data.amount) }}</td>
+                        <th class="pt-2 text-right pr-1 text-sm uppercase heading-font ">Total</th>
+                        <td class="pt-2 text-right pr-1 text-sm font-bold">{{ numberWithCommas(receipt.data.amount) }}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
