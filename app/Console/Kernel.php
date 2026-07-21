@@ -127,7 +127,7 @@ class Kernel extends ConsoleKernel
 
                 Storage::disk('public_uploads')->delete($file);
             }
-        })->everyMinute();
+        })->hourly();
 
         //Check Payments
         $schedule->call(function () {
