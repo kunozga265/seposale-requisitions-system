@@ -81,8 +81,6 @@ class WhatsappMessageTemplateController extends Controller
 
         if (is_object($template)) {
 
-
-
             if ($template->has_file) {
 
                 $request->validate([
@@ -154,6 +152,36 @@ class WhatsappMessageTemplateController extends Controller
                 else {
                     //Web Response
                     return Redirect::back()->with('success', 'Clients uploaded and pricelists will be sent.');
+                }
+            } elseif ($request->type == 'all') {
+
+             
+                try {
+
+                    CustomJob::create([
+                        "status" => 0,
+                        "type" => "BATCH_SEND_ALL",
+                        "content" => json_encode([
+                            'file' => null,
+                            'referred_by_id' => $request->user_id,
+                            'user_id' => Auth::id(),
+                            'force_send' => $request->force_send,
+                            'template' => $template,
+                            'template_file' => $template_filename,
+                        ]),
+                    ]);
+                } catch (\Exception $e) {
+
+                    Log::error($e);
+                    return Redirect::back()->with('error', "An error occurred: {$e->getMessage()}");
+                }
+
+                if ((new AppController())->isApi($request))
+                    //API Response
+                    return response()->json(['message' => 'Template will be sent to all clients.'], 201);
+                else {
+                    //Web Response
+                    return Redirect::back()->with('success', 'Template will be sent to all clients.');
                 }
             } else {
 

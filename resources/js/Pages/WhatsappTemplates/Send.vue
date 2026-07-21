@@ -79,6 +79,13 @@
                                     <label for="default-radio-2"
                                         class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">Upload
                                         File</label>
+
+                                    <input checked id="default-radio-2" type="radio" value="all"
+                                        v-model="checkClient"
+                                        class="ml-4 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    <label for="default-radio-2"
+                                        class="ml-1 text-sm font-medium text-gray-900 dark:text-gray-300">All Clients
+                                        </label>
                                 </div>
 
                                 <div class="p-2 mb-2 md:col-span-2">
@@ -393,7 +400,7 @@ export default {
                     this.error = "Select client"
                     return false
                 }
-            } else {
+            } else if(this.checkClient === "upload") {
                 if (this.form.file?.length === 0 || this.form.file == null) {
                     this.error = "Select file"
                     return false

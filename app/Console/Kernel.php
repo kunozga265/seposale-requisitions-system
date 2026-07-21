@@ -80,6 +80,7 @@ class Kernel extends ConsoleKernel
                     case "BATCH_SEND":
                         Log::info("Running Job: Sending Batch Template Message");
                         break;
+
                     // case "LATEST_UPLOADS":
                     //     $clients = Client::where('created_at', '>', Carbon::createFromTimestamp(1776682800))->get();
 
@@ -101,7 +102,24 @@ class Kernel extends ConsoleKernel
                 $content = json_decode($job->content, true);
                 $file = $content["file"];
 
-                Excel::import(new ClientsImport($job->type, $content), public_path($file));
+                if ($job->type ==  "BATCH_SEND_ALL") {
+                    Log::info("Running Job: Sending Batch Template Message");
+
+                    $template_id = $content["template"]["id"];
+                    $template = WhatsappMessageTemplate::find($template_id);
+
+                    $clients = Client::all();
+                    foreach ($clients as $client) {
+                        if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $template->code)->exists() || $this->force_send == true) {
+                            (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, "", $this->template_file);
+                        } else {
+                            Log::error("Aborted: {$template->name} message already sent to {$client->name}.");
+                        }
+                    }
+                } else {
+
+                    Excel::import(new ClientsImport($job->type, $content), public_path($file));
+                }
 
                 $job->update([
                     'status' => 2
@@ -109,7 +127,7 @@ class Kernel extends ConsoleKernel
 
                 Storage::disk('public_uploads')->delete($file);
             }
-        })->hourly();
+        })->everyMinute();
 
         //Check Payments
         $schedule->call(function () {

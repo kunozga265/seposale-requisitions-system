@@ -1835,7 +1835,23 @@ class NotificationController extends Controller
 
             case "introductory_01":
             case "introductory_02":
-                $client = \App\Models\Client::where('serial', $serial)->first();
+                $parameters =  [
+                    [
+                        "type" => "document",
+                        "document" => [
+                            "link" => env('APP_URL') . $file,
+                            "filename" => $template->name . date(" Y-m-d")
+                        ]
+                    ]
+                ];
+
+                break;
+            default:
+                $parameters = [];
+                break;
+        }
+
+           $client = \App\Models\Client::where('serial', $serial)->first();
 
                 $body = [
                     "messaging_product" => "whatsapp",
@@ -1850,15 +1866,7 @@ class NotificationController extends Controller
                         "components" => [
                             [
                                 "type" => "header",
-                                "parameters" => [
-                                    [
-                                        "type" => "document",
-                                        "document" => [
-                                            "link" => env('APP_URL') . $file,
-                                            "filename" => $template->name . date(" Y-m-d")
-                                        ]
-                                    ]
-                                ]
+                                "parameters" => $parameters
                             ],
                             [
                                 "type" => "body",
@@ -1868,16 +1876,6 @@ class NotificationController extends Controller
                                         //Transporter/Supplier Name
                                         "text" => $client->getName()
                                     ],
-                                    // [
-                                    //     "type" => "text",
-                                    //     //site name
-                                    //     "text" => Carbon::now()->format('F j, Y')
-                                    // ],
-                                    // [
-                                    //     "type" => "text",
-                                    //     //item name
-                                    //     "text" => $message
-                                    // ],
                                 ]
                             ],
                         ]
@@ -1888,10 +1886,7 @@ class NotificationController extends Controller
 
                 $data = [];
                 $check = $this->pushWhatsappMessage($body, $data);
-                break;
-
-            default:
-        }
+                
         return $check;
     }
 }
