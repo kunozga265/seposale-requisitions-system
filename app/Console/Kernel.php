@@ -110,8 +110,8 @@ class Kernel extends ConsoleKernel
 
                     $clients = Client::all();
                     foreach ($clients as $client) {
-                        if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $template->code)->exists() || $this->force_send == true) {
-                            (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, "", $this->template_file);
+                        if (!WhatsappMessage::where('client_id', $client->id)->where('message_type', $template->code)->exists() || $content["force_send"] == true) {
+                            (new NotificationController())->processWhatsappTemplateMessage($template, $client->serial, "", $content["template_file"]);
                         } else {
                             Log::error("Aborted: {$template->name} message already sent to {$client->name}.");
                         }
