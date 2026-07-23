@@ -49,6 +49,11 @@ class Client extends Model
     {
         return $this->hasMany(Collection::class);
     }
+
+    public function rewards()
+    {
+        return $this->hasMany(ClientReward::class);
+    }
     public function type()
     {
         return $this->belongsTo(ClientType::class, "client_type_id");

@@ -110,6 +110,11 @@ class ClientController extends Controller
                 $quotations = $client->quotations()->latest()->get();
                 $siteSales = $client->siteSales()->orderBy("date", "desc")->get();
                 $collections = $client->collections()->orderBy("date", "desc")->get();
+
+                $rewards = $client->rewards()->with(['sale', 'variant', 'user'])->orderByDesc('date')->get();
+                $rewardsEarned = $rewards->where('type', 'earned')->sum('amount');
+                $rewardsDeducted = $rewards->whereIn('type', ['applied', 'withdrawn', 'deducted'])->sum('amount');
+
                 //Web Response
                 return Inertia::render('Clients/Show', [
                     'client' => new ClientResource($client),
@@ -119,6 +124,20 @@ class ClientController extends Controller
                     'quotations' => QuotationResource::collection($quotations),
                     'siteSales' => SiteSaleResource::collection($siteSales),
                     'collections' => CollectionResource::collection($collections),
+                    'rewardsBalance' => round(max(0, $rewardsEarned - $rewardsDeducted), 2),
+                    'rewards' => $rewards->map(fn ($r) => [
+                        'id' => $r->id,
+                        'type' => $r->type,
+                        'amount' => floatval($r->amount),
+                        'date' => intval($r->date),
+                        'note' => $r->note,
+                        'sale' => $r->sale ? [
+                            'id' => $r->sale->id,
+                            'code' => (new AppController())->getZeroedNumber($r->sale->code_alt),
+                        ] : null,
+                        'variant' => $r->variant ? ($r->variant->name ?: $r->variant->description) : null,
+                        'user' => $r->user ? $r->user->fullName() : null,
+                    ])->values(),
                 ]);
             }
         } else {

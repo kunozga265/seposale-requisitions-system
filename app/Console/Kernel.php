@@ -127,7 +127,7 @@ class Kernel extends ConsoleKernel
 
                 Storage::disk('public_uploads')->delete($file);
             }
-        })->hourly();
+        })->dailyAt('19:15');
 
         //Check Payments
         $schedule->call(function () {
@@ -138,7 +138,7 @@ class Kernel extends ConsoleKernel
                 $status = (new PaymentController())->runCallback($payment, $payment->sale);
                 Log::info("RUN PAYMENT CHECK: Status: $status Ref#: {$payment->reference}, Sale Order #: LL{$payment->sale->formattedCode()}");
             }
-        })->everyMinute();
+        })->everyFifteenMinutes();
     }
 
     /**

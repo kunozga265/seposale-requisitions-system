@@ -135,6 +135,68 @@
           <div class="page-section">
             <div class="page-section-header">
               <div class="page-section-title">
+                Rewards
+              </div>
+            </div>
+            <div class="page-section-content">
+
+              <div class="card p-0 mb-4">
+                <div class="px-4 py-3 flex justify-between text-sm">
+                  <div class="text-gray-600 font-semibold">Reward Balance</div>
+                  <div class="font-bold">MK{{ numberWithCommas(rewardsBalance) }}</div>
+                </div>
+              </div>
+
+              <div v-if="rewards.length === 0" class="text-center text-gray-400 md:col-span-2 text-sm">
+                No Reward Records Found
+              </div>
+              <div v-else class="card p-0">
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                      <tr>
+                        <th class="p-2 heading-font">Date</th>
+                        <th class="p-2 heading-font">Type</th>
+                        <th class="p-2 heading-font text-right">Amount</th>
+                        <th class="p-2 heading-font">Product</th>
+                        <th class="p-2 heading-font">Sale</th>
+                        <th class="p-2 heading-font">Note</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="reward in rewards" :key="reward.id"
+                        class="border-b hover:bg-gray-50 transition ease-in-out duration-200">
+                        <td class="p-2">{{ getDate(reward.date * 1000) }}</td>
+                        <td class="p-2">
+                          <span :class="rewardTypeClass(reward.type)"
+                            class="px-2 py-0.5 text-xs rounded-full font-medium capitalize">
+                            {{ reward.type }}
+                          </span>
+                        </td>
+                        <td class="p-2 text-right font-medium"
+                          :class="['applied', 'withdrawn', 'deducted'].includes(reward.type) ? 'text-red-600' : 'text-green-600'">
+                          {{ ['applied', 'withdrawn', 'deducted'].includes(reward.type) ? '-' : '+' }}MK{{
+                            numberWithCommas(reward.amount) }}
+                        </td>
+                        <td class="p-2">{{ reward.variant || '—' }}</td>
+                        <td class="p-2">
+                          <inertia-link v-if="reward.sale" :href="route('sales.show', { id: reward.sale.id })">
+                            #{{ reward.sale.code }}
+                          </inertia-link>
+                          <span v-else>—</span>
+                        </td>
+                        <td class="p-2 text-gray-600">{{ reward.note || '—' }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-section">
+            <div class="page-section-header">
+              <div class="page-section-title">
                 Sales
               </div>
             </div>
@@ -396,7 +458,9 @@ export default {
   props: ['client', 'sales', 'receipts', 'invoices',
     'quotations',
     'siteSales',
-    'collections',],
+    'collections',
+    'rewards',
+    'rewardsBalance',],
   components: {
     Pagination,
     SaleStatus,
@@ -431,6 +495,14 @@ export default {
   },
   computed: {},
   methods: {
+    rewardTypeClass(type) {
+      return {
+        'earned': 'bg-green-100 text-green-800',
+        'applied': 'bg-blue-100 text-blue-800',
+        'withdrawn': 'bg-amber-100 text-amber-800',
+        'deducted': 'bg-red-100 text-red-800',
+      }[type] || 'bg-gray-100 text-gray-800'
+    },
     printQuotation() {
       this.$inertia.get(this.route('quotations.print', { 'id': this.quotation.data.id }))
     },
