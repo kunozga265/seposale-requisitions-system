@@ -1258,52 +1258,52 @@ Route::group(['middleware' => ['auth:sanctum', 'verified', 'roles']], function (
     Route::group(['prefix' => 'rewards'], function () {
         Route::get('/', [
             "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@index",
-            'roles' => ['management', 'employee']
+            'roles' => ['management', 'administrator', 'accountant']
         ])->name('rewards.index');
 
         Route::post('/withdrawal-requests/{id}/approve', [
             "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@approve",
-            'roles' => ['management']
+            'roles' => ['management', 'administrator', 'accountant']
         ])->name('rewards.withdrawal.approve');
 
         Route::post('/withdrawal-requests/{id}/reject', [
             "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@reject",
-            'roles' => ['management']
+            'roles' => ['management', 'administrator', 'accountant']
         ])->name('rewards.withdrawal.reject');
 
         Route::post('/withdrawal-requests/{id}/pay', [
             "uses"  => "App\Http\Controllers\RewardWithdrawalRequestController@pay",
-            'roles' => ['management', 'employee']
+            'roles' => ['management', 'administrator', 'accountant']
         ])->name('rewards.withdrawal.pay');
 
         Route::get('/product-rewards', [
             "uses"  => "App\Http\Controllers\ProductVariantRewardController@index",
-            'roles' => ['management']
+            'roles' => ['accountant','administrator','management']
         ])->name('rewards.product-rewards');
 
         Route::post('/product-rewards/store', [
             "uses"  => "App\Http\Controllers\ProductVariantRewardController@store",
-            'roles' => ['management']
+            'roles' => ['accountant','administrator','management']
         ])->name('rewards.product-rewards.store');
 
         Route::put('/product-rewards/{id}', [
             "uses"  => "App\Http\Controllers\ProductVariantRewardController@update",
-            'roles' => ['management']
+            'roles' => ['accountant','administrator','management']
         ])->name('rewards.product-rewards.update');
 
         Route::delete('/product-rewards/{id}', [
             "uses"  => "App\Http\Controllers\ProductVariantRewardController@destroy",
-            'roles' => ['management']
+            'roles' => ['accountant','administrator','management']
         ])->name('rewards.product-rewards.destroy');
 
         Route::post('/grant', [
             "uses"  => "App\Http\Controllers\ClientRewardController@store",
-            'roles' => ['management']
+            'roles' => ['accountant','administrator','management']
         ])->name('rewards.grant');
 
         Route::post('/deduct', [
             "uses"  => "App\Http\Controllers\ClientRewardController@deduct",
-            'roles' => ['management']
+            'roles' => ['accountant','administrator','management']
         ])->name('rewards.deduct');
     });
 
