@@ -64,7 +64,18 @@ class RewardWithdrawalRequestController extends Controller
 
     public function reject($id)
     {
-        RewardWithdrawalRequest::findOrFail($id)->update(['status' => 'rejected']);
+        $req = RewardWithdrawalRequest::findOrFail($id);
+        $req->update(['status' => 'rejected']);
+        $amount  = abs($req->amount);
+
+        ClientReward::create([
+            'client_id'                    => $req->client_id,
+            'reward_withdrawal_request_id' => $req->id,
+            'amount'                       => -$amount,
+            'type'                         => 'withdrawn',
+            'date'                         => now()->timestamp,
+        ]);
+
         return Redirect::back()->with('success', 'Withdrawal request rejected.');
     }
 
@@ -116,14 +127,6 @@ class RewardWithdrawalRequestController extends Controller
                 'status'  => 'paid',
                 'paid_by' => Auth::id(),
                 'paid_at' => now(),
-            ]);
-
-            ClientReward::create([
-                'client_id'                    => $req->client_id,
-                'reward_withdrawal_request_id' => $req->id,
-                'amount'                       => -$amount,
-                'type'                         => 'withdrawn',
-                'date'                         => now()->timestamp,
             ]);
         });
 
