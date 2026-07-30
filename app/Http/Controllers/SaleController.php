@@ -837,7 +837,9 @@ class SaleController extends Controller
 
 
                 //if client generated, confirm it
-                if ($sale->client_generated && !$sale->confirmed) {
+                //there's a bug with the client generated sales, they are not being confirmed when the sale is updated, so we will confirm it here
+                // if ($sale->client_generated && !$sale->confirmed) {
+                if (!$sale->confirmed) {
                     $sale->update([
                         'confirmed' => true,
                         'confirmed_date' => Carbon::now()->getTimestamp(),
