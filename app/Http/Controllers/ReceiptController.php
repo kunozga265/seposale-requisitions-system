@@ -7,9 +7,9 @@ use App\Http\Resources\SaleResource;
 use App\Http\Resources\SiteSaleResource;
 use App\Models\AccountingAccount;
 use App\Models\AccountingRecord;
-use App\Models\ClientReward;
 use App\Models\Delivery;
 use App\Models\DeliveryRequest;
+use App\Models\PendingReward;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantReward;
 use App\Models\Receipt;
@@ -272,7 +272,12 @@ class ReceiptController extends Controller
                                 "site_sale_summary_id" => $site_sale_summary_id,
                             ]);
 
-                            // Credit rewards proportionally per payment (ORDINARY sales only)
+                            // Stage a PendingReward per qualifying payment (ORDINARY sales only)
+                            // instead of crediting ClientReward directly -- a sale can be missing
+                            // an agent attachment it should have had, which used to silently
+                            // credit the client instead of the rightful agent. Staff now resolve
+                            // each pending reward in admin/ (PendingRewardController), choosing
+                            // the client and/or agent split at that point instead of here.
                             if ($request->type === "ORDINARY" && !empty($summary->product_variant_id)) {
                                 $rewardRecord = ProductVariantReward::where('product_variant_id', $summary->product_variant_id)
                                     ->where('active', true)->first();
@@ -284,40 +289,15 @@ class ReceiptController extends Controller
                                         $counts = ($amount / $unitPrice) / $packSize;
                                         $reward = round($counts * $rewardRecord->reward_amount, 2);
                                         if ($reward > 0) {
-                                            $agents = $summary->sale ? $summary->sale->agents : collect();
-
-                                            if ($agents->isEmpty()) {
-                                                ClientReward::create([
-                                                    'client_id'          => $receipt->client_id,
-                                                    'product_variant_id' => $summary->product_variant_id,
-                                                    'sale_id'            => $sale_id,
-                                                    'receipt_id'         => $receipt->id,
-                                                    'amount'             => $reward,
-                                                    'type'               => 'earned',
-                                                    'date'               => $receipt->date,
-                                                ]);
-                                            } else {
-                                                $agentCount      = $agents->count();
-                                                $remainingReward = $reward;
-                                                foreach ($agents as $i => $agent) {
-                                                    $share = ($i === $agentCount - 1)
-                                                        ? $remainingReward
-                                                        : round($reward * ($agent->percentage / 100), 2);
-                                                    $remainingReward -= $share;
-
-                                                    if ($share <= 0) continue;
-
-                                                    ClientReward::create([
-                                                        'client_id'          => $agent->client_id,
-                                                        'product_variant_id' => $summary->product_variant_id,
-                                                        'sale_id'            => $sale_id,
-                                                        'receipt_id'         => $receipt->id,
-                                                        'amount'             => $share,
-                                                        'type'               => 'earned',
-                                                        'date'               => $receipt->date,
-                                                    ]);
-                                                }
-                                            }
+                                            PendingReward::create([
+                                                'client_id'          => $receipt->client_id,
+                                                'product_variant_id' => $summary->product_variant_id,
+                                                'sale_id'            => $sale_id,
+                                                'receipt_id'         => $receipt->id,
+                                                'amount'             => $reward,
+                                                'status'             => PendingReward::STATUS_PENDING,
+                                                'date'               => $receipt->date,
+                                            ]);
                                         }
                                     }
                                 }

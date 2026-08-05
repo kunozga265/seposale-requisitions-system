@@ -75,6 +75,12 @@ Route::group(['prefix' => '1.0.0'], function () {
         "uses" => "App\Http\Controllers\EcommerceUploadController@store",
     ]);
 
+    // Accepts file uploads from the admin app (authenticated by shared key, no user session required) --
+    // backs admin's FILE_STORAGE_CURRENT_SERVER=false mode.
+    Route::post("/admin/upload", [
+        "uses" => "App\Http\Controllers\AdminUploadController@store",
+    ]);
+
     Route::post("/upload/delete", [
         "uses" => "App\Http\Controllers\AppController@removeFile",
         'roles' => ['employee', 'administrator']

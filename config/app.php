@@ -245,6 +245,8 @@ return [
 
     'ecommerce_upload_key' => env('ECOMMERCE_UPLOAD_KEY'),
 
+    'admin_upload_key' => env('ADMIN_UPLOAD_KEY'),
+
     'ecommerce_url' => env('ECOMMERCE_URL', 'https://seposale.com'),
 
 ];
