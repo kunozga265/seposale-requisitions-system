@@ -35,7 +35,9 @@ class PaymentController extends Controller
         Log::info("Access Token:  $access_token");
 
         if ($access_token === null) {
-            return Redirect::route('home')->with("error", "Failed to process payment. Please try again later.");
+            Log::error("Failed to get access token from Standard Bank API");
+            return "Failed to get access token from Standard Bank API";
+            // return Redirect::route('home')->with("error", "Failed to process payment. Please try again later.");
         }
 
         $client = new Client();
