@@ -20,6 +20,7 @@ class AdminUploadController extends Controller
         'PROOF_OF_PAYMENT' => 'files/proof-of-payments',
         'APPLICATION'      => 'files/applications',
         'BRAND'            => 'files/brands',
+        'BUILDING_TIP'     => 'files/building-tips',
     ];
 
     public function store(Request $request)
