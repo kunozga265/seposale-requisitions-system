@@ -21,6 +21,10 @@ class AdminUploadController extends Controller
         'APPLICATION'      => 'files/applications',
         'BRAND'            => 'files/brands',
         'BUILDING_TIP'     => 'files/building-tips',
+        'PRODUCT'          => 'files/products',
+        'PRODUCT_VARIANT'  => 'files/product-variants',
+        'MEMBER'           => 'files/members',
+        'HERO_SLIDE'       => 'files/hero-slides',
     ];
 
     public function store(Request $request)
