@@ -26,6 +26,7 @@ class AdminUploadController extends Controller
         'MEMBER'           => 'files/members',
         'HERO_SLIDE'       => 'files/hero-slides',
         'DELIVERY_NOTE'    => 'files/deliveries',
+        'COLLECTION_NOTE'  => 'files/collections',
     ];
 
     public function store(Request $request)
