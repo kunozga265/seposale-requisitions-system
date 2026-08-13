@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -33,12 +34,25 @@ class AdminUploadController extends Controller
     {
         $key = $request->header('X-Upload-Key') ?? $request->input('upload_key');
 
+        Log::info('AdminUploadController::store() called', [
+            'key' => $key,  
+            'upload_key_config' => config('app.admin_upload_key'),
+        ]);
+
         if (! $key || $key !== config('app.admin_upload_key')) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $request->validate([
-            'file' => 'required|file|max:10240|mimes:jpg,jpeg,png,pdf,doc,docx',
+            // gif/webp added -- confirmed via a real prod failure that these
+            // (plausible from a device's photo gallery, unlike the original
+            // jpg/jpeg/png/pdf/doc/docx-only list) were being rejected here,
+            // which admin/'s FileUploadService::storeRemotely() surfaced as
+            // an opaque "Return value must be of type string, null
+            // returned" crash rather than this validation message, since
+            // that caller wasn't sending Accept: application/json (fixed
+            // separately in admin/).
+            'file' => 'required|file|max:10240|mimes:jpg,jpeg,png,gif,webp,pdf,doc,docx',
             'type' => 'required|string',
         ]);
 
