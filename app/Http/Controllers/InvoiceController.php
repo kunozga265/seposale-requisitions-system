@@ -130,6 +130,7 @@ class InvoiceController extends Controller
                         'revision' => 0,
                         'client_id' => $sale->client->id,
                         'sale_id' => $sale->id,
+                        'branch_id' => $sale->branch_id ?? config('branch.default_id'),
                     ]);
                 });
 

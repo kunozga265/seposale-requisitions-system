@@ -176,6 +176,8 @@ class RequestFormController extends Controller
                 //Management Approval
                 'approvalStatus' => 0,
                 'editable' => true,
+
+                'branch_id' => $summary->sale->branch_id ?? config('branch.default_id'),
             ]);
 
             //create request form items

@@ -199,5 +199,6 @@ class Sale extends Model
         'vat',
         'vat_paid',
         'vat_option',
+        'branch_id',
     ];
 }

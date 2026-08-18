@@ -115,5 +115,6 @@ class Delivery extends Model
         "due_date",
         "notes",
         "whatsapp",
+        "branch_id",
     ];
 }

@@ -39,5 +39,6 @@ class Invoice extends Model
         "sale_id",
         "revision",
         "whatsapp",
+        "branch_id",
     ];
 }

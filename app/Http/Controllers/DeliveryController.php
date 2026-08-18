@@ -133,6 +133,7 @@ class DeliveryController extends Controller
                         "summary_id" => $summary->id,
                         "tracking_number" => uniqid(),
                         "due_date" => $request->delivery_date,
+                        "branch_id" => $summary->sale->branch_id ?? config('branch.default_id'),
                     ]);
 
                     $summary->update([

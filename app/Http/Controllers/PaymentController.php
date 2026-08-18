@@ -182,6 +182,7 @@ class PaymentController extends Controller
                 // 'information' => json_encode($filteredProducts),
                 'user_id' => 0,
                 'date' => \Carbon\Carbon::now()->getTimestamp(),
+                'branch_id' => $sale->branch_id ?? config('branch.default_id'),
             ]);
 
 

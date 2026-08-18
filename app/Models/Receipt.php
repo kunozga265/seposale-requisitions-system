@@ -137,5 +137,6 @@ class Receipt extends Model
         "date",
         "whatsapp",
         "account_id",
+        "branch_id",
     ];
 }

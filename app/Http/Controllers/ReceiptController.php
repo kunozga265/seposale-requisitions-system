@@ -170,6 +170,7 @@ class ReceiptController extends Controller
                         // 'information' => json_encode($filteredProducts),
                         'user_id' => $user->id,
                         'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+                        'branch_id' => $sale->branch_id ?? config('branch.default_id'),
                     ]);
 
                     //Hoisted out of the per-product loop below so it also runs for a VAT-only
@@ -639,6 +640,7 @@ class ReceiptController extends Controller
                         // 'information' => json_encode($filteredProducts),
                         'user_id' => Auth::id(),
                         'date' => isset($request->date) ? $request->date : \Carbon\Carbon::now()->getTimestamp(),
+                        'branch_id' => $sale->branch_id ?? config('branch.default_id'),
                     ]);
 
 

@@ -330,6 +330,8 @@ class RequestFormController extends Controller
                 //Management Approval
                 'approvalStatus' => 0,
                 'editable' => true,
+
+                'branch_id' => config('branch.default_id'),
             ]);
 
             //create request form items
@@ -505,6 +507,8 @@ class RequestFormController extends Controller
                 //Management Approval
                 'approvalStatus' => 0,
                 'editable' => true,
+
+                'branch_id' => $summary->sale->branch_id ?? config('branch.default_id'),
             ]);
 
             //create request form items
@@ -620,6 +624,8 @@ class RequestFormController extends Controller
             //Management Approval
             'approvalStatus' => 0,
             'editable' => false,
+
+            'branch_id' => config('branch.default_id'),
         ]);
 
         $accounts_payable_account = (new AccountingAccountController())->getAccount(2010);

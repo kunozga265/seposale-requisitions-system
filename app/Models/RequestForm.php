@@ -180,6 +180,7 @@ class RequestForm extends Model
         "quotes",
         "receipts",
         "editable",
-        "denied_by_id"
+        "denied_by_id",
+        "branch_id",
     ];
 }

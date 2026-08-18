@@ -76,5 +76,7 @@ class Zone extends Model
         'level',
         'coordinates',
         'costs',
+        'country_id',
+        'area_name',
     ];
 }

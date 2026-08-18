@@ -104,6 +104,7 @@ class ZoneController extends Controller
             'cost' => floatval($request->cost),
             'level' => intval($request->level ?? 1),
             'coordinates' => json_encode($request->coordinates),
+            'country_id' => config('branch.default_country_id'),
         ]);
 
         if ((new AppController())->isApi($request))

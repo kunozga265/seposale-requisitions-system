@@ -170,6 +170,8 @@ class QuotationController extends Controller
                 //Requested by
                 'user_id' => $user->id,
                 'quotes' => json_encode($request->quotes ?? []),
+
+                'branch_id' => config('branch.default_id'),
             ]);
         });
 

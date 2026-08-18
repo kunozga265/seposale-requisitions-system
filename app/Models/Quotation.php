@@ -67,5 +67,6 @@ class Quotation extends Model
         "meta",
         "client_generated",
         "confirmed",
+        "branch_id",
     ];
 }
