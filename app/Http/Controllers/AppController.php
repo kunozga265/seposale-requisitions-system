@@ -481,6 +481,10 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (InventorySummary::where('serial', $code)->exists());
+        } elseif ($type == "SUMMARY") {
+            do {
+                $code = $this->getNewCode();
+            } while (Summary::where('serial', $code)->exists());
         } elseif ($type == "CLIENT") {
             do {
                 $code = $this->getNewCode();

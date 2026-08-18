@@ -343,6 +343,7 @@ class SaleController extends Controller
                 //            }
 
                 $summary = Summary::create([
+                    "serial" => (new AppController())->generateUniqueCode("SUMMARY"),
                     //If product not found add it under other
                     "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
                     "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
@@ -462,6 +463,7 @@ class SaleController extends Controller
                     //                    }
 
                     $summary = Summary::create([
+                        "serial" => (new AppController())->generateUniqueCode("SUMMARY"),
                         "product_id" => is_object($product_variant) ? $product_variant->product->id : 7,
                         "product_variant_id" => is_object($product_variant) ? $product_variant->id : 0,
                         "sale_id" => $sale->id,
@@ -811,6 +813,7 @@ class SaleController extends Controller
 
                     // If no valid summary_id was passed, or the summary wasn't found, create a new one
                     $summary = Summary::create([
+                        "serial" => (new AppController())->generateUniqueCode("SUMMARY"),
                         "product_id" => $productId,
                         "product_variant_id" => $productVariantId,
                         "sale_id" => $sale->id,

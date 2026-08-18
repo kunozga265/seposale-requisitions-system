@@ -193,6 +193,7 @@ class Summary extends Model
 
 
     protected $fillable = [
+        "serial",
         "product_id",
         "product_variant_id",
         "sale_id",
