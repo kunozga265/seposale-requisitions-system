@@ -53,6 +53,7 @@ class InventorySummary extends Model
 
     protected $fillable = [
         "code",
+        "serial",
         "opening_stock",
         "closing_stock",
         "comments",

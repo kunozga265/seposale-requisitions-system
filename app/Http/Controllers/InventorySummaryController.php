@@ -111,6 +111,7 @@ class InventorySummaryController extends Controller
         //create new summary for today
         return InventorySummary::create([
             "code" => $this->getCodeNumber(),
+            "serial" => (new AppController())->generateUniqueCode("INVENTORY_SUMMARY"),
             "opening_stock" => json_encode($opening_stock),
             "closing_stock" => json_encode([]),
             "user_id" => Auth::id(),

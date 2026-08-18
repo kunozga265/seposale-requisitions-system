@@ -19,6 +19,7 @@ use App\Models\Delivery;
 use App\Models\DeliveryNote;
 use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\InventorySummary;
 use App\Models\Payable;
 use App\Models\Project;
 use App\Models\Quotation;
@@ -476,6 +477,10 @@ class AppController extends Controller
             do {
                 $code = $this->getNewCode();
             } while (Collection::where('serial', $code)->exists());
+        } elseif ($type == "INVENTORY_SUMMARY") {
+            do {
+                $code = $this->getNewCode();
+            } while (InventorySummary::where('serial', $code)->exists());
         } elseif ($type == "CLIENT") {
             do {
                 $code = $this->getNewCode();
